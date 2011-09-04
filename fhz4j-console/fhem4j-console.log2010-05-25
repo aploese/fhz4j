@@ -1,0 +1,123 @@
+INFO  2010-05-25 08:09:00,412 (net.sf.fhem4j.MyParser.openPort:179) - open port /dev/ttyACM0 
+INFO  2010-05-25 08:09:00,425 (net.sf.fhem4j.MyParser.openPort:182) - port opend /dev/ttyACM0 
+INFO  2010-05-25 08:10:11,447 (net.sf.fhem4j.MyParser.openPort:179) - open port /dev/ttyACM0 
+INFO  2010-05-25 08:10:11,462 (net.sf.fhem4j.MyParser.openPort:182) - port opend /dev/ttyACM0 
+INFO  2010-05-25 08:11:41,204 (net.sf.fhem4j.MyParser.openPort:179) - open port /dev/ttyACM0 
+INFO  2010-05-25 08:11:41,216 (net.sf.fhem4j.MyParser.openPort:182) - port opend /dev/ttyACM0 
+INFO  2010-05-25 08:11:41,320 (net.sf.fhem4j.console.Main$MyInputStream.read:103) - Send: T 
+INFO  2010-05-25 08:11:41,321 (net.sf.fhem4j.console.Main$MyInputStream.read:103) - Send: 1 
+INFO  2010-05-25 08:11:41,322 (net.sf.fhem4j.console.Main$MyInputStream.read:103) - Send: 2 
+INFO  2010-05-25 08:11:41,323 (net.sf.fhem4j.console.Main$MyInputStream.read:103) - Send: 3 
+INFO  2010-05-25 08:11:41,324 (net.sf.fhem4j.console.Main$MyInputStream.read:103) - Send: 4 
+INFO  2010-05-25 08:11:41,325 (net.sf.fhem4j.console.Main$MyInputStream.read:103) - Send: 6 
+INFO  2010-05-25 08:11:41,326 (net.sf.fhem4j.console.Main$MyInputStream.read:103) - Send: 6 
+INFO  2010-05-25 08:11:41,327 (net.sf.fhem4j.console.Main$MyInputStream.read:103) - Send: 7 
+INFO  2010-05-25 08:11:41,328 (net.sf.fhem4j.console.Main$MyInputStream.read:103) - Send: 9 
+INFO  2010-05-25 08:11:41,328 (net.sf.fhem4j.console.Main$MyInputStream.read:103) - Send: F 
+INFO  2010-05-25 08:11:41,329 (net.sf.fhem4j.console.Main$MyInputStream.read:103) - Send: F 
+INFO  2010-05-25 08:11:41,330 (net.sf.fhem4j.console.Main$MyInputStream.read:103) - Send: 2 
+INFO  2010-05-25 08:11:41,331 (net.sf.fhem4j.console.Main$MyInputStream.read:103) - Send: 2 
+INFO  2010-05-25 08:11:41,332 (net.sf.fhem4j.console.Main$MyInputStream.read:103) - Send:  
+INFO  2010-05-25 08:11:41,332 (net.sf.fhem4j.console.Main$MyInputStream.read:103) - Send: 
+ 
+INFO  2010-05-25 08:11:41,333 (net.sf.fhem4j.console.Main$MyInputStream.read:108) - Wait forever 
+INFO  2010-05-25 08:13:24,270 (net.sf.fhem4j.MyParser.openPort:179) - open port /dev/ttyACM0 
+INFO  2010-05-25 08:13:24,283 (net.sf.fhem4j.MyParser.openPort:182) - port opend /dev/ttyACM0 
+INFO  2010-05-25 08:13:24,387 (net.sf.fhem4j.console.Main$MyInputStream.read:103) - Send: T 
+INFO  2010-05-25 08:13:24,388 (net.sf.fhem4j.console.Main$MyInputStream.read:103) - Send: 1 
+INFO  2010-05-25 08:13:24,389 (net.sf.fhem4j.console.Main$MyInputStream.read:103) - Send: 2 
+INFO  2010-05-25 08:13:24,390 (net.sf.fhem4j.console.Main$MyInputStream.read:103) - Send: 3 
+INFO  2010-05-25 08:13:24,391 (net.sf.fhem4j.console.Main$MyInputStream.read:103) - Send: 4 
+INFO  2010-05-25 08:13:24,392 (net.sf.fhem4j.console.Main$MyInputStream.read:103) - Send: 6 
+INFO  2010-05-25 08:13:24,393 (net.sf.fhem4j.console.Main$MyInputStream.read:103) - Send: 6 
+INFO  2010-05-25 08:13:24,394 (net.sf.fhem4j.console.Main$MyInputStream.read:103) - Send: 7 
+INFO  2010-05-25 08:13:24,395 (net.sf.fhem4j.console.Main$MyInputStream.read:103) - Send: 9 
+INFO  2010-05-25 08:13:24,395 (net.sf.fhem4j.console.Main$MyInputStream.read:103) - Send: F 
+INFO  2010-05-25 08:13:24,396 (net.sf.fhem4j.console.Main$MyInputStream.read:103) - Send: F 
+INFO  2010-05-25 08:13:24,397 (net.sf.fhem4j.console.Main$MyInputStream.read:103) - Send: 2 
+INFO  2010-05-25 08:13:24,398 (net.sf.fhem4j.console.Main$MyInputStream.read:103) - Send: 2 
+INFO  2010-05-25 08:13:24,399 (net.sf.fhem4j.console.Main$MyInputStream.read:103) - Send:  
+INFO  2010-05-25 08:13:24,400 (net.sf.fhem4j.console.Main$MyInputStream.read:103) - Send: 
+ 
+INFO  2010-05-25 08:13:24,400 (net.sf.fhem4j.console.Main$MyInputStream.read:107) - Send close 
+INFO  2010-05-25 08:13:24,401 (net.sf.fhem4j.console.Main$MyInputStream.read:107) - Send close 
+INFO  2010-05-25 08:16:30,710 (net.sf.fhem4j.MyParser.openPort:179) - open port /dev/ttyACM0 
+INFO  2010-05-25 08:16:30,724 (net.sf.fhem4j.MyParser.openPort:182) - port opend /dev/ttyACM0 
+INFO  2010-05-25 08:16:30,828 (net.sf.fhem4j.console.Main$MyInputStream.read:103) - Send: T 
+INFO  2010-05-25 08:16:30,829 (net.sf.fhem4j.console.Main$MyInputStream.read:103) - Send: 1 
+INFO  2010-05-25 08:16:30,830 (net.sf.fhem4j.console.Main$MyInputStream.read:103) - Send: 2 
+INFO  2010-05-25 08:16:30,831 (net.sf.fhem4j.console.Main$MyInputStream.read:103) - Send: 3 
+INFO  2010-05-25 08:16:30,832 (net.sf.fhem4j.console.Main$MyInputStream.read:103) - Send: 4 
+INFO  2010-05-25 08:16:30,833 (net.sf.fhem4j.console.Main$MyInputStream.read:103) - Send: 6 
+INFO  2010-05-25 08:16:30,834 (net.sf.fhem4j.console.Main$MyInputStream.read:103) - Send: 6 
+INFO  2010-05-25 08:16:30,835 (net.sf.fhem4j.console.Main$MyInputStream.read:103) - Send: 7 
+INFO  2010-05-25 08:16:30,836 (net.sf.fhem4j.console.Main$MyInputStream.read:103) - Send: 9 
+INFO  2010-05-25 08:16:30,837 (net.sf.fhem4j.console.Main$MyInputStream.read:103) - Send: F 
+INFO  2010-05-25 08:16:30,837 (net.sf.fhem4j.console.Main$MyInputStream.read:103) - Send: F 
+INFO  2010-05-25 08:16:30,838 (net.sf.fhem4j.console.Main$MyInputStream.read:103) - Send: 2 
+INFO  2010-05-25 08:16:30,839 (net.sf.fhem4j.console.Main$MyInputStream.read:103) - Send: 2 
+INFO  2010-05-25 08:16:30,840 (net.sf.fhem4j.console.Main$MyInputStream.read:103) - Send:  
+INFO  2010-05-25 08:16:30,841 (net.sf.fhem4j.console.Main$MyInputStream.read:103) - Send: 
+ 
+INFO  2010-05-25 08:16:30,842 (net.sf.fhem4j.console.Main$MyInputStream.read:107) - Send close 
+INFO  2010-05-25 08:16:30,843 (net.sf.fhem4j.console.Main$MyInputStream.read:107) - Send close 
+INFO  2010-05-25 08:16:30,943 (net.sf.fhem4j.console.Main$MyInputStream.close:211) - Thread: null 
+INFO  2010-05-25 08:18:31,862 (net.sf.fhem4j.MyParser.openPort:179) - open port /dev/ttyACM0 
+INFO  2010-05-25 08:18:31,876 (net.sf.fhem4j.MyParser.openPort:182) - port opend /dev/ttyACM0 
+INFO  2010-05-25 08:18:31,980 (net.sf.fhem4j.console.Main$MyInputStream.read:103) - Send: T 
+INFO  2010-05-25 08:18:31,981 (net.sf.fhem4j.console.Main$MyInputStream.read:103) - Send: 1 
+INFO  2010-05-25 08:18:31,982 (net.sf.fhem4j.console.Main$MyInputStream.read:103) - Send: 2 
+INFO  2010-05-25 08:18:31,982 (net.sf.fhem4j.console.Main$MyInputStream.read:103) - Send: 3 
+INFO  2010-05-25 08:18:31,983 (net.sf.fhem4j.console.Main$MyInputStream.read:103) - Send: 4 
+INFO  2010-05-25 08:18:31,984 (net.sf.fhem4j.console.Main$MyInputStream.read:103) - Send: 6 
+INFO  2010-05-25 08:18:31,985 (net.sf.fhem4j.console.Main$MyInputStream.read:103) - Send: 6 
+INFO  2010-05-25 08:18:31,986 (net.sf.fhem4j.console.Main$MyInputStream.read:103) - Send: 7 
+INFO  2010-05-25 08:18:31,987 (net.sf.fhem4j.console.Main$MyInputStream.read:103) - Send: 9 
+INFO  2010-05-25 08:18:31,988 (net.sf.fhem4j.console.Main$MyInputStream.read:103) - Send: F 
+INFO  2010-05-25 08:18:31,989 (net.sf.fhem4j.console.Main$MyInputStream.read:103) - Send: F 
+INFO  2010-05-25 08:18:31,990 (net.sf.fhem4j.console.Main$MyInputStream.read:103) - Send: 2 
+INFO  2010-05-25 08:18:31,991 (net.sf.fhem4j.console.Main$MyInputStream.read:103) - Send: 2 
+INFO  2010-05-25 08:18:31,991 (net.sf.fhem4j.console.Main$MyInputStream.read:103) - Send:  
+INFO  2010-05-25 08:18:31,992 (net.sf.fhem4j.console.Main$MyInputStream.read:103) - Send: 
+ 
+INFO  2010-05-25 08:18:31,993 (net.sf.fhem4j.console.Main$MyInputStream.read:107) - Send close 
+INFO  2010-05-25 08:18:31,993 (net.sf.fhem4j.console.Main$MyInputStream.read:107) - Send close 
+INFO  2010-05-25 08:18:32,118 (net.sf.fhem4j.MyAntParser.setFhtMessage:39) - housecode: 0x1234, command: report 2, description: from FHT-B data register, value: -1  
+INFO  2010-05-25 08:19:44,921 (net.sf.fhem4j.MyParser.openPort:179) - open port /dev/ttyACM0 
+INFO  2010-05-25 08:19:44,938 (net.sf.fhem4j.MyParser.openPort:182) - port opend /dev/ttyACM0 
+INFO  2010-05-25 08:19:45,043 (net.sf.fhem4j.console.Main$MyInputStream.read:103) - Send: T 
+INFO  2010-05-25 08:19:45,044 (net.sf.fhem4j.console.Main$MyInputStream.read:103) - Send: 1 
+INFO  2010-05-25 08:19:45,045 (net.sf.fhem4j.console.Main$MyInputStream.read:103) - Send: 2 
+INFO  2010-05-25 08:19:45,046 (net.sf.fhem4j.console.Main$MyInputStream.read:103) - Send: 3 
+INFO  2010-05-25 08:19:45,047 (net.sf.fhem4j.console.Main$MyInputStream.read:103) - Send: 4 
+INFO  2010-05-25 08:19:45,048 (net.sf.fhem4j.console.Main$MyInputStream.read:103) - Send: 6 
+INFO  2010-05-25 08:19:45,048 (net.sf.fhem4j.console.Main$MyInputStream.read:103) - Send: 6 
+INFO  2010-05-25 08:19:45,049 (net.sf.fhem4j.console.Main$MyInputStream.read:103) - Send: 7 
+INFO  2010-05-25 08:19:45,050 (net.sf.fhem4j.console.Main$MyInputStream.read:103) - Send: 9 
+INFO  2010-05-25 08:19:45,051 (net.sf.fhem4j.console.Main$MyInputStream.read:103) - Send: F 
+INFO  2010-05-25 08:19:45,053 (net.sf.fhem4j.console.Main$MyInputStream.read:103) - Send: F 
+INFO  2010-05-25 08:19:45,054 (net.sf.fhem4j.console.Main$MyInputStream.read:103) - Send: 2 
+INFO  2010-05-25 08:19:45,055 (net.sf.fhem4j.console.Main$MyInputStream.read:103) - Send: 2 
+INFO  2010-05-25 08:19:45,056 (net.sf.fhem4j.console.Main$MyInputStream.read:103) - Send:  
+INFO  2010-05-25 08:19:45,057 (net.sf.fhem4j.console.Main$MyInputStream.read:103) - Send: 
+ 
+INFO  2010-05-25 08:19:45,058 (net.sf.fhem4j.console.Main$MyInputStream.read:103) - Send: T 
+INFO  2010-05-25 08:19:45,059 (net.sf.fhem4j.console.Main$MyInputStream.read:103) - Send: 4 
+INFO  2010-05-25 08:19:45,060 (net.sf.fhem4j.console.Main$MyInputStream.read:103) - Send: 3 
+INFO  2010-05-25 08:19:45,061 (net.sf.fhem4j.console.Main$MyInputStream.read:103) - Send: 2 
+INFO  2010-05-25 08:19:45,062 (net.sf.fhem4j.console.Main$MyInputStream.read:103) - Send: 1 
+INFO  2010-05-25 08:19:45,063 (net.sf.fhem4j.console.Main$MyInputStream.read:103) - Send: 6 
+INFO  2010-05-25 08:19:45,063 (net.sf.fhem4j.console.Main$MyInputStream.read:103) - Send: 5 
+INFO  2010-05-25 08:19:45,064 (net.sf.fhem4j.console.Main$MyInputStream.read:103) - Send: 7 
+INFO  2010-05-25 08:19:45,065 (net.sf.fhem4j.console.Main$MyInputStream.read:103) - Send: 9 
+INFO  2010-05-25 08:19:45,065 (net.sf.fhem4j.console.Main$MyInputStream.read:103) - Send: F 
+INFO  2010-05-25 08:19:45,066 (net.sf.fhem4j.console.Main$MyInputStream.read:103) - Send: F 
+INFO  2010-05-25 08:19:45,066 (net.sf.fhem4j.console.Main$MyInputStream.read:103) - Send: 2 
+INFO  2010-05-25 08:19:45,067 (net.sf.fhem4j.console.Main$MyInputStream.read:103) - Send: 2 
+INFO  2010-05-25 08:19:45,067 (net.sf.fhem4j.console.Main$MyInputStream.read:103) - Send:  
+INFO  2010-05-25 08:19:45,067 (net.sf.fhem4j.console.Main$MyInputStream.read:103) - Send: 
+ 
+INFO  2010-05-25 08:19:45,068 (net.sf.fhem4j.console.Main$MyInputStream.read:107) - Send close 
+INFO  2010-05-25 08:19:45,068 (net.sf.fhem4j.console.Main$MyInputStream.read:107) - Send close 
+INFO  2010-05-25 08:19:45,188 (net.sf.fhem4j.MyAntParser.setFhtMessage:39) - housecode: 0x1234, command: report 2, description: from FHT-B data register, value: -1  
+INFO  2010-05-25 08:19:45,188 (net.sf.fhem4j.MyAntParser.setFhtMessage:39) - housecode: 0x4321, command: report 1, description: from FHT-B data register, value: -1  

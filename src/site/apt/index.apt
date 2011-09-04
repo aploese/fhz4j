@@ -1,0 +1,15 @@
+ ------
+ OpenV4j
+ ------
+ Arne Pl�se
+ <arnep@users.sf.net>
+ ------
+ December 18, 2009
+
+OpenV4J
+
+  * Some components to access Viessmann devices via Optolink,
+
+  * A device dummy for testing,
+
+  * A readout tool and memory map printer.
