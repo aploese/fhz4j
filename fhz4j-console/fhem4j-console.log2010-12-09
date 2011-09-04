@@ -1,0 +1,83 @@
+INFO  2010-12-09 22:50:36,983 (net.sf.fhz4j.FhzParser.openPort:232) - open port /dev/ttyACM0 
+INFO  2010-12-09 22:50:36,999 (net.sf.fhz4j.FhzParser.openPort:235) - port opend /dev/ttyACM0 
+INFO  2010-12-09 22:50:37,001 (net.sf.fhz4j.FhzParser$StreamListener.run:249) - THREAD START false 
+DEBUG 2010-12-09 22:50:37,111 (net.sf.fhz4j.FhzParser.parse:136) - Discarted: 0x56 V 
+DEBUG 2010-12-09 22:50:37,112 (net.sf.fhz4j.FhzParser.parse:136) - Discarted: 0x20   
+DEBUG 2010-12-09 22:50:37,113 (net.sf.fhz4j.FhzParser.parse:136) - Discarted: 0x31 1 
+DEBUG 2010-12-09 22:50:37,114 (net.sf.fhz4j.FhzParser.parse:136) - Discarted: 0x2e . 
+DEBUG 2010-12-09 22:50:37,115 (net.sf.fhz4j.FhzParser.parse:136) - Discarted: 0x33 3 
+DEBUG 2010-12-09 22:50:37,115 (net.sf.fhz4j.FhzParser.parse:136) - Discarted: 0x37 7 
+DEBUG 2010-12-09 22:50:37,116 (net.sf.fhz4j.FhzParser.parse:136) - Discarted: 0x20   
+DEBUG 2010-12-09 22:50:37,117 (net.sf.fhz4j.FhzParser.parse:136) - Discarted: 0x43 C 
+DEBUG 2010-12-09 22:50:37,118 (net.sf.fhz4j.FhzParser.parse:136) - Discarted: 0x55 U 
+DEBUG 2010-12-09 22:50:37,119 (net.sf.fhz4j.FhzParser.parse:136) - Discarted: 0x4c L 
+DEBUG 2010-12-09 22:50:37,119 (net.sf.fhz4j.FhzParser.parse:136) - Discarted: 0x38 8 
+DEBUG 2010-12-09 22:50:37,120 (net.sf.fhz4j.FhzParser.parse:136) - Discarted: 0x36 6 
+DEBUG 2010-12-09 22:50:37,121 (net.sf.fhz4j.FhzParser.parse:136) - Discarted: 0x38 8 
+DEBUG 2010-12-09 22:50:37,121 (net.sf.fhz4j.FhzParser.parse:136) - Discarted: 0x0d  
+DEBUG 2010-12-09 22:50:37,121 (net.sf.fhz4j.FhzParser.parse:136) - Discarted: 0x0a 
+ 
+INFO  2010-12-09 22:56:22,006 (net.sf.fhz4j.FhzParser.openPort:232) - open port /dev/ttyACM0 
+INFO  2010-12-09 22:56:22,025 (net.sf.fhz4j.FhzParser.openPort:235) - port opend /dev/ttyACM0 
+INFO  2010-12-09 22:56:22,027 (net.sf.fhz4j.FhzParser$StreamListener.run:249) - THREAD START false 
+INFO  2010-12-09 22:58:33,041 (net.sf.fhz4j.FhzParser.openPort:232) - open port /dev/ttyACM0 
+INFO  2010-12-09 22:58:33,059 (net.sf.fhz4j.FhzParser.openPort:235) - port opend /dev/ttyACM0 
+INFO  2010-12-09 22:58:33,062 (net.sf.fhz4j.FhzParser$StreamListener.run:249) - THREAD START false 
+DEBUG 2010-12-09 22:58:33,170 (net.sf.fhz4j.FhzParser.parse:136) - Discarted: 0x56 V 
+DEBUG 2010-12-09 22:58:33,171 (net.sf.fhz4j.FhzParser.parse:136) - Discarted: 0x20   
+DEBUG 2010-12-09 22:58:33,172 (net.sf.fhz4j.FhzParser.parse:136) - Discarted: 0x31 1 
+DEBUG 2010-12-09 22:58:33,172 (net.sf.fhz4j.FhzParser.parse:136) - Discarted: 0x2e . 
+DEBUG 2010-12-09 22:58:33,173 (net.sf.fhz4j.FhzParser.parse:136) - Discarted: 0x33 3 
+DEBUG 2010-12-09 22:58:33,174 (net.sf.fhz4j.FhzParser.parse:136) - Discarted: 0x37 7 
+DEBUG 2010-12-09 22:58:33,175 (net.sf.fhz4j.FhzParser.parse:136) - Discarted: 0x20   
+DEBUG 2010-12-09 22:58:33,175 (net.sf.fhz4j.FhzParser.parse:136) - Discarted: 0x43 C 
+DEBUG 2010-12-09 22:58:33,176 (net.sf.fhz4j.FhzParser.parse:136) - Discarted: 0x55 U 
+DEBUG 2010-12-09 22:58:33,177 (net.sf.fhz4j.FhzParser.parse:136) - Discarted: 0x4c L 
+DEBUG 2010-12-09 22:58:33,178 (net.sf.fhz4j.FhzParser.parse:136) - Discarted: 0x38 8 
+DEBUG 2010-12-09 22:58:33,178 (net.sf.fhz4j.FhzParser.parse:136) - Discarted: 0x36 6 
+DEBUG 2010-12-09 22:58:33,179 (net.sf.fhz4j.FhzParser.parse:136) - Discarted: 0x38 8 
+DEBUG 2010-12-09 22:58:33,180 (net.sf.fhz4j.FhzParser.parse:136) - Discarted: 0x0d  
+DEBUG 2010-12-09 22:58:33,180 (net.sf.fhz4j.FhzParser.parse:136) - Discarted: 0x0a 
+ 
+INFO  2010-12-09 22:58:52,496 (net.sf.fhz4j.FhzParser.openPort:232) - open port /dev/ttyACM0 
+INFO  2010-12-09 22:58:52,512 (net.sf.fhz4j.FhzParser.openPort:235) - port opend /dev/ttyACM0 
+INFO  2010-12-09 22:58:52,514 (net.sf.fhz4j.FhzParser$StreamListener.run:249) - THREAD START false 
+INFO  2010-12-09 23:00:16,413 (net.sf.fhz4j.FhzParser.openPort:232) - open port /dev/ttyACM0 
+INFO  2010-12-09 23:00:16,429 (net.sf.fhz4j.FhzParser.openPort:235) - port opend /dev/ttyACM0 
+INFO  2010-12-09 23:00:16,430 (net.sf.fhz4j.FhzParser$StreamListener.run:249) - THREAD START false 
+DEBUG 2010-12-09 23:00:34,168 (net.sf.fhz4j.FhzParser.parse:136) - Discarted: 0x56 V 
+DEBUG 2010-12-09 23:00:38,383 (net.sf.fhz4j.FhzParser.parse:136) - Discarted: 0x20   
+DEBUG 2010-12-09 23:00:38,384 (net.sf.fhz4j.FhzParser.parse:136) - Discarted: 0x31 1 
+DEBUG 2010-12-09 23:00:38,385 (net.sf.fhz4j.FhzParser.parse:136) - Discarted: 0x2e . 
+DEBUG 2010-12-09 23:00:38,386 (net.sf.fhz4j.FhzParser.parse:136) - Discarted: 0x33 3 
+DEBUG 2010-12-09 23:00:38,387 (net.sf.fhz4j.FhzParser.parse:136) - Discarted: 0x37 7 
+DEBUG 2010-12-09 23:00:38,388 (net.sf.fhz4j.FhzParser.parse:136) - Discarted: 0x20   
+DEBUG 2010-12-09 23:00:38,389 (net.sf.fhz4j.FhzParser.parse:136) - Discarted: 0x43 C 
+DEBUG 2010-12-09 23:00:38,390 (net.sf.fhz4j.FhzParser.parse:136) - Discarted: 0x55 U 
+DEBUG 2010-12-09 23:00:38,391 (net.sf.fhz4j.FhzParser.parse:136) - Discarted: 0x4c L 
+DEBUG 2010-12-09 23:00:38,392 (net.sf.fhz4j.FhzParser.parse:136) - Discarted: 0x38 8 
+DEBUG 2010-12-09 23:00:38,392 (net.sf.fhz4j.FhzParser.parse:136) - Discarted: 0x36 6 
+DEBUG 2010-12-09 23:00:38,393 (net.sf.fhz4j.FhzParser.parse:136) - Discarted: 0x38 8 
+DEBUG 2010-12-09 23:00:38,394 (net.sf.fhz4j.FhzParser.parse:136) - Discarted: 0x0d  
+DEBUG 2010-12-09 23:00:38,395 (net.sf.fhz4j.FhzParser.parse:136) - Discarted: 0x0a 
+ 
+DEBUG 2010-12-09 23:00:45,484 (net.sf.fhz4j.FhzParser.parse:199) - housecode: 5510, command: valve, description: same pos absolute, value: 12,5 % signalStrength: 16 
+DEBUG 2010-12-09 23:00:45,488 (net.sf.fhz4j.FhzParser.parse:199) - housecode: 7149, command: valve, description: same pos absolute, value: 0,0 % signalStrength: -17 
+DEBUG 2010-12-09 23:01:40,872 (net.sf.fhz4j.FhzParser.parse:199) - housecode: 3339, command: valve, description: same pos absolute, value: 0,0 % signalStrength: -6 
+DEBUG 2010-12-09 23:01:50,751 (net.sf.fhz4j.FhzParser.parse:199) - housecode: 7784, command: valve, description: same pos absolute, value: 0,0 % signalStrength: -25 
+DEBUG 2010-12-09 23:01:54,467 (net.sf.fhz4j.FhzParser.parse:199) - housecode: 6794, command: valve, description: same pos absolute, value: 0,0 % signalStrength: 37 
+DEBUG 2010-12-09 23:02:04,552 (net.sf.fhz4j.FhzParser.parse:199) - housecode: 9752, command: valve, description: same pos absolute, value: 17,3 % signalStrength: -2 
+DEBUG 2010-12-09 23:02:25,713 (net.sf.fhz4j.FhzParser.parse:199) - housecode: 0821, command: valve, description: same pos absolute, value: 17,3 % signalStrength: -22 
+DEBUG 2010-12-09 23:02:37,344 (net.sf.fhz4j.FhzParser.parse:199) - housecode: 5510, command: valve, description: same pos absolute, value: 12,5 % signalStrength: 22 
+DEBUG 2010-12-09 23:02:38,196 (net.sf.fhz4j.FhzParser.parse:199) - housecode: 7149, command: desired temp, description: from FHT-B data register, value: 11,0 °C signalStrength: -18 
+DEBUG 2010-12-09 23:02:39,289 (net.sf.fhz4j.FhzParser.parse:199) - housecode: 7149, command: measured low, description: from FHT-B data register, value: 16,0 °C signalStrength: -18 
+DEBUG 2010-12-09 23:02:39,568 (net.sf.fhz4j.FhzParser.parse:199) - housecode: 7149, command: measured high, description: from FHT-B data register, value: 0,0 °C signalStrength: -18 
+DEBUG 2010-12-09 23:02:40,115 (net.sf.fhz4j.FhzParser.parse:199) - housecode: 7149, command: mode, description: from FHT-B data register, value: 0  signalStrength: -18 
+DEBUG 2010-12-09 23:02:41,193 (net.sf.fhz4j.FhzParser.parse:199) - housecode: 7149, command: warnings, description: from FHT-B data register, value: 0  signalStrength: -17 
+DEBUG 2010-12-09 23:03:39,394 (net.sf.fhz4j.FhzParser.parse:199) - housecode: 3339, command: valve, description: same pos absolute, value: 0,0 % signalStrength: -7 
+DEBUG 2010-12-09 23:03:47,845 (net.sf.fhz4j.FhzParser.parse:199) - housecode: 7784, command: valve, description: same pos absolute, value: 0,0 % signalStrength: -24 
+DEBUG 2010-12-09 23:03:52,489 (net.sf.fhz4j.FhzParser.parse:199) - housecode: 6794, command: valve, description: same pos absolute, value: 0,0 % signalStrength: 37 
+DEBUG 2010-12-09 23:04:01,574 (net.sf.fhz4j.FhzParser.parse:199) - housecode: 9752, command: valve, description: same pos absolute, value: 17,3 % signalStrength: -3 
+DEBUG 2010-12-09 23:04:23,163 (net.sf.fhz4j.FhzParser.parse:199) - housecode: 0821, command: valve, description: same pos absolute, value: 17,3 % signalStrength: -24 
+DEBUG 2010-12-09 23:04:33,091 (net.sf.fhz4j.FhzParser.parse:199) - housecode: 7149, command: valve, description: same pos absolute, value: 0,0 % signalStrength: -13 
+DEBUG 2010-12-09 23:04:33,367 (net.sf.fhz4j.FhzParser.parse:199) - housecode: 5510, command: valve, description: same pos absolute, value: 12,5 % signalStrength: 3 

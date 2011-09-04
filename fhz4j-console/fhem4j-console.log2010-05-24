@@ -1,0 +1,8 @@
+ERROR 2010-05-24 19:28:02,576 (net.sf.fhem4j.console.Main.run:285) -  
+gnu.io.NoSuchPortException
+	at gnu.io.CommPortIdentifier.getPortIdentifier(CommPortIdentifier.java:218)
+	at net.sf.fhem4j.MyParser.openPort(MyParser.java:173)
+	at net.sf.fhem4j.console.Main.run(Main.java:264)
+	at net.sf.fhem4j.console.Main.main(Main.java:249)
+INFO  2010-05-24 19:28:16,619 (net.sf.fhem4j.MyParser.openPort:179) - open port /dev/ttyACM0 
+INFO  2010-05-24 19:28:16,631 (net.sf.fhem4j.MyParser.openPort:182) - port opend /dev/ttyACM0 

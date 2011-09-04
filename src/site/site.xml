@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<project>
+    <poweredBy>
+    <logo name="Maven" href="http://maven.apache.org/"
+          img="http://maven.apache.org/images/logos/maven-feather.png"/>
+  </poweredBy>
+    <version />
+    <bannerLeft>
+        <name>OpenV4J</name>
+        <href>http://openv4j.sf.net/</href>
+    </bannerLeft>
+    <bannerRight>
+        <name>OpenV4J Overview</name>
+        <href>http://openv4j.sf.net</href>
+    </bannerRight>
+    <body>
+        <links>
+            <item name="OpenV Wiki" href="http://openv.wikispaces.com"/>
+            <item name="Mango Open Source M2M" href="http://mango.serotoninsoftware.com"/>
+        </links>
+        <menu name="OpenV4J">
+            <item name="Introduction" href="/index.html"/>
+        </menu>
+         <menu ref="modules" />
+
+        <menu ref="parent" inherit="top"/>
+        <menu ref="modules"/>
+        <menu ref="reports" inherit="bottom"/>
+    </body>
+</project>

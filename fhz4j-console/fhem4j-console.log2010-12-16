@@ -1,0 +1,94 @@
+INFO  2010-12-16 08:27:36,743 (net.sf.fhz4j.FhzParser.openPort:232) - open port /dev/ttyACM0 
+INFO  2010-12-16 08:27:36,757 (net.sf.fhz4j.FhzParser.openPort:235) - port opend /dev/ttyACM0 
+INFO  2010-12-16 08:27:36,759 (net.sf.fhz4j.FhzParser$StreamListener.run:249) - THREAD START false 
+INFO  2010-12-16 08:27:36,860 (net.sf.fhz4j.FhzWriter.initFhz:47) - INIT 1 
+DEBUG 2010-12-16 08:27:36,871 (net.sf.fhz4j.FhzParser.parse:136) - Discarted: 0x3f ? 
+DEBUG 2010-12-16 08:27:36,872 (net.sf.fhz4j.FhzParser.parse:136) - Discarted: 0x20   
+DEBUG 2010-12-16 08:27:36,873 (net.sf.fhz4j.FhzParser.parse:136) - Discarted: 0x28 ( 
+DEBUG 2010-12-16 08:27:36,874 (net.sf.fhz4j.FhzParser.parse:136) - Discarted: 0x20   
+DEBUG 2010-12-16 08:27:36,875 (net.sf.fhz4j.FhzParser.parse:136) - Discarted: 0x69 i 
+DEBUG 2010-12-16 08:27:36,876 (net.sf.fhz4j.FhzParser.parse:136) - Discarted: 0x73 s 
+DEBUG 2010-12-16 08:27:36,876 (net.sf.fhz4j.FhzParser.parse:136) - Discarted: 0x20   
+DEBUG 2010-12-16 08:27:36,876 (net.sf.fhz4j.FhzParser.parse:136) - Discarted: 0x75 u 
+DEBUG 2010-12-16 08:27:36,877 (net.sf.fhz4j.FhzParser.parse:136) - Discarted: 0x6e n 
+DEBUG 2010-12-16 08:27:36,877 (net.sf.fhz4j.FhzParser.parse:136) - Discarted: 0x6b k 
+DEBUG 2010-12-16 08:27:36,877 (net.sf.fhz4j.FhzParser.parse:136) - Discarted: 0x6e n 
+DEBUG 2010-12-16 08:27:36,878 (net.sf.fhz4j.FhzParser.parse:136) - Discarted: 0x6f o 
+DEBUG 2010-12-16 08:27:36,878 (net.sf.fhz4j.FhzParser.parse:136) - Discarted: 0x77 w 
+DEBUG 2010-12-16 08:27:36,879 (net.sf.fhz4j.FhzParser.parse:136) - Discarted: 0x6e n 
+DEBUG 2010-12-16 08:27:36,879 (net.sf.fhz4j.FhzParser.parse:136) - Discarted: 0x29 ) 
+DEBUG 2010-12-16 08:27:36,880 (net.sf.fhz4j.FhzParser.parse:136) - Discarted: 0x20   
+DEBUG 2010-12-16 08:27:36,880 (net.sf.fhz4j.FhzParser.parse:136) - Discarted: 0x55 U 
+DEBUG 2010-12-16 08:27:36,880 (net.sf.fhz4j.FhzParser.parse:136) - Discarted: 0x73 s 
+DEBUG 2010-12-16 08:27:36,881 (net.sf.fhz4j.FhzParser.parse:136) - Discarted: 0x65 e 
+DEBUG 2010-12-16 08:27:36,881 (net.sf.fhz4j.FhzParser.parse:136) - Discarted: 0x20   
+DEBUG 2010-12-16 08:27:36,882 (net.sf.fhz4j.FhzParser.parse:136) - Discarted: 0x6f o 
+DEBUG 2010-12-16 08:27:36,882 (net.sf.fhz4j.FhzParser.parse:136) - Discarted: 0x6e n 
+DEBUG 2010-12-16 08:27:36,882 (net.sf.fhz4j.FhzParser.parse:136) - Discarted: 0x65 e 
+DEBUG 2010-12-16 08:27:36,883 (net.sf.fhz4j.FhzParser.parse:136) - Discarted: 0x20   
+DEBUG 2010-12-16 08:27:36,883 (net.sf.fhz4j.FhzParser.parse:136) - Discarted: 0x6f o 
+DEBUG 2010-12-16 08:27:36,883 (net.sf.fhz4j.FhzParser.parse:136) - Discarted: 0x66 f 
+DEBUG 2010-12-16 08:27:36,884 (net.sf.fhz4j.FhzParser.parse:136) - Discarted: 0x20   
+DEBUG 2010-12-16 08:27:36,884 (net.sf.fhz4j.FhzParser.parse:136) - Discarted: 0x42 B 
+DEBUG 2010-12-16 08:27:36,884 (net.sf.fhz4j.FhzParser.parse:136) - Discarted: 0x20   
+DEBUG 2010-12-16 08:27:36,885 (net.sf.fhz4j.FhzParser.parse:136) - Discarted: 0x43 C 
+DEBUG 2010-12-16 08:27:36,885 (net.sf.fhz4j.FhzParser.parse:136) - Discarted: 0x20   
+DEBUG 2010-12-16 08:27:36,885 (net.sf.fhz4j.FhzParser.parse:136) - Discarted: 0x46 F 
+DEBUG 2010-12-16 08:27:36,886 (net.sf.fhz4j.FhzParser.parse:136) - Discarted: 0x20   
+DEBUG 2010-12-16 08:27:36,886 (net.sf.fhz4j.FhzParser.parse:136) - Discarted: 0x52 R 
+DEBUG 2010-12-16 08:27:36,887 (net.sf.fhz4j.FhzParser.parse:136) - Discarted: 0x20   
+INFO  2010-12-16 08:27:36,888 (net.sf.fhz4j.FhzParser$StreamListener.run:275) - finished waiting for packages 
+java.lang.RuntimeException: Not a Number
+	at net.sf.fhz4j.FhzParser.digit2Int(FhzParser.java:80)
+	at net.sf.fhz4j.FhzParser.parse(FhzParser.java:140)
+	at net.sf.fhz4j.FhzParser$StreamListener.run(FhzParser.java:259)
+	at java.lang.Thread.run(Thread.java:662)
+INFO  2010-12-16 08:27:37,861 (net.sf.fhz4j.FhzWriter.initFhz:50) - INIT 2 
+INFO  2010-12-16 08:27:38,863 (net.sf.fhz4j.FhzWriter.initFhz:53) - INIT Housecode 
+INFO  2010-12-16 08:27:39,865 (net.sf.fhz4j.FhzWriter.initFhz:56) - INIT End 
+INFO  2010-12-16 08:33:04,183 (net.sf.fhz4j.FhzParser.openPort:236) - open port /dev/ttyACM0 
+INFO  2010-12-16 08:33:04,197 (net.sf.fhz4j.FhzParser.openPort:239) - port opend /dev/ttyACM0 
+INFO  2010-12-16 08:33:04,199 (net.sf.fhz4j.FhzParser$StreamListener.run:253) - THREAD START false 
+INFO  2010-12-16 08:33:04,300 (net.sf.fhz4j.FhzWriter.initFhz:47) - INIT 1 
+INFO  2010-12-16 08:33:05,300 (net.sf.fhz4j.FhzWriter.initFhz:50) - INIT 2 
+INFO  2010-12-16 08:33:06,309 (net.sf.fhz4j.FhzWriter.initFhz:53) - INIT Housecode 
+INFO  2010-12-16 08:33:07,310 (net.sf.fhz4j.FhzWriter.initFhz:56) - INIT End 
+DEBUG 2010-12-16 08:33:43,910 (net.sf.fhz4j.FhzParser.parse:203) - housecode: 7784, command: valve, description: same pos absolute, value: 87,1 % signalStrength: -27 
+ERROR 2010-12-16 08:54:00,587 (net.sf.fhz4j.console.Main.run:148) -  
+gnu.io.NoSuchPortException
+	at gnu.io.CommPortIdentifier.getPortIdentifier(CommPortIdentifier.java:218)
+	at net.sf.fhz4j.FhzParser.openPort(FhzParser.java:232)
+	at net.sf.fhz4j.console.Main.run(Main.java:137)
+	at net.sf.fhz4j.console.Main.main(Main.java:121)
+ERROR 2010-12-16 08:54:47,858 (net.sf.fhz4j.console.Main.run:148) -  
+gnu.io.NoSuchPortException
+	at gnu.io.CommPortIdentifier.getPortIdentifier(CommPortIdentifier.java:218)
+	at net.sf.fhz4j.FhzParser.openPort(FhzParser.java:232)
+	at net.sf.fhz4j.console.Main.run(Main.java:137)
+	at net.sf.fhz4j.console.Main.main(Main.java:121)
+ERROR 2010-12-16 08:54:56,441 (net.sf.fhz4j.console.Main.run:148) -  
+gnu.io.NoSuchPortException
+	at gnu.io.CommPortIdentifier.getPortIdentifier(CommPortIdentifier.java:218)
+	at net.sf.fhz4j.FhzParser.openPort(FhzParser.java:232)
+	at net.sf.fhz4j.console.Main.run(Main.java:137)
+	at net.sf.fhz4j.console.Main.main(Main.java:121)
+ERROR 2010-12-16 08:55:11,666 (net.sf.fhz4j.console.Main.run:148) -  
+gnu.io.NoSuchPortException
+	at gnu.io.CommPortIdentifier.getPortIdentifier(CommPortIdentifier.java:218)
+	at net.sf.fhz4j.FhzParser.openPort(FhzParser.java:232)
+	at net.sf.fhz4j.console.Main.run(Main.java:137)
+	at net.sf.fhz4j.console.Main.main(Main.java:121)
+ERROR 2010-12-16 08:55:25,098 (net.sf.fhz4j.console.Main.run:148) -  
+gnu.io.NoSuchPortException
+	at gnu.io.CommPortIdentifier.getPortIdentifier(CommPortIdentifier.java:218)
+	at net.sf.fhz4j.FhzParser.openPort(FhzParser.java:232)
+	at net.sf.fhz4j.console.Main.run(Main.java:137)
+	at net.sf.fhz4j.console.Main.main(Main.java:121)
+INFO  2010-12-16 08:56:23,942 (net.sf.fhz4j.FhzParser.openPort:238) - open port /dev/ttyACM0 
+INFO  2010-12-16 08:56:23,957 (net.sf.fhz4j.FhzParser.openPort:241) - port opend /dev/ttyACM0 
+INFO  2010-12-16 08:56:23,958 (net.sf.fhz4j.FhzParser$StreamListener.run:255) - THREAD START false 
+INFO  2010-12-16 08:56:24,059 (net.sf.fhz4j.FhzWriter.initFhz:47) - INIT 1 
+INFO  2010-12-16 08:56:25,060 (net.sf.fhz4j.FhzWriter.initFhz:50) - INIT 2 
+DEBUG 2010-12-16 08:56:25,820 (net.sf.fhz4j.FhzParser.parse:204) - housecode: 9752, command: valve, description: same pos absolute, value: 22,7 % signalStrength: 2 
+INFO  2010-12-16 08:56:26,067 (net.sf.fhz4j.FhzWriter.initFhz:53) - INIT Housecode 
+INFO  2010-12-16 08:56:27,068 (net.sf.fhz4j.FhzWriter.initFhz:56) - INIT End 
