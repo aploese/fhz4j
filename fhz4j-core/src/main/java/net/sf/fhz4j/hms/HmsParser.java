@@ -14,10 +14,11 @@ import org.slf4j.LoggerFactory;
  * @author aploese
  */
 public class HmsParser extends Parser {
-    
+
     private int[] rawValues;
     private int currentRawDataPos;
-
+    private StringBuilder rawValuesSb = new StringBuilder();
+    
     private void setRaWDataSize(int newLength) {
         if (rawValues == null || rawValues.length != newLength) {
             rawValues = new int[newLength];
@@ -33,7 +34,7 @@ public class HmsParser extends Parser {
         return currentRawDataPos >= rawValues.length;
     }
 
-        private enum State {
+    private enum State {
 
         COLLECT_DEVICE_CODE,
         DEVICE_STATUS,
@@ -44,15 +45,11 @@ public class HmsParser extends Parser {
         COLLECT_HMS_100_RM_DATA,
         PARSE_SUCCESS,
         PARSE_ERROR;
+    }
 
-        }
-
-    
-    
     public HmsParser(ParserListener parserListener) {
         this.parserListener = parserListener;
     }
-    
     private static final Logger LOG = LoggerFactory.getLogger(HmsParser.class);
     private final ParserListener parserListener;
     private State state;
@@ -65,6 +62,7 @@ public class HmsParser extends Parser {
 
     @Override
     public void parse(int b) {
+        rawValuesSb.append((char)b);
         switch (state) {
             case COLLECT_DEVICE_CODE:
                 try {
@@ -76,7 +74,7 @@ public class HmsParser extends Parser {
                     return;
                 }
                 if (getStackpos() == 0) {
-                    hmsMessage.setDevicecode(getShortValue());
+                    hmsMessage.setHousecode(getShortValue());
                     setStackSize(1);
                     setState(State.DEVICE_STATUS);
                 }
@@ -90,16 +88,16 @@ public class HmsParser extends Parser {
                     parserListener.fail(hmsMessage);
                     return;
                 }
-                    try {
-                        hmsMessage.setDeviceStatus(HmsDeviceStatus.valueOf(getIntValue()));
-                    } catch (Exception ex) {
-                        LOG.warn(String.format("Wrong device type - Wrong number: 0x%04x", getIntValue()));
-                        setState(State.PARSE_ERROR);
+                try {
+                    hmsMessage.setDeviceStatus(HmsDeviceStatus.valueOf(getIntValue()));
+                } catch (Exception ex) {
+                    LOG.warn(String.format("Wrong device type - Wrong number: 0x%04x", getIntValue()));
+                    setState(State.PARSE_ERROR);
                     parserListener.fail(hmsMessage);
                     return;
-                    }
-                    setStackSize(1);
-                    setState(State.DEVICE_TYPE);
+                }
+                setStackSize(1);
+                setState(State.DEVICE_TYPE);
                 break;
             case DEVICE_TYPE:
                 try {
@@ -110,35 +108,35 @@ public class HmsParser extends Parser {
                     parserListener.fail(hmsMessage);
                     return;
                 }
-                    try {
-                        hmsMessage.setDeviceType(HmsDeviceType.valueOf(getIntValue()));
-                    } catch (Exception ex) {
-                        LOG.warn(String.format("Wrong device type - Wrong number: 0x%04x", getIntValue()));
-                        setState(State.PARSE_ERROR);
+                try {
+                    hmsMessage.setDeviceType(HmsDeviceType.valueOf(getIntValue()));
+                } catch (Exception ex) {
+                    LOG.warn(String.format("Wrong device type - Wrong number: 0x%04x", getIntValue()));
+                    setState(State.PARSE_ERROR);
                     parserListener.fail(hmsMessage);
                     return;
-                    }
-                    switch (hmsMessage.getDeviceType()) {
-                        case HMS_100_TF:
-                    setRaWDataSize(6);
-                    setState(State.COLLECT_HMS_100_TF_DATA);
-                            break;
-                        case HMS_100_TFK:
-                    setRaWDataSize(6);
-                    setState(State.COLLECT_HMS_100_TFK_DATA);
-                            break;
-                        case HMS_100_WD:
-                    setRaWDataSize(6);
-                    setState(State.COLLECT_HMS_100_WD_DATA);
-                            break;
-                        case HMS_100_RM:
-                    setRaWDataSize(6);
-                    setState(State.COLLECT_HMS_100_RM_DATA);
-                            break;
-                        default:
-                            setState(State.PARSE_ERROR);
-                            parserListener.fail(hmsMessage);
-                    }
+                }
+                switch (hmsMessage.getDeviceType()) {
+                    case HMS_100_TF:
+                        setRaWDataSize(6);
+                        setState(State.COLLECT_HMS_100_TF_DATA);
+                        break;
+                    case HMS_100_TFK:
+                        setRaWDataSize(6);
+                        setState(State.COLLECT_HMS_100_TFK_DATA);
+                        break;
+                    case HMS_100_WD:
+                        setRaWDataSize(6);
+                        setState(State.COLLECT_HMS_100_WD_DATA);
+                        break;
+                    case HMS_100_RM:
+                        setRaWDataSize(6);
+                        setState(State.COLLECT_HMS_100_RM_DATA);
+                        break;
+                    default:
+                        setState(State.PARSE_ERROR);
+                        parserListener.fail(hmsMessage);
+                }
                 break;
 
             case COLLECT_HMS_100_TF_DATA:
@@ -150,12 +148,13 @@ public class HmsParser extends Parser {
                     pushBCD(rawValues[3]);
                     pushBCD(rawValues[0]);
                     pushBCD(rawValues[1]);
-                    hms100TfMessage.setTemp(((double)getIntValue()) / 10.0);
+                    hms100TfMessage.setTemp(((double) getIntValue()) / 10.0);
                     setStackSize(3);
                     pushBCD(rawValues[4]);
                     pushBCD(rawValues[5]);
                     pushBCD(rawValues[2]);
-                    hms100TfMessage.setHumidy(((double)getIntValue()) / 10.0);
+                    hms100TfMessage.setHumidy(((double) getIntValue()) / 10.0);
+                    hms100TfMessage.setRawValue(rawValuesSb.toString());
                     setState(State.PARSE_SUCCESS);
                     parserListener.success(hmsMessage);
                 }
@@ -168,6 +167,7 @@ public class HmsParser extends Parser {
                     setStackSize(1);
                     push(rawValues[1]);
                     hms100TfkMessage.setOpen(getByteValue() == 1);
+                    hms100TfkMessage.setRawValue(rawValuesSb.toString());
                     setState(State.PARSE_SUCCESS);
                     parserListener.success(hmsMessage);
                 }
@@ -180,6 +180,7 @@ public class HmsParser extends Parser {
                     setStackSize(1);
                     push(rawValues[1]);
                     hms100WdMessage.setWater(getByteValue() == 1);
+                    hms100WdMessage.setRawValue(rawValuesSb.toString());
                     setState(State.PARSE_SUCCESS);
                     parserListener.success(hmsMessage);
                 }
@@ -192,6 +193,7 @@ public class HmsParser extends Parser {
                     setStackSize(1);
                     push(rawValues[1]);
                     hms100RmMessage.setSmoke(getByteValue() == 1);
+                    hms100RmMessage.setRawValue(rawValuesSb.toString());
                     setState(State.PARSE_SUCCESS);
                     parserListener.success(hmsMessage);
                 }
@@ -204,6 +206,6 @@ public class HmsParser extends Parser {
         setStackSize(4);
         setState(State.COLLECT_DEVICE_CODE);
         hmsMessage = new HmsMessage();
-    }
-    
+        rawValuesSb = new StringBuilder('H');
+   }
 }

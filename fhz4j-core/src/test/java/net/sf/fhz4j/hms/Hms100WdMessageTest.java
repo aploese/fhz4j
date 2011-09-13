@@ -48,7 +48,7 @@ public class Hms100WdMessageTest {
         msg.setRawValue("12345678");
         Hms100WdMessage instance = new Hms100WdMessage(new HmsMessage());
         instance.setWater(true);
-        for (HmsProperty prop : HmsDeviceType.HMS_100_WD.getHmsProperties()) {
+        for (HmsProperty prop : HmsDeviceType.HMS_100_WD.getProperties()) {
                     instance.toString(prop);
         }
     }

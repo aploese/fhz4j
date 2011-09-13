@@ -9,11 +9,10 @@ package net.sf.fhz4j.hms;
  * @author aploese
  */
 class Hms100RmMessage extends HmsMessage {
-    
+
     Hms100RmMessage(HmsMessage hmsMessage) {
         super(hmsMessage);
     }
-    
     private boolean smoke;
 
     @Override
@@ -36,5 +35,11 @@ class Hms100RmMessage extends HmsMessage {
         this.smoke = smoke;
     }
 
-    
+    public boolean getBoolean(HmsProperty prop) {
+        switch (prop) {
+            case SMOKE_ALERT:
+                return isSmoke();
+        }
+        return super.getBoolean(prop);
+    }
 }

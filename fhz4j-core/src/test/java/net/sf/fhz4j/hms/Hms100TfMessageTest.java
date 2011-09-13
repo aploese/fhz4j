@@ -49,7 +49,7 @@ public class Hms100TfMessageTest {
         Hms100TfMessage instance = new Hms100TfMessage(new HmsMessage());
         instance.setTemp(45);
         instance.setHumidy(22);
-        for (HmsProperty prop : HmsDeviceType.HMS_100_TF.getHmsProperties()) {
+        for (HmsProperty prop : HmsDeviceType.HMS_100_TF.getProperties()) {
             instance.toString(prop);
         }
     }

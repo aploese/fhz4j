@@ -7,11 +7,13 @@ package net.sf.fhz4j.fht;
 import java.util.Locale;
 import net.sf.fhz4j.Fhz1000;
 import net.sf.fhz4j.FhzMessage;
+import net.sf.fhz4j.scada.Time;
+
 /**
  *
  * @author aploese
  */
-public class FhtMessage extends FhzMessage {
+public class FhtMessage extends FhzMessage<FhtProperty> {
 
     private short housecode;
     private FhtProperty command;
@@ -34,7 +36,7 @@ public class FhtMessage extends FhzMessage {
             case VALVE_6:
             case VALVE_7:
             case VALVE_8:
-                sb.append(String.format((Locale)null, "%.1f", getActuatorValue()));
+                sb.append(String.format((Locale) null, "%.1f", getActuatorValue()));
                 break;
             case DESIRED_TEMP:
                 sb.append(getDesiredTempValue());
@@ -73,7 +75,7 @@ public class FhtMessage extends FhzMessage {
             case SUN_TO_1:
             case SUN_FROM_2:
             case SUN_TO_2:
-                sb.append(getTimeAsString());
+                sb.append(getTime());
                 sb.append(" ");
                 break;
             default:
@@ -181,18 +183,19 @@ public class FhtMessage extends FhzMessage {
         return rawvalue;
     }
 
-    public String getTimeAsString() {
-        int hour = rawvalue / 6;
-        int min = rawvalue % 6;
-        return String.format("%02d : %02d", hour, min);
+    public Time getTime() {
+        Time result = new Time();
+        result.setHour((byte)(rawvalue / 6));
+        result.setMin((byte)(rawvalue % 6));
+        return result;
     }
 
     public double getDesiredTempValue() {
-        return ((double)rawvalue) / 2;
+        return ((double) rawvalue) / 2;
     }
 
     public double getLowTempValue() {
-        return ((double)rawvalue) / 10;
+        return ((double) rawvalue) / 10;
     }
 
     public double getHighTempValue() {
@@ -207,4 +210,104 @@ public class FhtMessage extends FhzMessage {
         this.rawvalue = value;
     }
 
+    public Time getTimeValue(FhtProperty property) {
+        switch (property) {
+            default:
+                throw new RuntimeException("Not implemented" + property);
+        }
+
+    }
+
+    @Override
+    public short getShort(FhtProperty property) {
+        switch (property) {
+            case DAY:
+            case HOUR:
+            case MINUTE:
+            case MODE:
+            case MONTH:
+            case REPORT_1:
+            case REPORT_2:
+            case YEAR:
+                return (short)rawvalue;
+            default:
+                return super.getShort(property);
+        }
+    }
+
+    @Override
+    public byte getByte(FhtProperty property) {
+        switch (property) {
+            case WARNINGS:
+            case UNKNOWN:
+            case UNKNOWN_0XFF:
+                return (byte)rawvalue;
+            default:
+                return super.getByte(property);
+        }
+    }
+
+    @Override
+    public Time getTime(FhtProperty property) {
+        switch (property) {
+            case FRI_FROM_1:
+            case FRI_FROM_2:
+            case FRI_TO_1:
+            case FRI_TO_2:    
+            case MO_FROM_1:    
+            case MO_FROM_2:    
+            case MO_TO_1:    
+            case MO_TO_2:    
+            case SAT_FROM_1:    
+            case SAT_FROM_2:    
+            case SAT_TO_1:    
+            case SAT_TO_2:    
+            case SUN_FROM_1:    
+            case SUN_FROM_2:    
+            case SUN_TO_1:    
+            case SUN_TO_2:    
+            case THU_FROM_1:    
+            case THU_FROM_2:    
+            case THU_TO_1:    
+            case THU_TO_2:    
+            case TUE_FROM_1:
+            case TUE_FROM_2:
+            case TUE_TO_1:
+            case TUE_TO_2:
+                case WED_FROM_1:
+                case WED_FROM_2:
+                case WED_TO_1:
+                case WED_TO_2:
+                return getTime();
+            default:
+                return super.getTime(property);
+        }
+    }
+    
+    @Override
+    public double getDouble(FhtProperty property) {
+        switch (property) {
+            case VALVE:
+            case VALVE_1:
+            case VALVE_2:
+            case VALVE_3:
+            case VALVE_4:
+            case VALVE_5:
+            case VALVE_6:
+            case VALVE_7:
+            case VALVE_8:
+                return getActuatorValue();
+            case DAY_TEMP:
+            case DESIRED_TEMP:
+            case NIGHT_TEMP:
+            case MANU_TEMP:
+                return getDesiredTempValue();
+            case MEASURED_HIGH:
+                return getHighTempValue();
+            case MEASURED_LOW:
+                return getLowTempValue();
+            default:
+                return super.getDouble(property);
+        }
+    }
 }

@@ -9,11 +9,10 @@ package net.sf.fhz4j.hms;
  * @author aploese
  */
 class Hms100TfkMessage extends HmsMessage {
-    
+
     Hms100TfkMessage(HmsMessage hmsMessage) {
         super(hmsMessage);
     }
-    
     private boolean open;
 
     @Override
@@ -36,5 +35,13 @@ class Hms100TfkMessage extends HmsMessage {
         this.open = open;
     }
 
-    
+    @Override
+    public boolean getBoolean(HmsProperty prop) {
+        switch (prop) {
+            case DOOR_WINDOW_OPEN:
+                return isOpen();
+        }
+        return super.getBoolean(prop);
+
+    }
 }

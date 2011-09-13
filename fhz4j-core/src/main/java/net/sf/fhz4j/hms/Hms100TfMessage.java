@@ -9,7 +9,7 @@ package net.sf.fhz4j.hms;
  * @author aploese
  */
 class Hms100TfMessage extends HmsMessage {
-    
+
     private double temp;
     private double humidy;
 
@@ -44,7 +44,7 @@ class Hms100TfMessage extends HmsMessage {
     public void setHumidy(double humidy) {
         this.humidy = humidy;
     }
-    
+
     @Override
     public void toString(StringBuilder sb) {
         super.toString(sb);
@@ -52,5 +52,14 @@ class Hms100TfMessage extends HmsMessage {
         sb.append(", humidy: ").append(humidy);
     }
 
-    
+    public double getDouble(HmsProperty prop) {
+        switch (prop) {
+            case HUMIDY:
+                return getHumidy();
+            case TEMP:
+                return getTemp();
+            default:
+                return super.getDouble(prop);
+        }
+    }
 }

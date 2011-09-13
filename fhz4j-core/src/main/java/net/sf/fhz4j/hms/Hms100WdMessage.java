@@ -36,5 +36,15 @@ class Hms100WdMessage extends HmsMessage {
         this.water = water;
     }
 
+    @Override
+    public boolean getBoolean(HmsProperty prop) {
+        switch (prop) {
+            case WATER:
+                return isWater();
+            default:
+                return super.getBoolean(prop);
+        }
+    }
+
     
 }

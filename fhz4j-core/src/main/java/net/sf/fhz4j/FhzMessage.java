@@ -4,11 +4,14 @@
  */
 package net.sf.fhz4j;
 
+import net.sf.fhz4j.scada.AbstractPropertyProvider;
+import net.sf.fhz4j.scada.ScadaProperty;
+
 /**
  *
  * @author aploese
  */
-public abstract class FhzMessage {
+public abstract class FhzMessage<T extends ScadaProperty> extends AbstractPropertyProvider<T> {
     
     private float signalStrength;
 
@@ -36,6 +39,4 @@ public abstract class FhzMessage {
         return sb.toString();
     }
 
-
-    
 }

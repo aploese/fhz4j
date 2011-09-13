@@ -102,15 +102,15 @@ public class FhzParserTest implements FhzDataListener {
     public void decode_HMS_100_TF() {
         decode("H7758005282720F\r\n");
         assertNotNull(hmsMsg);
-        assertEquals("devicecode: 7758, device type: HMS 100 TF status: [ ] temp: 25.2, humidy: 72.8 signal strength: -66.5", hmsMsg.toString());
+        assertEquals("housecode: 7758, device type: HMS 100 TF status: [ ] temp: 25.2, humidy: 72.8 signal strength: -66.5", hmsMsg.toString());
 
         decode("HC25C00098262F6\r\n");
         assertNotNull(hmsMsg);
-        assertEquals("devicecode: C25C, device type: HMS 100 TF status: [ ] temp: 20.9, humidy: 62.8 signal strength: -79.0", hmsMsg.toString());
+        assertEquals("housecode: C25C, device type: HMS 100 TF status: [ ] temp: 20.9, humidy: 62.8 signal strength: -79.0", hmsMsg.toString());
 
         decode("HC25C20128260EA\r\n");
         assertNotNull(hmsMsg);
-        assertEquals("devicecode: C25C, device type: HMS 100 TF status: [Batt low ] temp: 21.2, humidy: 60.8 signal strength: -85.0", hmsMsg.toString());
+        assertEquals("housecode: C25C, device type: HMS 100 TF status: [Batt low ] temp: 21.2, humidy: 60.8 signal strength: -85.0", hmsMsg.toString());
                 }
 
     @Test
@@ -119,19 +119,19 @@ public class FhzParserTest implements FhzDataListener {
 //        H 7AEF 0400 0000F3 off
         decode("H7AEF04000000F3\r\n");
         assertNotNull(hmsMsg);
-        assertEquals("devicecode: 7AEF, device type: HMS 100 TFK status: [ ] open: false signal strength: -80.5", hmsMsg.toString());
+        assertEquals("housecode: 7AEF, device type: HMS 100 TFK status: [ ] open: false signal strength: -80.5", hmsMsg.toString());
 //H 7AEF 0401 0000DD on
         decode("H7AEF04010000DD\r\n");
         assertNotNull(hmsMsg);
-        assertEquals("devicecode: 7AEF, device type: HMS 100 TFK status: [ ] open: true signal strength: -91.5", hmsMsg.toString());
+        assertEquals("housecode: 7AEF, device type: HMS 100 TFK status: [ ] open: true signal strength: -91.5", hmsMsg.toString());
 //H 7AEF 2400 0000E5 off, Bat low
         decode("H7AEF24000000E5\r\n");
         assertNotNull(hmsMsg);
-        assertEquals("devicecode: 7AEF, device type: HMS 100 TFK status: [Batt low ] open: false signal strength: -87.5", hmsMsg.toString());
+        assertEquals("housecode: 7AEF, device type: HMS 100 TFK status: [Batt low ] open: false signal strength: -87.5", hmsMsg.toString());
 //H 7AEF 2401 0000DD on, Bat low
         decode("H7AEF24010000DD\r\n");
         assertNotNull(hmsMsg);
-        assertEquals("devicecode: 7AEF, device type: HMS 100 TFK status: [Batt low ] open: true signal strength: -91.5", hmsMsg.toString());
+        assertEquals("housecode: 7AEF, device type: HMS 100 TFK status: [Batt low ] open: true signal strength: -91.5", hmsMsg.toString());
         }
     
     @Test
@@ -140,19 +140,19 @@ public class FhzParserTest implements FhzDataListener {
 //H 78D1 0200 FA00ED no water
         decode("H78D10200FA00ED\r\n");
         assertNotNull(hmsMsg);
-        assertEquals("devicecode: 78D1, device type: HMS 100 WD status: [ ] water: false signal strength: -83.5", hmsMsg.toString());
+        assertEquals("housecode: 78D1, device type: HMS 100 WD status: [ ] water: false signal strength: -83.5", hmsMsg.toString());
 //H 78D1 0201 0000F3 water
         decode("H78D102010000F3\r\n");
         assertNotNull(hmsMsg);
-        assertEquals("devicecode: 78D1, device type: HMS 100 WD status: [ ] water: true signal strength: -80.5", hmsMsg.toString());
+        assertEquals("housecode: 78D1, device type: HMS 100 WD status: [ ] water: true signal strength: -80.5", hmsMsg.toString());
 //H 78D1 2200 0000F2 no water, Bat low
         decode("H78D122000000F2\r\n");
         assertNotNull(hmsMsg);
-        assertEquals("devicecode: 78D1, device type: HMS 100 WD status: [Batt low ] water: false signal strength: -81.0", hmsMsg.toString());
+        assertEquals("housecode: 78D1, device type: HMS 100 WD status: [Batt low ] water: false signal strength: -81.0", hmsMsg.toString());
 //H 78D1 2201 0000F3
         decode("H78D122010000F3\r\n");
         assertNotNull(hmsMsg);
-        assertEquals("devicecode: 78D1, device type: HMS 100 WD status: [Batt low ] water: true signal strength: -80.5", hmsMsg.toString());
+        assertEquals("housecode: 78D1, device type: HMS 100 WD status: [Batt low ] water: true signal strength: -80.5", hmsMsg.toString());
     }
     
     @Ignore
@@ -162,14 +162,14 @@ public class FhzParserTest implements FhzDataListener {
 //H 707D 0300 FF00F6 kein Feuer
         decode("H707D0300FF00F6\r\n");
         assertNotNull(hmsMsg);
-        assertEquals("devicecode: 707D, device type: HMS 100 RM status: [ ] smoke: false signal strength: -79.0", hmsMsg.toString());
+        assertEquals("housecode: 707D, device type: HMS 100 RM status: [ ] smoke: false signal strength: -79.0", hmsMsg.toString());
 //H DC87 0300 0000F6
 //H DC87 0300 0100F6
 //H DC87 0300 0500E6 21.16h
 //H DC87 0303 0100F2 Feuer, bat low
         decode("HDC8703030100F2\r\n");
         assertNotNull(hmsMsg);
-        assertEquals("devicecode: 707D, device type: HMS 100 RM status: [Batt low ] smoke: false signal strength: -81.0", hmsMsg.toString());
+        assertEquals("housecode: 707D, device type: HMS 100 RM status: [Batt low ] smoke: false signal strength: -81.0", hmsMsg.toString());
 //H DC87 0303 0200F4
 //H DC87 0303 0400F4 bis auf 2.8V runtergeregelt
 //H DC87 0303 0500F3 runter auf 2.5V
@@ -178,15 +178,15 @@ public class FhzParserTest implements FhzDataListener {
 //H DC87 2300 0500F6 kein Feuer, jetzt erst Bat empty
         decode("HDC8723000500F6\r\n");
         assertNotNull(hmsMsg);
-        assertEquals("devicecode: C25C, device type: HMS 100 TF temp: 20.9, humidy: 61.8 signal strength: -66.5", hmsMsg.toString());
+        assertEquals("housecode: C25C, device type: HMS 100 TF temp: 20.9, humidy: 61.8 signal strength: -66.5", hmsMsg.toString());
 //H DC87 2303 0200F8 Feuer
         decode("HDC8723030200F8\r\n");
         assertNotNull(hmsMsg);
-        assertEquals("devicecode: C25C, device type: HMS 100 TF temp: 20.9, humidy: 61.8 signal strength: -66.5", hmsMsg.toString());
+        assertEquals("housecode: C25C, device type: HMS 100 TF temp: 20.9, humidy: 61.8 signal strength: -66.5", hmsMsg.toString());
 //H DC87 2300 0500F6 kein Feuer
         decode("HDC8723000500F6\r\n");
         assertNotNull(hmsMsg);
-        assertEquals("devicecode: C25C, device type: HMS 100 TF temp: 20.9, humidy: 61.8 signal strength: -66.5", hmsMsg.toString());
+        assertEquals("housecode: C25C, device type: HMS 100 TF temp: 20.9, humidy: 61.8 signal strength: -66.5", hmsMsg.toString());
 
         /*
 Byte 9+10 könnte irgendeine Sequence Nr. sein ???

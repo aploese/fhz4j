@@ -48,7 +48,7 @@ public class Hms100TfkMessageTest {
         msg.setRawValue("12345678");
         Hms100TfkMessage instance = new Hms100TfkMessage(new HmsMessage());
         instance.setOpen(true);
-        for (HmsProperty prop : HmsDeviceType.HMS_100_TFK.getHmsProperties()) {
+        for (HmsProperty prop : HmsDeviceType.HMS_100_TFK.getProperties()) {
                     instance.toString(prop);
         }
     }

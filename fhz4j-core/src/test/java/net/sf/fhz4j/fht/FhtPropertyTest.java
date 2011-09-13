@@ -5,7 +5,6 @@
 
 package net.sf.fhz4j.fht;
 
-import net.sf.fhz4j.FhzDeviceTypes;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -45,8 +44,8 @@ public class FhtPropertyTest {
     @Test
     public void testGetSupportedBy() {
         System.out.println("getSupportedBy");
-        FhzDeviceTypes[] result = FhtProperty.UNKNOWN.getSupportedBy();
-        assertArrayEquals(new FhzDeviceTypes[0], result);
+        FhtDeviceTypes[] result = FhtProperty.UNKNOWN.getSupportedBy();
+        assertArrayEquals(new FhtDeviceTypes[0], result);
     }
 
     /**
@@ -55,9 +54,9 @@ public class FhtPropertyTest {
     @Test
     public void testGetFhzPropertiesOf() {
         System.out.println("getFhzPropertiesOf");
-        FhzDeviceTypes type = FhzDeviceTypes.UNKNOWN;
+        FhtDeviceTypes type = FhtDeviceTypes.UNKNOWN;
         FhtProperty[] expResult = new FhtProperty[0];
-        FhtProperty[] result = FhtProperty.getFhzPropertiesOf(type);
+        FhtProperty[] result = FhtProperty.getFhtPropertiesOf(type);
         assertArrayEquals(expResult, result);
     }
 

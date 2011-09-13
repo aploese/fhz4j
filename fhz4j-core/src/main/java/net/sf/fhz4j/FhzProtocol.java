@@ -12,5 +12,6 @@ package net.sf.fhz4j;
 public enum FhzProtocol {
     FHT,
     FS20,
+    HMS,
     UNKNOWN;
 }

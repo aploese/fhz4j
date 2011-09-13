@@ -48,7 +48,7 @@ public class Hms100RmMessageTest {
         msg.setRawValue("12345678");
         Hms100RmMessage instance = new Hms100RmMessage(new HmsMessage());
         instance.setSmoke(true);
-        for (HmsProperty prop : HmsDeviceType.HMS_100_RM.getHmsProperties()) {
+        for (HmsProperty prop : HmsDeviceType.HMS_100_RM.getProperties()) {
             switch (prop.getDataType()) {
                 case BOOLEAN:
                     instance.getBoolean(prop);
