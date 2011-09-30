@@ -4,11 +4,13 @@
  */
 package net.sf.fhz4j.scada;
 
+import java.io.Serializable;
+
 /**
  *
  * @author aploese
  */
-public interface ScadaProperty {
+public interface ScadaProperty extends Serializable {
     
     String getUnitOfMeasurement();
     

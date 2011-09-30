@@ -11,6 +11,7 @@ package net.sf.fhz4j;
  */
 public enum FhzProtocol {
     FHT,
+    FHT_TEMP,
     FS20,
     HMS,
     UNKNOWN;

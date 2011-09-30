@@ -5,7 +5,7 @@
 
 package net.sf.fhz4j;
 
-import net.sf.fhz4j.fht.FhtMeasuredTempMessage;
+import net.sf.fhz4j.fht.FhtTempMessage;
 import net.sf.fhz4j.fht.FhtMessage;
 import net.sf.fhz4j.hms.HmsMessage;
 import org.junit.After;
@@ -24,7 +24,7 @@ public class FhzParserTest implements FhzDataListener {
 
     private FhzParser parser;
     private FhtMessage fhtMessage;
-    private FhtMeasuredTempMessage temp;
+    private FhtTempMessage temp;
     private HmsMessage hmsMsg;
 
     public FhzParserTest() {
@@ -211,7 +211,7 @@ Klaus
     }
 
     @Override
-    public void fhtMeasuredTempData(FhtMeasuredTempMessage temp) {
+    public void fhtCombinedData(FhtTempMessage temp) {
         this.temp = temp;
     }
 

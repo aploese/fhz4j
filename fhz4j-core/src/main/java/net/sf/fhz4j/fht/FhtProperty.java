@@ -122,10 +122,12 @@ public enum FhtProperty implements Serializable, ScadaProperty {
         return valueOf(label);
     }
 
+    @Override
     public String getLabel() {
         return name().toLowerCase().replaceAll("_", " ");
     }
 
+    @Override
     public String getName() {
         return name();
     }
@@ -134,6 +136,7 @@ public enum FhtProperty implements Serializable, ScadaProperty {
         return value;
     }
 
+    @Override
     public String getUnitOfMeasurement() {
         return unitOfmeasurement;
     }
@@ -187,6 +190,7 @@ public enum FhtProperty implements Serializable, ScadaProperty {
     /**
      * @return the dataType
      */
+    @Override
     public DataType getDataType() {
         return dataType;
     }

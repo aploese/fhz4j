@@ -5,7 +5,7 @@
 
 package net.sf.fhz4j;
 
-import net.sf.fhz4j.fht.FhtMeasuredTempMessage;
+import net.sf.fhz4j.fht.FhtTempMessage;
 import net.sf.fhz4j.fht.FhtMessage;
 import net.sf.fhz4j.hms.HmsMessage;
 
@@ -17,7 +17,7 @@ public interface FhzDataListener {
 
     void fhtDataParsed(FhtMessage fhtMessage);
 
-    public void fhtMeasuredTempData(FhtMeasuredTempMessage temp);
+    public void fhtCombinedData(FhtTempMessage fhtTempMessage);
 
     public void hmsDataParsed(HmsMessage hmsMsg);
 

@@ -7,23 +7,21 @@ package net.sf.fhz4j.hms;
 import java.util.EnumSet;
 import java.util.Set;
 import net.sf.fhz4j.FhzMessage;
-import net.sf.fhz4j.scada.ScadaProperty;
-
 
 /**
  *
  * @author aploese
  */
 public class HmsMessage extends FhzMessage<HmsProperty> {
-    
-    private short housececode;
+
+    private short housecode;
     private HmsDeviceType deviceType;
     private Set<HmsDeviceStatus> deviceStatus = EnumSet.noneOf(HmsDeviceStatus.class);
     private String rawValue;
- 
+
     HmsMessage(HmsMessage hmsMessage) {
         this();
-        housececode = hmsMessage.housececode;
+        housecode = hmsMessage.housecode;
         deviceType = hmsMessage.deviceType;
         deviceStatus = hmsMessage.deviceStatus;
     }
@@ -34,7 +32,7 @@ public class HmsMessage extends FhzMessage<HmsProperty> {
 
     @Override
     public void toString(StringBuilder sb) {
-        sb.append(String.format("housecode: %04X, device type: %s", housececode, deviceType.getLabel()));
+        sb.append(String.format("housecode: %04X, device type: %s", housecode, deviceType.getLabel()));
         sb.append(" status: [");
         boolean first = true;
         for (HmsDeviceStatus status : deviceStatus) {
@@ -52,14 +50,14 @@ public class HmsMessage extends FhzMessage<HmsProperty> {
      * @return the housecode
      */
     public short getHousecode() {
-        return housececode;
+        return housecode;
     }
 
     /**
      * @param housecode the housecode to set
      */
     public void setHousecode(short housecode) {
-        this.housececode = housecode;
+        this.housecode = housecode;
     }
 
     /**
@@ -89,7 +87,7 @@ public class HmsMessage extends FhzMessage<HmsProperty> {
     public void setDeviceStatus(Set<HmsDeviceStatus> deviceStatus) {
         this.deviceStatus = deviceStatus;
     }
-    
+
     @Override
     public boolean getBoolean(HmsProperty prop) {
         switch (prop) {
@@ -99,16 +97,16 @@ public class HmsMessage extends FhzMessage<HmsProperty> {
                 return super.getBoolean(prop);
         }
     }
-    
+
     @Override
     public String getString(HmsProperty prop) {
-                switch (prop) {
+        switch (prop) {
             case RAW_VALUE:
                 return rawValue;
             default:
                 return super.getString(prop);
+        }
     }
-}
 
     /**
      * @return the rawValue

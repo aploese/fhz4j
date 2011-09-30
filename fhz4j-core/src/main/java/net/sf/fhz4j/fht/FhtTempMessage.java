@@ -5,19 +5,24 @@
 package net.sf.fhz4j.fht;
 
 import net.sf.fhz4j.Fhz1000;
+import net.sf.fhz4j.scada.AbstractPropertyProvider;
 
 /**
  *
  * @author aploese
  */
-public class FhtMeasuredTempMessage {
+public class FhtTempMessage extends AbstractPropertyProvider<FhtTempPropery> {
     
     private final FhtMessage low;
     private final FhtMessage high;
     
-    public FhtMeasuredTempMessage(FhtMessage low, FhtMessage high) {
+    public FhtTempMessage(FhtMessage low, FhtMessage high) {
         this.low = low;
         this.high = high;
+    }
+    
+    public short getHousecode() {
+        return high.getHousecode();
     }
 
     public double getTempValue() {
@@ -33,5 +38,18 @@ public class FhtMeasuredTempMessage {
         sb.append(" signal strength: ").append(low.getSignalStrength()).append(" and ").append(high.getSignalStrength());
         return sb.toString();
     }
-   
+
+    @Override
+    public double getDouble(FhtTempPropery p) {
+            return getTempValue();
+    }
+    
+    public FhtTempPropery getProperty() {
+        return FhtTempPropery.COMBINED_TEMP;
+    }
+
+    public FhtProperty getCommand() {
+        return high.getCommand();
+    }
+
 }

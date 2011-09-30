@@ -14,7 +14,7 @@ import java.io.InputStream;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
-import net.sf.fhz4j.fht.FhtMeasuredTempMessage;
+import net.sf.fhz4j.fht.FhtTempMessage;
 import net.sf.fhz4j.fht.FhtMessage;
 import net.sf.fhz4j.fht.FhtParser;
 import net.sf.fhz4j.fht.FhtProperty;
@@ -158,12 +158,12 @@ public class FhzParser extends Parser implements ParserListener {
                             }
                             if (fhtMessage.getCommand() == FhtProperty.MEASURED_HIGH) {
                                 if (tempMap.containsKey(fhtMessage.getHousecode())) {
-                                    final FhtMeasuredTempMessage temp = new FhtMeasuredTempMessage(tempMap.remove(fhtMessage.getHousecode()), fhtMessage);
+                                    final FhtTempMessage temp = new FhtTempMessage(tempMap.remove(fhtMessage.getHousecode()), fhtMessage);
                                     if (LOG.isDebugEnabled()) {
                                         LOG.debug(temp.toString());
                                     }
                                     if (dataListener != null) {
-                                        dataListener.fhtMeasuredTempData(temp);
+                                        dataListener.fhtCombinedData(temp);
                                     }
                                 }
                             }
