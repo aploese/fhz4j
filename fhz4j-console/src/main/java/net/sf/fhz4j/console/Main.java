@@ -29,7 +29,6 @@ import java.io.IOException;
 
 import java.util.Date;
 import java.util.logging.Level;
-import net.sf.fhz4j.fht.FhtMeasuredTempMessage;
 import net.sf.fhz4j.fht.FhtMessage;
 
 import net.sf.fhz4j.hms.HmsMessage;
@@ -52,6 +51,7 @@ import gnu.io.UnsupportedCommOperationException;
 import net.sf.fhz4j.FhzDataListener;
 import net.sf.fhz4j.FhzParser;
 import net.sf.fhz4j.FhzWriter;
+import net.sf.fhz4j.fht.FhtTempMessage;
 
 /**
  * DOCUMENT ME!
@@ -71,13 +71,13 @@ public class Main {
         }
 
         @Override
-        public void fhtMeasuredTempData(FhtMeasuredTempMessage temp) {
-            System.out.println(temp.toString());
+        public void hmsDataParsed(HmsMessage hmsMsg) {
+            System.out.println(hmsMsg);
         }
 
         @Override
-        public void hmsDataParsed(HmsMessage hmsMsg) {
-            System.out.println(hmsMsg);
+        public void fhtCombinedData(FhtTempMessage fhtTempMessage) {
+            System.out.println(fhtTempMessage.toString());
         }
 
     }
