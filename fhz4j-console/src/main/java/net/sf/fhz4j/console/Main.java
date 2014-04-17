@@ -28,7 +28,11 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 
 import java.util.Date;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.logging.Level;
+import java.util.logging.Logger;
+import net.sf.atmodem4j.spsw.SerialPortSocket;
 import net.sf.fhz4j.fht.FhtMessage;
 
 import net.sf.fhz4j.hms.HmsMessage;
@@ -41,16 +45,10 @@ import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 import org.apache.commons.cli.PosixParser;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import gnu.io.NoSuchPortException;
-import gnu.io.PortInUseException;
-import gnu.io.SerialPort;
-import gnu.io.UnsupportedCommOperationException;
 import net.sf.fhz4j.FhzDataListener;
 import net.sf.fhz4j.FhzParser;
 import net.sf.fhz4j.FhzWriter;
+import net.sf.fhz4j.LogUtils;
 import net.sf.fhz4j.fht.FhtTempMessage;
 
 /**
@@ -60,13 +58,14 @@ import net.sf.fhz4j.fht.FhtTempMessage;
  */
 public class Main {
 
-    private static final Logger LOG = LoggerFactory.getLogger(Main.class);
+    private static final Logger LOG = Logger.getLogger(LogUtils.FHZ_CONSOLE);
 
 
     static class FhzListener implements FhzDataListener {
 
         @Override
         public void fhtDataParsed(FhtMessage fhtMessage) {
+            DEVICES_HOME_CODE.add(fhtMessage.getHousecode());
             System.out.println(fhtMessage.toString());
         }
 
@@ -132,17 +131,17 @@ public class Main {
         Date startTime = new Date();
         run(cmd.getOptionValue("port"));
     }
-    private final static short[] DEVICES_HOME_CODE = new short[]{821, 3339, 5510, 6794, 7149, 7784, 9752};
+    
+    private final static Set<Short> DEVICES_HOME_CODE = new HashSet<>();
 
 
     /**
      * DOCUMENT ME!
      *
      * @param port DOCUMENT ME!
-     * @param dc DOCUMENT ME!
      */
     public static void run(String port) {
-        SerialPort masterPort = null;
+        SerialPortSocket masterPort = null;
         FhzParser p = new FhzParser(new FhzListener());
         FhzWriter w = new FhzWriter();
         try {
@@ -155,17 +154,8 @@ public class Main {
                 java.util.logging.Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
             }
             w.initFhz((short)1234);
-        } catch (NoSuchPortException ex) {
-            LOG.error(ex.getMessage(), ex);
-            throw new RuntimeException(ex);
-        } catch (PortInUseException ex) {
-            LOG.error(ex.getMessage(), ex);
-            throw new RuntimeException(ex);
-        } catch (UnsupportedCommOperationException ex) {
-            LOG.error(ex.getMessage(), ex);
-            throw new RuntimeException(ex);
         } catch (IOException ex) {
-            LOG.error(ex.getMessage(), ex);
+            LOG.log(Level.SEVERE, ex.getMessage(), ex);
             throw new RuntimeException(ex);
         }
         try {
@@ -195,8 +185,10 @@ public class Main {
         }
         
 
-        if (masterPort != null) {
+        try {
             masterPort.close();
+        } catch (IOException e) {
+            LOG.log(Level.SEVERE, "Ex during close", e);
         }
     }
 

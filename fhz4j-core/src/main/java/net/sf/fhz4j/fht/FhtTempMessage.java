@@ -35,7 +35,7 @@ public class FhtTempMessage extends AbstractPropertyProvider<FhtTempPropery> {
         sb.append("housecode: ").append(Fhz1000.houseCodeToString(low.getHousecode()));
         sb.append(", measured temperature (combined): ").append(getTempValue());
         sb.append(low.getCommand().getUnitOfMeasurement());
-        sb.append(" signal strength: ").append(low.getSignalStrength()).append(" and ").append(high.getSignalStrength());
+        sb.append(" signal strength: ").append(low.getSignalStrength()).append(" dB and ").append(high.getSignalStrength()).append(" dB");
         return sb.toString();
     }
 

@@ -4,7 +4,7 @@
     <groupId>net.sf.fhz4j</groupId>
     <artifactId>fhz4j</artifactId>
     <packaging>pom</packaging>
-    <version>0.1.4-SNAPSHOT</version>
+    <version>0.1.5-SNAPSHOT</version>
     <name>fhz4j</name>
     <url>http://fhz4j.sourceforge.net</url>
     <description>fhz For Java</description>
@@ -91,49 +91,20 @@
     <dependencyManagement>
         <dependencies>
             <dependency>
-                <groupId>org.slf4j</groupId>
-                <artifactId>slf4j-log4j12</artifactId>
-                <version>1.6.2</version>
-                <exclusions>
-                    <exclusion>
-                        <artifactId>log4j</artifactId>
-                        <groupId>log4j</groupId>
-                    </exclusion>
-                </exclusions>
-            </dependency>
-            <dependency>
                 <groupId>junit</groupId>
                 <artifactId>junit</artifactId>
-                <version>4.9</version>
+                <version>4.11</version>
                 <scope>test</scope>
             </dependency>
             <dependency>
-                <groupId>org.rxtx</groupId>
-                <artifactId>rxtx</artifactId>
-                <version>2.1.7</version>
+                <groupId>net.sf.atmodem4j</groupId>
+                <artifactId>spsw-java</artifactId>
+                <version>0.0.4-SNAPSHOT</version>
             </dependency>
             <dependency>
-                <groupId>log4j</groupId>
-                <artifactId>log4j</artifactId>
-                <version>1.2.16</version>
-                <exclusions>
-                    <exclusion>
-                        <artifactId>jmxri</artifactId>
-                        <groupId>com.sun.jmx</groupId>
-                    </exclusion>
-                    <exclusion>
-                        <artifactId>jmxtools</artifactId>
-                        <groupId>com.sun.jdmk</groupId>
-                    </exclusion>
-                    <exclusion>
-                        <artifactId>mail</artifactId>
-                        <groupId>javax.mail</groupId>
-                    </exclusion>
-                    <exclusion>
-                        <artifactId>jms</artifactId>
-                        <groupId>javax.jms</groupId>
-                    </exclusion>
-                </exclusions>
+                <groupId>net.sf.atmodem4j</groupId>
+                <artifactId>spsw-native-lib-resources</artifactId>
+                <version>0.0.4-SNAPSHOT</version>
             </dependency>
             <!-- swing-gui-->
             <dependency>
@@ -154,7 +125,7 @@
             <dependency>
                 <groupId>org.easymock</groupId>
                 <artifactId>easymockclassextension</artifactId>
-                <version>3.0</version>
+                <version>3.1</version>
                 <scope>test</scope>
             </dependency>
         </dependencies>
@@ -171,23 +142,23 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-compiler-plugin</artifactId>
-                    <version>2.3.2</version>
+                    <version>3.1</version>
                     <configuration>
                         <maxmem>512m</maxmem>
-                        <source>1.6</source>
-                        <target>1.6</target>
+                        <source>1.7</source>
+                        <target>1.7</target>
                         <encoding>UTF-8</encoding>
                     </configuration>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-release-plugin</artifactId>
-                    <version>2.2.1</version>
+                    <version>2.5</version>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-site-plugin</artifactId>
-                    <version>3.0</version>
+                    <version>3.3</version>
                     <configuration>
                         <generateReports>${site.generateReports}</generateReports>
                         <port>${site.run.port}</port>
@@ -196,14 +167,14 @@
                 </plugin>
                 <plugin>
                     <artifactId>maven-resources-plugin</artifactId>
-                    <version>2.5</version>
+                    <version>2.6</version>
                     <configuration>
                         <encoding>UTF-8</encoding>
                     </configuration>
                 </plugin>
                 <plugin>
                     <artifactId>maven-jar-plugin</artifactId>
-                    <version>2.3.2</version>
+                    <version>2.4</version>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
@@ -221,7 +192,7 @@
                 <plugin>
                     <groupId>org.codehaus.mojo</groupId>
                     <artifactId>appassembler-maven-plugin</artifactId>
-                    <version>1.1.1</version>
+                    <version>1.8</version>
                     <executions>
                         <execution>
                             <phase>package</phase> <!-- append to the packaging phase. -->
@@ -315,7 +286,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-report-plugin</artifactId>
-                <version>2.9</version>
+                <version>2.17</version>
                 <configuration>
                     <showSuccess>true</showSuccess>
                 </configuration>
@@ -331,7 +302,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-changes-plugin</artifactId>
-                <version>2.6</version>
+                <version>2.9</version>
                 <configuration>
                     <statusIds>Closed</statusIds>
                 </configuration>
@@ -339,7 +310,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-jxr-plugin</artifactId>
-                <version>2.3</version>
+                <version>2.4</version>
                 <configuration>
                     <!--aggregate>true</aggregate-->
                 </configuration>
@@ -347,7 +318,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-pmd-plugin</artifactId>
-                <version>2.5</version>
+                <version>3.1</version>
                 <configuration>
                     <sourceEncoding>UTF-8</sourceEncoding>
                     <linkXref>true</linkXref>
@@ -365,7 +336,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-checkstyle-plugin</artifactId>
-                <version>2.7</version>
+                <version>2.12</version>
                 <configuration>
                     <!--configLocation>${basedir}/../sun_checks.xml</configLocation>
                     <enableRulesSummary>false</enableRulesSummary-->
@@ -375,12 +346,12 @@
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>cobertura-maven-plugin</artifactId>
-                <version>2.5.1</version>
+                <version>2.6</version>
             </plugin>
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>findbugs-maven-plugin</artifactId>
-                <version>2.3.2</version>
+                <version>2.5.3</version>
                 <configuration>
                     <effort>Max</effort>
                     <threshold>Exp</threshold>
@@ -404,7 +375,7 @@
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>clirr-maven-plugin</artifactId>
-                <version>2.3</version>
+                <version>2.6.1</version>
             </plugin>
 
             <plugin>

@@ -4,24 +4,24 @@
  */
 package net.sf.fhz4j;
 
-import gnu.io.CommPortIdentifier;
-import gnu.io.NoSuchPortException;
-import gnu.io.PortInUseException;
-import gnu.io.SerialPort;
-import gnu.io.UnsupportedCommOperationException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import net.sf.atmodem4j.spsw.Baudrate;
+import net.sf.atmodem4j.spsw.DataBits;
+import net.sf.atmodem4j.spsw.FlowControl;
+import net.sf.atmodem4j.spsw.Parity;
+import net.sf.atmodem4j.spsw.SerialPortSocket;
+import net.sf.atmodem4j.spsw.StopBits;
 import net.sf.fhz4j.fht.FhtTempMessage;
 import net.sf.fhz4j.fht.FhtMessage;
 import net.sf.fhz4j.fht.FhtParser;
 import net.sf.fhz4j.fht.FhtProperty;
 import net.sf.fhz4j.hms.HmsMessage;
 import net.sf.fhz4j.hms.HmsParser;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -33,16 +33,16 @@ public class FhzParser extends Parser implements ParserListener {
         this.dataListener = dataListener;
     }
     
-    private static final Logger LOG = LoggerFactory.getLogger(FhzParser.class);
+    private static final Logger LOG = Logger.getLogger(LogUtils.FHZ_CORE);
     private InputStream is;
-    private StreamListener streamListener = new StreamListener();
+    private final StreamListener streamListener = new StreamListener();
     private Thread t;
     private boolean closed;
     private final Object closeLock = new Object();
     private final FhzDataListener dataListener;
 
     private void setState(State state) {
-        LOG.trace(String.format("Set state from %s to %s", this.state, state));
+        LOG.log(Level.FINEST, "Set state from {0} to {1}", new Object[] {this.state, state});
         this.state = state;
     }
 
@@ -82,10 +82,10 @@ public class FhzParser extends Parser implements ParserListener {
         END_CHAR_0X0A;
     }
     private State state = State.IDLE;
-    private FhtParser fhtParser = new FhtParser(this);
-    private HmsParser hmsParser = new HmsParser(this);
+    private final FhtParser fhtParser = new FhtParser(this);
+    private final HmsParser hmsParser = new HmsParser(this);
     private FhzMessage fhzMessage;
-    private Map<Short, FhtMessage> tempMap = new HashMap<Short, FhtMessage>();
+    private final Map<Short, FhtMessage> tempMap = new HashMap<>();
 
     @Override
     public void parse(int b) {
@@ -102,7 +102,7 @@ public class FhzParser extends Parser implements ParserListener {
                         setState(State.HMS_PARSING);
                         break;
                     default:
-                        LOG.debug(String.format("Discarted: 0x%02x %s", b, (char) b));
+                        LOG.fine(String.format("Discarted: 0x%02x %s", b, (char) b));
                 }
                 break;
             case FHT_PARSING:
@@ -121,7 +121,7 @@ public class FhzParser extends Parser implements ParserListener {
                 try {
                     push(digit2Int(b));
                 } catch (RuntimeException ex) {
-                    LOG.warn(String.format("Signal strenght - Wrong char: 0x%02x %s", b, (char) b));
+                    LOG.severe(String.format("Signal strenght - Wrong char: 0x%02x %s", b, (char) b));
                     setState(State.IDLE);
                 }
                 if (getStackpos() == 0) {
@@ -143,9 +143,9 @@ public class FhzParser extends Parser implements ParserListener {
             case END_CHAR_0X0A:
                 if (b == '\n') {
                     setState(State.IDLE);
-                    if (LOG.isDebugEnabled()) {
+                    if (LOG.isLoggable(Level.FINE)) {
                         if (fhzMessage != null) {
-                            LOG.debug(fhzMessage.toString());
+                            LOG.fine(fhzMessage.toString());
                         }
                     }
 
@@ -159,8 +159,8 @@ public class FhzParser extends Parser implements ParserListener {
                             if (fhtMessage.getCommand() == FhtProperty.MEASURED_HIGH) {
                                 if (tempMap.containsKey(fhtMessage.getHousecode())) {
                                     final FhtTempMessage temp = new FhtTempMessage(tempMap.remove(fhtMessage.getHousecode()), fhtMessage);
-                                    if (LOG.isDebugEnabled()) {
-                                        LOG.debug(temp.toString());
+                                    if (LOG.isLoggable(Level.FINE)) {
+                                        LOG.fine(temp.toString());
                                     }
                                     if (dataListener != null) {
                                         dataListener.fhtCombinedData(temp);
@@ -186,43 +186,19 @@ public class FhzParser extends Parser implements ParserListener {
      *
      * @return DOCUMENT ME!
      *
-     * @throws NoSuchPortException DOCUMENT ME!
-     * @throws PortInUseException DOCUMENT ME!
-     * @throws UnsupportedCommOperationException DOCUMENT ME!
      * @throws IOException DOCUMENT ME!
      */
-    public static SerialPort openPort(String portName)
-            throws NoSuchPortException, PortInUseException, UnsupportedCommOperationException, IOException {
-        CommPortIdentifier portId;
-        try {
-            LOG.info("OLD: gnu.io.rxtx.SerialPorts: " + System.getProperty("gnu.io.rxtx.SerialPorts"));
-            System.setProperty("gnu.io.rxtx.SerialPorts", "/dev/ttyACM0:/dev/ttyACM1:/dev/ttyACM2:/dev/ttyACM3:/dev/ttyACM4");
-
-            LOG.info("My: gnu.io.rxtx.SerialPorts: " + System.getProperty("gnu.io.rxtx.SerialPorts"));
-            Enumeration<CommPortIdentifier> ports = (Enumeration<CommPortIdentifier>) CommPortIdentifier.getPortIdentifiers();
-            while (ports.hasMoreElements()) {
-                LOG.info("found port: " + ports.nextElement().getName());
-            }
-
-            // Obtain a CommPortIdentifier object for the port you want to open.
-            portId = CommPortIdentifier.getPortIdentifier(portName);
-        } finally {
-            System.clearProperty("gnu.io.rxtx.SerialPorts");
-        }
+    public static SerialPortSocket openPort(String portName) throws IOException {
 
         // Open the port represented by the CommPortIdentifier object. Give
         // the open call a relatively long timeout of 30 seconds to allow
         // a different application to reliquish the port if the user
         // wants to.
-        LOG.info("open port " + portName);
+        LOG.log(Level.FINE, "open port {0}", portName);
 
-        SerialPort sPort = (SerialPort) portId.open(FhzParser.class.getName(), 30000);
-        LOG.info("port opend " + portName);
-        sPort.setSerialPortParams(9600, SerialPort.DATABITS_8, SerialPort.STOPBITS_2, SerialPort.PARITY_EVEN);
-        sPort.enableReceiveTimeout(1000);
-        sPort.setInputBufferSize(512);
-        sPort.setOutputBufferSize(512);
-        sPort.setFlowControlMode(SerialPort.FLOWCONTROL_NONE);
+        SerialPortSocket sPort = SerialPortSocket.FACTORY.createSerialPortSocket(portName);
+        sPort.openRaw(Baudrate.B9600, DataBits.DB_8, StopBits.SB_2, Parity.EVEN, FlowControl.getFC_NONE());
+        LOG.log(Level.FINE, "port opend {0}", portName);
 
         return sPort;
     }
@@ -231,7 +207,7 @@ public class FhzParser extends Parser implements ParserListener {
 
         @Override
         public void run() {
-            LOG.info("THREAD START " + closed);
+            LOG.log(Level.INFO, "THREAD START {0}", closed);
             try {
                 int theData;
 
@@ -255,9 +231,9 @@ public class FhzParser extends Parser implements ParserListener {
                     }
                     LOG.info("closing down - finish waiting for new data");
                 } catch (IOException e) {
-                    LOG.error("run()", e);
-                } catch (Exception e) {
-                    LOG.info("finished waiting for packages", e);
+                    LOG.log(Level.SEVERE, "run()", e);
+                } catch (RuntimeException e) {
+                    LOG.log(Level.SEVERE, "finished waiting for packages", e);
                 }
             } finally {
             }
@@ -291,7 +267,7 @@ public class FhzParser extends Parser implements ParserListener {
     public void close() throws InterruptedException {
         synchronized (closeLock) {
             closed = true;
-            closeLock.wait(2000); //wait man 2 sec
+            closeLock.wait(2000); //wait max 2 sec
         }
     }
 }

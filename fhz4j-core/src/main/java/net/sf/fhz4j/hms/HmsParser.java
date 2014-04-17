@@ -4,10 +4,11 @@
  */
 package net.sf.fhz4j.hms;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import net.sf.fhz4j.LogUtils;
 import net.sf.fhz4j.Parser;
 import net.sf.fhz4j.ParserListener;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -50,13 +51,13 @@ public class HmsParser extends Parser {
     public HmsParser(ParserListener parserListener) {
         this.parserListener = parserListener;
     }
-    private static final Logger LOG = LoggerFactory.getLogger(HmsParser.class);
+    private static final Logger LOG = Logger.getLogger(LogUtils.FHZ_CORE);
     private final ParserListener parserListener;
     private State state;
     private HmsMessage hmsMessage;
 
     private void setState(State state) {
-        LOG.trace(String.format("Set state from %s to %s", this.state, state));
+        LOG.log(Level.FINEST, "Set state from {0} to {1}", new Object[] {this.state, state});
         this.state = state;
     }
 
@@ -68,7 +69,7 @@ public class HmsParser extends Parser {
                 try {
                     push(digit2Int(b));
                 } catch (RuntimeException ex) {
-                    LOG.warn(String.format("Collect device code - Wrong char: 0x%02x %s", b, (char) b));
+                    LOG.warning(String.format("Collect device code - Wrong char: 0x%02x %s", b, (char) b));
                     setState(State.PARSE_ERROR);
                     parserListener.fail(hmsMessage);
                     return;
@@ -83,7 +84,7 @@ public class HmsParser extends Parser {
                 try {
                     push(digit2Int(b));
                 } catch (RuntimeException ex) {
-                    LOG.warn(String.format("Collect device type - Wrong char: 0x%02x %s", b, (char) b));
+                    LOG.warning(String.format("Collect device type - Wrong char: 0x%02x %s", b, (char) b));
                     setState(State.PARSE_ERROR);
                     parserListener.fail(hmsMessage);
                     return;
@@ -91,7 +92,7 @@ public class HmsParser extends Parser {
                 try {
                     hmsMessage.setDeviceStatus(HmsDeviceStatus.valueOf(getIntValue()));
                 } catch (Exception ex) {
-                    LOG.warn(String.format("Wrong device type - Wrong number: 0x%04x", getIntValue()));
+                    LOG.warning(String.format("Wrong device type - Wrong number: 0x%04x", getIntValue()));
                     setState(State.PARSE_ERROR);
                     parserListener.fail(hmsMessage);
                     return;
@@ -103,7 +104,7 @@ public class HmsParser extends Parser {
                 try {
                     push(digit2Int(b));
                 } catch (RuntimeException ex) {
-                    LOG.warn(String.format("Collect device type - Wrong char: 0x%02x %s", b, (char) b));
+                    LOG.warning(String.format("Collect device type - Wrong char: 0x%02x %s", b, (char) b));
                     setState(State.PARSE_ERROR);
                     parserListener.fail(hmsMessage);
                     return;
@@ -111,7 +112,7 @@ public class HmsParser extends Parser {
                 try {
                     hmsMessage.setDeviceType(HmsDeviceType.valueOf(getIntValue()));
                 } catch (Exception ex) {
-                    LOG.warn(String.format("Wrong device type - Wrong number: 0x%04x", getIntValue()));
+                    LOG.warning(String.format("Wrong device type - Wrong number: 0x%04x", getIntValue()));
                     setState(State.PARSE_ERROR);
                     parserListener.fail(hmsMessage);
                     return;

@@ -35,7 +35,7 @@ public abstract class FhzMessage<T extends ScadaProperty> extends AbstractProper
     public String toString() {
         StringBuilder sb = new StringBuilder();
         toString(sb);
-        sb.append(" signal strength: ").append(getSignalStrength());
+        sb.append(" signal strength: ").append(getSignalStrength()).append(" dB");
         return sb.toString();
     }
 

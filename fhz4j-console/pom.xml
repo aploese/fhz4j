@@ -4,7 +4,7 @@
     <parent>
         <groupId>net.sf.fhz4j</groupId>
         <artifactId>fhz4j</artifactId>
-        <version>0.1.4-SNAPSHOT</version>
+        <version>0.1.5-SNAPSHOT</version>
     </parent>
 
     <artifactId>fhz4j-console</artifactId>
@@ -13,21 +13,17 @@
 
     <dependencies>
         <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-log4j12</artifactId>
-        </dependency>
-        <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>org.rxtx</groupId>
-            <artifactId>rxtx</artifactId>
+            <groupId>net.sf.atmodem4j</groupId>
+            <artifactId>spsw-java</artifactId>
         </dependency>
         <dependency>
-            <groupId>log4j</groupId>
-            <artifactId>log4j</artifactId>
+            <groupId>net.sf.atmodem4j</groupId>
+            <artifactId>spsw-native-lib-resources</artifactId>
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
@@ -75,7 +71,7 @@
                     <archive>
                         <manifest>
                             <addClasspath>true</addClasspath>
-                            <mainClass>net.sf.fms4j.swingui.Chapter2SwingApp</mainClass>
+                            <mainClass>nnet.sf.fhz4j.console.Main</mainClass>
                         </manifest>
                     </archive>
                 </configuration>

@@ -6,11 +6,12 @@ package net.sf.fhz4j;
 
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.logging.Level;
+import java.util.logging.Logger;
 import net.sf.fhz4j.fht.FhtProperty;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -18,7 +19,7 @@ import org.slf4j.LoggerFactory;
  */
 public class FhzWriter {
 
-    private final static Logger LOG = LoggerFactory.getLogger(FhzWriter.class);
+    private final static Logger LOG = Logger.getLogger(LogUtils.FHZ_CORE);
     final static byte INIT_MSG_PACKAGE_OK = 0x01;
     final static byte INIT_MSG_ALL_REPEATED = 0x02;
     final static byte INIT_MSG_REPORT_ALL = 0x04;
@@ -39,7 +40,7 @@ public class FhzWriter {
         try {
             initFhz(fhzHousecode, (byte) (INIT_MSG_PACKAGE_OK | INIT_MSG_WITH_RSSI));
         } catch (InterruptedException ex) {
-            LOG.warn("EX during init", ex);
+            LOG.log(Level.SEVERE, "EX during init", ex);
         }
     }
 
@@ -60,12 +61,15 @@ public class FhzWriter {
         os.write(String.format("T%s%02X%02X%02X\n", Fhz1000.houseCodeToString(housecode), property.getValue(), origin, value).getBytes());
     }
 
-    public void initFhtReporting(short... fhtDeviceHomeCodes) throws IOException {
+    public void initFhtReporting(Iterable<Short> fhtDeviceHomeCodes) throws IOException {
         LOG.info("Send: request report to: ");
         for (short homecode : fhtDeviceHomeCodes) {
             writeFhtCmd(homecode, FhtProperty.REPORT_1, ORIGIN_CUL, ALL_REPORTS);
             writeFhtCmd(homecode, FhtProperty.REPORT_2, ORIGIN_CUL, ALL_REPORTS);
         }
+    }
+    public void initFhtReporting(Short... fhtDeviceHomeCodes) throws IOException {
+        initFhtReporting(Arrays.asList(fhtDeviceHomeCodes));
     }
 
     private void setFhzHousecode(short fhz100Housecode) throws IOException {
