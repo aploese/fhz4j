@@ -6,12 +6,15 @@
     <packaging>pom</packaging>
     <version>0.1.5-SNAPSHOT</version>
     <name>fhz4j</name>
+    <inceptionYear>2009</inceptionYear>
     <url>http://fhz4j.sourceforge.net</url>
     <description>fhz For Java</description>
 
-  <properties>
-     <parent.basedir>${basedir}</parent.basedir>
-  </properties>
+    <parent>
+        <groupId>org.sonatype.oss</groupId>
+        <artifactId>oss-parent</artifactId>
+        <version>9</version>
+    </parent>
   
     <!-- Developers and Contributors -->
     <organization>
@@ -32,16 +35,15 @@
             </roles>
             <timezone>+1</timezone>
             <!--properties>
-        <picUrl>http://tinyurl.com/prv4t</picUrl>
-      </properties-->
+              <picUrl>http://tinyurl.com/prv4t</picUrl>
+            </properties-->
         </developer>
     </developers>
 
-    <!-- Licenses -->
     <licenses>
         <license>
-            <name>GNU GENERAL PUBLIC LICENSE, Version 3</name>
-            <url>http://www.gnu.org/licenses/gpl.txt</url>
+            <name>GNU LESSER GENERAL PUBLIC LICENSE, Version 3</name>
+            <url>http://www.gnu.org/licenses/lgpl.txt</url>
             <distribution>repo</distribution>
         </license>
     </licenses>
@@ -51,43 +53,24 @@
     </issueManagement>
 
     <distributionManagement>
-        <!--
-          The server id here defined must also appear in ~/.m2/settings.xml with username
-        -->
-        <repository>
-            <id>fhz4j.sf.net</id>
-            <name>fhz4J Repository</name>
-            <url>sftp://web.sf.net:/home/project-web/fhz4j/htdocs/repository</url>
-        </repository>
-        <snapshotRepository>
-            <id>fhz4j.sf.net</id>
-            <name>fhz4J Snapshot Repository</name>
-            <url>sftp://web.sf.net:/home/project-web/fhz4j/htdocs/snapshot-repository</url>
-        </snapshotRepository>
         <site>
             <id>fhz4j.sf.net</id>
-            <name>fhz4J Site</name>
-            <url>scp://shell.sf.net:/home/project-web/fhz4j/htdocs</url>
+            <name>SF Fhz4j Site</name>
+            <url>scp://shell.sourceforge.net/home/project-web/fhz4j/htdocs</url>
         </site>
     </distributionManagement>
 
-    <!-- Currently no lists
-    < mailingLists>
-        <mailingList>
-            <name>ovanttasks-list@lists.sourceforge.net</name>
-            <subscribe>http://lists.sourceforge.net/lists/listinfo/fhz4j-list</subscribe>
-            <unsubscribe>http://lists.sourceforge.net/lists/listinfo/fhz4j-list</unsubscribe>
-            <post>fhz4j-list@lists.sourceforge.net</post>
-            <archive>http://sourceforge.net/mailarchive/forum.php?forum=fhz4j-list</archive>
-        </mailingList>
-    </mailingLists>
-    -->
     <scm>
         <developerConnection>scm:git:ssh://fhz4j.git.sourceforge.net/gitroot/fhz4j/fhz4j</developerConnection>
         <connection>scm:git://fhz4j.git.sourceforge.net/gitroot/fhz4j/fhz4j</connection>
         <url>http://fhz4j.git.sourceforge.net/git/gitweb-index.cgi</url>
     </scm>
 
+    <properties>
+        <compile.source>1.7</compile.source>
+        <compile.target>1.7</compile.target>
+        <sourceEncoding>UTF-8</sourceEncoding>
+    </properties>
     <dependencyManagement>
         <dependencies>
             <dependency>
@@ -99,12 +82,12 @@
             <dependency>
                 <groupId>net.sf.atmodem4j</groupId>
                 <artifactId>spsw-java</artifactId>
-                <version>0.0.4-SNAPSHOT</version>
+                <version>0.0.4</version>
             </dependency>
             <dependency>
                 <groupId>net.sf.atmodem4j</groupId>
-                <artifactId>spsw-native-lib-resources</artifactId>
-                <version>0.0.4-SNAPSHOT</version>
+                <artifactId>spsw-nativelibs-bundle</artifactId>
+                <version>0.0.4</version>
             </dependency>
             <!-- swing-gui-->
             <dependency>
@@ -125,7 +108,7 @@
             <dependency>
                 <groupId>org.easymock</groupId>
                 <artifactId>easymockclassextension</artifactId>
-                <version>3.1</version>
+                <version>3.2</version>
                 <scope>test</scope>
             </dependency>
         </dependencies>
@@ -145,9 +128,9 @@
                     <version>3.1</version>
                     <configuration>
                         <maxmem>512m</maxmem>
-                        <source>1.7</source>
-                        <target>1.7</target>
-                        <encoding>UTF-8</encoding>
+                        <source>${compile.source}</source>
+                        <target>${compile.target}</target>
+                        <encoding>${sourceEncoding}</encoding>
                     </configuration>
                 </plugin>
                 <plugin>
@@ -159,26 +142,35 @@
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-site-plugin</artifactId>
                     <version>3.3</version>
+                    <dependencies>
+                        <dependency><!-- add support for ssh/scp -->
+                            <groupId>org.apache.maven.wagon</groupId>
+                            <artifactId>wagon-ssh</artifactId>
+                            <version>1.0</version>
+                        </dependency>
+                    </dependencies>
                     <configuration>
                         <generateReports>${site.generateReports}</generateReports>
                         <port>${site.run.port}</port>
-                        <stagingDirectory>${java.io.tmpdir}/mbus4j</stagingDirectory>
+                        <stagingDirectory>${java.io.tmpdir}/atmodem4j</stagingDirectory>
                     </configuration>
                 </plugin>
                 <plugin>
                     <artifactId>maven-resources-plugin</artifactId>
                     <version>2.6</version>
                     <configuration>
-                        <encoding>UTF-8</encoding>
+                        <encoding>${sourceEncoding}</encoding>
                     </configuration>
                 </plugin>
                 <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-jar-plugin</artifactId>
                     <version>2.4</version>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-gpg-plugin</artifactId>
+                    <version>1.5</version>
                     <executions>
                         <execution>
                             <id>sign-artifacts</id>
@@ -203,27 +195,62 @@
                     </executions>
                 </plugin>
 
-                <!--plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>jalopy-maven-plugin</artifactId>
-                <version>1.0-alpha-1</version>
-                <configuration>
-                    <convention>${project.parent.basedir}/src/main/jalopy/jalopy-nb.xml</convention>
-                </configuration>
-                <dependencies>
-                    <dependency>
-                        <groupId>jalopy</groupId>
-                        <artifactId>jalopy</artifactId>
-                        <version>1.5-SNAPSHOT</version>
-                    </dependency>
-                </dependencies>
-            </plugin-->
+                <plugin>
+                    <groupId>org.codehaus.mojo</groupId>
+                    <artifactId>license-maven-plugin</artifactId>
+                    <version>1.6</version>
+                    <configuration>
+                        <licenseName>fhz4j-lgpl</licenseName>
+                        <licenseResolver>${project.baseUri}/src/license</licenseResolver>
+                        <excludes>
+                            <exclude>**/*.txt</exclude>
+                            <exclude>**/*.js</exclude>
+                            <exclude>**/*.json</exclude>
+                        </excludes>
+                    </configuration>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-javadoc-plugin</artifactId>
+                    <version>2.9.1</version>
+                    <configuration>
+                        <source>${compile.source}</source>
+                        <target>${compile.target}</target>
+                        <encoding>${sourceEncoding}</encoding>
+                        <links>
+                            <link>http://java.sun.com/j2se/1.7.0/docs/api/</link>
+                        </links>
+                        <maxmemory>256m</maxmemory>
+                        <!--
+                        <aggregate>true</aggregate>
+                        -->
+                    </configuration>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId> 
+                    <artifactId>maven-source-plugin</artifactId>
+                    <version>2.2.1</version>
+                </plugin>
+
             </plugins>
         </pluginManagement>
 
         <plugins>
             <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-resources-plugin</artifactId>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-javadoc-plugin</artifactId>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-source-plugin</artifactId>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -233,37 +260,12 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-site-plugin</artifactId>
             </plugin>
-            <plugin>
-                <artifactId>maven-resources-plugin</artifactId>
-            </plugin>
-            <!--plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>jalopy-maven-plugin</artifactId>
-                <version>1.0-alpha-1</version>
-                <configuration>
-                    <convention>${project.parent.basedir}/src/main/jalopy/jalopy-nb.xml</convention>
-                </configuration>
-                <dependencies>
-                    <dependency>
-                        <groupId>jalopy</groupId>
-                        <artifactId>jalopy</artifactId>
-                        <version>1.5-SNAPSHOT</version>
-                    </dependency>
-                </dependencies>
-            </plugin-->
-
         </plugins>
     </build>
 
     <profiles>
         <profile>
-            <id>release-sign-artifacts</id>
-            <activation>
-                <property>
-                    <name>performRelease</name>
-                    <value>true</value>
-                </property>
-            </activation>
+            <id>release</id>
             <build>
                 <plugins>
                     <plugin>
@@ -282,6 +284,19 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-javadoc-plugin</artifactId>
+                    <version>2.9.1</version>
+                    <configuration>
+                        <source>${compile.source}</source>
+                        <target>${compile.target}</target>
+                        <encoding>${sourceEncoding}</encoding>
+                        <links>
+                            <link>http://java.sun.com/j2se/1.7.0/docs/api/</link>
+                        </links>
+                        <maxmemory>256m</maxmemory>
+                        <!--
+                        <aggregate>true</aggregate>
+                        -->
+                    </configuration>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -299,14 +314,14 @@
                     <displayFileDetailUrl>http://svn.apache.org/viewvc%FILE%?view=markup</displayFileDetailUrl>
                 </configuration>
             </plugin-->
-            <plugin>
+            <!--plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-changes-plugin</artifactId>
                 <version>2.9</version>
                 <configuration>
                     <statusIds>Closed</statusIds>
                 </configuration>
-            </plugin>
+            </plugin-->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-jxr-plugin</artifactId>
@@ -333,16 +348,16 @@
                     </rulesets-->
                 </configuration>
             </plugin>
-            <plugin>
+            <!--plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-checkstyle-plugin</artifactId>
                 <version>2.12</version>
                 <configuration>
-                    <!--configLocation>${basedir}/../sun_checks.xml</configLocation>
-                    <enableRulesSummary>false</enableRulesSummary-->
+                    <!- -configLocation>${basedir}/../sun_checks.xml</configLocation>
+                    <enableRulesSummary>false</enableRulesSummary- ->
                     <headerFile>${basedir}/../license-header.txt</headerFile>
                 </configuration>
-            </plugin>
+            </plugin-->
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>cobertura-maven-plugin</artifactId>
@@ -378,11 +393,11 @@
                 <version>2.6.1</version>
             </plugin>
 
-            <plugin>
+            <!--plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>javancss-maven-plugin</artifactId>
                 <version>2.0</version>
-            </plugin>
+            </plugin-->
         </plugins>
     </reporting>
 

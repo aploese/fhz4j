@@ -23,7 +23,7 @@
         </dependency>
         <dependency>
             <groupId>net.sf.atmodem4j</groupId>
-            <artifactId>spsw-native-lib-resources</artifactId>
+            <artifactId>spsw-nativelibs-bundle</artifactId>
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
