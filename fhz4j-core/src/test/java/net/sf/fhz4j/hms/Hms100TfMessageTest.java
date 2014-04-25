@@ -28,6 +28,7 @@ package net.sf.fhz4j.hms;
  * #L%
  */
 
+import java.util.EnumSet;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -66,11 +67,7 @@ public class Hms100TfMessageTest {
     @Test
     public void testGetProps() {
         System.out.println("get props");
-        HmsMessage msg = new HmsMessage();
-        msg.setDeviceType(HmsDeviceType.HMS_100_TF);
-        msg.setHousecode((short) 1234);
-        msg.setRawValue("12345678");
-        Hms100TfMessage instance = new Hms100TfMessage(new HmsMessage());
+        Hms100TfMessage instance = new Hms100TfMessage((short)1234, EnumSet.noneOf(HmsDeviceStatus.class));
         instance.setTemp(45);
         instance.setHumidy(22);
         for (HmsProperty prop : HmsDeviceType.HMS_100_TF.getProperties()) {

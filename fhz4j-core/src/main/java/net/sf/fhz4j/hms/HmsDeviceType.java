@@ -28,6 +28,10 @@ package net.sf.fhz4j.hms;
  * #L%
  */
 
+import java.util.Arrays;
+import java.util.EnumSet;
+import java.util.HashSet;
+import java.util.Set;
 import static net.sf.fhz4j.hms.HmsProperty.*;
 
 /**
@@ -35,19 +39,19 @@ import static net.sf.fhz4j.hms.HmsProperty.*;
  * @author aploese
  */
 public enum HmsDeviceType {
-    HMS_100_TF(0x00, "HMS 100 TF", TEMP, HUMIDY, BATT_STATUS, RAW_VALUE),
-    HMS_100_WD(0x02, "HMS 100 WD", WATER, BATT_STATUS, RAW_VALUE),
-    HMS_100_RM(0x03, "HMS 100 RM", SMOKE_ALERT, BATT_STATUS, RAW_VALUE),
-    HMS_100_TFK(0x04, "HMS 100 TFK", DOOR_WINDOW_OPEN, BATT_STATUS, RAW_VALUE);
+    HMS_100_TF(0x00, "HMS 100 TF", TEMP, HUMIDY, BATT_STATUS),
+    HMS_100_WD(0x02, "HMS 100 WD", WATER, BATT_STATUS),
+    HMS_100_RM(0x03, "HMS 100 RM", SMOKE_ALERT, BATT_STATUS),
+    HMS_100_TFK(0x04, "HMS 100 TFK", DOOR_WINDOW_OPEN, BATT_STATUS);
     
     private final byte value;
     private final String label;
-    private final HmsProperty[] hmsProperties;
+    private final Set<HmsProperty> hmsProperties;
 
     private HmsDeviceType(int value, String label, HmsProperty... hmsProperties) {
         this.value = (byte) value;
         this.label = label;
-        this.hmsProperties = hmsProperties;
+        this.hmsProperties = EnumSet.copyOf(Arrays.asList(hmsProperties));
     }
 
     public String getLabel() {
@@ -80,7 +84,7 @@ public enum HmsDeviceType {
         return valueOf(label);
     }
 
-    public HmsProperty[] getProperties() {
+    public Set<HmsProperty> getProperties() {
         return hmsProperties;
     }
 

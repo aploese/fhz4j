@@ -106,7 +106,6 @@ public abstract class Parser {
         return value;
     }
 
-
     public abstract void parse(int b);
     
     public abstract void init();

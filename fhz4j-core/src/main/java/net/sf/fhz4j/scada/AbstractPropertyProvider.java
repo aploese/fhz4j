@@ -28,13 +28,11 @@ package net.sf.fhz4j.scada;
  * #L%
  */
 
-import java.util.Set;
-
 /**
  *
  * @author aploese
  */
-public class AbstractPropertyProvider<T extends ScadaProperty> implements ScadaPropertyProvider<T> {
+public abstract class AbstractPropertyProvider<T extends ScadaProperty> implements ScadaPropertyProvider<T> {
     
     @Override
     public double getDouble(T property) {
@@ -94,11 +92,6 @@ public class AbstractPropertyProvider<T extends ScadaProperty> implements ScadaP
     @Override
     public Timestamp getTimestamp(T property) {
         throw new UnsupportedOperationException("cant get Timestamp of:" + property.getName());
-    }
-
-    @Override
-    public Set<T> getProperties() {
-        throw new UnsupportedOperationException("Not supported yet.");
     }
 
     @Override

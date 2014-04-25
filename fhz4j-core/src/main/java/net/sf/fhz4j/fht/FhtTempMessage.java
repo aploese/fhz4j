@@ -27,7 +27,10 @@ package net.sf.fhz4j.fht;
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  * #L%
  */
-
+import java.util.Collections;
+import java.util.EnumSet;
+import java.util.HashSet;
+import java.util.Set;
 import net.sf.fhz4j.Fhz1000;
 import net.sf.fhz4j.scada.AbstractPropertyProvider;
 
@@ -36,23 +39,23 @@ import net.sf.fhz4j.scada.AbstractPropertyProvider;
  * @author aploese
  */
 public class FhtTempMessage extends AbstractPropertyProvider<FhtTempPropery> {
-    
+
     private final FhtMessage low;
     private final FhtMessage high;
-    
+
     public FhtTempMessage(FhtMessage low, FhtMessage high) {
         this.low = low;
         this.high = high;
     }
-    
+
     public short getHousecode() {
         return high.getHousecode();
     }
 
     public double getTempValue() {
-        return ((double)low.getRawValue()) / 10 + high.getRawValue() * 25.5;
+        return ((double) low.getRawValue()) / 10 + high.getRawValue() * 25.5;
     }
-    
+
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
@@ -65,15 +68,22 @@ public class FhtTempMessage extends AbstractPropertyProvider<FhtTempPropery> {
 
     @Override
     public double getDouble(FhtTempPropery p) {
-            return getTempValue();
+        return getTempValue();
     }
-    
+
     public FhtTempPropery getProperty() {
         return FhtTempPropery.COMBINED_TEMP;
     }
 
     public FhtProperty getCommand() {
         return high.getCommand();
+    }
+
+    @Override
+    public Set<FhtTempPropery> getProperties() {
+        Set result = new HashSet();
+        result.add(FhtTempPropery.COMBINED_TEMP);
+        return result;
     }
 
 }

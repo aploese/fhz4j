@@ -1,5 +1,8 @@
 package net.sf.fhz4j.hms;
 
+import java.util.EnumSet;
+import java.util.Set;
+
 /*
  * #%L
  * fhz4j Core
@@ -32,10 +35,10 @@ package net.sf.fhz4j.hms;
  *
  * @author aploese
  */
-class Hms100RmMessage extends HmsMessage {
+public class Hms100RmMessage extends HmsMessage {
 
-    Hms100RmMessage(HmsMessage hmsMessage) {
-        super(hmsMessage);
+    Hms100RmMessage(short housecode, Set<HmsDeviceStatus> deviceStatus) {
+        super(housecode, deviceStatus);
     }
     private boolean smoke;
 
@@ -59,11 +62,17 @@ class Hms100RmMessage extends HmsMessage {
         this.smoke = smoke;
     }
 
+    @Override
     public boolean getBoolean(HmsProperty prop) {
         switch (prop) {
             case SMOKE_ALERT:
                 return isSmoke();
         }
         return super.getBoolean(prop);
+    }
+
+    @Override
+    public HmsDeviceType getDeviceType() {
+        return HmsDeviceType.HMS_100_RM;
     }
 }

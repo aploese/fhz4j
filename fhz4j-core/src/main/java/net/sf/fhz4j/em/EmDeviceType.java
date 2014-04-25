@@ -1,7 +1,4 @@
-package net.sf.fhz4j.hms;
-
-import java.util.EnumSet;
-import java.util.Set;
+package net.sf.fhz4j.em;
 
 /*
  * #%L
@@ -31,52 +28,38 @@ import java.util.Set;
  * #L%
  */
 
+import java.util.Arrays;
+import java.util.EnumSet;
+import java.util.Set;
+
 /**
  *
  * @author aploese
  */
-public class Hms100WdMessage extends HmsMessage {
+public enum EmDeviceType {
+    EM_1000S("EM 1000s"),
+    EM_1000_EM("EM 1000 EM", EmProperty.ELECTRICAL_ENERGY, EmProperty.ELECTRICAL_ENERGY_LAST_5_MIN, EmProperty.ELECTRICAL_POWER_LAST_5_MIN_MAX),
+    EM_1000_GZ("EM 1000-GZ");
     
-    Hms100WdMessage(short housecode, Set<HmsDeviceStatus> deviceStatus) {
-        super(housecode, deviceStatus);
-    }
+    final String label;
+    final Set<EmProperty> emProperties;
     
-    private boolean water;
-
-    @Override
-    public void toString(StringBuilder sb) {
-        super.toString(sb);
-        sb.append(" water: ").append(water);
-    }
-
-    /**
-     * @return the water
-     */
-    public boolean isWater() {
-        return water;
-    }
-
-    /**
-     * @param water the water to set
-     */
-    public void setWater(boolean water) {
-        this.water = water;
-    }
-
-    @Override
-    public boolean getBoolean(HmsProperty prop) {
-        switch (prop) {
-            case WATER:
-                return isWater();
-            default:
-                return super.getBoolean(prop);
+    private EmDeviceType(String label, EmProperty ... emProperties) {
+        this.label = label;
+        if (emProperties.length == 0) {
+            this.emProperties = EnumSet.noneOf(EmProperty.class);
+        }else {
+            this.emProperties = EnumSet.copyOf(Arrays.asList(emProperties));
         }
     }
 
-    @Override
-    public HmsDeviceType getDeviceType() {
-        return HmsDeviceType.HMS_100_WD;
+    public String getLabel() {
+        return label;
     }
 
+    public Set<EmProperty> getProperties() {
+        return emProperties;
+    }
+    
     
 }

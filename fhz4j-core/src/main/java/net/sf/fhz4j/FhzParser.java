@@ -40,10 +40,14 @@ import net.sf.atmodem4j.spsw.FlowControl;
 import net.sf.atmodem4j.spsw.Parity;
 import net.sf.atmodem4j.spsw.SerialPortSocket;
 import net.sf.atmodem4j.spsw.StopBits;
+import net.sf.fhz4j.em.EmMessage;
+import net.sf.fhz4j.em.EmParser;
 import net.sf.fhz4j.fht.FhtTempMessage;
 import net.sf.fhz4j.fht.FhtMessage;
 import net.sf.fhz4j.fht.FhtParser;
 import net.sf.fhz4j.fht.FhtProperty;
+import net.sf.fhz4j.fs20.FS20Parser;
+import net.sf.fhz4j.fs20.FS20Message;
 import net.sf.fhz4j.hms.HmsMessage;
 import net.sf.fhz4j.hms.HmsParser;
 
@@ -97,8 +101,8 @@ public class FhzParser extends Parser implements ParserListener {
     private enum State {
 
         IDLE,
-        //FS20,
-        //EM,
+        EM_PARSING,
+        FS20_PARSING,
         FHT_PARSING,
         HMS_PARSING,
         SINGNAL_STRENGTH,
@@ -106,8 +110,11 @@ public class FhzParser extends Parser implements ParserListener {
         END_CHAR_0X0A;
     }
     private State state = State.IDLE;
+    private final EmParser emParser = new EmParser(this);
+    private final FS20Parser fs20Parser = new FS20Parser(this);
     private final FhtParser fhtParser = new FhtParser(this);
     private final HmsParser hmsParser = new HmsParser(this);
+    
     private FhzMessage fhzMessage;
     private final Map<Short, FhtMessage> tempMap = new HashMap<>();
 
@@ -117,6 +124,14 @@ public class FhzParser extends Parser implements ParserListener {
         switch (state) {
             case IDLE:
                 switch ((char) b) {
+                    case 'E':
+                        emParser.init();
+                        setState(State.EM_PARSING);
+                        break;
+                    case 'F':
+                        fs20Parser.init();
+                        setState(State.FS20_PARSING);
+                        break;
                     case 'T':
                         fhtParser.init();
                         setState(State.FHT_PARSING);
@@ -128,6 +143,12 @@ public class FhzParser extends Parser implements ParserListener {
                     default:
                         LOG.fine(String.format("Discarted: 0x%02x %s", b, (char) b));
                 }
+                break;
+            case EM_PARSING:
+                emParser.parse(b);
+                break;
+            case FS20_PARSING:
+                fs20Parser.parse(b);
                 break;
             case FHT_PARSING:
                 fhtParser.parse(b);
@@ -147,6 +168,7 @@ public class FhzParser extends Parser implements ParserListener {
                 } catch (RuntimeException ex) {
                     LOG.severe(String.format("Signal strenght - Wrong char: 0x%02x %s", b, (char) b));
                     setState(State.IDLE);
+                    parse(b); // ry to recover
                 }
                 if (getStackpos() == 0) {
                     fhzMessage.setSignalStrength((float)(((float)getByteValue()) / 2.0 - 74));
@@ -161,7 +183,6 @@ public class FhzParser extends Parser implements ParserListener {
                 } else {
                     //ERRORhandling
                     setState(State.IDLE);
-                    return;
                 }
                 break;
             case END_CHAR_0X0A:
@@ -187,17 +208,22 @@ public class FhzParser extends Parser implements ParserListener {
                                         LOG.fine(temp.toString());
                                     }
                                     if (dataListener != null) {
-                                        dataListener.fhtCombinedData(temp);
+                                        dataListener.fhtTempParsed(temp);
                                     }
                                 }
                             }
                         } else if (fhzMessage instanceof HmsMessage) {
                             dataListener.hmsDataParsed((HmsMessage) fhzMessage);
+                        } else if (fhzMessage instanceof EmMessage) {
+                            dataListener.emDataParsed((EmMessage) fhzMessage);
+                        } else if (fhzMessage instanceof FS20Message) {
+                            dataListener.fs20DataParsed((FS20Message) fhzMessage);
                         }
                     }
                 } else {
                     //ERRORhandling ???
                     setState(State.IDLE);
+                    parse(b); // try to recover
                 }
             default:
         }

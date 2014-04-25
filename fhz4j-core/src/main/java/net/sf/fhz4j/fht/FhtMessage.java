@@ -28,7 +28,9 @@ package net.sf.fhz4j.fht;
  * #L%
  */
 
+import java.util.EnumSet;
 import java.util.Locale;
+import java.util.Set;
 import net.sf.fhz4j.Fhz1000;
 import net.sf.fhz4j.FhzMessage;
 import net.sf.fhz4j.scada.Time;
@@ -214,20 +216,21 @@ public class FhtMessage extends FhzMessage<FhtProperty> {
         return result;
     }
 
-    public double getDesiredTempValue() {
-        return ((double) rawvalue) / 2;
+    public float getDesiredTempValue() {
+        return 0.5f * rawvalue;
     }
 
-    public double getLowTempValue() {
-        return ((double) rawvalue) / 10;
+    public float getLowTempValue() {
+        return 0.1f *  rawvalue;
     }
 
-    public double getHighTempValue() {
+    public float getHighTempValue() {
         return rawvalue * 25;
     }
 
-    public double getActuatorValue() {
-        return (100.0 * rawvalue) / 255;
+    public float getActuatorValue() {
+        //100.0 / 255.0 = 0,392156863;
+        return 0.392156863f * rawvalue;
     }
 
     public void setRawValue(int value) {
@@ -309,7 +312,7 @@ public class FhtMessage extends FhzMessage<FhtProperty> {
     }
     
     @Override
-    public double getDouble(FhtProperty property) {
+    public float getFloat(FhtProperty property) {
         switch (property) {
             case VALVE:
             case VALVE_1:
@@ -331,7 +334,12 @@ public class FhtMessage extends FhzMessage<FhtProperty> {
             case MEASURED_LOW:
                 return getLowTempValue();
             default:
-                return super.getDouble(property);
+                return super.getFloat(property);
         }
+    }
+
+    @Override
+    public Set<FhtProperty> getProperties() {
+        return EnumSet.of(command);
     }
 }

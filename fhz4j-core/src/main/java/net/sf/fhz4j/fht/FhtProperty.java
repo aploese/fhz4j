@@ -46,15 +46,15 @@ import static net.sf.fhz4j.scada.DataType.*;
  */
 public enum FhtProperty implements Serializable, ScadaProperty {
 
-    VALVE(0x00, "%", DOUBLE, FHT_8, FHT_80B),
-    VALVE_1(0x01, "%", DOUBLE, FHT_8, FHT_80B),
-    VALVE_2(0x02, "%", DOUBLE, FHT_8, FHT_80B),
-    VALVE_3(0x03, "%", DOUBLE, FHT_8, FHT_80B),
-    VALVE_4(0x04, "%", DOUBLE, FHT_8, FHT_80B),
-    VALVE_5(0x05, "%", DOUBLE, FHT_8, FHT_80B),
-    VALVE_6(0x06, "%", DOUBLE, FHT_8, FHT_80B),
-    VALVE_7(0x07, "%", DOUBLE, FHT_8, FHT_80B),
-    VALVE_8(0x08, "%", DOUBLE, FHT_8, FHT_80B),
+    VALVE(0x00, "%", FLOAT, FHT_8, FHT_80B),
+    VALVE_1(0x01, "%", FLOAT, FHT_8, FHT_80B),
+    VALVE_2(0x02, "%", FLOAT, FHT_8, FHT_80B),
+    VALVE_3(0x03, "%", FLOAT, FHT_8, FHT_80B),
+    VALVE_4(0x04, "%", FLOAT, FHT_8, FHT_80B),
+    VALVE_5(0x05, "%", FLOAT, FHT_8, FHT_80B),
+    VALVE_6(0x06, "%", FLOAT, FHT_8, FHT_80B),
+    VALVE_7(0x07, "%", FLOAT, FHT_8, FHT_80B),
+    VALVE_8(0x08, "%", FLOAT, FHT_8, FHT_80B),
     MO_FROM_1(0x14, "", TIME, FHT_80B),
     MO_TO_1(0x15, "", TIME, FHT_80B),
     MO_FROM_2(0x16, "", TIME, FHT_80B),
@@ -86,12 +86,12 @@ public enum FhtProperty implements Serializable, ScadaProperty {
     MODE(0x3e, "", SHORT, FHT_80B),
     HOLIDAY_1(0x3f, "", SHORT, FHT_80B), //# Not verified
     HOLIDAY_2(0x40, "", SHORT, FHT_80B), //# Not verified
-    DESIRED_TEMP(0x41, "°C", DOUBLE, FHT_80B),
+    DESIRED_TEMP(0x41, "°C", FLOAT, FHT_80B),
     //  (0xXX, "measured-temp"),		# sum of next. two, never really sent
-    MEASURED_LOW(0x42, "°C", DOUBLE, FHT_80B),
-    MEASURED_HIGH(0x43, "°C", DOUBLE, FHT_80B),
+    MEASURED_LOW(0x42, "°C", FLOAT, FHT_80B),
+    MEASURED_HIGH(0x43, "°C", FLOAT, FHT_80B),
     WARNINGS(0x44, "", BYTE, FHT_80B),
-    MANU_TEMP(0x45, "°C", DOUBLE, FHT_80B), //# No clue what it does.
+    MANU_TEMP(0x45, "°C", FLOAT, FHT_80B), //# No clue what it does.
     ACK(0x4b, "", SHORT, FHT_80B),
     CAN_CMIT(0x53, "", SHORT, FHT_80B),
     CAN_RCV(0x54, "", SHORT, FHT_80B),
@@ -105,10 +105,10 @@ public enum FhtProperty implements Serializable, ScadaProperty {
     ACK_2(0x69, "", SHORT, FHT_80B),
     START_XMIT(0x7d, "", SHORT, FHT_80B),
     END_XMIT(0x7e, "", SHORT, FHT_80B),
-    DAY_TEMP(0x82, "", DOUBLE, FHT_80B),
-    NIGHT_TEMP(0x84, "", DOUBLE, FHT_80B),
-    LOW_TEMP_OFFSET(0x85, "", DOUBLE, FHT_80B), //# Alarm-Temp.-Differenz
-    WINDOW_OPEN_TEMP(0x8a, "", DOUBLE, FHT_80B),
+    DAY_TEMP(0x82, "", FLOAT, FHT_80B),
+    NIGHT_TEMP(0x84, "", FLOAT, FHT_80B),
+    LOW_TEMP_OFFSET(0x85, "", FLOAT, FHT_80B), //# Alarm-Temp.-Differenz
+    WINDOW_OPEN_TEMP(0x8a, "", FLOAT, FHT_80B),
     UNKNOWN_0XFF(0xff, "", BYTE, FHT_80B),
     UNKNOWN(0xFF, "unknown", BYTE);
     
@@ -128,7 +128,7 @@ public enum FhtProperty implements Serializable, ScadaProperty {
         }
     }
 
-    public static FhtProperty valueOf(int value) {
+    public final static FhtProperty valueOf(int value) {
         for (FhtProperty prop : values()) {
             if (prop.value == (byte)value) {
                 return prop;
@@ -174,7 +174,7 @@ public enum FhtProperty implements Serializable, ScadaProperty {
     }
 
     public static FhtProperty[] getFhtPropertiesOf(FhtDeviceTypes type) {
-        List<FhtProperty> result = new ArrayList<FhtProperty>();
+        List<FhtProperty> result = new ArrayList<>();
         for (FhtProperty prop : values()) {
             if (prop.supportedBy.contains(type)) {
                 result.add(prop);
@@ -202,7 +202,7 @@ public enum FhtProperty implements Serializable, ScadaProperty {
     }
 
     public static String[] getFhtPropertyLabelsOf(FhtDeviceTypes type) {
-        List<String> result = new ArrayList<String>();
+        List<String> result = new ArrayList<>();
         for (FhtProperty prop : values()) {
             if (prop.supportedBy.contains(type)) {
                 result.add(prop.getLabel());

@@ -1,5 +1,8 @@
 package net.sf.fhz4j.hms;
 
+import java.util.EnumSet;
+import java.util.Set;
+
 /*
  * #%L
  * fhz4j Core
@@ -32,10 +35,10 @@ package net.sf.fhz4j.hms;
  *
  * @author aploese
  */
-class Hms100TfkMessage extends HmsMessage {
+public class Hms100TfkMessage extends HmsMessage {
 
-    Hms100TfkMessage(HmsMessage hmsMessage) {
-        super(hmsMessage);
+    Hms100TfkMessage(short housecode, Set<HmsDeviceStatus> deviceStatus) {
+        super(housecode, deviceStatus);
     }
     private boolean open;
 
@@ -67,5 +70,10 @@ class Hms100TfkMessage extends HmsMessage {
         }
         return super.getBoolean(prop);
 
+    }
+
+    @Override
+    public HmsDeviceType getDeviceType() {
+        return HmsDeviceType.HMS_100_TFK;
     }
 }

@@ -38,13 +38,12 @@ import static net.sf.fhz4j.scada.DataType.*;
  * @author aploese
  */
 public enum HmsProperty implements Serializable, ScadaProperty {
-        TEMP("temp", "°C", DOUBLE),
-        HUMIDY("humidy", "%", DOUBLE),
+        TEMP("temp", "°C", FLOAT),
+        HUMIDY("humidy", "%", FLOAT),
         BATT_STATUS("batt low", "", BOOLEAN),
         WATER("water", "", BOOLEAN),
         SMOKE_ALERT("smoke", "", BOOLEAN),
-        DOOR_WINDOW_OPEN("window open", "", BOOLEAN),
-        RAW_VALUE("raw value", "", STRING);
+        DOOR_WINDOW_OPEN("window open", "", BOOLEAN);
         
         final private String label;
         final private DataType dataType;

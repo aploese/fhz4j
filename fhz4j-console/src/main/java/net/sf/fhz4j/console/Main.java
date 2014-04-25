@@ -30,6 +30,8 @@ package net.sf.fhz4j.console;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 
 import java.util.Date;
 import java.util.HashSet;
@@ -53,7 +55,9 @@ import net.sf.fhz4j.FhzDataListener;
 import net.sf.fhz4j.FhzParser;
 import net.sf.fhz4j.FhzWriter;
 import net.sf.fhz4j.LogUtils;
+import net.sf.fhz4j.em.EmMessage;
 import net.sf.fhz4j.fht.FhtTempMessage;
+import net.sf.fhz4j.fs20.FS20Message;
 
 /**
  * DOCUMENT ME!
@@ -70,17 +74,39 @@ public class Main {
         @Override
         public void fhtDataParsed(FhtMessage fhtMessage) {
             DEVICES_HOME_CODE.add(fhtMessage.getHousecode());
+            printTimeStamp();
             System.out.println(fhtMessage.toString());
         }
 
         @Override
         public void hmsDataParsed(HmsMessage hmsMsg) {
+            printTimeStamp();
             System.out.println(hmsMsg);
         }
 
         @Override
-        public void fhtCombinedData(FhtTempMessage fhtTempMessage) {
+        public void fhtTempParsed(FhtTempMessage fhtTempMessage) {
+            printTimeStamp();
             System.out.println(fhtTempMessage.toString());
+        }
+
+        @Override
+        public void emDataParsed(EmMessage emMsg) {
+            printTimeStamp();
+            System.out.println(emMsg.toString());
+        }
+
+        @Override
+        public void fs20DataParsed(FS20Message fs20Msg) {
+            printTimeStamp();
+            System.out.println(fs20Msg.toString());
+        }
+
+        SimpleDateFormat df =  new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+        
+        private void printTimeStamp() {
+            System.out.print(df.format(new Date()));
+            System.out.print(": ");
         }
 
     }
@@ -155,7 +181,7 @@ public class Main {
             try {
                 Thread.sleep(100);
             } catch (InterruptedException ex) {
-                java.util.logging.Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
+                LOG.log(Level.SEVERE, null, ex);
             }
             w.initFhz((short)1234);
         } catch (IOException ex) {
@@ -179,13 +205,13 @@ public class Main {
             } while (c != 'q');
 
         } catch (IOException ex) {
-            java.util.logging.Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
+            LOG.log(Level.SEVERE, null, ex);
         }
         System.out.println("CLOSE");
         try {
             p.close();
         } catch (InterruptedException ex) {
-            java.util.logging.Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
+            LOG.log(Level.SEVERE, null, ex);
         }
         
 

@@ -1,7 +1,4 @@
-package net.sf.fhz4j.hms;
-
-import java.util.EnumSet;
-import java.util.Set;
+package net.sf.fhz4j.em;
 
 /*
  * #%L
@@ -30,53 +27,58 @@ import java.util.Set;
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  * #L%
  */
+import java.io.Serializable;
+import net.sf.fhz4j.scada.DataType;
+import static net.sf.fhz4j.scada.DataType.FLOAT;
+import net.sf.fhz4j.scada.ScadaProperty;
 
 /**
  *
  * @author aploese
  */
-public class Hms100WdMessage extends HmsMessage {
-    
-    Hms100WdMessage(short housecode, Set<HmsDeviceStatus> deviceStatus) {
-        super(housecode, deviceStatus);
-    }
-    
-    private boolean water;
+public enum EmProperty implements ScadaProperty, Serializable {
 
-    @Override
-    public void toString(StringBuilder sb) {
-        super.toString(sb);
-        sb.append(" water: ").append(water);
-    }
+    ELECTRICAL_ENERGY("energy", "kWh", FLOAT),
+    ELECTRICAL_ENERGY_LAST_5_MIN("energy last 5 min", "kWh", FLOAT),
+    ELECTRICAL_POWER_LAST_5_MIN_MAX("max power last 5 min", "kW", FLOAT);
 
-    /**
-     * @return the water
-     */
-    public boolean isWater() {
-        return water;
+    final private String label;
+    final private DataType dataType;
+    final private String unitOfMeasurement;
+
+    private EmProperty(String label, String unitOfMeasurement, DataType dataType) {
+        this.label = label;
+        this.unitOfMeasurement = unitOfMeasurement;
+        this.dataType = dataType;
     }
 
     /**
-     * @param water the water to set
+     * @return the label
      */
-    public void setWater(boolean water) {
-        this.water = water;
+    @Override
+    public String getLabel() {
+        return label;
+    }
+
+    /**
+     * @return the dataType
+     */
+    @Override
+    public DataType getDataType() {
+        return dataType;
+    }
+
+    /**
+     * @return the unitOfMeasurement
+     */
+    @Override
+    public String getUnitOfMeasurement() {
+        return unitOfMeasurement;
     }
 
     @Override
-    public boolean getBoolean(HmsProperty prop) {
-        switch (prop) {
-            case WATER:
-                return isWater();
-            default:
-                return super.getBoolean(prop);
-        }
+    public String getName() {
+        return name();
     }
 
-    @Override
-    public HmsDeviceType getDeviceType() {
-        return HmsDeviceType.HMS_100_WD;
-    }
-
-    
 }

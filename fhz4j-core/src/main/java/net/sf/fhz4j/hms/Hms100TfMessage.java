@@ -1,5 +1,8 @@
 package net.sf.fhz4j.hms;
 
+import java.util.EnumSet;
+import java.util.Set;
+
 /*
  * #%L
  * fhz4j Core
@@ -34,38 +37,38 @@ package net.sf.fhz4j.hms;
  */
 class Hms100TfMessage extends HmsMessage {
 
-    private double temp;
-    private double humidy;
+    private float temp;
+    private float humidy;
 
-    Hms100TfMessage(HmsMessage hmsMessage) {
-        super(hmsMessage);
+    Hms100TfMessage(short housecode, Set<HmsDeviceStatus> deviceStatus) {
+        super(housecode, deviceStatus);
     }
 
     /**
      * @return the temp
      */
-    public double getTemp() {
+    public float getTemp() {
         return temp;
     }
 
     /**
      * @param temp the temp to set
      */
-    public void setTemp(double temp) {
+    public void setTemp(float temp) {
         this.temp = temp;
     }
 
     /**
      * @return the humidy
      */
-    public double getHumidy() {
+    public float getHumidy() {
         return humidy;
     }
 
     /**
      * @param humidy the humidy to set
      */
-    public void setHumidy(double humidy) {
+    public void setHumidy(float humidy) {
         this.humidy = humidy;
     }
 
@@ -76,14 +79,21 @@ class Hms100TfMessage extends HmsMessage {
         sb.append(", humidy: ").append(humidy);
     }
 
-    public double getDouble(HmsProperty prop) {
+    @Override
+    public float getFloat(HmsProperty prop) {
         switch (prop) {
             case HUMIDY:
                 return getHumidy();
             case TEMP:
                 return getTemp();
             default:
-                return super.getDouble(prop);
+                return super.getFloat(prop);
         }
     }
+
+    @Override
+    public HmsDeviceType getDeviceType() {
+        return HmsDeviceType.HMS_100_TF;
+    }
+
 }

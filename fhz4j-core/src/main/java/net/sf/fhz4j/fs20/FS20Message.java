@@ -1,4 +1,4 @@
-package net.sf.fhz4j.hms;
+package net.sf.fhz4j.fs20;
 
 /*
  * #%L
@@ -27,44 +27,32 @@ package net.sf.fhz4j.hms;
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  * #L%
  */
-
 import java.util.EnumSet;
 import java.util.Set;
+import net.sf.fhz4j.Fhz1000;
 import net.sf.fhz4j.FhzMessage;
 
 /**
  *
  * @author aploese
  */
-public abstract class HmsMessage extends FhzMessage<HmsProperty> {
+public class FS20Message extends FhzMessage<FS20Property> {
 
     private short housecode;
-    private Set<HmsDeviceStatus> deviceStatus = EnumSet.noneOf(HmsDeviceStatus.class);
-
-    HmsMessage(short housecode, Set<HmsDeviceStatus> deviceStatus) {
-        super();
-        this.housecode = housecode;
-        this.deviceStatus = deviceStatus;
-    }
-
-    HmsMessage() {
-        super();
+    private byte offset;
+    private FS20Property property;
+    
+    
+    @Override
+    protected void toString(StringBuilder sb) {
+        sb.append("housecode: ").append(Fhz1000.houseCodeToString(housecode));
+        sb.append(", offset: ").append(offset);
+        sb.append(", command: ").append(property.getLabel());
     }
 
     @Override
-    public void toString(StringBuilder sb) {
-        sb.append(String.format("housecode: %04X, device type: %s", housecode, getDeviceType().getLabel()));
-        sb.append(" status: [");
-        boolean first = true;
-        for (HmsDeviceStatus status : deviceStatus) {
-            if (first) {
-                first = false;
-            } else {
-                sb.append(" ,");
-            }
-            sb.append(status.getLabel());
-        }
-        sb.append(" ]");
+    public Set<FS20Property> getProperties() {
+        return EnumSet.of(property); 
     }
 
     /**
@@ -82,39 +70,31 @@ public abstract class HmsMessage extends FhzMessage<HmsProperty> {
     }
 
     /**
-     * @return the deviceType
+     * @return the offset
      */
-    public abstract HmsDeviceType getDeviceType();
-
-    /**
-     * @return the deviceStatus
-     */
-    public Set<HmsDeviceStatus> getDeviceStatus() {
-        return deviceStatus;
+    public byte getOffset() {
+        return offset;
     }
 
     /**
-     * @param deviceStatus the deviceStatus to set
+     * @param offset the offset to set
      */
-    public void setDeviceStatus(Set<HmsDeviceStatus> deviceStatus) {
-        this.deviceStatus = deviceStatus;
+    public void setOffset(byte offset) {
+        this.offset = offset;
     }
 
-    
-    @Override
-    public Set<HmsProperty> getProperties() {
-        return getDeviceType().getProperties();
+    /**
+     * @return the property
+     */
+    public FS20Property getProperty() {
+        return property;
     }
 
-
-    @Override
-    public boolean getBoolean(HmsProperty prop) {
-        switch (prop) {
-            case BATT_STATUS:
-                return getDeviceStatus().contains(HmsDeviceStatus.BATT_LOW);
-            default:
-                return super.getBoolean(prop);
-        }
+    /**
+     * @param property the property to set
+     */
+    public void setProperty(FS20Property property) {
+        this.property = property;
     }
 
 }

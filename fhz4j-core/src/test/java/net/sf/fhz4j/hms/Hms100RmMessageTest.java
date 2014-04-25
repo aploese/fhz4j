@@ -27,7 +27,7 @@ package net.sf.fhz4j.hms;
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  * #L%
  */
-
+import java.util.EnumSet;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -40,7 +40,7 @@ import static org.junit.Assert.*;
  * @author aploese
  */
 public class Hms100RmMessageTest {
-    
+
     public Hms100RmMessageTest() {
     }
 
@@ -51,11 +51,11 @@ public class Hms100RmMessageTest {
     @AfterClass
     public static void tearDownClass() throws Exception {
     }
-    
+
     @Before
     public void setUp() {
     }
-    
+
     @After
     public void tearDown() {
     }
@@ -66,11 +66,7 @@ public class Hms100RmMessageTest {
     @Test
     public void testGetProps() {
         System.out.println("get props");
-        HmsMessage msg = new HmsMessage();
-        msg.setDeviceType(HmsDeviceType.HMS_100_RM);
-        msg.setHousecode((short)1234);
-        msg.setRawValue("12345678");
-        Hms100RmMessage instance = new Hms100RmMessage(new HmsMessage());
+        Hms100RmMessage instance = new Hms100RmMessage((short) 1234, EnumSet.noneOf(HmsDeviceStatus.class));
         instance.setSmoke(true);
         for (HmsProperty prop : HmsDeviceType.HMS_100_RM.getProperties()) {
             switch (prop.getDataType()) {

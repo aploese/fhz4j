@@ -1,7 +1,4 @@
-package net.sf.fhz4j.hms;
-
-import java.util.EnumSet;
-import java.util.Set;
+package net.sf.fhz4j.em;
 
 /*
  * #%L
@@ -35,48 +32,29 @@ import java.util.Set;
  *
  * @author aploese
  */
-public class Hms100WdMessage extends HmsMessage {
-    
-    Hms100WdMessage(short housecode, Set<HmsDeviceStatus> deviceStatus) {
-        super(housecode, deviceStatus);
-    }
-    
-    private boolean water;
+class Em1000SMessage extends EmMessage {
 
-    @Override
-    public void toString(StringBuilder sb) {
-        super.toString(sb);
-        sb.append(" water: ").append(water);
-    }
-
-    /**
-     * @return the water
-     */
-    public boolean isWater() {
-        return water;
-    }
-
-    /**
-     * @param water the water to set
-     */
-    public void setWater(boolean water) {
-        this.water = water;
+    public Em1000SMessage() {
     }
 
     @Override
-    public boolean getBoolean(HmsProperty prop) {
-        switch (prop) {
-            case WATER:
-                return isWater();
-            default:
-                return super.getBoolean(prop);
-        }
+    public EmDeviceType getType() {
+        return EmDeviceType.EM_1000S;
     }
 
     @Override
-    public HmsDeviceType getDeviceType() {
-        return HmsDeviceType.HMS_100_WD;
+    void setCumulatedValue(int cummulatedValue) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
+    @Override
+    void setLastValue(int lastValue) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    void setMaxLastValue(int maxLastValue) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
     
 }
