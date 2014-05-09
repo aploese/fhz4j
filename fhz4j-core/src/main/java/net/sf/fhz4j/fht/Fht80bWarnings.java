@@ -28,38 +28,45 @@ package net.sf.fhz4j.fht;
  * #L%
  */
 
-import net.sf.fhz4j.scada.DataType;
-import net.sf.fhz4j.scada.ScadaProperty;
-
 /**
  *
  * @author aploese
  */
-public class FhtTempPropery implements ScadaProperty {
+public enum Fht80bWarnings {
+    NONE(0, "NONE"),
+    BATT_LOW(1, "Batt Low");
     
-    public final static FhtTempPropery COMBINED_TEMP = new FhtTempPropery();
     
-    private FhtTempPropery() {
-    }
-    
-    @Override
-    public String getUnitOfMeasurement() {
-        return "′C";
+    final private String label;
+    final private byte value;
+
+    private Fht80bWarnings(int value, String label) {
+        this.label = label;
+        this.value = (byte) value;
     }
 
-    @Override
-    public DataType getDataType() {
-        return DataType.DOUBLE;
-    }
-
-    @Override
-    public String getName() {
-        return "COMBINED_TEMP";
-    }
-
-    @Override
+    /**
+     * @return the label
+     */
     public String getLabel() {
-        return ("actual temperature");
+        return label;
     }
 
+    public String getName() {
+        return name();
+    }
+
+    public final static Fht80bWarnings valueOf(int value) {
+        for (Fht80bWarnings prop : values()) {
+            if (prop.value == (byte) value) {
+                return prop;
+            }
+        }
+        return valueOf(String.valueOf(value));
+    }
+
+    public byte getValue() {
+        return value;
+    }
+    
 }

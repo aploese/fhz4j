@@ -102,7 +102,7 @@ public abstract class HmsMessage extends FhzMessage<HmsProperty> {
 
     
     @Override
-    public Set<HmsProperty> getProperties() {
+    public Set<HmsProperty> getSupportedProperties() {
         return getDeviceType().getProperties();
     }
 

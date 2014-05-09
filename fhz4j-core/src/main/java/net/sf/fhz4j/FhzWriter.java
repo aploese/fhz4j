@@ -27,15 +27,14 @@ package net.sf.fhz4j;
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  * #L%
  */
-
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.Arrays;
-import java.util.Collection;
+import java.util.Calendar;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import net.sf.fhz4j.fht.FhtMessage;
 import net.sf.fhz4j.fht.FhtProperty;
-
 
 /**
  *
@@ -73,7 +72,9 @@ public class FhzWriter {
         os.write("\r\n".getBytes());
         Thread.sleep(1000);
         LOG.info("INIT 2");
-        os.write(String.format("X%02X\r\n", initFlags).getBytes());
+        final String data = String.format("X%02X\r\n", initFlags);
+        os.write(data.getBytes());
+        LOG.log(Level.INFO, "Data sent: {0}", new Object[]{data});
         Thread.sleep(1000);
         LOG.info("INIT Housecode");
         setFhzHousecode(fhz100Housecode);
@@ -81,22 +82,55 @@ public class FhzWriter {
         LOG.info("INIT End");
     }
 
-    public void writeFhtCmd(short housecode, FhtProperty property, byte origin, byte value) throws IOException {
-        os.write(String.format("T%s%02X%02X%02X\n", Fhz1000.houseCodeToString(housecode), property.getValue(), origin, value).getBytes());
+    private void writeFhtCmd8v(short housecode, FhtProperty property, byte origin, byte value) throws IOException {
+        final String data = String.format("T%04X%02X%02X%02X\n", housecode, property.getValue(), origin, value);
+        os.write(data.getBytes());
+        LOG.log(Level.INFO, "Data sent to {0}: {1}", new Object[]{Fhz1000.houseCodeToString(housecode), data});
+    }
+
+    private void writeFhtCmd8b(short housecode, FhtProperty property, byte value) throws IOException {
+        final String data = String.format("T%04X%02X%02X\n", housecode, property.getValue(), value);
+        os.write(data.getBytes());
+        LOG.log(Level.INFO, "Data sent to {0}: {1}", new Object[]{Fhz1000.houseCodeToString(housecode), data});
     }
 
     public void initFhtReporting(Iterable<Short> fhtDeviceHomeCodes) throws IOException {
         LOG.info("Send: request report to: ");
-        for (short homecode : fhtDeviceHomeCodes) {
-            writeFhtCmd(homecode, FhtProperty.REPORT_1, ORIGIN_CUL, ALL_REPORTS);
-            writeFhtCmd(homecode, FhtProperty.REPORT_2, ORIGIN_CUL, ALL_REPORTS);
+        for (short housecode : fhtDeviceHomeCodes) {
+            final String data = String.format("T%04X%02X%02X%02X%02X\n", housecode, FhtProperty.REPORT_1.getValue(), ALL_REPORTS, FhtProperty.REPORT_2.getValue(), ALL_REPORTS);
+            os.write(data.getBytes());
+            LOG.log(Level.INFO, "Data sent to {0}: {1}", new Object[]{Fhz1000.houseCodeToString(housecode), data});
         }
     }
+
+    public void syncFhtClocks(Iterable<Short> fhtDeviceHomeCodes) throws IOException {
+        LOG.info("Send: request report to: ");
+        final Calendar c = Calendar.getInstance();
+
+        final byte year = (byte) (c.get(Calendar.YEAR) - 2000);
+        final byte month = (byte) (c.get(Calendar.MONTH) + 1);
+        final byte dayOfMonth = (byte) c.get(Calendar.DAY_OF_MONTH);
+        final byte minute = (byte) c.get(Calendar.MINUTE);
+        final byte hour = (byte) c.get(Calendar.HOUR);
+
+        for (short housecode : fhtDeviceHomeCodes) {
+            final String data = String.format("T%04X02X%02X%02X%02X%02X%02X%02X%02X%02X%02X\n", housecode, FhtProperty.YEAR.getValue(), year, FhtProperty.MONTH.getValue(), month, FhtProperty.DAY.getValue(), dayOfMonth, FhtProperty.HOUR.getValue(), hour, FhtProperty.MINUTE.getValue(), minute);
+            os.write(data.getBytes());
+            LOG.log(Level.INFO, "Data sent to {0}: {1}", new Object[]{Fhz1000.houseCodeToString(housecode), data});
+        }
+    }
+
     public void initFhtReporting(Short... fhtDeviceHomeCodes) throws IOException {
         initFhtReporting(Arrays.asList(fhtDeviceHomeCodes));
     }
 
+    public void writeFhtMsg(FhtMessage message) throws IOException {
+        writeFhtCmd8b(message.getHousecode(), message.getCommand(), (byte) message.getRawValue());
+    }
+
     private void setFhzHousecode(short fhz100Housecode) throws IOException {
-        os.write(String.format("T01%s\r\n", Fhz1000.houseCodeToString(fhz100Housecode)).getBytes());
+        final String data = String.format("T01%04X\r\n", fhz100Housecode);
+        os.write(data.getBytes());
+        LOG.log(Level.INFO, "Set my housecode to {0}: {1}", new Object[]{Fhz1000.houseCodeToString(fhz100Housecode), data});
     }
 }

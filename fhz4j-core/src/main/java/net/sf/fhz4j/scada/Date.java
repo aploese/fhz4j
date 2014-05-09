@@ -1,5 +1,7 @@
 package net.sf.fhz4j.scada;
 
+import java.util.Calendar;
+
 /*
  * #%L
  * fhz4j Core
@@ -37,6 +39,16 @@ public class Date {
     private byte month;
     private byte day;
 
+    public Date(Calendar c) {
+        day = (byte)c.get(Calendar.DAY_OF_MONTH);
+        month = (byte)(c.get(Calendar.MONTH) + 1);
+        year = c.get(Calendar.YEAR);
+    }
+
+    public Date() {
+    
+    }
+    
     /**
      * @return the year
      */
@@ -78,4 +90,10 @@ public class Date {
     public void setDay(byte day) {
         this.day = day;
     }
+    
+    @Override
+    public String toString() {
+        return String.format("%04d-%02d-%02d", year, month, day);
+    }
+
 }

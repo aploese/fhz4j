@@ -98,7 +98,7 @@ public abstract class EmMessage extends FhzMessage<EmProperty> {
     abstract void setMaxLastValue(int maxLastValue);
 
     @Override
-    public Set<EmProperty> getProperties() {
+    public Set<EmProperty> getSupportedProperties() {
         return getType().getProperties(); 
     }
 

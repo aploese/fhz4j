@@ -1,5 +1,7 @@
 package net.sf.fhz4j.scada;
 
+import java.util.Calendar;
+
 /*
  * #%L
  * fhz4j Core
@@ -38,6 +40,17 @@ public class Time {
     private byte min;
     private byte sec;
     private int ms;
+
+    public Time() {
+        
+    }
+    
+    public Time(Calendar c) {
+        hour = (byte)c.get(Calendar.HOUR_OF_DAY);
+        min = (byte)c.get(Calendar.MINUTE);
+        sec = (byte)c.get(Calendar.SECOND);
+        ms = (byte)c.get(Calendar.MILLISECOND);
+    }
 
     /**
      * @return the hour
@@ -97,6 +110,13 @@ public class Time {
 
     @Override
     public String toString() {
-        return String.format("%02d : %02d", hour, min);
+        return String.format("%02d:%02d:%02d.%03d", hour, min, sec, ms);
+    }
+
+    public void setTimeToCalendar(Calendar c) {
+        c.set(Calendar.MILLISECOND, ms);
+        c.set(Calendar.SECOND, sec);
+        c.set(Calendar.MINUTE, min);
+        c.set(Calendar.HOUR_OF_DAY, hour);
     }
 }

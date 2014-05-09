@@ -55,6 +55,13 @@ public class Fhz1000Test {
         assertEquals("6794", Fhz1000.houseCodeToString((short)0x435E));
         assertEquals("0000", Fhz1000.houseCodeToString((short)0x0000));
         assertEquals("0001", Fhz1000.houseCodeToString((short)0x0001));
+
+        assertEquals("9752", Fhz1000.houseCodeToString((short)0x6134));
+        assertEquals(0X6134, Fhz1000.parseHouseCode("9752"));
+
+        assertEquals("1852", Fhz1000.houseCodeToString((short)0x1234));
+        assertEquals(0X1234, Fhz1000.parseHouseCode("1852"));
+    
     }
 
     @Test

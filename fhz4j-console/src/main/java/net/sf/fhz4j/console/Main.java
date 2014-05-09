@@ -56,7 +56,7 @@ import net.sf.fhz4j.FhzParser;
 import net.sf.fhz4j.FhzWriter;
 import net.sf.fhz4j.LogUtils;
 import net.sf.fhz4j.em.EmMessage;
-import net.sf.fhz4j.fht.FhtTempMessage;
+import net.sf.fhz4j.fht.FhtMultiMsgMessage;
 import net.sf.fhz4j.fs20.FS20Message;
 
 /**
@@ -85,7 +85,7 @@ public class Main {
         }
 
         @Override
-        public void fhtTempParsed(FhtTempMessage fhtTempMessage) {
+        public void fhtMultiMsgParsed(FhtMultiMsgMessage fhtTempMessage) {
             printTimeStamp();
             System.out.println(fhtTempMessage.toString());
         }

@@ -28,6 +28,8 @@ package net.sf.fhz4j.fht;
  * #L%
  */
 
+import java.util.Collection;
+import java.util.EnumSet;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -62,25 +64,15 @@ public class FhtPropertyTest {
 
 
     /**
-     * Test of getSupportedBy method, of class FhtProperty.
-     */
-    @Test
-    public void testGetSupportedBy() {
-        System.out.println("getSupportedBy");
-        FhtDeviceTypes[] result = FhtProperty.UNKNOWN.getSupportedBy();
-        assertArrayEquals(new FhtDeviceTypes[0], result);
-    }
-
-    /**
      * Test of getFhzPropertiesOf method, of class FhtProperty.
      */
     @Test
     public void testGetFhzPropertiesOf() {
         System.out.println("getFhzPropertiesOf");
-        FhtDeviceTypes type = FhtDeviceTypes.UNKNOWN;
-        FhtProperty[] expResult = new FhtProperty[0];
-        FhtProperty[] result = FhtProperty.getFhtPropertiesOf(type);
-        assertArrayEquals(expResult, result);
+        FhtDeviceType type = FhtDeviceType.UNKNOWN;
+        Collection<FhtProperty> expResult = EnumSet.of(FhtProperty.UNKNOWN);
+        Collection<FhtProperty> result = FhtProperty.getFhtPropertiesOf(type);
+        assertArrayEquals(expResult.toArray(), result.toArray());
     }
 
 }

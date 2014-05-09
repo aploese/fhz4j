@@ -28,7 +28,7 @@ package net.sf.fhz4j;
  * #L%
  */
 import net.sf.fhz4j.em.EmMessage;
-import net.sf.fhz4j.fht.FhtTempMessage;
+import net.sf.fhz4j.fht.FhtMultiMsgMessage;
 import net.sf.fhz4j.fht.FhtMessage;
 import net.sf.fhz4j.fs20.FS20Message;
 import net.sf.fhz4j.hms.HmsMessage;
@@ -48,7 +48,7 @@ public class FhzParserTest implements FhzDataListener {
 
     private FhzParser parser;
     private FhtMessage fhtMessage;
-    private FhtTempMessage temp;
+    private FhtMultiMsgMessage fhtMultiMsgMessage;
     private HmsMessage hmsMsg;
     private EmMessage emMsg;
     private FS20Message fs20Msg;
@@ -76,7 +76,7 @@ public class FhzParserTest implements FhzDataListener {
 
     private void decode(String s) {
         fhtMessage = null;
-        temp = null;
+        fhtMultiMsgMessage = null;
         hmsMsg = null;
         emMsg = null;
         for (byte b : s.getBytes()) {
@@ -121,8 +121,42 @@ public class FhzParserTest implements FhzDataListener {
         assertNotNull(fhtMessage);
         assertEquals("housecode: 5510, command: measured low, description: from FHT-B data register, value: 0.4°C signal strength: -71.0 dB", fhtMessage.toString());
         decode("T370A43690106\r\n");
-        assertNotNull(temp);
-        assertEquals("housecode: 5510, measured temperature (combined): 25.9°C signal strength: -71.0 dB and -71.0 dB", temp.toString());
+        assertNotNull(fhtMessage);
+        assertEquals("housecode: 5510, command: measured high, description: from FHT-B data register, value: 25.0°C signal strength: -71.0 dB", fhtMessage.toString());
+        assertNotNull(fhtMultiMsgMessage);
+        assertEquals("housecode: 5510, measured temperature (combined): 25.9°C", fhtMultiMsgMessage.toString());
+    }
+
+    @Test
+    @Ignore//TODO inject calendar
+    public void decode_FHT_Holiday_End() {
+        decode("T370A3E690206\r\n");
+        assertNotNull(fhtMessage);
+        assertEquals("housecode: 5510, command: mode, description: from FHT-B data register, value: 2 signal strength: -71.0 dB", fhtMessage.toString());
+        decode("T370A3F010106\r\n");
+        assertNotNull(fhtMessage);
+        assertEquals("housecode: 5510, command: holiday 1, description:  0x0 0x1, value: 1 signal strength: -71.0 dB", fhtMessage.toString());
+        decode("T370A40010106\r\n");
+        assertNotNull(fhtMessage);
+        assertEquals("housecode: 5510, command: holiday 2, description:  0x0 0x1, value: 1 signal strength: -71.0 dB", fhtMessage.toString());
+        assertNotNull(fhtMultiMsgMessage);
+        assertEquals("", fhtMultiMsgMessage.toString());
+    }
+
+    @Test
+    @Ignore//TODO inject calendar
+    public void decode_FHT_Party_End() {
+        decode("T370A3E690306\r\n");
+        assertNotNull(fhtMessage);
+        assertEquals("housecode: 5510, command: mode, description: from FHT-B data register, value: 3 signal strength: -71.0 dB", fhtMessage.toString());
+        decode("T370A3F010106\r\n");
+        assertNotNull(fhtMessage);
+        assertEquals("housecode: 5510, command: holiday 1, description:  0x0 0x1, value: 1 signal strength: -71.0 dB", fhtMessage.toString());
+        decode("T370A40010106\r\n");
+        assertNotNull(fhtMessage);
+        assertEquals("housecode: 5510, command: holiday 2, description:  0x0 0x1, value: 1 signal strength: -71.0 dB", fhtMessage.toString());
+        assertNotNull(fhtMultiMsgMessage);
+        assertEquals("", fhtMultiMsgMessage.toString());
     }
 
     @Test
@@ -296,8 +330,8 @@ public class FhzParserTest implements FhzDataListener {
     }
 
     @Override
-    public void fhtTempParsed(FhtTempMessage temp) {
-        this.temp = temp;
+    public void fhtMultiMsgParsed(FhtMultiMsgMessage temp) {
+        this.fhtMultiMsgMessage = temp;
     }
 
     @Override

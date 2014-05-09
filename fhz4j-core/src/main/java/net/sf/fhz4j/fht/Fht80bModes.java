@@ -28,45 +28,47 @@ package net.sf.fhz4j.fht;
  * #L%
  */
 
-import java.io.Serializable;
-import net.sf.fhz4j.FhzProtocol;
-import static net.sf.fhz4j.FhzProtocol.*;
-
 /**
  *
  * @author aploese
  */
-public enum FhtDeviceTypes implements Serializable {
+public enum Fht80bModes {
+    AUTO(0, "Auto"),
+    MANUAL(1, "Manu"),
+    HOLIDAY(2, "Holiday"),
+    PARTY(3, "Party");
+    
+    
+    final private String label;
+    final private byte value;
 
-    FHT_8("FHT 8", FHT),
-    FHT_80B("FHT 80B", FHT),
-    UNKNOWN("Unknown", FhzProtocol.UNKNOWN);
-
-    public static FhtDeviceTypes fromLabel(String label) {
-        for (FhtDeviceTypes deviceType : values()) {
-            if (deviceType.getLabel().equals(label)) {
-                return deviceType;
-            }
-        }
-        return valueOf(label);
-    }
-    private final String label;
-    private final FhzProtocol protocol;
-
-    private FhtDeviceTypes(String label, FhzProtocol protocol) {
+    private Fht80bModes(int value, String label) {
         this.label = label;
-        this.protocol = protocol;
+        this.value = (byte) value;
     }
 
+    /**
+     * @return the label
+     */
     public String getLabel() {
         return label;
-    }
-
-    public FhzProtocol getProtocol() {
-        return protocol;
     }
 
     public String getName() {
         return name();
     }
+
+    public final static Fht80bModes valueOf(int value) {
+        for (Fht80bModes prop : values()) {
+            if (prop.value == (byte) value) {
+                return prop;
+            }
+        }
+        return valueOf(String.valueOf(value));
+    }
+
+    public byte getValue() {
+        return value;
+    }
+    
 }

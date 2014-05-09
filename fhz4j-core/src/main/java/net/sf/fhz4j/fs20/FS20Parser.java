@@ -125,7 +125,7 @@ public class FS20Parser extends Parser {
                     return;
                 }
                 if (getStackpos() == 0) {
-                    fs20Message.setProperty(FS20Property.valueOf(getIntValue()));
+                    fs20Message.setCommand(FS20CommandValues.valueOf(getIntValue()));
                     setStackSize(0);
                     setState(State.PARSE_SUCCESS);
                     parserListener.success(fs20Message);

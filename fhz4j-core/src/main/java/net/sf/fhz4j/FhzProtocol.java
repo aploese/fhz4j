@@ -33,9 +33,24 @@ package net.sf.fhz4j;
  * @author aploese
  */
 public enum FhzProtocol {
-    FHT,
-    FHT_TEMP,
-    FS20,
-    HMS,
-    UNKNOWN;
+    FHT("FHT"),
+    FHT_MULTI_MSG("FHT Multi Message"),
+    FS20("FS 20"),
+    EM("EM"),
+    HMS("HMS"),
+    UNKNOWN("Unknown");
+    
+    private final String label;
+
+    private FhzProtocol(String label) {
+        this.label = label;
+    }
+
+    /**
+     * @return the label
+     */
+    public String getLabel() {
+        return label;
+    }
+    
 }

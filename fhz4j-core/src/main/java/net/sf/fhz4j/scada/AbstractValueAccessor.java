@@ -1,5 +1,7 @@
 package net.sf.fhz4j.scada;
 
+import net.sf.fhz4j.hms.HmsProperty;
+
 /*
  * #%L
  * fhz4j Core
@@ -31,62 +33,118 @@ package net.sf.fhz4j.scada;
 /**
  *
  * @author aploese
+ * @param <T>
  */
-public abstract class AbstractPropertyProvider<T extends ScadaProperty> implements ScadaPropertyProvider<T> {
+public abstract class AbstractValueAccessor<T extends ScadaProperty> implements ScadaValueAccessor<T> {
     
     @Override
     public double getDouble(T property) {
-        throw new UnsupportedOperationException("cant get double of:" + property.getName());
+        throw new IllegalArgumentException("can't get double of:" + property.getName());
+    }
+
+    @Override
+    public void setDouble(T property, double value) {
+        throw new IllegalArgumentException("can't set double of:" + property.getName());
     }
 
     @Override
     public float getFloat(T property) {
-        throw new UnsupportedOperationException("cant get float of:" + property.getName());
+        throw new IllegalArgumentException("can't get float of:" + property.getName());
+    }
+
+    @Override
+    public void setFloat(T property, float value) {
+        throw new IllegalArgumentException("can't set float of:" + property.getName());
     }
 
     @Override
     public long getLong(T property) {
-        throw new UnsupportedOperationException("cant get long of:" + property.getName());
+        throw new IllegalArgumentException("can't get long of:" + property.getName());
+    }
+
+    @Override
+    public void setLong(T property, long value) {
+        throw new IllegalArgumentException("can't set long of:" + property.getName());
     }
 
     @Override
     public int getInt(T property) {
-        throw new UnsupportedOperationException("cant get int of:" + property.getName());
+        throw new IllegalArgumentException("can't get int of:" + property.getName());
+    }
+
+    @Override
+    public void setInt(T property, int value) {
+        throw new IllegalArgumentException("can't set int of:" + property.getName());
     }
 
     @Override
     public short getShort(T property) {
-        throw new UnsupportedOperationException("cant get short of:" + property.getName());
+        throw new IllegalArgumentException("can't get short of:" + property.getName());
+    }
+
+    @Override
+    public void setShort(T property, short value) {
+        throw new IllegalArgumentException("can't set short of:" + property.getName());
     }
 
     @Override
     public byte getByte(T property) {
-        throw new UnsupportedOperationException("cant get byte of:" + property.getName());
+        throw new IllegalArgumentException("can't get byte of:" + property.getName());
+    }
+
+    @Override
+    public void setByte(T property, byte value) {
+        throw new IllegalArgumentException("can't set byte of:" + property.getName());
     }
 
     @Override
     public boolean getBoolean(T property) {
-        throw new UnsupportedOperationException("cant get boolean of:" + property.getName());
+        throw new IllegalArgumentException("can't get boolean of:" + property.getName());
+    }
+
+    @Override
+    public void setBoolean(T property, boolean value) {
+        throw new IllegalArgumentException("can't set boolean of:" + property.getName());
     }
 
     @Override
     public char getChar(ScadaProperty property) {
-        throw new UnsupportedOperationException("cant get char of:" + property.getName());
+        throw new IllegalArgumentException("can't get char of:" + property.getName());
+    }
+
+    @Override
+    public void setChar(T property, char value) {
+        throw new IllegalArgumentException("can't set char of:" + property.getName());
     }
 
     @Override
     public String getString(T property) {
-        throw new UnsupportedOperationException("cant get String of:" + property.getName());
+        throw new IllegalArgumentException("can't get String of:" + property.getName());
+    }
+
+    @Override
+    public String setString(T property, String value) {
+        throw new IllegalArgumentException("can't set String of:" + property.getName());
     }
 
     @Override
     public Time getTime(T property) {
-        throw new UnsupportedOperationException("cant get Time of:" + property.getName());
+        throw new IllegalArgumentException("can't get Time of:" + property.getName());
+    }
+
+    @Override
+    public void setTime(T property, Time value) {
+        throw new IllegalArgumentException("can't set Time of:" + property.getName());
     }
 
     @Override
     public Date getDate(T property) {
-        throw new UnsupportedOperationException("cant get Date of:" + property.getName());
+        throw new IllegalArgumentException("can't get Date of:" + property.getName());
+    }
+
+    @Override
+    public void setDate(T property, Date value) {
+        throw new IllegalArgumentException("can't get Date of:" + property.getName());
     }
 
     @Override
@@ -95,6 +153,10 @@ public abstract class AbstractPropertyProvider<T extends ScadaProperty> implemen
     }
 
     @Override
+    public Timestamp setTimestamp(T property, Timestamp value) {
+        throw new IllegalArgumentException("can't set Timestamp of:" + property.getName());
+    }
+
     public String asString(T property) {
         switch (property.getDataType()) {
             case BOOLEAN:
@@ -125,67 +187,10 @@ public abstract class AbstractPropertyProvider<T extends ScadaProperty> implemen
         }
         
     }
+
     @Override
     public String toString(T property) {
           return String.format("%s = %s %s", property.getLabel(), asString(property), property.getUnitOfMeasurement());
-    }
-
-    @Override
-    public double asDouble(T property) {
-        switch (property.getDataType()) {
-            case BYTE:
-                return getByte(property);
-            case DOUBLE:
-                return getDouble(property);
-            case FLOAT:
-                return getFloat(property);
-            case INT:
-                return getInt(property);
-            case LONG:
-                return getLong(property);
-            case SHORT:
-                return getShort(property);
-            default: throw new RuntimeException("Cant do adDouble() " + property); 
-        }
-    }
-
-    @Override
-    public long asLong(T property) {
-        switch (property.getDataType()) {
-            case BYTE:
-                return getByte(property);
-            case INT:
-                return getInt(property);
-            case LONG:
-                return getLong(property);
-            case SHORT:
-                return getShort(property);
-            default: throw new RuntimeException("Cant do adDouble() " + property); 
-        }
-    }
-
-    @Override
-    public int asInt(T property) {
-        switch (property.getDataType()) {
-            case BYTE:
-                return getByte(property);
-            case INT:
-                return getInt(property);
-            case SHORT:
-                return getShort(property);
-            default: throw new RuntimeException("Cant do adDouble() " + property); 
-        }
-    }
-
-    @Override
-    public short asShort(T property) {
-        switch (property.getDataType()) {
-            case BYTE:
-                return getByte(property);
-            case SHORT:
-                return getShort(property);
-            default: throw new RuntimeException("Cant do adDouble() " + property); 
-        }
     }
 
 }

@@ -2,6 +2,9 @@ package net.sf.fhz4j.hms;
 
 import java.util.EnumSet;
 import java.util.Set;
+import net.sf.fhz4j.scada.Date;
+import net.sf.fhz4j.scada.Time;
+import net.sf.fhz4j.scada.Timestamp;
 
 /*
  * #%L
@@ -78,5 +81,4 @@ public class Hms100WdMessage extends HmsMessage {
         return HmsDeviceType.HMS_100_WD;
     }
 
-    
 }

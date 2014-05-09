@@ -27,19 +27,16 @@ package net.sf.fhz4j.em;
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  * #L%
  */
-
-
 /**
  *
  * @author aploese
  */
 public class Em1000EmMessage extends EmMessage {
-    
+
     private float energy;
     private float energyLast5Min;
     private float maxPowerLast5Min;
-    
-    
+
     @Override
     protected void toString(StringBuilder sb) {
         super.toString(sb);
@@ -47,7 +44,7 @@ public class Em1000EmMessage extends EmMessage {
         sb.append(", energyLast5Min: ").append(energyLast5Min);
         sb.append(", maxPowerLast5Min: ").append(maxPowerLast5Min);
     }
-    
+
     /**
      * @return the energy
      */
@@ -88,6 +85,20 @@ public class Em1000EmMessage extends EmMessage {
      */
     public void setMaxPowerLast5Min(float maxPowerLast5Min) {
         this.maxPowerLast5Min = maxPowerLast5Min;
+    }
+
+    @Override
+    public float getFloat(EmProperty property) {
+        switch (property) {
+            case ELECTRICAL_ENERGY:
+                return energy;
+            case ELECTRICAL_ENERGY_LAST_5_MIN:
+                return energyLast5Min;
+            case ELECTRICAL_POWER_LAST_5_MIN_MAX:
+                return maxPowerLast5Min;
+            default:
+                return super.getFloat(property);
+        }
     }
 
     @Override

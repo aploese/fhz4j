@@ -27,7 +27,6 @@ package net.sf.fhz4j.fht;
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  * #L%
  */
-
 import java.util.EnumSet;
 import java.util.Locale;
 import java.util.Set;
@@ -65,6 +64,8 @@ public class FhtMessage extends FhzMessage<FhtProperty> {
                 sb.append(String.format((Locale) null, "%.1f", getActuatorValue()));
                 break;
             case DESIRED_TEMP:
+            case WINDOW_OPEN_TEMP:
+            case LOW_TEMP_OFFSET:
                 sb.append(getDesiredTempValue());
                 break;
             case MEASURED_LOW:
@@ -196,7 +197,7 @@ public class FhtMessage extends FhzMessage<FhtProperty> {
     }
 
     /**
-     * @param origin the description to set
+     * @param description the description to set
      */
     public void setDescription(byte description) {
         this.description = description;
@@ -211,8 +212,8 @@ public class FhtMessage extends FhzMessage<FhtProperty> {
 
     public Time getTime() {
         Time result = new Time();
-        result.setHour((byte)(rawvalue / 6));
-        result.setMin((byte)(rawvalue % 6));
+        result.setHour((byte) (rawvalue / 6));
+        result.setMin((byte) ((rawvalue % 6) * 10));
         return result;
     }
 
@@ -221,7 +222,7 @@ public class FhtMessage extends FhzMessage<FhtProperty> {
     }
 
     public float getLowTempValue() {
-        return 0.1f *  rawvalue;
+        return 0.1f * rawvalue;
     }
 
     public float getHighTempValue() {
@@ -256,7 +257,11 @@ public class FhtMessage extends FhzMessage<FhtProperty> {
             case REPORT_1:
             case REPORT_2:
             case YEAR:
-                return (short)rawvalue;
+                return (short) rawvalue;
+            case HOLIDAY_1:
+            case HOLIDAY_2:
+                //raw values 
+                return (short) rawvalue;
             default:
                 return super.getShort(property);
         }
@@ -268,7 +273,7 @@ public class FhtMessage extends FhzMessage<FhtProperty> {
             case WARNINGS:
             case UNKNOWN:
             case UNKNOWN_0XFF:
-                return (byte)rawvalue;
+                return (byte) rawvalue;
             default:
                 return super.getByte(property);
         }
@@ -280,37 +285,37 @@ public class FhtMessage extends FhzMessage<FhtProperty> {
             case FRI_FROM_1:
             case FRI_FROM_2:
             case FRI_TO_1:
-            case FRI_TO_2:    
-            case MO_FROM_1:    
-            case MO_FROM_2:    
-            case MO_TO_1:    
-            case MO_TO_2:    
-            case SAT_FROM_1:    
-            case SAT_FROM_2:    
-            case SAT_TO_1:    
-            case SAT_TO_2:    
-            case SUN_FROM_1:    
-            case SUN_FROM_2:    
-            case SUN_TO_1:    
-            case SUN_TO_2:    
-            case THU_FROM_1:    
-            case THU_FROM_2:    
-            case THU_TO_1:    
-            case THU_TO_2:    
+            case FRI_TO_2:
+            case MO_FROM_1:
+            case MO_FROM_2:
+            case MO_TO_1:
+            case MO_TO_2:
+            case SAT_FROM_1:
+            case SAT_FROM_2:
+            case SAT_TO_1:
+            case SAT_TO_2:
+            case SUN_FROM_1:
+            case SUN_FROM_2:
+            case SUN_TO_1:
+            case SUN_TO_2:
+            case THU_FROM_1:
+            case THU_FROM_2:
+            case THU_TO_1:
+            case THU_TO_2:
             case TUE_FROM_1:
             case TUE_FROM_2:
             case TUE_TO_1:
             case TUE_TO_2:
-                case WED_FROM_1:
-                case WED_FROM_2:
-                case WED_TO_1:
-                case WED_TO_2:
+            case WED_FROM_1:
+            case WED_FROM_2:
+            case WED_TO_1:
+            case WED_TO_2:
                 return getTime();
             default:
                 return super.getTime(property);
         }
     }
-    
+
     @Override
     public float getFloat(FhtProperty property) {
         switch (property) {
@@ -328,6 +333,8 @@ public class FhtMessage extends FhzMessage<FhtProperty> {
             case DESIRED_TEMP:
             case NIGHT_TEMP:
             case MANU_TEMP:
+            case WINDOW_OPEN_TEMP:
+            case LOW_TEMP_OFFSET:
                 return getDesiredTempValue();
             case MEASURED_HIGH:
                 return getHighTempValue();
@@ -339,7 +346,64 @@ public class FhtMessage extends FhzMessage<FhtProperty> {
     }
 
     @Override
-    public Set<FhtProperty> getProperties() {
+    public void setFloat(FhtProperty property, float value) {
+        switch (property) {
+            case VALVE:
+            case VALVE_1:
+            case VALVE_2:
+            case VALVE_3:
+            case VALVE_4:
+            case VALVE_5:
+            case VALVE_6:
+            case VALVE_7:
+            case VALVE_8:
+                this.command = property;
+                setActuatorValue(value);
+                break;
+            case DAY_TEMP:
+            case DESIRED_TEMP:
+            case NIGHT_TEMP:
+            case MANU_TEMP:
+            case WINDOW_OPEN_TEMP:
+            case LOW_TEMP_OFFSET:
+                this.command = property;
+                setDesiredTempValue(value);
+                break;
+            case MEASURED_HIGH:
+                this.command = property;
+                setHighTempValue(value);
+                break;
+            case MEASURED_LOW:
+                this.command = property;
+                setLowTempValue(value);
+                break;
+            default:
+                super.setFloat(property, value);
+        }
+    }
+
+    @Override
+    public Set<FhtProperty> getSupportedProperties() {
         return EnumSet.of(command);
+    }
+
+    private void setActuatorValue(float value) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    private void setDesiredTempValue(float value) {
+        rawvalue = Math.round(value * 2.0f);
+    }
+
+    private void setHighTempValue(float value) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    private void setLowTempValue(float value) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    public String getHousecodeStr() {
+        return Fhz1000.houseCodeToString(housecode);
     }
 }

@@ -1,4 +1,4 @@
-package net.sf.fhz4j.scada;
+package net.sf.fhz4j.fht;
 
 /*
  * #%L
@@ -28,49 +28,45 @@ package net.sf.fhz4j.scada;
  * #L%
  */
 
-import java.util.Set;
+import java.io.Serializable;
+import net.sf.fhz4j.FhzProtocol;
+import static net.sf.fhz4j.FhzProtocol.*;
 
 /**
  *
  * @author aploese
  */
-public interface ScadaPropertyProvider<T extends ScadaProperty> {
+public enum FhtDeviceType implements Serializable {
 
-    double getDouble(T property);
+    FHT_8V("FHT V", FHT),
+    FHT_80B("FHT 80B", FHT),
+    UNKNOWN("Unknown", FhzProtocol.UNKNOWN);
 
-    float getFloat(T property);
+    public static FhtDeviceType fromLabel(String label) {
+        for (FhtDeviceType deviceType : values()) {
+            if (deviceType.getLabel().equals(label)) {
+                return deviceType;
+            }
+        }
+        return valueOf(label);
+    }
+    private final String label;
+    private final FhzProtocol protocol;
 
-    long getLong(T property);
+    private FhtDeviceType(String label, FhzProtocol protocol) {
+        this.label = label;
+        this.protocol = protocol;
+    }
 
-    int getInt(T property);
+    public String getLabel() {
+        return label;
+    }
 
-    short getShort(T property);
+    public FhzProtocol getProtocol() {
+        return protocol;
+    }
 
-    byte getByte(T property);
-
-    boolean getBoolean(T property);
-
-    char getChar(T property);
-
-    String getString(T property);
-
-    Time getTime(T property);
-
-    Date getDate(T property);
-
-    Timestamp getTimestamp(T property);
-
-    String asString(T property);
-    
-    double asDouble(T property);
-    
-    long asLong(T property);
-    
-    int asInt(T property);
-    
-    short asShort(T property);
-
-    String toString(T property);
-
-    Set<T> getProperties();
+    public String getName() {
+        return name();
+    }
 }

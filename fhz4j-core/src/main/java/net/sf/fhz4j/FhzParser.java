@@ -27,7 +27,6 @@ package net.sf.fhz4j;
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  * #L%
  */
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashMap;
@@ -42,8 +41,10 @@ import net.sf.atmodem4j.spsw.SerialPortSocket;
 import net.sf.atmodem4j.spsw.StopBits;
 import net.sf.fhz4j.em.EmMessage;
 import net.sf.fhz4j.em.EmParser;
-import net.sf.fhz4j.fht.FhtTempMessage;
+import net.sf.fhz4j.fht.Fht80bModes;
+import net.sf.fhz4j.fht.FhtMultiMsgMessage;
 import net.sf.fhz4j.fht.FhtMessage;
+import net.sf.fhz4j.fht.FhtMultiMsgProperty;
 import net.sf.fhz4j.fht.FhtParser;
 import net.sf.fhz4j.fht.FhtProperty;
 import net.sf.fhz4j.fs20.FS20Parser;
@@ -60,7 +61,7 @@ public class FhzParser extends Parser implements ParserListener {
     public FhzParser(FhzDataListener dataListener) {
         this.dataListener = dataListener;
     }
-    
+
     private static final Logger LOG = Logger.getLogger(LogUtils.FHZ_CORE);
     private InputStream is;
     private final StreamListener streamListener = new StreamListener();
@@ -70,7 +71,7 @@ public class FhzParser extends Parser implements ParserListener {
     private final FhzDataListener dataListener;
 
     private void setState(State state) {
-        LOG.log(Level.FINEST, "Set state from {0} to {1}", new Object[] {this.state, state});
+        LOG.log(Level.FINEST, "Set state from {0} to {1}", new Object[]{this.state, state});
         this.state = state;
     }
 
@@ -114,9 +115,11 @@ public class FhzParser extends Parser implements ParserListener {
     private final FS20Parser fs20Parser = new FS20Parser(this);
     private final FhtParser fhtParser = new FhtParser(this);
     private final HmsParser hmsParser = new HmsParser(this);
-    
+
     private FhzMessage fhzMessage;
-    private final Map<Short, FhtMessage> tempMap = new HashMap<>();
+    private final Map<Short, FhtMessage> fhtTempMap = new HashMap<>();
+    private final Map<Short, FhtMessage> fhtHolidayMap = new HashMap<>();
+    private final Map<Short, FhtMessage> fhtModeMap = new HashMap<>();
 
     @Override
     public void parse(int b) {
@@ -171,7 +174,7 @@ public class FhzParser extends Parser implements ParserListener {
                     parse(b); // ry to recover
                 }
                 if (getStackpos() == 0) {
-                    fhzMessage.setSignalStrength((float)(((float)getByteValue()) / 2.0 - 74));
+                    fhzMessage.setSignalStrength((float) (((float) getByteValue()) / 2.0 - 74));
                     setStackSize(0);
                     setState(State.END_CHAR_0X0D);
                 }
@@ -198,19 +201,50 @@ public class FhzParser extends Parser implements ParserListener {
                         if (fhzMessage instanceof FhtMessage) {
                             final FhtMessage fhtMessage = (FhtMessage) fhzMessage;
                             dataListener.fhtDataParsed(fhtMessage);
-                            if (fhtMessage.getCommand() == FhtProperty.MEASURED_LOW) {
-                                tempMap.put(fhtMessage.getHousecode(), fhtMessage);
-                            }
-                            if (fhtMessage.getCommand() == FhtProperty.MEASURED_HIGH) {
-                                if (tempMap.containsKey(fhtMessage.getHousecode())) {
-                                    final FhtTempMessage temp = new FhtTempMessage(tempMap.remove(fhtMessage.getHousecode()), fhtMessage);
-                                    if (LOG.isLoggable(Level.FINE)) {
-                                        LOG.fine(temp.toString());
+                            switch (fhtMessage.getCommand()) {
+                                case MEASURED_LOW:
+                                    fhtTempMap.put(fhtMessage.getHousecode(), fhtMessage);
+                                    break;
+                                case MEASURED_HIGH:
+                                    if (fhtTempMap.containsKey(fhtMessage.getHousecode())) {
+                                        final FhtMultiMsgMessage temp = new FhtMultiMsgMessage(FhtMultiMsgProperty.TEMP, fhtTempMap.remove(fhtMessage.getHousecode()), fhtMessage);
+                                        if (LOG.isLoggable(Level.FINE)) {
+                                            LOG.fine(temp.toString());
+                                        }
+                                        if (dataListener != null) {
+                                            dataListener.fhtMultiMsgParsed(temp);
+                                        }
                                     }
-                                    if (dataListener != null) {
-                                        dataListener.fhtTempParsed(temp);
+                                    break;
+                                case MODE:
+                                    fhtModeMap.put(fhtMessage.getHousecode(), fhtMessage);
+                                    break;
+                                case HOLIDAY_1:
+                                    fhtHolidayMap.put(fhtMessage.getHousecode(), fhtMessage);
+                                    break;
+                                case HOLIDAY_2:
+                                    if (fhtModeMap.containsKey(fhtMessage.getHousecode())) {
+                                        FhtMultiMsgProperty p;
+                                        switch (Fht80bModes.valueOf(fhtModeMap.get(fhtMessage.getHousecode()).getRawValue())) {
+                                            case HOLIDAY:
+                                                p = FhtMultiMsgProperty.HOLIDAY_END;
+                                                break;
+                                            case PARTY:
+                                                p = FhtMultiMsgProperty.PARTY_END;
+                                                break;
+                                                default: throw new RuntimeException();
+                                        }
+                                        FhtMultiMsgMessage hm = new FhtMultiMsgMessage(p, fhtHolidayMap.remove(fhtMessage.getHousecode()), fhtMessage); 
+                                        if (LOG.isLoggable(Level.FINE)) {
+                                            LOG.fine(hm.toString());
+                                        }
+                                        if (dataListener != null) {
+                                            dataListener.fhtMultiMsgParsed(hm);
+                                        }
                                     }
-                                }
+                                    break;
+                                        
+                                default:
                             }
                         } else if (fhzMessage instanceof HmsMessage) {
                             dataListener.hmsDataParsed((HmsMessage) fhzMessage);

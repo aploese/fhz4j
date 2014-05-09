@@ -30,14 +30,14 @@ package net.sf.fhz4j.fht;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.Collection;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.Set;
 
 import net.sf.fhz4j.scada.DataType;
 import net.sf.fhz4j.scada.ScadaProperty;
-import static net.sf.fhz4j.fht.FhtDeviceTypes.*;
+import static net.sf.fhz4j.fht.FhtDeviceType.*;
 import static net.sf.fhz4j.scada.DataType.*;
 
 /**
@@ -46,15 +46,15 @@ import static net.sf.fhz4j.scada.DataType.*;
  */
 public enum FhtProperty implements Serializable, ScadaProperty {
 
-    VALVE(0x00, "%", FLOAT, FHT_8, FHT_80B),
-    VALVE_1(0x01, "%", FLOAT, FHT_8, FHT_80B),
-    VALVE_2(0x02, "%", FLOAT, FHT_8, FHT_80B),
-    VALVE_3(0x03, "%", FLOAT, FHT_8, FHT_80B),
-    VALVE_4(0x04, "%", FLOAT, FHT_8, FHT_80B),
-    VALVE_5(0x05, "%", FLOAT, FHT_8, FHT_80B),
-    VALVE_6(0x06, "%", FLOAT, FHT_8, FHT_80B),
-    VALVE_7(0x07, "%", FLOAT, FHT_8, FHT_80B),
-    VALVE_8(0x08, "%", FLOAT, FHT_8, FHT_80B),
+    VALVE(0x00, "%", FLOAT, FHT_8V),
+    VALVE_1(0x01, "%", FLOAT, FHT_8V),
+    VALVE_2(0x02, "%", FLOAT, FHT_8V),
+    VALVE_3(0x03, "%", FLOAT, FHT_8V),
+    VALVE_4(0x04, "%", FLOAT, FHT_8V),
+    VALVE_5(0x05, "%", FLOAT, FHT_8V),
+    VALVE_6(0x06, "%", FLOAT, FHT_8V),
+    VALVE_7(0x07, "%", FLOAT, FHT_8V),
+    VALVE_8(0x08, "%", FLOAT, FHT_8V),
     MO_FROM_1(0x14, "", TIME, FHT_80B),
     MO_TO_1(0x15, "", TIME, FHT_80B),
     MO_FROM_2(0x16, "", TIME, FHT_80B),
@@ -84,8 +84,8 @@ public enum FhtProperty implements Serializable, ScadaProperty {
     SUN_FROM_2(0x2e, "", TIME, FHT_80B),
     SUN_TO_2(0x2f, "", TIME, FHT_80B),
     MODE(0x3e, "", SHORT, FHT_80B),
-    HOLIDAY_1(0x3f, "", SHORT, FHT_80B), //# Not verified
-    HOLIDAY_2(0x40, "", SHORT, FHT_80B), //# Not verified
+    HOLIDAY_1(0x3f, "", SHORT, FHT_80B), //raw value if mode == party the time and if mode == holiday the day of month of end
+    HOLIDAY_2(0x40, "", SHORT, FHT_80B), //raw value if mode == party the day of month and if mode == holiday the month of end
     DESIRED_TEMP(0x41, "°C", FLOAT, FHT_80B),
     //  (0xXX, "measured-temp"),		# sum of next. two, never really sent
     MEASURED_LOW(0x42, "°C", FLOAT, FHT_80B),
@@ -110,22 +110,18 @@ public enum FhtProperty implements Serializable, ScadaProperty {
     LOW_TEMP_OFFSET(0x85, "", FLOAT, FHT_80B), //# Alarm-Temp.-Differenz
     WINDOW_OPEN_TEMP(0x8a, "", FLOAT, FHT_80B),
     UNKNOWN_0XFF(0xff, "", BYTE, FHT_80B),
-    UNKNOWN(0xFF, "unknown", BYTE);
+    UNKNOWN(0xFF, "unknown", BYTE, FhtDeviceType.UNKNOWN);
     
     private final byte value;
     private final String unitOfmeasurement;
-    private final Set<FhtDeviceTypes> supportedBy;
+    private final FhtDeviceType targetDevice;
     private final DataType dataType;
         
-    private FhtProperty(int value, String unitOfMeasurement, DataType dataType, FhtDeviceTypes... supportedBy) {
+    private FhtProperty(int value, String unitOfMeasurement, DataType dataType, FhtDeviceType targetDevice) {
         this.value = (byte) value;
         this.unitOfmeasurement = unitOfMeasurement;
         this.dataType = dataType;
-        if (supportedBy.length > 0) {
-            this.supportedBy = EnumSet.copyOf(Arrays.asList(supportedBy));
-        } else {
-            this.supportedBy = EnumSet.noneOf(FhtDeviceTypes.class);
-        }
+        this.targetDevice = targetDevice;
     }
 
     public final static FhtProperty valueOf(int value) {
@@ -165,28 +161,24 @@ public enum FhtProperty implements Serializable, ScadaProperty {
         return unitOfmeasurement;
     }
 
-    public FhtDeviceTypes[] getSupportedBy() {
-        if (supportedBy != null) {
-            return supportedBy.toArray(new FhtDeviceTypes[supportedBy.size()]);
-        } else {
-            return new FhtDeviceTypes[0];
-        }
+    public FhtDeviceType getTagetDevice() {
+        return targetDevice;
     }
 
-    public static FhtProperty[] getFhtPropertiesOf(FhtDeviceTypes type) {
-        List<FhtProperty> result = new ArrayList<>();
+    public static Collection<FhtProperty> getFhtPropertiesOf(FhtDeviceType type) {
+        Set<FhtProperty> result = EnumSet.noneOf(FhtProperty.class);
         for (FhtProperty prop : values()) {
-            if (prop.supportedBy.contains(type)) {
+            if (type == prop.targetDevice) {
                 result.add(prop);
             }
         }
-        return result.toArray(new FhtProperty[result.size()]);
+        return result;
     }
 
-    public static FhtProperty fromLabel(FhtDeviceTypes deviceType, String propertyLabel) {
+    public static FhtProperty fromLabel(FhtDeviceType deviceType, String propertyLabel) {
         switch (deviceType) {
             case FHT_80B:
-            case FHT_8:
+            case FHT_8V:
                 return FhtProperty.fromLabel(propertyLabel);
             default:
                 throw new RuntimeException(String.format("Dont know to hande property %s of : %s", propertyLabel, deviceType));
@@ -201,10 +193,10 @@ public enum FhtProperty implements Serializable, ScadaProperty {
         return result;
     }
 
-    public static String[] getFhtPropertyLabelsOf(FhtDeviceTypes type) {
+    public static String[] getFhtPropertyLabelsOf(FhtDeviceType type) {
         List<String> result = new ArrayList<>();
         for (FhtProperty prop : values()) {
-            if (prop.supportedBy.contains(type)) {
+            if (type == prop.targetDevice) {
                 result.add(prop.getLabel());
             }
         }

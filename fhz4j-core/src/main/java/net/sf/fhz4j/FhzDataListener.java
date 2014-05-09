@@ -29,7 +29,7 @@ package net.sf.fhz4j;
  */
 
 import net.sf.fhz4j.em.EmMessage;
-import net.sf.fhz4j.fht.FhtTempMessage;
+import net.sf.fhz4j.fht.FhtMultiMsgMessage;
 import net.sf.fhz4j.fht.FhtMessage;
 import net.sf.fhz4j.fs20.FS20Message;
 import net.sf.fhz4j.hms.HmsMessage;
@@ -46,7 +46,7 @@ public interface FhzDataListener {
 
     void fhtDataParsed(FhtMessage fhtMessage);
 
-    void fhtTempParsed(FhtTempMessage fhtTempMessage);
+    void fhtMultiMsgParsed(FhtMultiMsgMessage fhtMultiMsgMessage);
 
     void hmsDataParsed(HmsMessage hmsMsg);
 

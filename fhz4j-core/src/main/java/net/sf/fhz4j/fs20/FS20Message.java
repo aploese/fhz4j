@@ -36,23 +36,29 @@ import net.sf.fhz4j.FhzMessage;
  *
  * @author aploese
  */
-public class FS20Message extends FhzMessage<FS20Property> {
+public class FS20Message extends FhzMessage<FS20DeviceType> {
 
     private short housecode;
     private byte offset;
-    private FS20Property property;
+    private FS20DeviceType deviceType;
+    private FS20CommandValues command;
     
     
     @Override
     protected void toString(StringBuilder sb) {
         sb.append("housecode: ").append(Fhz1000.houseCodeToString(housecode));
         sb.append(", offset: ").append(offset);
-        sb.append(", command: ").append(property.getLabel());
+        sb.append(", command: ").append(command.getLabel());
     }
 
     @Override
-    public Set<FS20Property> getProperties() {
-        return EnumSet.of(property); 
+    public byte getByte(FS20DeviceType property) {
+        return command.getValue();
+    }
+
+    @Override
+    public Set<FS20DeviceType> getSupportedProperties() {
+        return EnumSet.of(deviceType); 
     }
 
     /**
@@ -84,17 +90,25 @@ public class FS20Message extends FhzMessage<FS20Property> {
     }
 
     /**
-     * @return the property
+     * @return the command
      */
-    public FS20Property getProperty() {
-        return property;
+    public FS20CommandValues getCommand() {
+        return command;
     }
 
     /**
-     * @param property the property to set
+     * @param command the command to set
      */
-    public void setProperty(FS20Property property) {
-        this.property = property;
+    public void setCommand(FS20CommandValues command) {
+        this.command = command;
+    }
+
+    public FS20DeviceType getDeviceType() {
+        return FS20DeviceType.valueOf(command);
+    }
+
+    public String getHousecodeStr() {
+        return String.format("%04X", housecode);
     }
 
 }

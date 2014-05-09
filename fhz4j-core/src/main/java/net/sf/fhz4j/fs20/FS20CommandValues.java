@@ -28,15 +28,12 @@ package net.sf.fhz4j.fs20;
  * #L%
  */
 import java.io.Serializable;
-import net.sf.fhz4j.scada.DataType;
-import static net.sf.fhz4j.scada.DataType.*;
-import net.sf.fhz4j.scada.ScadaProperty;
 
 /**
  *
  * @author aploese
  */
-public enum FS20Property implements ScadaProperty, Serializable {
+public enum FS20CommandValues implements Serializable {
 
     OFF(0x00, "off"),
     DIM_6_PERCENT(0x01, "dim06%"),
@@ -72,50 +69,35 @@ public enum FS20Property implements ScadaProperty, Serializable {
     ON_100_FOR_TIMER_PREV(0x1f, "on-100-for-timer-prev"); // 100% for timer, then go to previous state
 
     final private String label;
-    final private short value;
+    final private byte value;
 
-    private FS20Property(int value, String label) {
+    private FS20CommandValues(int value, String label) {
         this.label = label;
-        this.value = (short) value;
+        this.value = (byte) value;
     }
 
     /**
      * @return the label
      */
-    @Override
     public String getLabel() {
         return label;
     }
 
-    /**
-     * @return the dataType
-     */
-    @Override
-    public DataType getDataType() {
-        return BYTE;
-    }
-
-    @Override
     public String getName() {
         return name();
     }
 
-    /**
-     * @return the unitOfMeasurement
-     */
-    @Override
-    public String getUnitOfMeasurement() {
-        return "none";
-    }
-
-    public final static FS20Property valueOf(int value) {
-        for (FS20Property prop : values()) {
-            if (prop.value == (byte)value) {
+    public final static FS20CommandValues valueOf(int value) {
+        for (FS20CommandValues prop : values()) {
+            if (prop.value == (byte) value) {
                 return prop;
             }
         }
         return valueOf(String.valueOf(value));
     }
 
+    public byte getValue() {
+        return value;
+    }
 
 }
