@@ -28,9 +28,10 @@ package net.sf.fhz4j.console;
  * #L%
  */
 
+import de.ibapl.spsw.api.SerialPortSocket;
+import de.ibapl.spsw.provider.SerialPortSocketFactoryImpl;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 
 import java.util.Date;
@@ -38,7 +39,6 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import net.sf.atmodem4j.spsw.SerialPortSocket;
 import net.sf.fhz4j.fht.FhtMessage;
 
 import net.sf.fhz4j.hms.HmsMessage;
@@ -171,11 +171,11 @@ public class Main {
      * @param port DOCUMENT ME!
      */
     public static void run(String port) {
-        SerialPortSocket masterPort = null;
+        SerialPortSocket masterPort = SerialPortSocketFactoryImpl.singleton().createSerialPortSocket(port);
         FhzParser p = new FhzParser(new FhzListener());
         FhzWriter w = new FhzWriter();
         try {
-            masterPort = FhzParser.openPort(port);
+            FhzParser.openPort(masterPort);
             p.setInputStream(masterPort.getInputStream());
             w.setOutputStream(masterPort.getOutputStream());
             try {

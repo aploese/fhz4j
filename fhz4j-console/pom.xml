@@ -18,12 +18,8 @@
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>net.sf.atmodem4j</groupId>
-            <artifactId>spsw-java</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>net.sf.atmodem4j</groupId>
-            <artifactId>spsw-nativelibs-bundle</artifactId>
+            <groupId>de.ibapl.spsw</groupId>
+            <artifactId>de.ibapl.spsw.provider</artifactId>
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
@@ -39,49 +35,29 @@
     <build>
         <plugins>
             <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>appassembler-maven-plugin</artifactId>
+                <artifactId>maven-assembly-plugin</artifactId>
+                <version>3.0.0</version>
                 <configuration>
-                    <repositoryLayout>flat</repositoryLayout>
-                    <!-- Include etc/ in the beginning of the classpath declaration in the bin scripts -->
-                    <includeConfigurationDirectoryInClasspath>false</includeConfigurationDirectoryInClasspath>
-                    <!-- prefix all bin files with "fhz" -->
-                    <binPrefix>fhz</binPrefix>
-                    <!-- set alternative assemble directory -->
-                    <assembleDirectory>${project.build.directory}/fhz-console</assembleDirectory>
-                    <!-- Extra JVM arguments that will be included in the bin scripts -->
-                    <extraJvmArguments></extraJvmArguments>
-                    <!-- Generate bin scripts for windows and unix pr default -->
-                    <platforms>
-                        <platform>windows</platform>
-                        <platform>unix</platform>
-                    </platforms>
-                    <programs>
-                        <program>
-                            <mainClass>net.sf.fhz4j.console.Main</mainClass>
-                            <name>console</name>
-                        </program>
-                    </programs>
-                </configuration>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-jar-plugin</artifactId>
-                <configuration>
+                    <descriptorRefs>
+                        <descriptorRef>jar-with-dependencies</descriptorRef>
+                    </descriptorRefs>
                     <archive>
                         <manifest>
-                            <addClasspath>true</addClasspath>
-                            <mainClass>nnet.sf.fhz4j.console.Main</mainClass>
+                            <mainClass>net.sf.fhz4j.console.Main</mainClass>
                         </manifest>
                     </archive>
                 </configuration>
+                <executions>
+                    <execution>
+                        <id>make-assembly</id> <!-- this is used for inheritance merges -->
+                        <phase>package</phase> <!-- bind to the packaging phase -->
+                        <goals>
+                            <goal>single</goal>
+                        </goals>
+                    </execution>
+                </executions>
             </plugin>
         </plugins>
     </build>
 
 </project>
-
-
-
-
-

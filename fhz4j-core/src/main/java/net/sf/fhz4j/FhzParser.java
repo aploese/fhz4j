@@ -33,12 +33,12 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import net.sf.atmodem4j.spsw.Baudrate;
-import net.sf.atmodem4j.spsw.DataBits;
-import net.sf.atmodem4j.spsw.FlowControl;
-import net.sf.atmodem4j.spsw.Parity;
-import net.sf.atmodem4j.spsw.SerialPortSocket;
-import net.sf.atmodem4j.spsw.StopBits;
+import de.ibapl.spsw.api.Baudrate;
+import de.ibapl.spsw.api.DataBits;
+import de.ibapl.spsw.api.FlowControl;
+import de.ibapl.spsw.api.Parity;
+import de.ibapl.spsw.api.SerialPortSocket;
+import de.ibapl.spsw.api.StopBits;
 import net.sf.fhz4j.em.EmMessage;
 import net.sf.fhz4j.em.EmParser;
 import net.sf.fhz4j.fht.Fht80bModes;
@@ -46,7 +46,6 @@ import net.sf.fhz4j.fht.FhtMultiMsgMessage;
 import net.sf.fhz4j.fht.FhtMessage;
 import net.sf.fhz4j.fht.FhtMultiMsgProperty;
 import net.sf.fhz4j.fht.FhtParser;
-import net.sf.fhz4j.fht.FhtProperty;
 import net.sf.fhz4j.fs20.FS20Parser;
 import net.sf.fhz4j.fs20.FS20Message;
 import net.sf.fhz4j.hms.HmsMessage;
@@ -272,19 +271,18 @@ public class FhzParser extends Parser implements ParserListener {
      *
      * @throws IOException DOCUMENT ME!
      */
-    public static SerialPortSocket openPort(String portName) throws IOException {
+    public static SerialPortSocket openPort(final SerialPortSocket serialPortSocket) throws IOException {
 
         // Open the port represented by the CommPortIdentifier object. Give
         // the open call a relatively long timeout of 30 seconds to allow
         // a different application to reliquish the port if the user
         // wants to.
-        LOG.log(Level.FINE, "open port {0}", portName);
+        LOG.log(Level.FINE, "open port {0}", serialPortSocket.getPortName());
 
-        SerialPortSocket sPort = SerialPortSocket.FACTORY.createSerialPortSocket(portName);
-        sPort.openRaw(Baudrate.B9600, DataBits.DB_8, StopBits.SB_2, Parity.EVEN, FlowControl.getFC_NONE());
-        LOG.log(Level.FINE, "port opend {0}", portName);
+        serialPortSocket.openRaw(Baudrate.B9600, DataBits.DB_8, StopBits.SB_2, Parity.EVEN, FlowControl.getFC_NONE());
+        LOG.log(Level.FINE, "port opend {0}", serialPortSocket.getPortName());
 
-        return sPort;
+        return serialPortSocket;
     }
 
     private class StreamListener implements Runnable {

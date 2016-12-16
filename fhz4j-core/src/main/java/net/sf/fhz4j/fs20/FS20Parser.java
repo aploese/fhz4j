@@ -125,10 +125,16 @@ public class FS20Parser extends Parser {
                     return;
                 }
                 if (getStackpos() == 0) {
-                    fs20Message.setCommand(FS20CommandValues.valueOf(getIntValue()));
+                    try {
+                        fs20Message.setCommand(FS20CommandValues.valueOf(getIntValue()));
+                        setState(State.PARSE_SUCCESS);
+                        parserListener.success(fs20Message);
+                    } catch (IllegalArgumentException ex) {
+                        LOG.severe(ex.getMessage());
+                        setState(State.PARSE_ERROR);
+                        parserListener.fail(ex);
+                    }
                     setStackSize(0);
-                    setState(State.PARSE_SUCCESS);
-                    parserListener.success(fs20Message);
                 }
                 break;
 
