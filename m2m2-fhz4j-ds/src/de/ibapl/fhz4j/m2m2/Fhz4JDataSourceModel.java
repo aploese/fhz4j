@@ -4,11 +4,7 @@
  */
 package de.ibapl.fhz4j.m2m2;
 
-import com.fasterxml.jackson.annotation.JsonGetter;
-import com.fasterxml.jackson.annotation.JsonSetter;
-import com.serotonin.m2m2.web.mvc.rest.v1.model.AbstractDataSourceModel;
-import com.serotonin.m2m2.web.mvc.rest.v1.model.time.TimePeriod;
-import com.serotonin.m2m2.web.mvc.rest.v1.model.time.TimePeriodType;
+import com.serotonin.m2m2.web.mvc.rest.v1.model.dataSource.AbstractDataSourceModel;
 
 /**
  * @author Terry Packer

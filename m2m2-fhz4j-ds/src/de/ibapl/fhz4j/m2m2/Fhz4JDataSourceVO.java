@@ -25,9 +25,8 @@ import com.serotonin.m2m2.util.ExportCodes;
 import com.serotonin.m2m2.vo.dataSource.DataSourceVO;
 import com.serotonin.m2m2.vo.dataSource.PointLocatorVO;
 import com.serotonin.m2m2.vo.event.EventTypeVO;
-import com.serotonin.m2m2.web.mvc.rest.v1.model.AbstractDataSourceModel;
-import de.ibapl.spsw.api.SerialPortSocketFactory;
-import de.ibapl.spsw.spi.SerialPortSocketFactoryImpl;
+import com.serotonin.m2m2.web.mvc.rest.v1.model.dataSource.AbstractDataSourceModel;
+import de.ibapl.spsw.provider.SerialPortSocketFactoryImpl;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -197,14 +196,6 @@ public class Fhz4JDataSourceVO extends DataSourceVO<Fhz4JDataSourceVO> {
     @Override
     public AbstractDataSourceModel<?> asModel() {
         return new Fhz4JDataSourceModel(this);
-    }
-
-    @Override
-    protected void addPropertiesImpl(List<TranslatableMessage> list) {
-    }
-
-    @Override
-    protected void addPropertyChangesImpl(List<TranslatableMessage> list, Fhz4JDataSourceVO from) {
     }
 
 }

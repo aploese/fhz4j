@@ -154,12 +154,4 @@ public class Fhz4JPointLocatorVO<T extends ScadaProperty> extends AbstractPointL
         return new Fhz4JPointLocatorModel(this);
     }
     
-    @Override
-    public void addProperties(List<TranslatableMessage> list) {
-    }
-
-    @Override
-    public void addPropertyChanges(List<TranslatableMessage> list, Object o) {
-    }
-
 }

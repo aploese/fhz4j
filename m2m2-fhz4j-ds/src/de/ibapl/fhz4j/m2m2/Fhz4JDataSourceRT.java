@@ -38,7 +38,7 @@ import com.serotonin.m2m2.vo.DataPointVO;
 import com.serotonin.m2m2.vo.hierarchy.PointFolder;
 import com.serotonin.m2m2.vo.hierarchy.PointHierarchy;
 import de.ibapl.spsw.api.SerialPortSocket;
-import de.ibapl.spsw.spi.SerialPortSocketFactoryImpl;
+import de.ibapl.spsw.provider.SerialPortSocketFactoryImpl;
 import java.util.ArrayList;
 import java.util.EnumMap;
 import java.util.HashMap;
@@ -149,11 +149,14 @@ public class Fhz4JDataSourceRT extends DataSourceRT implements FhzDataListener {
                 Thread.sleep(100);
             } catch (InterruptedException ex) {
             }
+            
             writer.initFhz(getVo().getFhzHousecode());
+          
             if (getVo().isFhtMaster()) {
                 writer.initFhtReporting(getFhtDeviceHousecodes());
                 writer.syncFhtClocks(getFhtDeviceHousecodes());
             }
+            
             returnToNormal(DATA_SOURCE_EXCEPTION_EVENT, System.currentTimeMillis());
         } catch (IOException ex) {
             raiseEvent(DATA_SOURCE_EXCEPTION_EVENT, System.currentTimeMillis(), true,
@@ -437,6 +440,9 @@ public class Fhz4JDataSourceRT extends DataSourceRT implements FhzDataListener {
         try {
             final Fhz4JPointLocatorRT locator = (Fhz4JPointLocatorRT) dataPoint.getPointLocator();
             switch (locator.getFhzProtocol()) {
+                case FHT_MULTI_MSG:
+                    setFhtValue(valueTime, (FhtPointLocator) locator.getVo().getProtocolLocator());
+                    break;
                 case FHT:
                     setFhtValue(valueTime, (FhtPointLocator) locator.getVo().getProtocolLocator());
                     break;

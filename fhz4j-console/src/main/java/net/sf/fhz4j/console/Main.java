@@ -27,7 +27,6 @@ package net.sf.fhz4j.console;
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  * #L%
  */
-
 import de.ibapl.spsw.api.SerialPortSocket;
 import de.ibapl.spsw.provider.SerialPortSocketFactoryImpl;
 import java.io.FileNotFoundException;
@@ -37,6 +36,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.function.BiConsumer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import net.sf.fhz4j.fht.FhtMessage;
@@ -67,7 +67,6 @@ import net.sf.fhz4j.fs20.FS20Message;
 public class Main {
 
     private static final Logger LOG = Logger.getLogger(LogUtils.FHZ_CONSOLE);
-
 
     static class FhzListener implements FhzDataListener {
 
@@ -102,15 +101,14 @@ public class Main {
             System.out.println(fs20Msg.toString());
         }
 
-        SimpleDateFormat df =  new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
-        
+        SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+
         private void printTimeStamp() {
             System.out.print(df.format(new Date()));
             System.out.print(": ");
         }
 
     }
-
 
     /**
      * DOCUMENT ME!
@@ -136,6 +134,9 @@ public class Main {
         opt.setType(String.class);
         optg.addOption(opt);
 
+        opt = new Option("s", "scan", false, "scan for serial ports");
+        optg.addOption(opt);
+
         options.addOptionGroup(optg);
 
         opt = null;
@@ -158,12 +159,30 @@ public class Main {
             return;
         }
 
+        if (cmd.hasOption("scan")) {
+            System.out.println("Java Properties:");
+            System.getProperties().forEach(new BiConsumer<Object, Object>() {
+                @Override
+                public void accept(Object key, Object value) {
+                    System.out.printf("\t\"%s\" = \"%s\"\n", key, value);
+                }
+            });
+
+            final Set<String> ports = SerialPortSocketFactoryImpl.singleton().getPortNames(false);
+            System.out.println("Serial ports available");
+            for (String port : ports) {
+                System.out.println("Serial port: " + port);
+            }
+            System.out.println("Done.");
+
+            return;
+        }
+
         Date startTime = new Date();
         run(cmd.getOptionValue("port"));
     }
-    
-    private final static Set<Short> DEVICES_HOME_CODE = new HashSet<>();
 
+    private final static Set<Short> DEVICES_HOME_CODE = new HashSet<>();
 
     /**
      * DOCUMENT ME!
@@ -183,7 +202,7 @@ public class Main {
             } catch (InterruptedException ex) {
                 LOG.log(Level.SEVERE, null, ex);
             }
-            w.initFhz((short)1234);
+            w.initFhz((short) 1234);
         } catch (IOException ex) {
             LOG.log(Level.SEVERE, ex.getMessage(), ex);
             throw new RuntimeException(ex);
@@ -213,7 +232,6 @@ public class Main {
         } catch (InterruptedException ex) {
             LOG.log(Level.SEVERE, null, ex);
         }
-        
 
         try {
             masterPort.close();
