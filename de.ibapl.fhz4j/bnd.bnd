@@ -1,0 +1,7 @@
+Export-Package: \
+ de.ibapl.fhz4j,\
+ de.ibapl.fhz4j.em,\
+ de.ibapl.fhz4j.fht,\
+ de.ibapl.fhz4j.fs20,\
+ de.ibapl.fhz4j.hms,\
+ de.ibapl.fhz4j.scada

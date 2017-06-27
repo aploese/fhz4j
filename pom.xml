@@ -1,42 +1,31 @@
 
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
-    <groupId>net.sf.fhz4j</groupId>
-    <artifactId>fhz4j</artifactId>
+    
+    <groupId>de.ibapl.fhz4j</groupId>
+    <artifactId>fhz4j-project</artifactId>
+    
     <packaging>pom</packaging>
-    <version>0.1.5-SNAPSHOT</version>
-    <name>fhz4j</name>
+    <version>1.0.0-SNAPSHOT</version>
+    <name>FHZ4J Project</name>
     <inceptionYear>2009</inceptionYear>
-    <url>http://fhz4j.sourceforge.net</url>
+    <url>https://github.com/aploese/fhz4j</url>
     <description>fhz For Java</description>
-
-    <parent>
-        <groupId>org.sonatype.oss</groupId>
-        <artifactId>oss-parent</artifactId>
-        <version>9</version>
-    </parent>
-  
-    <!-- Developers and Contributors -->
     <organization>
-        <name>fhz4j</name>
-        <url>http://sourceforge.net/projects/fhz4j/</url>
+        <name>Arne Plöse</name>
     </organization>
+    <!-- Developers and Contributors -->
     <developers>
         <developer>
             <id>apl</id>
             <name>Arne Plöse</name>
-            <email>arnep@users.sourceforge.net</email>
-            <url>http://sourceforge.net/users/arnep/</url>
-            <organization>Sourceforge User</organization>
-            <organizationUrl>http://www.sourceforge.net</organizationUrl>
+            <email>arnep@github.com</email>
+            <url>https://github.com/aploese</url>
             <roles>
                 <role>architect</role>
                 <role>developer</role>
             </roles>
             <timezone>+1</timezone>
-            <!--properties>
-              <picUrl>http://tinyurl.com/prv4t</picUrl>
-            </properties-->
         </developer>
     </developers>
 
@@ -47,39 +36,89 @@
             <distribution>repo</distribution>
         </license>
     </licenses>
+
+    <properties>
+        <project.scm.id>github</project.scm.id>
+        <compile.source>1.8</compile.source>
+        <compile.target>1.8</compile.target>
+        <sourceEncoding>UTF-8</sourceEncoding>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <license.licenseName>fhz4j-lgpl</license.licenseName>
+        <license.licenseResolver>${project.baseUri}/src/license</license.licenseResolver>
+    </properties>
+
     <issueManagement>
-        <system>Sourceforge</system>
-        <url>http://sourceforge.net/tracker/?group_id=294247&amp;atid=1242940</url>
+        <url>https://github.com/aploese/fhz4j/issues</url>
+        <system>GitHub Issues</system>
     </issueManagement>
 
     <scm>
-        <developerConnection>scm:git:ssh://fhz4j.git.sourceforge.net/gitroot/fhz4j/fhz4j</developerConnection>
-        <connection>scm:git://fhz4j.git.sourceforge.net/gitroot/fhz4j/fhz4j</connection>
-        <url>http://fhz4j.git.sourceforge.net/git/gitweb-index.cgi</url>
+        <url>http://github.com/aploese/fhz4j</url>
+        <connection>scm:git:git://github.com/aploese/fhz4j.git</connection>
+        <developerConnection>scm:git:git@github.com:aploese/fhz4j.git</developerConnection>
     </scm>
 
-    <properties>
-        <compile.source>1.7</compile.source>
-        <compile.target>1.7</compile.target>
-        <sourceEncoding>UTF-8</sourceEncoding>
-    </properties>
+    <modules>
+        <module>de.ibapl.fhz4j</module>
+        <module>de.ibapl.fhz4j.console</module>
+        <!--module>m2m2-fhz4j-ds</module-->
+    </modules>
+
+    <repositories>
+        <repository>
+            <id>sonatype-nexus-snapshots</id>
+            <name>Sonatype Nexus Snapshots</name>
+            <url>https://oss.sonatype.org/content/repositories/snapshots</url>
+            <releases>
+                <enabled>false</enabled>
+            </releases>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
+        </repository>
+    </repositories>
+
+    <pluginRepositories>
+        <pluginRepository>
+            <id>bnd-snapshots</id>
+            <url>https://bndtools.ci.cloudbees.com/job/bnd.master/lastSuccessfulBuild/artifact/dist/bundles/</url>
+            <layout>default</layout>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
+        </pluginRepository>
+    </pluginRepositories>
+
+    <distributionManagement>
+        <snapshotRepository>
+            <id>sonatype-nexus-snapshots</id>
+            <name>Sonatype Nexus Snapshots</name>
+            <url>https://oss.sonatype.org/content/repositories/snapshots/</url>
+        </snapshotRepository>
+        <repository>
+            <id>sonatype-nexus-staging</id>
+            <name>Nexus Release Repository</name>
+            <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
+        </repository>
+    </distributionManagement>
+
     <dependencyManagement>
         <dependencies>
             <dependency>
                 <groupId>junit</groupId>
                 <artifactId>junit</artifactId>
-                <version>4.11</version>
+                <version>4.12</version>
                 <scope>test</scope>
             </dependency>
             <dependency>
                 <groupId>de.ibapl.spsw</groupId>
                 <artifactId>de.ibapl.spsw.api</artifactId>
-                <version>1.0.0-SNAPSHOT</version>
+                <version>1.0.0</version>
             </dependency>
             <dependency>
                 <groupId>de.ibapl.spsw</groupId>
                 <artifactId>de.ibapl.spsw.provider</artifactId>
-                <version>1.0.0-SNAPSHOT</version>
+                <version>1.0.0</version>
                 <!--scope>runtime</scope-->
             </dependency>
             <dependency>
@@ -96,19 +135,13 @@
         </dependencies>
     </dependencyManagement>
 
-    <modules>
-        <module>fhz4j-core</module>
-        <module>fhz4j-console</module>
-        <module>m2m2-fhz4j-ds</module>
-    </modules>
-
     <build>
         <pluginManagement>
             <plugins>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-compiler-plugin</artifactId>
-                    <version>3.6.0</version>
+                    <version>3.6.1</version>
                     <configuration>
                         <maxmem>512m</maxmem>
                         <source>${compile.source}</source>
@@ -123,7 +156,7 @@
                 </plugin>
                 <plugin>
                     <artifactId>maven-resources-plugin</artifactId>
-                    <version>3.0.1</version>
+                    <version>3.0.2</version>
                     <configuration>
                         <encoding>${sourceEncoding}</encoding>
                     </configuration>
@@ -132,11 +165,16 @@
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-jar-plugin</artifactId>
                     <version>3.0.2</version>
+                    <configuration>
+                        <archive>
+                            <manifestFile>${project.build.outputDirectory}/META-INF/MANIFEST.MF</manifestFile>
+                        </archive>
+                    </configuration>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-gpg-plugin</artifactId>
-                    <version>1.5</version>
+                    <version>1.6</version>
                     <executions>
                         <execution>
                             <id>sign-artifacts</id>
@@ -150,10 +188,8 @@
                 <plugin>
                     <groupId>org.codehaus.mojo</groupId>
                     <artifactId>license-maven-plugin</artifactId>
-                    <version>1.10</version>
+                    <version>1.13</version>
                     <configuration>
-                        <licenseName>fhz4j-lgpl</licenseName>
-                        <licenseResolver>${project.baseUri}/src/license</licenseResolver>
                         <excludes>
                             <exclude>**/*.txt</exclude>
                             <exclude>**/*.js</exclude>
@@ -165,23 +201,26 @@
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-javadoc-plugin</artifactId>
                     <version>2.10.4</version>
-                    <configuration>
-                        <source>${compile.source}</source>
-                        <target>${compile.target}</target>
-                        <encoding>${sourceEncoding}</encoding>
-                        <links>
-                            <link>http://java.sun.com/j2se/1.7.0/docs/api/</link>
-                        </links>
-                        <maxmemory>256m</maxmemory>
-                        <!--
-                        <aggregate>true</aggregate>
-                        -->
-                    </configuration>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId> 
                     <artifactId>maven-source-plugin</artifactId>
                     <version>3.0.1</version>
+                </plugin>
+                <plugin>
+                    <groupId>biz.aQute.bnd</groupId>
+                    <artifactId>bnd-maven-plugin</artifactId>
+                    <version>3.3.0</version>
+                    <executions>
+                        <execution>
+                            <goals>
+                                <goal>bnd-process</goal>
+                            </goals>
+                        </execution>
+                    </executions>
+                    <configuration>
+                        
+                    </configuration>
                 </plugin>
 
             </plugins>
@@ -191,6 +230,10 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
+            </plugin>
+            <plugin>
+                <groupId>biz.aQute.bnd</groupId>
+                <artifactId>bnd-maven-plugin</artifactId>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
