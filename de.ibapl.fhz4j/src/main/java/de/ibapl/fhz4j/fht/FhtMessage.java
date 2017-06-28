@@ -227,7 +227,7 @@ public class FhtMessage extends FhzMessage<FhtProperty> {
     }
 
     public float getHighTempValue() {
-        return rawvalue * 25;
+        return (float)(25.6f * rawvalue);
     }
 
     public float getActuatorValue() {

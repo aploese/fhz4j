@@ -123,7 +123,7 @@ public class FhzParserTest implements FhzDataListener {
         assertEquals("housecode: 5510, command: measured low, description: from FHT-B data register, value: 0.4°C signal strength: -71.0 dB", fhtMessage.toString());
         decode("T370A43690106\r\n");
         assertNotNull(fhtMessage);
-        assertEquals("housecode: 5510, command: measured high, description: from FHT-B data register, value: 25.0°C signal strength: -71.0 dB", fhtMessage.toString());
+        assertEquals("housecode: 5510, command: measured high, description: from FHT-B data register, value: 25.6°C signal strength: -71.0 dB", fhtMessage.toString());
         assertNotNull(fhtMultiMsgMessage);
         assertEquals("housecode: 5510, measured temperature (combined): 26.0°C", fhtMultiMsgMessage.toString());
     }
