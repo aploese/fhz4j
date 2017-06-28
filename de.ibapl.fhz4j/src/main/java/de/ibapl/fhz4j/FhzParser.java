@@ -27,7 +27,6 @@ package de.ibapl.fhz4j;
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  * #L%
  */
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashMap;
@@ -47,6 +46,7 @@ import de.ibapl.fhz4j.fht.FhtMultiMsgMessage;
 import de.ibapl.fhz4j.fht.FhtMessage;
 import de.ibapl.fhz4j.fht.FhtMultiMsgProperty;
 import de.ibapl.fhz4j.fht.FhtParser;
+import de.ibapl.fhz4j.fht.FhtProperty;
 import de.ibapl.fhz4j.fs20.FS20Parser;
 import de.ibapl.fhz4j.fs20.FS20Message;
 import de.ibapl.fhz4j.hms.HmsMessage;
@@ -203,17 +203,43 @@ public class FhzParser extends Parser implements ParserListener {
                             dataListener.fhtDataParsed(fhtMessage);
                             switch (fhtMessage.getCommand()) {
                                 case MEASURED_LOW:
-                                    fhtTempMap.put(fhtMessage.getHousecode(), fhtMessage);
+                                    if (fhtTempMap.containsKey(fhtMessage.getHousecode())) {
+                                        FhtMessage high = fhtTempMap.get(fhtMessage.getHousecode());
+                                        if (FhtProperty.MEASURED_HIGH == high.getCommand()) {
+                                            fhtTempMap.remove(fhtMessage.getHousecode());
+                                            final FhtMultiMsgMessage temp = new FhtMultiMsgMessage(FhtMultiMsgProperty.TEMP, fhtMessage, high);
+                                            if (LOG.isLoggable(Level.FINE)) {
+                                                LOG.fine(temp.toString());
+                                            }
+                                            if (dataListener != null) {
+                                                dataListener.fhtMultiMsgParsed(temp);
+                                            }
+
+                                        } else {
+                                            fhtTempMap.put(fhtMessage.getHousecode(), fhtMessage);
+                                        }
+                                    } else {
+                                        fhtTempMap.put(fhtMessage.getHousecode(), fhtMessage);
+                                    }
                                     break;
                                 case MEASURED_HIGH:
                                     if (fhtTempMap.containsKey(fhtMessage.getHousecode())) {
-                                        final FhtMultiMsgMessage temp = new FhtMultiMsgMessage(FhtMultiMsgProperty.TEMP, fhtTempMap.remove(fhtMessage.getHousecode()), fhtMessage);
-                                        if (LOG.isLoggable(Level.FINE)) {
-                                            LOG.fine(temp.toString());
+                                        FhtMessage low = fhtTempMap.get(fhtMessage.getHousecode());
+                                        if (FhtProperty.MEASURED_LOW == low.getCommand()) {
+                                            fhtTempMap.remove(fhtMessage.getHousecode());
+                                            final FhtMultiMsgMessage temp = new FhtMultiMsgMessage(FhtMultiMsgProperty.TEMP, low, fhtMessage);
+                                            if (LOG.isLoggable(Level.FINE)) {
+                                                LOG.fine(temp.toString());
+                                            }
+                                            if (dataListener != null) {
+                                                dataListener.fhtMultiMsgParsed(temp);
+                                            }
+
+                                        } else {
+                                            fhtTempMap.put(fhtMessage.getHousecode(), fhtMessage);
                                         }
-                                        if (dataListener != null) {
-                                            dataListener.fhtMultiMsgParsed(temp);
-                                        }
+                                    } else {
+                                        fhtTempMap.put(fhtMessage.getHousecode(), fhtMessage);
                                     }
                                     break;
                                 case MODE:
@@ -232,9 +258,10 @@ public class FhzParser extends Parser implements ParserListener {
                                             case PARTY:
                                                 p = FhtMultiMsgProperty.PARTY_END;
                                                 break;
-                                                default: throw new RuntimeException();
+                                            default:
+                                                throw new RuntimeException();
                                         }
-                                        FhtMultiMsgMessage hm = new FhtMultiMsgMessage(p, fhtHolidayMap.remove(fhtMessage.getHousecode()), fhtMessage); 
+                                        FhtMultiMsgMessage hm = new FhtMultiMsgMessage(p, fhtHolidayMap.remove(fhtMessage.getHousecode()), fhtMessage);
                                         if (LOG.isLoggable(Level.FINE)) {
                                             LOG.fine(hm.toString());
                                         }
@@ -243,7 +270,7 @@ public class FhzParser extends Parser implements ParserListener {
                                         }
                                     }
                                     break;
-                                        
+
                                 default:
                             }
                         } else if (fhzMessage instanceof HmsMessage) {

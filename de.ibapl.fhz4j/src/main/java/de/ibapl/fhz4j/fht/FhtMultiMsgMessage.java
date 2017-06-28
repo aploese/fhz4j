@@ -103,7 +103,7 @@ public class FhtMultiMsgMessage extends AbstractValueAccessor<FhtMultiMsgPropert
     public float getFloat(FhtMultiMsgProperty property) {
         switch (property) {
             case TEMP:
-                return ((float) messages.get(FhtProperty.MEASURED_LOW).getRawValue()) / 10.0f + messages.get(FhtProperty.MEASURED_HIGH).getRawValue() * 25.5f;
+                return ((float) (messages.get(FhtProperty.MEASURED_LOW).getRawValue() + messages.get(FhtProperty.MEASURED_HIGH).getRawValue() * 256) * 0.1f);
             default:
                 return super.getFloat(property);
         }

@@ -162,11 +162,8 @@ public class Main {
 
         if (cmd.hasOption("scan")) {
             System.out.println("Java Properties:");
-            System.getProperties().forEach(new BiConsumer<Object, Object>() {
-                @Override
-                public void accept(Object key, Object value) {
-                    System.out.printf("\t\"%s\" = \"%s\"\n", key, value);
-                }
+            System.getProperties().forEach((Object key, Object value) -> {
+                System.out.printf("\t\"%s\" = \"%s\"\n", key, value);
             });
             final Set<String> ports = SerialPortSocketFactoryImpl.singleton().getPortNames(false);
             System.out.println("Serial ports available");
