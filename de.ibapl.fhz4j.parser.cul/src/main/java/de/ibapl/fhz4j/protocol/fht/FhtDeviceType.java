@@ -1,4 +1,4 @@
-package de.ibapl.fhz4j.fht;
+package de.ibapl.fhz4j.protocol.fht;
 
 /*-
  * #%L
@@ -30,8 +30,8 @@ package de.ibapl.fhz4j.fht;
 
 
 import java.io.Serializable;
-import de.ibapl.fhz4j.FhzProtocol;
-import static de.ibapl.fhz4j.FhzProtocol.*;
+import de.ibapl.fhz4j.api.FhzProtocol;
+import static de.ibapl.fhz4j.api.FhzProtocol.*;
 
 /**
  *

@@ -1,4 +1,4 @@
-package de.ibapl.fhz4j.fs20;
+package de.ibapl.fhz4j.parser.cul;
 
 /*-
  * #%L
@@ -29,11 +29,12 @@ package de.ibapl.fhz4j.fs20;
  */
 
 
-import java.util.logging.Level;
 import java.util.logging.Logger;
 import de.ibapl.fhz4j.LogUtils;
-import de.ibapl.fhz4j.Parser;
-import de.ibapl.fhz4j.ParserListener;
+import de.ibapl.fhz4j.protocol.fs20.FS20CommandValues;
+import de.ibapl.fhz4j.protocol.fs20.FS20Message;
+import de.ibapl.fhz4j.parser.api.Parser;
+import de.ibapl.fhz4j.parser.api.ParserListener;
 
 /**
  *
@@ -44,7 +45,7 @@ public class FS20Parser extends Parser {
     @Override
     public void init() {
         setStackSize(4);
-        setState(State.COLLECT_HOUSECODE);
+        state = State.COLLECT_HOUSECODE;
         fs20Message = new FS20Message();
     }
 
@@ -64,42 +65,36 @@ public class FS20Parser extends Parser {
         this.parserListener = parserListener;
     }
     
-    private static final Logger LOG = Logger.getLogger(LogUtils.FHZ_CORE);
+    private static final Logger LOG = Logger.getLogger(LogUtils.FHZ_PARSER_CUL);
     private final ParserListener parserListener;
     private State state;
     private FS20Message fs20Message;
 
-    private void setState(State state) {
-        LOG.log(Level.FINEST, "Set state from {0} to {1}", new Object[] {this.state, state});
-        this.state = state;
-    }
-
-
     @Override
-    public void parse(int b) {
+    public void parse(char c) {
         switch(state) {
                         //FHT
             case COLLECT_HOUSECODE:
                 try {
-                    push(digit2Int(b));
+                    push(digit2Int(c));
                 } catch (RuntimeException ex) {
-                    LOG.warning(String.format("Collect housecode - Wrong char: 0x%02x %s", b, (char) b));
-                    setState(State.PARSE_ERROR);
+                    LOG.warning(String.format("Collect housecode - Wrong char: 0x%02x %s", (byte)c, c));
+                    state = State.PARSE_ERROR;
                     parserListener.fail(fs20Message);
                     return;
                 }
                 if (getStackpos() == 0) {
                     fs20Message.setHousecode(getShortValue());
                     setStackSize(2);
-                    setState(State.COLLECT_OFFSET);
+                    state = State.COLLECT_OFFSET;
                 }
                 break;
             case COLLECT_OFFSET:
                 try {
-                    push(digit2Int(b));
+                    push(digit2Int(c));
                 } catch (RuntimeException ex) {
-                    LOG.warning(String.format("Collect command - Wrong char: 0x%02x %s", b, (char) b));
-                    setState(State.PARSE_ERROR);
+                    LOG.warning(String.format("Collect command - Wrong char: 0x%02x %s", (byte)c, c));
+                    state = State.PARSE_ERROR;
                     parserListener.fail(fs20Message);
                     return;
                 }
@@ -108,31 +103,31 @@ public class FS20Parser extends Parser {
                         fs20Message.setOffset(getByteValue());
                     } catch (Exception ex) {
                         LOG.warning(String.format("Wrong Command - Wrong number: 0x%04x", getIntValue()));
-                        setState(State.PARSE_ERROR);
+                        state = State.PARSE_ERROR;
                     parserListener.fail(fs20Message);
                     return;
                     }
                     setStackSize(2);
-                    setState(State.COLLECT_COMMAND);
+                    state = State.COLLECT_COMMAND;
                 }
                 break;
             case COLLECT_COMMAND:
                 try {
-                    push(digit2Int(b));
+                    push(digit2Int(c));
                 } catch (RuntimeException ex) {
-                    LOG.warning(String.format("Collect origin - Wrong char: 0x%02x %s", b, (char) b));
-                    setState(State.PARSE_ERROR);
+                    LOG.warning(String.format("Collect origin - Wrong char: 0x%02x %s", (byte)c, c));
+                    state = State.PARSE_ERROR;
                     parserListener.fail(fs20Message);
                     return;
                 }
                 if (getStackpos() == 0) {
                     try {
                         fs20Message.setCommand(FS20CommandValues.valueOf(getIntValue()));
-                        setState(State.PARSE_SUCCESS);
+                        state = State.PARSE_SUCCESS;
                         parserListener.success(fs20Message);
                     } catch (IllegalArgumentException ex) {
                         LOG.severe(ex.getMessage());
-                        setState(State.PARSE_ERROR);
+                        state = State.PARSE_ERROR;
                         parserListener.fail(ex);
                     }
                     setStackSize(0);

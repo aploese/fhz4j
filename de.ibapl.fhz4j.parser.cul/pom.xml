@@ -11,9 +11,10 @@
         <license.licenseResolver>${project.baseUri}/../src/license</license.licenseResolver>
     </properties>
 
-    <artifactId>de.ibapl.fhz4j</artifactId>
+    <artifactId>de.ibapl.fhz4j.parser.cul</artifactId>
     <packaging>jar</packaging>
-    <name>FHZ4J Core</name>
+    <name>FHZ4J Parser CUL</name>
+    <description>FHZ4J Bundle for the www.busware.de CUL RF adapter</description>
 
     <dependencies>
         <dependency>

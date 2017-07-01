@@ -1,4 +1,4 @@
-package de.ibapl.fhz4j.fht;
+package de.ibapl.fhz4j.protocol.fht;
 
 /*-
  * #%L
@@ -38,7 +38,7 @@ import java.util.Set;
 
 import de.ibapl.fhz4j.scada.DataType;
 import de.ibapl.fhz4j.scada.ScadaProperty;
-import static de.ibapl.fhz4j.fht.FhtDeviceType.*;
+import static de.ibapl.fhz4j.protocol.fht.FhtDeviceType.*;
 import static de.ibapl.fhz4j.scada.DataType.*;
 
 /**

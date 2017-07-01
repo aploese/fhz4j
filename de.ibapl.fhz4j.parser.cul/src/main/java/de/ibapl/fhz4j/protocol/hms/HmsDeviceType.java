@@ -1,4 +1,4 @@
-package de.ibapl.fhz4j.hms;
+package de.ibapl.fhz4j.protocol.hms;
 
 /*-
  * #%L
@@ -31,9 +31,8 @@ package de.ibapl.fhz4j.hms;
 
 import java.util.Arrays;
 import java.util.EnumSet;
-import java.util.HashSet;
 import java.util.Set;
-import static de.ibapl.fhz4j.hms.HmsProperty.*;
+import static de.ibapl.fhz4j.protocol.hms.HmsProperty.*;
 
 /**
  *

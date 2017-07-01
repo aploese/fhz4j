@@ -1,4 +1,4 @@
-package de.ibapl.fhz4j;
+package de.ibapl.fhz4j.parser.api;
 
 /*-
  * #%L
@@ -46,8 +46,8 @@ public abstract class Parser {
         return stackpos;
     }
 
-    protected  int digit2Int(int i) {
-        switch ((char) i) {
+    public static int digit2Int(char c) {
+        switch (c) {
             case '0':
                 return 0x00;
             case '1':
@@ -81,7 +81,7 @@ public abstract class Parser {
             case 'F':
                 return 0x0f;
             default:
-                throw new RuntimeException("Not a Number: " + (char) i);
+                throw new RuntimeException("Not a Number: " + c);
         }
     }
 
@@ -107,7 +107,7 @@ public abstract class Parser {
         return value;
     }
 
-    public abstract void parse(int b);
+    public abstract void parse(char c);
     
     public abstract void init();
     

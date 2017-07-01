@@ -28,7 +28,7 @@
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>de.ibapl.fhz4j</artifactId>
+            <artifactId>de.ibapl.fhz4j.parser.cul</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>

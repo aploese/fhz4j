@@ -1,4 +1,4 @@
-package de.ibapl.fhz4j;
+package de.ibapl.fhz4j.parser.cul;
 
 /*-
  * #%L
@@ -27,6 +27,9 @@ package de.ibapl.fhz4j;
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  * #L%
  */
+import de.ibapl.fhz4j.LogUtils;
+import de.ibapl.fhz4j.api.FhzDataListener;
+import de.ibapl.fhz4j.api.FhzMessage;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashMap;
@@ -39,41 +42,39 @@ import de.ibapl.spsw.api.FlowControl;
 import de.ibapl.spsw.api.Parity;
 import de.ibapl.spsw.api.SerialPortSocket;
 import de.ibapl.spsw.api.StopBits;
-import de.ibapl.fhz4j.em.EmMessage;
-import de.ibapl.fhz4j.em.EmParser;
-import de.ibapl.fhz4j.fht.Fht80bModes;
-import de.ibapl.fhz4j.fht.FhtMultiMsgMessage;
-import de.ibapl.fhz4j.fht.FhtMessage;
-import de.ibapl.fhz4j.fht.FhtMultiMsgProperty;
-import de.ibapl.fhz4j.fht.FhtParser;
-import de.ibapl.fhz4j.fht.FhtProperty;
-import de.ibapl.fhz4j.fs20.FS20Parser;
-import de.ibapl.fhz4j.fs20.FS20Message;
-import de.ibapl.fhz4j.hms.HmsMessage;
-import de.ibapl.fhz4j.hms.HmsParser;
+import de.ibapl.fhz4j.protocol.em.EmMessage;
+import de.ibapl.fhz4j.protocol.fht.Fht80bModes;
+import de.ibapl.fhz4j.protocol.fht.FhtMultiMsgMessage;
+import de.ibapl.fhz4j.protocol.fht.FhtMessage;
+import de.ibapl.fhz4j.protocol.fht.FhtMultiMsgProperty;
+import de.ibapl.fhz4j.protocol.fht.FhtProperty;
+import de.ibapl.fhz4j.protocol.fs20.FS20Message;
+import de.ibapl.fhz4j.protocol.hms.HmsMessage;
+import de.ibapl.fhz4j.protocol.lacrosse.tx2.LaCrosseTx2Message;
+import de.ibapl.fhz4j.parser.api.Parser;
+import de.ibapl.fhz4j.parser.api.ParserListener;
+import de.ibapl.fhz4j.scada.ScadaProperty;
 
 /**
+ * Parses CUL from www.busware.de
+ * Commands see http://culfw.de/commandref.html
+ * partial implemented.
  *
  * @author aploese
  */
-public class FhzParser extends Parser implements ParserListener {
+public class CulParser extends Parser implements ParserListener {
 
-    public FhzParser(FhzDataListener dataListener) {
+    public CulParser(FhzDataListener dataListener) {
         this.dataListener = dataListener;
     }
 
-    private static final Logger LOG = Logger.getLogger(LogUtils.FHZ_CORE);
+    private static final Logger LOG = Logger.getLogger(LogUtils.FHZ_PARSER_CUL);
     private InputStream is;
     private final StreamListener streamListener = new StreamListener();
     private Thread t;
     private boolean closed;
     private final Object closeLock = new Object();
     private final FhzDataListener dataListener;
-
-    private void setState(State state) {
-        LOG.log(Level.FINEST, "Set state from {0} to {1}", new Object[]{this.state, state});
-        this.state = state;
-    }
 
     /**
      * @return the dataListener
@@ -88,15 +89,15 @@ public class FhzParser extends Parser implements ParserListener {
     }
 
     @Override
-    public void success(FhzMessage fhzMessage) {
+    public void success(FhzMessage<? extends ScadaProperty> fhzMessage) {
         this.fhzMessage = fhzMessage;
         setStackSize(2);
-        setState(State.SINGNAL_STRENGTH);
+        state = State.SINGNAL_STRENGTH;
     }
 
     @Override
     public void fail(Object o) {
-        setState(State.IDLE);
+        state = State.IDLE;
     }
 
     private enum State {
@@ -106,6 +107,7 @@ public class FhzParser extends Parser implements ParserListener {
         FS20_PARSING,
         FHT_PARSING,
         HMS_PARSING,
+        LA_CROSSE_TX2_PARSING,
         SINGNAL_STRENGTH,
         END_CHAR_0X0D,
         END_CHAR_0X0A;
@@ -115,82 +117,90 @@ public class FhzParser extends Parser implements ParserListener {
     private final FS20Parser fs20Parser = new FS20Parser(this);
     private final FhtParser fhtParser = new FhtParser(this);
     private final HmsParser hmsParser = new HmsParser(this);
+    private final LaCrosseTx2Parser laCrosseTx2Parser = new LaCrosseTx2Parser(this);
 
-    private FhzMessage fhzMessage;
+    private FhzMessage<? extends ScadaProperty> fhzMessage;
     private final Map<Short, FhtMessage> fhtTempMap = new HashMap<>();
     private final Map<Short, FhtMessage> fhtHolidayMap = new HashMap<>();
     private final Map<Short, FhtMessage> fhtModeMap = new HashMap<>();
 
     @Override
-    public void parse(int b) {
+    public void parse(char c) {
 //        LOG.info(String.format("XXX 0x%02X, %s", b, (char) b));
         switch (state) {
             case IDLE:
-                switch ((char) b) {
+                switch (c) {
                     case 'E':
                         emParser.init();
-                        setState(State.EM_PARSING);
+                        state = State.EM_PARSING;
                         break;
                     case 'F':
                         fs20Parser.init();
-                        setState(State.FS20_PARSING);
+                        state = State.FS20_PARSING;
                         break;
                     case 'T':
                         fhtParser.init();
-                        setState(State.FHT_PARSING);
+                        state = State.FHT_PARSING;
                         break;
                     case 'H':
                         hmsParser.init();
-                        setState(State.HMS_PARSING);
+                        state = State.HMS_PARSING;
+                        break;
+                    case 't':
+                        laCrosseTx2Parser.init();
+                        state = State.LA_CROSSE_TX2_PARSING;
                         break;
                     default:
-                        LOG.fine(String.format("Discarted: 0x%02x %s", b, (char) b));
+                        LOG.fine(String.format("Discarted: 0x%02x %s", (byte)c, c));
                 }
                 break;
             case EM_PARSING:
-                emParser.parse(b);
+                emParser.parse(c);
                 break;
             case FS20_PARSING:
-                fs20Parser.parse(b);
+                fs20Parser.parse(c);
                 break;
             case FHT_PARSING:
-                fhtParser.parse(b);
+                fhtParser.parse(c);
                 break;
             case HMS_PARSING:
-                hmsParser.parse(b);
+                hmsParser.parse(c);
+                break;
+            case LA_CROSSE_TX2_PARSING:
+                laCrosseTx2Parser.parse(c);
                 break;
 
             case SINGNAL_STRENGTH:
-                if (b == '\r') {
+                if (c == '\r') {
                     setStackSize(0);
-                    setState(State.END_CHAR_0X0A);
+                    state = State.END_CHAR_0X0A;
                     break;
                 }
                 try {
-                    push(digit2Int(b));
+                    push(digit2Int(c));
                 } catch (RuntimeException ex) {
-                    LOG.severe(String.format("Signal strenght - Wrong char: 0x%02x %s", b, (char) b));
-                    setState(State.IDLE);
-                    parse(b); // ry to recover
+                    LOG.severe(String.format("Signal strenght - Wrong char: 0x%02x %s", (byte)c, c));
+                    state = State.IDLE;
+                    parse(c); // try to recover
                 }
                 if (getStackpos() == 0) {
                     fhzMessage.setSignalStrength((float) (((float) getByteValue()) / 2.0 - 74));
                     setStackSize(0);
-                    setState(State.END_CHAR_0X0D);
+                    state = State.END_CHAR_0X0D;
                 }
                 break;
 
             case END_CHAR_0X0D:
-                if (b == '\r') {
-                    setState(State.END_CHAR_0X0A);
+                if (c == '\r') {
+                    state = State.END_CHAR_0X0A;
                 } else {
                     //ERRORhandling
-                    setState(State.IDLE);
+                    state = State.IDLE;
                 }
                 break;
             case END_CHAR_0X0A:
-                if (b == '\n') {
-                    setState(State.IDLE);
+                if (c == '\n') {
+                    state = State.IDLE;
                     if (LOG.isLoggable(Level.FINE)) {
                         if (fhzMessage != null) {
                             LOG.fine(fhzMessage.toString());
@@ -279,12 +289,14 @@ public class FhzParser extends Parser implements ParserListener {
                             dataListener.emDataParsed((EmMessage) fhzMessage);
                         } else if (fhzMessage instanceof FS20Message) {
                             dataListener.fs20DataParsed((FS20Message) fhzMessage);
+                        } else if (fhzMessage instanceof LaCrosseTx2Message) {
+                            dataListener.laCrosseTxParsed((LaCrosseTx2Message) fhzMessage);
                         }
                     }
                 } else {
                     //ERRORhandling ???
-                    setState(State.IDLE);
-                    parse(b); // try to recover
+                    state = State.IDLE;
+                    parse(c); // try to recover
                 }
             default:
         }
@@ -327,7 +339,7 @@ public class FhzParser extends Parser implements ParserListener {
                             theData = is.read();
 
                             if (theData > -1) {
-                                parse(theData);
+                                parse((char)theData);
                             }
 
                         } catch (NullPointerException npe) {

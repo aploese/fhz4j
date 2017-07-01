@@ -1,4 +1,4 @@
-package de.ibapl.fhz4j.em;
+package de.ibapl.fhz4j.protocol.em;
 
 /*-
  * #%L
@@ -28,8 +28,8 @@ package de.ibapl.fhz4j.em;
  * #L%
  */
 
+import de.ibapl.fhz4j.api.FhzMessage;
 import java.util.Set;
-import de.ibapl.fhz4j.FhzMessage;
 
 /**
  *
@@ -84,19 +84,19 @@ public abstract class EmMessage extends FhzMessage<EmProperty> {
      * 
      * @param cummulatedValue the raw value from parser
      */
-    abstract void setCumulatedValue(int cummulatedValue);
+    public abstract void setCumulatedValue(int cummulatedValue);
 
     /**
      * 
      * @param lastValue the raw value from parser
      */
-    abstract void setLastValue(int lastValue);
+    public abstract void setLastValue(int lastValue);
 
     /**
      * 
      * @param maxLastValue the raw value from parser
      */
-    abstract void setMaxLastValue(int maxLastValue);
+    public abstract void setMaxLastValue(int maxLastValue);
 
     @Override
     public Set<EmProperty> getSupportedProperties() {

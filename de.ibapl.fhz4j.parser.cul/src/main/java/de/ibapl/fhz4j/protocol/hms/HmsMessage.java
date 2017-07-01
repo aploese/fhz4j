@@ -1,4 +1,4 @@
-package de.ibapl.fhz4j.hms;
+package de.ibapl.fhz4j.protocol.hms;
 
 /*-
  * #%L
@@ -31,7 +31,7 @@ package de.ibapl.fhz4j.hms;
 
 import java.util.EnumSet;
 import java.util.Set;
-import de.ibapl.fhz4j.FhzMessage;
+import de.ibapl.fhz4j.api.FhzMessage;
 
 /**
  *

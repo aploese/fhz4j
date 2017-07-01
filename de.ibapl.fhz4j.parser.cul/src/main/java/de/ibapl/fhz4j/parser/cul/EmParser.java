@@ -1,4 +1,4 @@
-package de.ibapl.fhz4j.em;
+package de.ibapl.fhz4j.parser.cul;
 
 /*-
  * #%L
@@ -28,11 +28,14 @@ package de.ibapl.fhz4j.em;
  * #L%
  */
 
-import java.util.logging.Level;
 import java.util.logging.Logger;
 import de.ibapl.fhz4j.LogUtils;
-import de.ibapl.fhz4j.Parser;
-import de.ibapl.fhz4j.ParserListener;
+import de.ibapl.fhz4j.protocol.em.Em1000EmMessage;
+import de.ibapl.fhz4j.protocol.em.Em1000GzMessage;
+import de.ibapl.fhz4j.protocol.em.Em1000SMessage;
+import de.ibapl.fhz4j.protocol.em.EmMessage;
+import de.ibapl.fhz4j.parser.api.Parser;
+import de.ibapl.fhz4j.parser.api.ParserListener;
 
 /**
  *
@@ -55,7 +58,7 @@ public class EmParser extends Parser {
     @Override
     public void init() {
         setStackSize(2);
-        setState(State.COLLECT_TYPE);
+        state = State.COLLECT_TYPE;
         emMessage = null;
     }
 
@@ -81,25 +84,20 @@ public class EmParser extends Parser {
         this.parserListener = parserListener;
     }
 
-    private static final Logger LOG = Logger.getLogger(LogUtils.FHZ_CORE);
+    private static final Logger LOG = Logger.getLogger(LogUtils.FHZ_PARSER_CUL);
     private final ParserListener parserListener;
     private State state;
     private EmMessage emMessage;
 
-    private void setState(State state) {
-        LOG.log(Level.FINEST, "Set state from {0} to {1}", new Object[]{this.state, state});
-        this.state = state;
-    }
-
     @Override
-    public void parse(int b) {
+    public void parse(char c) {
         switch (state) {
             case COLLECT_TYPE:
                 try {
-                    push(digit2Int(b));
+                    push(digit2Int(c));
                 } catch (RuntimeException ex) {
-                    LOG.warning(String.format("Collect type - Wrong char: 0x%02x %s", b, (char) b));
-                    setState(State.PARSE_ERROR);
+                    LOG.warning(String.format("Collect type - Wrong char: 0x%02x %s", (byte)c, c));
+                    state = State.PARSE_ERROR;
                     parserListener.fail(emMessage);
                     return;
                 }
@@ -115,21 +113,21 @@ public class EmParser extends Parser {
                             emMessage = new Em1000GzMessage();
                             break;
                         default:
-                            LOG.warning(String.format("Collect command - Wrong char: 0x%02x %s", b, (char) b));
-                            setState(State.PARSE_ERROR);
+                            LOG.warning(String.format("Collect command - Wrong char: 0x%02x %s", (byte)c, c));
+                            state = State.PARSE_ERROR;
                             parserListener.fail(emMessage);
                             return;
                     }
                     setStackSize(2);
-                    setState(State.COLLECT_ADDRESS);
+                    state = State.COLLECT_ADDRESS;
                 }
                 break;
             case COLLECT_ADDRESS:
                 try {
-                    push(digit2Int(b));
+                    push(digit2Int(c));
                 } catch (RuntimeException ex) {
-                    LOG.warning(String.format("Collect address - Wrong char: 0x%02x %s", b, (char) b));
-                    setState(State.PARSE_ERROR);
+                    LOG.warning(String.format("Collect address - Wrong char: 0x%02x %s", (byte)c, c));
+                    state = State.PARSE_ERROR;
                     parserListener.fail(emMessage);
                     return;
                 }
@@ -138,72 +136,72 @@ public class EmParser extends Parser {
                         emMessage.setAddress(getShortValue());
                     } catch (Exception ex) {
                         LOG.warning(String.format("Wrong address - Wrong number: 0x%02x", getShortValue()));
-                        setState(State.PARSE_ERROR);
+                        state = State.PARSE_ERROR;
                         parserListener.fail(emMessage);
                         return;
                     }
                     setStackSize(2);
-                    setState(State.COLLECT_COUNTER);
+                    state = State.COLLECT_COUNTER;
                 }
                 break;
             case COLLECT_COUNTER:
                 try {
-                    push(digit2Int(b));
+                    push(digit2Int(c));
                 } catch (RuntimeException ex) {
-                    LOG.warning(String.format("Collect counter - Wrong char: 0x%02x %s", b, (char) b));
-                    setState(State.PARSE_ERROR);
+                    LOG.warning(String.format("Collect counter - Wrong char: 0x%02x %s", (byte)c, c));
+                    state = State.PARSE_ERROR;
                     parserListener.fail(emMessage);
                     return;
                 }
                 if (getStackpos() == 0) {
                     emMessage.setCounter(getShortValue());
                     setStackSize(4);
-                    setState(State.COLLECT_CUMULATED_VALUE);
+                    state = State.COLLECT_CUMULATED_VALUE;
                 }
                 break;
             case COLLECT_CUMULATED_VALUE:
                 try {
-                    push(digit2Int(b));
+                    push(digit2Int(c));
                 } catch (RuntimeException ex) {
-                    LOG.warning(String.format("Collect cumulated value - Wrong char: 0x%02x %s", b, (char) b));
-                    setState(State.PARSE_ERROR);
+                    LOG.warning(String.format("Collect cumulated value - Wrong char: 0x%02x %s", (byte)c, c));
+                    state = State.PARSE_ERROR;
                     parserListener.fail(emMessage);
                     return;
                 }
                 if (getStackpos() == 0) {
                     emMessage.setCumulatedValue(reorderBytes(getIntValue()));
                     setStackSize(4);
-                    setState(State.COLLECT_LAST_VALUE);
+                    state = State.COLLECT_LAST_VALUE;
                 }
                 break;
             case COLLECT_LAST_VALUE:
                 try {
-                    push(digit2Int(b));
+                    push(digit2Int(c));
                 } catch (RuntimeException ex) {
-                    LOG.warning(String.format("Collect last value - Wrong char: 0x%02x %s", b, (char) b));
-                    setState(State.PARSE_ERROR);
+                    LOG.warning(String.format("Collect last value - Wrong char: 0x%02x %s", (byte)c, c));
+                    state = State.PARSE_ERROR;
                     parserListener.fail(emMessage);
                     return;
                 }
                 if (getStackpos() == 0) {
                     emMessage.setLastValue(reorderBytes(getIntValue()));
                     setStackSize(4);
-                    setState(State.COLLECT_LAST_MAX_VALUE);
+                    state = State.COLLECT_LAST_MAX_VALUE;
                 }
                 break;
             case COLLECT_LAST_MAX_VALUE:
                 try {
-                    push(digit2Int(b));
+                    push(digit2Int(c));
                 } catch (RuntimeException ex) {
-                    LOG.warning(String.format("Collect top value - Wrong char: 0x%02x %s", b, (char) b));
-                    setState(State.PARSE_ERROR);
+                    LOG.warning(String.format("Collect top value - Wrong char: 0x%02x %s", (byte)c, c));
+                    state = State.PARSE_ERROR;
                     parserListener.fail(emMessage);
                     return;
                 }
                 if (getStackpos() == 0) {
                     emMessage.setMaxLastValue(reorderBytes(getIntValue()));
                     setStackSize(2);
-                    setState(State.PARSE_SUCCESS);
+                    state = State.PARSE_SUCCESS;
                     parserListener.success(emMessage);
                 }
                 break;

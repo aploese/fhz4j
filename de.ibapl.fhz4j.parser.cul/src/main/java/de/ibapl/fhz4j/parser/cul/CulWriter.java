@@ -1,4 +1,4 @@
-package de.ibapl.fhz4j;
+package de.ibapl.fhz4j.parser.cul;
 
 /*-
  * #%L
@@ -28,22 +28,24 @@ package de.ibapl.fhz4j;
  * #L%
  */
 
+import de.ibapl.fhz4j.Fhz1000;
+import de.ibapl.fhz4j.LogUtils;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import de.ibapl.fhz4j.fht.FhtMessage;
-import de.ibapl.fhz4j.fht.FhtProperty;
+import de.ibapl.fhz4j.protocol.fht.FhtMessage;
+import de.ibapl.fhz4j.protocol.fht.FhtProperty;
 
 /**
  *
  * @author aploese
  */
-public class FhzWriter {
+public class CulWriter {
 
-    private final static Logger LOG = Logger.getLogger(LogUtils.FHZ_CORE);
+    private final static Logger LOG = Logger.getLogger(LogUtils.FHZ_PARSER_CUL);
     final static byte INIT_MSG_PACKAGE_OK = 0x01;
     final static byte INIT_MSG_ALL_REPEATED = 0x02;
     final static byte INIT_MSG_REPORT_ALL = 0x04;

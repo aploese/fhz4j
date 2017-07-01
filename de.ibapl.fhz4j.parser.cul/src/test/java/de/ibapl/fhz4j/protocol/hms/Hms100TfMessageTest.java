@@ -1,4 +1,4 @@
-package de.ibapl.fhz4j.hms;
+package de.ibapl.fhz4j.protocol.hms;
 
 /*-
  * #%L

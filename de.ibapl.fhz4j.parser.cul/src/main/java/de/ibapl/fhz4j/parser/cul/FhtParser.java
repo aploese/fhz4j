@@ -1,4 +1,4 @@
-package de.ibapl.fhz4j.fht;
+package de.ibapl.fhz4j.parser.cul;
 
 /*-
  * #%L
@@ -29,11 +29,12 @@ package de.ibapl.fhz4j.fht;
  */
 
 
-import java.util.logging.Level;
 import java.util.logging.Logger;
 import de.ibapl.fhz4j.LogUtils;
-import de.ibapl.fhz4j.Parser;
-import de.ibapl.fhz4j.ParserListener;
+import de.ibapl.fhz4j.protocol.fht.FhtMessage;
+import de.ibapl.fhz4j.protocol.fht.FhtProperty;
+import de.ibapl.fhz4j.parser.api.Parser;
+import de.ibapl.fhz4j.parser.api.ParserListener;
 
 /**
  *
@@ -44,7 +45,7 @@ public class FhtParser extends Parser {
     @Override
     public void init() {
         setStackSize(4);
-        setState(State.COLLECT_HOUSECODE);
+        state = State.COLLECT_HOUSECODE;
         fhtMessage = new FhtMessage();
     }
 
@@ -65,42 +66,36 @@ public class FhtParser extends Parser {
         this.parserListener = parserListener;
     }
     
-    private static final Logger LOG = Logger.getLogger(LogUtils.FHZ_CORE);
+    private static final Logger LOG = Logger.getLogger(LogUtils.FHZ_PARSER_CUL);
     private final ParserListener parserListener;
     private State state;
     private FhtMessage fhtMessage;
 
-    private void setState(State state) {
-        LOG.log(Level.FINEST, "Set state from {0} to {1}", new Object[] {this.state, state});
-        this.state = state;
-    }
-
-
     @Override
-    public void parse(int b) {
+    public void parse(char c) {
         switch(state) {
                         //FHT
             case COLLECT_HOUSECODE:
                 try {
-                    push(digit2Int(b));
+                    push(digit2Int(c));
                 } catch (RuntimeException ex) {
-                    LOG.warning(String.format("Collect housecode - Wrong char: 0x%02x %s", b, (char) b));
-                    setState(State.PARSE_ERROR);
+                    LOG.warning(String.format("Collect housecode - Wrong char: 0x%02x %s", (byte)c, c));
+                    state = State.PARSE_ERROR;
                     parserListener.fail(fhtMessage);
                     return;
                 }
                 if (getStackpos() == 0) {
                     fhtMessage.setHousecode(getShortValue());
                     setStackSize(2);
-                    setState(State.COLLECT_COMMAND);
+                    state = State.COLLECT_COMMAND;
                 }
                 break;
             case COLLECT_COMMAND:
                 try {
-                    push(digit2Int(b));
+                    push(digit2Int(c));
                 } catch (RuntimeException ex) {
-                    LOG.warning(String.format("Collect command - Wrong char: 0x%02x %s", b, (char) b));
-                    setState(State.PARSE_ERROR);
+                    LOG.warning(String.format("Collect command - Wrong char: 0x%02x %s", (byte)c, c));
+                    state = State.PARSE_ERROR;
                     parserListener.fail(fhtMessage);
                     return;
                 }
@@ -109,42 +104,42 @@ public class FhtParser extends Parser {
                         fhtMessage.setCommand(FhtProperty.valueOf(getIntValue()));
                     } catch (Exception ex) {
                         LOG.warning(String.format("Wrong Command - Wrong number: 0x%04x", getIntValue()));
-                        setState(State.PARSE_ERROR);
+                        state = State.PARSE_ERROR;
                     parserListener.fail(fhtMessage);
                     return;
                     }
                     setStackSize(2);
-                    setState(State.COLLECT_ORIGIN);
+                    state = State.COLLECT_ORIGIN;
                 }
                 break;
             case COLLECT_ORIGIN:
                 try {
-                    push(digit2Int(b));
+                    push(digit2Int(c));
                 } catch (RuntimeException ex) {
-                    LOG.warning(String.format("Collect origin - Wrong char: 0x%02x %s", b, (char) b));
-                    setState(State.PARSE_ERROR);
+                    LOG.warning(String.format("Collect origin - Wrong char: 0x%02x %s", (byte)c, c));
+                    state = State.PARSE_ERROR;
                     parserListener.fail(fhtMessage);
                     return;
                 }
                 if (getStackpos() == 0) {
                     fhtMessage.setDescription(getByteValue());
                     setStackSize(2);
-                    setState(State.COLLECT_VALUE);
+                    state = State.COLLECT_VALUE;
                 }
                 break;
             case COLLECT_VALUE:
                 try {
-                    push(digit2Int(b));
+                    push(digit2Int(c));
                 } catch (RuntimeException ex) {
-                    LOG.warning(String.format("Collect value - Wrong char: 0x%02x %s", b, (char) b));
-                    setState(State.PARSE_ERROR);
+                    LOG.warning(String.format("Collect value - Wrong char: 0x%02x %s", (byte)c, c));
+                    state = State.PARSE_ERROR;
                     parserListener.fail(fhtMessage);
                     return;
                 }
                 if (getStackpos() == 0) {
                     fhtMessage.setRawValue(getIntValue());
                     setStackSize(2);
-                    setState(State.PARSE_SUCCESS);
+                    state = State.PARSE_SUCCESS;
                     parserListener.success(fhtMessage);
                 }
                 break;

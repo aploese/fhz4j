@@ -59,7 +59,7 @@
     </scm>
 
     <modules>
-        <module>de.ibapl.fhz4j</module>
+        <module>de.ibapl.fhz4j.parser.cul</module>
         <module>de.ibapl.fhz4j.console</module>
         <!--module>m2m2-fhz4j-ds</module-->
     </modules>

@@ -1,4 +1,4 @@
-package de.ibapl.fhz4j.fht;
+package de.ibapl.fhz4j.protocol.fht;
 
 /*-
  * #%L
@@ -32,7 +32,7 @@ import java.util.EnumSet;
 import java.util.Locale;
 import java.util.Set;
 import de.ibapl.fhz4j.Fhz1000;
-import de.ibapl.fhz4j.FhzMessage;
+import de.ibapl.fhz4j.api.FhzMessage;
 import de.ibapl.fhz4j.scada.Time;
 
 /**

@@ -1,4 +1,4 @@
-package de.ibapl.fhz4j.fs20;
+package de.ibapl.fhz4j.protocol.fs20;
 
 /*-
  * #%L

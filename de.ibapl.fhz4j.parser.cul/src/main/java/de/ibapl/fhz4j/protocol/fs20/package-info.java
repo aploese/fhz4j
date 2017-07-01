@@ -1,5 +1,5 @@
 @org.osgi.annotation.versioning.Version("1.0.0")
-package de.ibapl.fhz4j.fs20;
+package de.ibapl.fhz4j.protocol.fs20;
 
 /*-
  * #%L

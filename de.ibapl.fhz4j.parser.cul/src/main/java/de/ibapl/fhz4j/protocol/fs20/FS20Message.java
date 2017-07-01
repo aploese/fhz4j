@@ -1,4 +1,4 @@
-package de.ibapl.fhz4j.fs20;
+package de.ibapl.fhz4j.protocol.fs20;
 
 /*-
  * #%L
@@ -31,7 +31,7 @@ package de.ibapl.fhz4j.fs20;
 import java.util.EnumSet;
 import java.util.Set;
 import de.ibapl.fhz4j.Fhz1000;
-import de.ibapl.fhz4j.FhzMessage;
+import de.ibapl.fhz4j.api.FhzMessage;
 
 /**
  *

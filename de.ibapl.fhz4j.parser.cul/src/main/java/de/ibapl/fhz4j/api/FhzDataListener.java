@@ -1,4 +1,4 @@
-package de.ibapl.fhz4j;
+package de.ibapl.fhz4j.api;
 
 /*-
  * #%L
@@ -29,11 +29,12 @@ package de.ibapl.fhz4j;
  */
 
 
-import de.ibapl.fhz4j.em.EmMessage;
-import de.ibapl.fhz4j.fht.FhtMultiMsgMessage;
-import de.ibapl.fhz4j.fht.FhtMessage;
-import de.ibapl.fhz4j.fs20.FS20Message;
-import de.ibapl.fhz4j.hms.HmsMessage;
+import de.ibapl.fhz4j.protocol.em.EmMessage;
+import de.ibapl.fhz4j.protocol.fht.FhtMultiMsgMessage;
+import de.ibapl.fhz4j.protocol.fht.FhtMessage;
+import de.ibapl.fhz4j.protocol.fs20.FS20Message;
+import de.ibapl.fhz4j.protocol.hms.HmsMessage;
+import de.ibapl.fhz4j.protocol.lacrosse.tx2.LaCrosseTx2Message;
 
 /**
  *
@@ -50,5 +51,7 @@ public interface FhzDataListener {
     void fhtMultiMsgParsed(FhtMultiMsgMessage fhtMultiMsgMessage);
 
     void hmsDataParsed(HmsMessage hmsMsg);
+    
+    void laCrosseTxParsed(LaCrosseTx2Message laCrosseTx2Msg);
 
 }

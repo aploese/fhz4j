@@ -1,4 +1,4 @@
-package de.ibapl.fhz4j;
+package de.ibapl.fhz4j.parser.cul;
 
 /*-
  * #%L
@@ -28,11 +28,13 @@ package de.ibapl.fhz4j;
  * #L%
  */
 
-import de.ibapl.fhz4j.em.EmMessage;
-import de.ibapl.fhz4j.fht.FhtMultiMsgMessage;
-import de.ibapl.fhz4j.fht.FhtMessage;
-import de.ibapl.fhz4j.fs20.FS20Message;
-import de.ibapl.fhz4j.hms.HmsMessage;
+import de.ibapl.fhz4j.api.FhzDataListener;
+import de.ibapl.fhz4j.protocol.em.EmMessage;
+import de.ibapl.fhz4j.protocol.fht.FhtMultiMsgMessage;
+import de.ibapl.fhz4j.protocol.fht.FhtMessage;
+import de.ibapl.fhz4j.protocol.fs20.FS20Message;
+import de.ibapl.fhz4j.protocol.hms.HmsMessage;
+import de.ibapl.fhz4j.protocol.lacrosse.tx2.LaCrosseTx2Message;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -45,16 +47,17 @@ import static org.junit.Assert.*;
  *
  * @author aploese
  */
-public class FhzParserTest implements FhzDataListener {
+public class CulParserTest implements FhzDataListener {
 
-    private FhzParser parser;
+    private CulParser parser;
     private FhtMessage fhtMessage;
     private FhtMultiMsgMessage fhtMultiMsgMessage;
     private HmsMessage hmsMsg;
     private EmMessage emMsg;
     private FS20Message fs20Msg;
+    private LaCrosseTx2Message laCrosseTx2Message;
 
-    public FhzParserTest() {
+    public CulParserTest() {
     }
 
     @BeforeClass
@@ -67,7 +70,7 @@ public class FhzParserTest implements FhzDataListener {
 
     @Before
     public void setUp() {
-        parser = new FhzParser(this);
+        parser = new CulParser(this);
     }
 
     @After
@@ -80,8 +83,9 @@ public class FhzParserTest implements FhzDataListener {
         fhtMultiMsgMessage = null;
         hmsMsg = null;
         emMsg = null;
-        for (byte b : s.getBytes()) {
-            parser.parse(0x00FF & b);
+        laCrosseTx2Message = null;
+        for (char c : s.toCharArray()) {
+            parser.parse(c);
         }
     }
 
@@ -142,6 +146,38 @@ public class FhzParserTest implements FhzDataListener {
         assertEquals("housecode: 5510, command: holiday 2, description:  0x0 0x1, value: 1 signal strength: -71.0 dB", fhtMessage.toString());
         assertNotNull(fhtMultiMsgMessage);
         assertEquals("", fhtMultiMsgMessage.toString());
+    }
+
+    @Test
+    public void decode_LA_CROSSE_TX2() {
+        decode("tA00E73173D\r\n");
+        assertNotNull(laCrosseTx2Message);
+        assertEquals("address: 7, type: TEMP, value: 23.1 signal strength: 0.0 dB", laCrosseTx2Message.toString());
+        decode("tAECC60060C\r\n");
+        assertNotNull(laCrosseTx2Message);
+        assertEquals("address: 66, type: HUMIDITY, value: 60.0 signal strength: 0.0 dB", laCrosseTx2Message.toString());
+        decode("tA00AA002EAE5\r\n");
+        assertNull(laCrosseTx2Message);
+        decode("tAFA67B255EF9\r\n");
+        assertNull(laCrosseTx2Message);
+        decode("tA876900EF841\r\n");
+        assertNull(laCrosseTx2Message);
+        decode("tA003280104F3\r\n");
+        assertNull(laCrosseTx2Message);
+        decode("tAD267B251640\r\n");
+        assertNull(laCrosseTx2Message);
+        decode("tA00BA8032E3E\r\n");
+        assertNull(laCrosseTx2Message);
+        decode("tA9667B2496F2\r\n");
+        assertNull(laCrosseTx2Message);
+        decode("tAD267B251640\r\n");
+        assertNull(laCrosseTx2Message);
+        decode("tA003280104F2\r\n");
+        assertNull(laCrosseTx2Message);
+        decode("tA84690330A3C\r\n");
+        assertNull(laCrosseTx2Message);
+        decode("tAD267B250EF6\r\n");
+        assertNull(laCrosseTx2Message);
     }
 
     @Test
@@ -343,5 +379,10 @@ public class FhzParserTest implements FhzDataListener {
     @Override
     public void fs20DataParsed(FS20Message fs20Msg) {
         this.fs20Msg = fs20Msg;
+    }
+
+    @Override
+    public void laCrosseTxParsed(LaCrosseTx2Message laCrosseTx2Msg) {
+        this.laCrosseTx2Message = laCrosseTx2Msg;
     }
 }

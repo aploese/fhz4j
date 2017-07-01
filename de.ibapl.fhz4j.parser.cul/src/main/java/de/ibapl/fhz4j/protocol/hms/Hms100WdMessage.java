@@ -1,4 +1,4 @@
-package de.ibapl.fhz4j.hms;
+package de.ibapl.fhz4j.protocol.hms;
 
 /*-
  * #%L
@@ -37,7 +37,7 @@ import java.util.Set;
  */
 public class Hms100WdMessage extends HmsMessage {
     
-    Hms100WdMessage(short housecode, Set<HmsDeviceStatus> deviceStatus) {
+    public Hms100WdMessage(short housecode, Set<HmsDeviceStatus> deviceStatus) {
         super(housecode, deviceStatus);
     }
     

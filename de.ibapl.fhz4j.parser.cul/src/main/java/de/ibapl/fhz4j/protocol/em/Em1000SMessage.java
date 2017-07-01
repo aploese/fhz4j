@@ -1,4 +1,4 @@
-package de.ibapl.fhz4j.em;
+package de.ibapl.fhz4j.protocol.em;
 
 /*-
  * #%L
@@ -33,7 +33,7 @@ package de.ibapl.fhz4j.em;
  *
  * @author aploese
  */
-class Em1000SMessage extends EmMessage {
+public class Em1000SMessage extends EmMessage {
 
     public Em1000SMessage() {
     }
@@ -44,17 +44,17 @@ class Em1000SMessage extends EmMessage {
     }
 
     @Override
-    void setCumulatedValue(int cummulatedValue) {
+    public void setCumulatedValue(int cummulatedValue) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
-    void setLastValue(int lastValue) {
+    public void setLastValue(int lastValue) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
-    void setMaxLastValue(int maxLastValue) {
+    public void setMaxLastValue(int maxLastValue) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
     

@@ -28,6 +28,11 @@ package de.ibapl.fhz4j.console;
  * #L%
  */
 
+import de.ibapl.fhz4j.LogUtils;
+import de.ibapl.fhz4j.api.FhzDataListener;
+import de.ibapl.fhz4j.parser.cul.CulParser;
+import de.ibapl.fhz4j.parser.cul.CulWriter;
+import de.ibapl.fhz4j.protocol.em.EmMessage;
 import de.ibapl.spsw.api.SerialPortSocket;
 import de.ibapl.spsw.provider.SerialPortSocketFactoryImpl;
 import java.io.FileNotFoundException;
@@ -37,12 +42,14 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
-import java.util.function.BiConsumer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import de.ibapl.fhz4j.fht.FhtMessage;
+import de.ibapl.fhz4j.protocol.fht.FhtMessage;
+import de.ibapl.fhz4j.protocol.fht.FhtMultiMsgMessage;
+import de.ibapl.fhz4j.protocol.fs20.FS20Message;
 
-import de.ibapl.fhz4j.hms.HmsMessage;
+import de.ibapl.fhz4j.protocol.hms.HmsMessage;
+import de.ibapl.fhz4j.protocol.lacrosse.tx2.LaCrosseTx2Message;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.HelpFormatter;
@@ -52,13 +59,6 @@ import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 import org.apache.commons.cli.PosixParser;
 
-import de.ibapl.fhz4j.FhzDataListener;
-import de.ibapl.fhz4j.FhzParser;
-import de.ibapl.fhz4j.FhzWriter;
-import de.ibapl.fhz4j.LogUtils;
-import de.ibapl.fhz4j.em.EmMessage;
-import de.ibapl.fhz4j.fht.FhtMultiMsgMessage;
-import de.ibapl.fhz4j.fs20.FS20Message;
 
 /**
  * DOCUMENT ME!
@@ -100,6 +100,12 @@ public class Main {
         public void fs20DataParsed(FS20Message fs20Msg) {
             printTimeStamp();
             System.out.println(fs20Msg.toString());
+        }
+
+        @Override
+        public void laCrosseTxParsed(LaCrosseTx2Message laCrosseTx2Msg) {
+            printTimeStamp();
+            System.out.println(laCrosseTx2Msg.toString());
         }
 
         SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
@@ -188,10 +194,10 @@ public class Main {
      */
     public static void run(String port) {
         SerialPortSocket masterPort = SerialPortSocketFactoryImpl.singleton().createSerialPortSocket(port);
-        FhzParser p = new FhzParser(new FhzListener());
-        FhzWriter w = new FhzWriter();
+        CulParser p = new CulParser(new FhzListener());
+        CulWriter w = new CulWriter();
         try {
-            FhzParser.openPort(masterPort);
+            CulParser.openPort(masterPort);
             p.setInputStream(masterPort.getInputStream());
             w.setOutputStream(masterPort.getOutputStream());
             try {

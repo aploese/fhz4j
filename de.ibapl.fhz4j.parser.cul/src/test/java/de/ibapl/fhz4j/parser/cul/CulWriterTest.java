@@ -1,6 +1,4 @@
-
-
-package de.ibapl.fhz4j;
+package de.ibapl.fhz4j.parser.cul;
 
 /*-
  * #%L
@@ -30,10 +28,10 @@ package de.ibapl.fhz4j;
  * #L%
  */
 
+import de.ibapl.fhz4j.Fhz1000;
 import java.io.ByteArrayOutputStream;
-import java.io.OutputStream;
-import de.ibapl.fhz4j.fht.FhtMessage;
-import de.ibapl.fhz4j.fht.FhtProperty;
+import de.ibapl.fhz4j.protocol.fht.FhtMessage;
+import de.ibapl.fhz4j.protocol.fht.FhtProperty;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -46,9 +44,9 @@ import org.junit.Ignore;
  *
  * @author aploese
  */
-public class FhzWriterTest {
+public class CulWriterTest {
     
-    public FhzWriterTest() {
+    public CulWriterTest() {
     }
     
     @BeforeClass
@@ -75,7 +73,7 @@ public class FhzWriterTest {
     public void testInitFhz_short() throws Exception {
         System.out.println("initFhz");
         short fhzHousecode = 0;
-        FhzWriter instance = new FhzWriter();
+        CulWriter instance = new CulWriter();
         instance.initFhz(fhzHousecode);
         // TODO review the generated test code and remove the default call to fail.
         fail("The test case is a prototype.");
@@ -90,7 +88,7 @@ public class FhzWriterTest {
         System.out.println("initFhz");
         short fhz100Housecode = 0;
         byte initFlags = 0;
-        FhzWriter instance = new FhzWriter();
+        CulWriter instance = new CulWriter();
         instance.initFhz(fhz100Housecode, initFlags);
         // TODO review the generated test code and remove the default call to fail.
         fail("The test case is a prototype.");
@@ -104,7 +102,7 @@ public class FhzWriterTest {
     public void testInitFhtReporting_Iterable() throws Exception {
         System.out.println("initFhtReporting");
         Iterable<Short> fhtDeviceHomeCodes = null;
-        FhzWriter instance = new FhzWriter();
+        CulWriter instance = new CulWriter();
         instance.initFhtReporting(fhtDeviceHomeCodes);
         // TODO review the generated test code and remove the default call to fail.
         fail("The test case is a prototype.");
@@ -118,7 +116,7 @@ public class FhzWriterTest {
     public void testSyncFhtClocks() throws Exception {
         System.out.println("syncFhtClocks");
         Iterable<Short> fhtDeviceHomeCodes = null;
-        FhzWriter instance = new FhzWriter();
+        CulWriter instance = new CulWriter();
         instance.syncFhtClocks(fhtDeviceHomeCodes);
         // TODO review the generated test code and remove the default call to fail.
         fail("The test case is a prototype.");
@@ -132,7 +130,7 @@ public class FhzWriterTest {
     public void testInitFhtReporting_ShortArr() throws Exception {
         System.out.println("initFhtReporting");
         Short[] fhtDeviceHomeCodes = null;
-        FhzWriter instance = new FhzWriter();
+        CulWriter instance = new CulWriter();
         instance.initFhtReporting(fhtDeviceHomeCodes);
         // TODO review the generated test code and remove the default call to fail.
         fail("The test case is a prototype.");
@@ -147,7 +145,7 @@ public class FhzWriterTest {
         FhtMessage message = new FhtMessage();
         message.setFloat(FhtProperty.DESIRED_TEMP, 24.0f);
         message.setHousecode(Fhz1000.parseHouseCode("9752"));
-        FhzWriter instance = new FhzWriter();
+        CulWriter instance = new CulWriter();
         ByteArrayOutputStream os = new ByteArrayOutputStream();
         instance.setOutputStream(os);
         instance.writeFhtMsg(message);

@@ -1,4 +1,4 @@
-package de.ibapl.fhz4j.em;
+package de.ibapl.fhz4j.protocol.em;
 
 /*-
  * #%L
@@ -108,17 +108,17 @@ public class Em1000EmMessage extends EmMessage {
     }
 
     @Override
-    void setCumulatedValue(int cummulatedValue) {
+    public void setCumulatedValue(int cummulatedValue) {
         energy = 0.001f * cummulatedValue;
     }
 
     @Override
-    void setLastValue(int lastValue) {
+    public void setLastValue(int lastValue) {
         energyLast5Min = 0.01f * lastValue;
     }
 
     @Override
-    void setMaxLastValue(int maxLastValue) {
+    public void setMaxLastValue(int maxLastValue) {
         maxPowerLast5Min = 0.01f * maxLastValue;
     }
 }
