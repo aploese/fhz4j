@@ -1,4 +1,4 @@
-package de.ibapl.fhz4j.scada;
+package de.ibapl.fhz4j.protocol.fht;
 
 /*-
  * #%L
@@ -28,52 +28,21 @@ package de.ibapl.fhz4j.scada;
  * #L%
  */
 
-import java.util.Calendar;
-
-
 /**
  *
  * @author aploese
  */
-public class Timestamp {
-    private Date date;
-    private Time time;
-
+public class FhtTempMessage extends Fht8bMessage {
     
-    public Timestamp(Calendar c) {
-        time = new Time(c);
-        date = new Date(c);
-    }
-    /**
-     * @return the date
-     */
-    public Date getDate() {
-        return date;
-    }
-
-    /**
-     * @param date the date to set
-     */
-    public void setDate(Date date) {
-        this.date = date;
-    }
-
-    /**
-     * @return the time
-     */
-    public Time getTime() {
-        return time;
-    }
-
-    /**
-     * @param time the time to set
-     */
-    public void setTime(Time time) {
-        this.time = time;
-    }
+    public float temp;
     
-    @Override
-    public String toString() {
-        return date.toString() + " " + time.toString();
+    public FhtTempMessage(int housecode, FhtProperty command, float temp) {
+        super((short)housecode, command, false, true);
+        this.temp = temp;
+    }
+
+    public FhtTempMessage(short housecode, FhtProperty command, boolean fromFht_8B, boolean dataRegister, float temp) {
+        super(housecode, command, fromFht_8B, dataRegister);
+        this.temp = temp;
     }
 }

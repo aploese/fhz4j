@@ -1,5 +1,8 @@
 package de.ibapl.fhz4j.api;
 
+import de.ibapl.fhz4j.protocol.fs20.FS20Message;
+import org.osgi.dto.DTO;
+
 /*-
  * #%L
  * FHZ4J Core
@@ -28,42 +31,18 @@ package de.ibapl.fhz4j.api;
  * #L%
  */
 
-
-
-
-import de.ibapl.fhz4j.scada.AbstractValueAccessor;
-import de.ibapl.fhz4j.scada.ScadaProperty;
-
 /**
  *
  * @author aploese
+ * 
  */
-public abstract class FhzMessage<T extends ScadaProperty> extends AbstractValueAccessor<T> {
+public abstract class FhzMessage extends DTO {
     
-    private float signalStrength;
-
-    /**
-     * @return the signalStrength
-     */
-    public float getSignalStrength() {
-        return signalStrength;
-    }
-
-    /**
-     * @param signalStrength the signalStrength to set
-     */
-    public void setSignalStrength(float signalStrength) {
-        this.signalStrength = signalStrength;
+    public float signalStrength;
+    public FhzProtocol fhzProtocol;
+    
+    protected FhzMessage(FhzProtocol fhzProtocol) {
+        this.fhzProtocol = fhzProtocol;
     }
     
-    protected abstract void toString(StringBuilder sb);
-
-    @Override
-    public String toString() {
-        StringBuilder sb = new StringBuilder();
-        toString(sb);
-        sb.append(" signal strength: ").append(getSignalStrength()).append(" dB");
-        return sb.toString();
-    }
-
 }

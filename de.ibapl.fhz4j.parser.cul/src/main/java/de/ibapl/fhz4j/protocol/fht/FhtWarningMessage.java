@@ -1,4 +1,7 @@
-package de.ibapl.fhz4j.scada;
+package de.ibapl.fhz4j.protocol.fht;
+
+import java.util.EnumSet;
+import java.util.Set;
 
 /*-
  * #%L
@@ -29,64 +32,18 @@ package de.ibapl.fhz4j.scada;
  */
 
 
-import java.util.Set;
 
 /**
  *
  * @author aploese
- * @param <T>
  */
-public interface ScadaValueAccessor<T extends ScadaProperty> {
+public class FhtWarningMessage extends Fht8bMessage {
 
-    double getDouble(T property);
+    public Set<Fht80bWarning> warnings; 
     
-    void setDouble(T property, double value);
+    public FhtWarningMessage(short housecode, boolean fromFht_8B, boolean dataRegister, Set<Fht80bWarning> warnings) {
+        super(housecode, FhtProperty.WARNINGS, fromFht_8B, dataRegister);
+        this.warnings = EnumSet.copyOf(warnings);
+    }
     
-    float getFloat(T property);
-    
-    void setFloat(T property, float value);
-    
-    long getLong(T property);
-
-    void setLong(T property, long value);
-    
-    int getInt(T property);
-
-    void setInt(T property, int value);
-    
-    short getShort(T property);
-    
-    void setShort(T property, short value);
-
-    byte getByte(T property);
-    
-    void setByte(T property, byte value);
-
-    boolean getBoolean(T property);
-    
-    void setBoolean(T property, boolean value);
-
-    char getChar(T property);
-    
-    void setChar(T property, char value);
-
-    String getString(T property);
-    
-    String setString(T property, String value);
-
-    Time getTime(T property);
-    
-    void setTime(T property, Time value);
-
-    Date getDate(T property);
-    
-    void setDate(T property, Date value);
-
-    Timestamp getTimestamp(T property);
-    
-    Timestamp setTimestamp(T property, Timestamp value);
-
-    String toString(T property);
-
-    Set<T> getSupportedProperties();
 }

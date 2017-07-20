@@ -38,8 +38,7 @@ import de.ibapl.fhz4j.scada.ScadaProperty;
 public enum LaCrosseTx2Property implements ScadaProperty {
 
     TEMP,
-    HUMIDITY
-    ;
+    HUMIDITY;
 
     @Override
     public String getUnitOfMeasurement() {

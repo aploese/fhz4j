@@ -36,26 +36,7 @@ package de.ibapl.fhz4j.protocol.em;
 public class Em1000SMessage extends EmMessage {
 
     public Em1000SMessage() {
+        super(EmDeviceType.EM_1000S);
     }
 
-    @Override
-    public EmDeviceType getType() {
-        return EmDeviceType.EM_1000S;
-    }
-
-    @Override
-    public void setCumulatedValue(int cummulatedValue) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
-    public void setLastValue(int lastValue) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
-    public void setMaxLastValue(int maxLastValue) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-    
 }

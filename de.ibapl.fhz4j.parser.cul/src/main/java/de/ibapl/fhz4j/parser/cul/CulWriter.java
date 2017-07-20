@@ -27,17 +27,20 @@ package de.ibapl.fhz4j.parser.cul;
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  * #L%
  */
-
-import de.ibapl.fhz4j.Fhz1000;
 import de.ibapl.fhz4j.LogUtils;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.Arrays;
-import java.util.Calendar;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import de.ibapl.fhz4j.protocol.fht.FhtMessage;
 import de.ibapl.fhz4j.protocol.fht.FhtProperty;
+import java.time.DayOfWeek;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.ZoneId;
+import java.util.EnumSet;
+import java.util.Set;
 
 /**
  *
@@ -45,16 +48,23 @@ import de.ibapl.fhz4j.protocol.fht.FhtProperty;
  */
 public class CulWriter {
 
+    public enum InitFlag {
+        PACKAGE_OK(0x01),
+        ALL_REPEATED(0x02),
+        REPORT_ALL(0x04),
+        MONITOR_MODE(0x08),
+        WITH_TIMING(0x10),
+        WITH_RSSI(0x20),
+        REPORT_FHT_ALL_MESSAGES(0x40),
+        REPORT_RAW_RSSI(0x80);
+        final byte value;
+
+        private InitFlag(int value) {
+            this.value = (byte) value;
+        }
+    }
+
     private final static Logger LOG = Logger.getLogger(LogUtils.FHZ_PARSER_CUL);
-    final static byte INIT_MSG_PACKAGE_OK = 0x01;
-    final static byte INIT_MSG_ALL_REPEATED = 0x02;
-    final static byte INIT_MSG_REPORT_ALL = 0x04;
-    final static byte INIT_MSG_MONITOR_MODE = 0x08;
-    final static byte INIT_MSG_WITH_TIMING = 0x10;
-    final static byte INIT_MSG_WITH_RSSI = 0x20;
-    final static byte INIT_MSG_REPORT_FHT_ALL_MESSAGES = 0x40;
-    final static byte INIT_MSG_REPORT_RAW_RSSI = (byte) 0x80;
-    final static byte ORIGIN_CUL = 0x79;
     final static byte ALL_REPORTS = (byte) 0xFF;
     private OutputStream os;
 
@@ -64,18 +74,22 @@ public class CulWriter {
 
     public void initFhz(short fhzHousecode) throws IOException {
         try {
-            initFhz(fhzHousecode, (byte) (INIT_MSG_PACKAGE_OK | INIT_MSG_WITH_RSSI));
+            initFhz(fhzHousecode, EnumSet.of(InitFlag.PACKAGE_OK, InitFlag.WITH_RSSI));
         } catch (InterruptedException ex) {
             LOG.log(Level.SEVERE, "EX during init", ex);
         }
     }
 
-    public void initFhz(short fhz100Housecode, byte initFlags) throws IOException, InterruptedException {
+    public void initFhz(short fhz100Housecode, Set<InitFlag> initFlags) throws IOException, InterruptedException {
         LOG.info("INIT 1");
         os.write("\r\n".getBytes());
         Thread.sleep(1000);
         LOG.info("INIT 2");
-        final String data = String.format("X%02X\r\n", initFlags);
+        byte flags = 0;
+        for (InitFlag flag : initFlags) {
+            flags |= flag.value;
+        }
+        final String data = String.format("X%02X\r\n", flags);
         os.write(data.getBytes());
         LOG.log(Level.INFO, "Data sent: {0}", new Object[]{data});
         Thread.sleep(1000);
@@ -85,55 +99,482 @@ public class CulWriter {
         LOG.info("INIT End");
     }
 
-    private void writeFhtCmd8v(short housecode, FhtProperty property, byte origin, byte value) throws IOException {
-        final String data = String.format("T%04X%02X%02X%02X\n", housecode, property.getValue(), origin, value);
-        os.write(data.getBytes());
-        LOG.log(Level.INFO, "Data sent to {0}: {1}", new Object[]{Fhz1000.houseCodeToString(housecode), data});
+    public void initFhtReporting(short housecode) throws IOException {
+        startFhtMessage(housecode);
+        writeFhtProperty(FhtProperty.REPORT_1, ALL_REPORTS);
+        writeFhtProperty(FhtProperty.REPORT_2, ALL_REPORTS);
+        finishFhtMessage();
     }
 
-    private void writeFhtCmd8b(short housecode, FhtProperty property, byte value) throws IOException {
-        final String data = String.format("T%04X%02X%02X\n", housecode, property.getValue(), value);
-        os.write(data.getBytes());
-        LOG.log(Level.INFO, "Data sent to {0}: {1}", new Object[]{Fhz1000.houseCodeToString(housecode), data});
-    }
+    public void syncFhtClocks(Iterable<Short> fhtDeviceHomeCodes, LocalDateTime ts) throws IOException {
 
-    public void initFhtReporting(Iterable<Short> fhtDeviceHomeCodes) throws IOException {
-        LOG.info("Send: request report to: ");
         for (short housecode : fhtDeviceHomeCodes) {
-            final String data = String.format("T%04X%02X%02X%02X%02X\n", housecode, FhtProperty.REPORT_1.getValue(), ALL_REPORTS, FhtProperty.REPORT_2.getValue(), ALL_REPORTS);
-            os.write(data.getBytes());
-            LOG.log(Level.INFO, "Data sent to {0}: {1}", new Object[]{Fhz1000.houseCodeToString(housecode), data});
+            writeFhtTimeAndDate(housecode, ts);
+        }
+
+    }
+
+    public void writeFhtTimeAndDate(short housecode, LocalDateTime ts) throws IOException {
+        startFhtMessage(housecode);
+        writeFhtProperty(FhtProperty.YEAR, (byte) (ts.getYear() - 2000));
+        writeFhtProperty(FhtProperty.MONTH, (byte) ts.getMonthValue());
+        writeFhtProperty(FhtProperty.DAY, (byte) ts.getDayOfMonth());
+        writeFhtProperty(FhtProperty.HOUR, (byte) ts.getHour());
+        writeFhtProperty(FhtProperty.MINUTE, (byte) ts.getMinute());
+        os.write('\n');
+    }
+
+    public void initFhtReporting(Iterable<Short> housecodes) throws IOException {
+        for (Short housecode : housecodes) {
+            initFhtReporting(housecode);
         }
     }
 
-    public void syncFhtClocks(Iterable<Short> fhtDeviceHomeCodes) throws IOException {
-        LOG.info("Send: request report to: ");
-        final Calendar c = Calendar.getInstance();
+    private void setFhzHousecode(short ownHousecode) throws IOException {
+        os.write('T');
+        os.write('0');
+        os.write('1');
+        writeByte(ownHousecode / 100);
+        writeByte(ownHousecode % 100);
+        os.write('\n');
+    }
 
-        final byte year = (byte) (c.get(Calendar.YEAR) - 2000);
-        final byte month = (byte) (c.get(Calendar.MONTH) + 1);
-        final byte dayOfMonth = (byte) c.get(Calendar.DAY_OF_MONTH);
-        final byte minute = (byte) c.get(Calendar.MINUTE);
-        final byte hour = (byte) c.get(Calendar.HOUR);
+    public void writeFhtModeAuto(short housecode) throws IOException {
+        startFhtMessage(housecode);
+        writeFhtProperty(FhtProperty.MODE, (byte) 0x00);
+        finishFhtMessage();
+    }
 
-        for (short housecode : fhtDeviceHomeCodes) {
-            final String data = String.format("T%04X02X%02X%02X%02X%02X%02X%02X%02X%02X%02X\n", housecode, FhtProperty.YEAR.getValue(), year, FhtProperty.MONTH.getValue(), month, FhtProperty.DAY.getValue(), dayOfMonth, FhtProperty.HOUR.getValue(), hour, FhtProperty.MINUTE.getValue(), minute);
-            os.write(data.getBytes());
-            LOG.log(Level.INFO, "Data sent to {0}: {1}", new Object[]{Fhz1000.houseCodeToString(housecode), data});
+    public void writeFhtModeManu(short housecode) throws IOException {
+        startFhtMessage(housecode);
+        writeFhtProperty(FhtProperty.MODE, (byte) 0x01);
+        finishFhtMessage();
+    }
+
+    public void writeFhtModeHoliday(short housecode, float temp, LocalDate date) throws IOException {
+        startFhtMessage(housecode);
+        writeFhtProperty(FhtProperty.DESIRED_TEMP, (byte) (temp * 2));
+        writeFhtProperty(FhtProperty.HOLIDAY_1, (byte) date.getDayOfMonth());
+        writeFhtProperty(FhtProperty.HOLIDAY_2, (byte) date.getMonthValue());
+        writeFhtProperty(FhtProperty.MODE, (byte) 0x02);
+        finishFhtMessage();
+    }
+
+    public void writeFhtModeParty(short housecode, float temp, LocalDateTime ts) throws IOException {
+        //Check date against ???
+        startFhtMessage(housecode);
+        writeFhtProperty(FhtProperty.DESIRED_TEMP, (byte) (temp * 2));
+        writeFhtProperty(FhtProperty.HOLIDAY_1, (byte) (ts.getHour() * 6 + ts.getMinute() / 10));
+        writeFhtProperty(FhtProperty.HOLIDAY_2, (byte) ts.getDayOfMonth());
+        writeFhtProperty(FhtProperty.MODE, (byte) 0x03);
+        finishFhtMessage();
+    }
+
+    public void writeFhtCycle(short housecode, DayOfWeek dayOfWeek, LocalTime from1, LocalTime to1, LocalTime from2, LocalTime to2) throws IOException {
+        startFhtMessage(housecode);
+        FhtProperty from1Property, to1Property, from2Property, to2Property;
+        byte from1Value, to1Value, from2Value, to2Value;
+
+        if (from1 == null) {
+            if (to1 != null) {
+                throw new IllegalArgumentException("Both from1 and to1 must be null or set!");
+            } else {
+                from1Value = (byte) 0x90; // this is 24:00 or 24 * 6 = 144 the meaning is not set ....
+                to1Value = (byte) 0x90;
+            }
+        } else {
+            from1Value = (byte) (from1.getHour() * 6 + from1.getMinute() / 10);
+            to1Value = (byte) (to1.getHour() * 6 + to1.getMinute() / 10);
+        }
+
+        if (from2 == null) {
+            if (to2 != null) {
+                throw new IllegalArgumentException("Both from2 and to2 must be null or set!");
+            } else {
+                from2Value = (byte) 0x90; // this is 24:00 or 24 * 6 = 144 the meaning is not set ....
+                to2Value = (byte) 0x90;
+            }
+        } else {
+            from2Value = (byte) (from2.getHour() * 6 + from2.getMinute() / 10);
+            to2Value = (byte) (to2.getHour() * 6 + to2.getMinute() / 10);
+        }
+
+        switch (dayOfWeek) {
+            case MONDAY:
+                from1Property = FhtProperty.MON_FROM_1;
+                to1Property = FhtProperty.MON_TO_1;
+                from2Property = FhtProperty.MON_FROM_2;
+                to2Property = FhtProperty.MON_TO_2;
+                break;
+            case TUESDAY:
+                from1Property = FhtProperty.TUE_FROM_1;
+                to1Property = FhtProperty.TUE_TO_1;
+                from2Property = FhtProperty.TUE_FROM_2;
+                to2Property = FhtProperty.TUE_TO_2;
+                break;
+            case WEDNESDAY:
+                from1Property = FhtProperty.WED_FROM_1;
+                to1Property = FhtProperty.WED_TO_1;
+                from2Property = FhtProperty.WED_FROM_2;
+                to2Property = FhtProperty.WED_TO_2;
+                break;
+            case THURSDAY:
+                from1Property = FhtProperty.THU_FROM_1;
+                to1Property = FhtProperty.THU_TO_1;
+                from2Property = FhtProperty.THU_FROM_2;
+                to2Property = FhtProperty.THU_TO_2;
+                break;
+            case FRIDAY:
+                from1Property = FhtProperty.FRI_FROM_1;
+                to1Property = FhtProperty.FRI_TO_1;
+                from2Property = FhtProperty.FRI_FROM_2;
+                to2Property = FhtProperty.FRI_TO_2;
+                break;
+            case SATURDAY:
+                from1Property = FhtProperty.SAT_FROM_1;
+                to1Property = FhtProperty.SAT_TO_1;
+                from2Property = FhtProperty.SAT_FROM_2;
+                to2Property = FhtProperty.SAT_TO_2;
+                break;
+            case SUNDAY:
+                from1Property = FhtProperty.SUN_FROM_1;
+                to1Property = FhtProperty.SUN_TO_1;
+                from2Property = FhtProperty.SUN_FROM_2;
+                to2Property = FhtProperty.SUN_TO_2;
+                break;
+            default:
+                throw new IllegalArgumentException("Unknown dayOfweek: " + dayOfWeek);
+
+        }
+        writeFhtProperty(from1Property, from1Value);
+        writeFhtProperty(to1Property, to1Value);
+        writeFhtProperty(from2Property, from2Value);
+        writeFhtProperty(to2Property, to2Value);
+        finishFhtMessage();
+    }
+
+    public void writeFht(short housecode, FhtProperty fhtProperty, float value) throws IOException {
+        startFhtMessage(housecode);
+        switch (fhtProperty) {
+            case DAY_TEMP:
+            case NIGHT_TEMP:
+            case DESIRED_TEMP:
+            case LOW_TEMP_OFFSET:
+            case WINDOW_OPEN_TEMP:
+            case MANU_TEMP:
+                writeFhtProperty(fhtProperty, (byte) (value * 2));
+                break;
+            default:
+                throw new IllegalArgumentException("Wrong fht property for temp: " + fhtProperty);
+        }
+        finishFhtMessage();
+    }
+
+    public void writeFht(short housecode, FhtProperty fhtProperty, LocalTime value) throws IOException {
+        startFhtMessage(housecode);
+        switch (fhtProperty) {
+            case MON_FROM_1:
+            case MON_TO_1:
+            case MON_FROM_2:
+            case MON_TO_2:
+            case TUE_FROM_1:
+            case TUE_TO_1:
+            case TUE_FROM_2:
+            case TUE_TO_2:
+            case WED_FROM_1:
+            case WED_TO_1:
+            case WED_FROM_2:
+            case WED_TO_2:
+            case THU_FROM_1:
+            case THU_TO_1:
+            case THU_FROM_2:
+            case THU_TO_2:
+            case FRI_FROM_1:
+            case FRI_TO_1:
+            case FRI_FROM_2:
+            case FRI_TO_2:
+            case SAT_FROM_1:
+            case SAT_TO_1:
+            case SAT_FROM_2:
+            case SAT_TO_2:
+            case SUN_FROM_1:
+            case SUN_TO_1:
+            case SUN_FROM_2:
+            case SUN_TO_2:
+                if (value == null) {
+                    writeFhtProperty(fhtProperty, (byte) 0x90); // this is 24:00 or 24 * 6 = 144 the meaning is not set ....
+                } else {
+                    writeFhtProperty(fhtProperty, (byte) (value.getHour() * 6 + value.getMinute() / 10));
+                }
+                break;
+            default:
+                throw new IllegalArgumentException("Wrong fht property for temp: " + fhtProperty);
+        }
+        finishFhtMessage();
+    }
+
+    private void startFhtMessage(short housecode) throws IOException {
+        os.write('T');
+        writeByte(housecode / 100);
+        writeByte(housecode % 100);
+    }
+
+    private void finishFhtMessage() throws IOException {
+        os.write('\n');
+    }
+
+    private void writeByte(int value) throws IOException {
+        writeNibble((0xF0 & value) >> 4);
+        writeNibble(0x0F & value);
+    }
+
+    private void writeFhtProperty(FhtProperty fhtProperty, byte value) throws IOException {
+        switch (fhtProperty) {
+            case VALVE:
+                writeByte(0x00);
+                break;
+            case OFFSET_VALVE_1:
+                writeByte(0x01);
+                break;
+            case OFFSET_VALVE_2:
+                writeByte(0x02);
+                break;
+            case OFFSET_VALVE_3:
+                writeByte(0x03);
+                break;
+            case OFFSET_VALVE_4:
+                writeByte(0x04);
+                break;
+            case OFFSET_VALVE_5:
+                writeByte(0x05);
+                break;
+            case OFFSET_VALVE_6:
+                writeByte(0x06);
+                break;
+            case OFFSET_VALVE_7:
+                writeByte(0x07);
+                break;
+            case OFFSET_VALVE_8:
+                writeByte(0x08);
+                break;
+            case MON_FROM_1:
+                writeByte(0x14);
+                break;
+            case MON_TO_1:
+                writeByte(0x15);
+                break;
+            case MON_FROM_2:
+                writeByte(0x16);
+                break;
+            case MON_TO_2:
+                writeByte(0x17);
+                break;
+            case TUE_FROM_1:
+                writeByte(0x18);
+                break;
+            case TUE_TO_1:
+                writeByte(0x19);
+                break;
+            case TUE_FROM_2:
+                writeByte(0x1a);
+                break;
+            case TUE_TO_2:
+                writeByte(0x1b);
+                break;
+            case WED_FROM_1:
+                writeByte(0x1c);
+                break;
+            case WED_TO_1:
+                writeByte(0x1d);
+                break;
+            case WED_FROM_2:
+                writeByte(0x1e);
+                break;
+            case WED_TO_2:
+                writeByte(0x1f);
+                break;
+            case THU_FROM_1:
+                writeByte(0x20);
+                break;
+            case THU_TO_1:
+                writeByte(0x21);
+                break;
+            case THU_FROM_2:
+                writeByte(0x22);
+                break;
+            case THU_TO_2:
+                writeByte(0x23);
+                break;
+            case FRI_FROM_1:
+                writeByte(0x24);
+                break;
+            case FRI_TO_1:
+                writeByte(0x25);
+                break;
+            case FRI_FROM_2:
+                writeByte(0x26);
+                break;
+            case FRI_TO_2:
+                writeByte(0x27);
+                break;
+            case SAT_FROM_1:
+                writeByte(0x28);
+                break;
+            case SAT_TO_1:
+                writeByte(0x29);
+                break;
+            case SAT_FROM_2:
+                writeByte(0x2a);
+                break;
+            case SAT_TO_2:
+                writeByte(0x2b);
+                break;
+            case SUN_FROM_1:
+                writeByte(0x2c);
+                break;
+            case SUN_TO_1:
+                writeByte(0x2d);
+                break;
+            case SUN_FROM_2:
+                writeByte(0x2e);
+                break;
+            case SUN_TO_2:
+                writeByte(0x2f);
+                break;
+            case MODE:
+                writeByte(0x3e);
+                break;
+            case HOLIDAY_1:
+                writeByte(0x3f);
+                break;
+            case HOLIDAY_2:
+                writeByte(0x40);
+                break;
+            case DESIRED_TEMP:
+                writeByte(0x41);
+                break;
+            case MEASURED_LOW:
+                writeByte(0x42);
+                break;
+            case MEASURED_HIGH:
+                writeByte(0x43);
+                break;
+            case WARNINGS:
+                writeByte(0x44);
+                break;
+            case MANU_TEMP:
+                writeByte(0x45);
+                break;
+            case ACK:
+                writeByte(0x4b);
+                break;
+            case CAN_CMIT:
+                writeByte(0x53);
+                break;
+            case CAN_RCV:
+                writeByte(0x54);
+                break;
+            case YEAR:
+                writeByte(0x60);
+                break;
+            case MONTH:
+                writeByte(0x61);
+                break;
+            case DAY:
+                writeByte(0x62);
+                break;
+            case HOUR:
+                writeByte(0x63);
+                break;
+            case MINUTE:
+                writeByte(0x64);
+                break;
+            case REPORT_1:
+                writeByte(0x65);
+                break;
+            case REPORT_2:
+                writeByte(0x66);
+                break;
+            case ACK_2:
+                writeByte(0x69);
+                break;
+            case START_XMIT:
+                writeByte(0x7d);
+                break;
+            case END_XMIT:
+                writeByte(0x7e);
+                break;
+            case DAY_TEMP:
+                writeByte(0x82);
+                break;
+            case NIGHT_TEMP:
+                writeByte(0x84);
+                break;
+            case LOW_TEMP_OFFSET:
+                writeByte(0x85);
+                break;
+            case WINDOW_OPEN_TEMP:
+                writeByte(0x8a);
+                break;
+            default:
+                throw new UnsupportedOperationException("Not supported yet.");
+        }
+        writeByte(value);
+    }
+
+    private void writeNibble(int value) throws IOException {
+        switch (value) {
+            case 0x00:
+                os.write('0');
+                break;
+            case 0x01:
+                os.write('1');
+                break;
+            case 0x02:
+                os.write('2');
+                break;
+            case 0x03:
+                os.write('3');
+                break;
+            case 0x04:
+                os.write('4');
+                break;
+            case 0x05:
+                os.write('5');
+                break;
+            case 0x06:
+                os.write('6');
+                break;
+            case 0x07:
+                os.write('7');
+                break;
+            case 0x08:
+                os.write('8');
+                break;
+            case 0x09:
+                os.write('9');
+                break;
+            case 0x0A:
+                os.write('A');
+                break;
+            case 0x0B:
+                os.write('B');
+                break;
+            case 0x0C:
+                os.write('C');
+                break;
+            case 0x0D:
+                os.write('D');
+                break;
+            case 0x0E:
+                os.write('E');
+                break;
+            case 0x0F:
+                os.write('F');
+                break;
+            default:
+                throw new RuntimeException("Not a Number: " + value);
         }
     }
 
-    public void initFhtReporting(Short... fhtDeviceHomeCodes) throws IOException {
-        initFhtReporting(Arrays.asList(fhtDeviceHomeCodes));
-    }
-
-    public void writeFhtMsg(FhtMessage message) throws IOException {
-        writeFhtCmd8b(message.getHousecode(), message.getCommand(), (byte) message.getRawValue());
-    }
-
-    private void setFhzHousecode(short fhz100Housecode) throws IOException {
-        final String data = String.format("T01%04X\r\n", fhz100Housecode);
-        os.write(data.getBytes());
-        LOG.log(Level.INFO, "Set my housecode to {0}: {1}", new Object[]{Fhz1000.houseCodeToString(fhz100Housecode), data});
-    }
 }

@@ -28,88 +28,24 @@ package de.ibapl.fhz4j.protocol.fs20;
  * #L%
  */
 
-import java.util.EnumSet;
-import java.util.Set;
-import de.ibapl.fhz4j.Fhz1000;
 import de.ibapl.fhz4j.api.FhzMessage;
+import de.ibapl.fhz4j.api.FhzProtocol;
 
 /**
  *
  * @author aploese
  */
-public class FS20Message extends FhzMessage<FS20DeviceType> {
+public class FS20Message extends FhzMessage {
 
-    private short housecode;
-    private byte offset;
-    private FS20DeviceType deviceType;
-    private FS20CommandValues command;
+    public short housecode;
+    public byte offset;
+    public FS20CommandValue command;
     
-    
-    @Override
-    protected void toString(StringBuilder sb) {
-        sb.append("housecode: ").append(Fhz1000.houseCodeToString(housecode));
-        sb.append(", offset: ").append(offset);
-        sb.append(", command: ").append(command.getLabel());
-    }
-
-    @Override
-    public byte getByte(FS20DeviceType property) {
-        return command.getValue();
-    }
-
-    @Override
-    public Set<FS20DeviceType> getSupportedProperties() {
-        return EnumSet.of(deviceType); 
-    }
-
-    /**
-     * @return the housecode
-     */
-    public short getHousecode() {
-        return housecode;
-    }
-
-    /**
-     * @param housecode the housecode to set
-     */
-    public void setHousecode(short housecode) {
+    public FS20Message(short housecode, FS20CommandValue fS20CommandValues, byte offset) {
+        super(FhzProtocol.FS20);
         this.housecode = housecode;
-    }
-
-    /**
-     * @return the offset
-     */
-    public byte getOffset() {
-        return offset;
-    }
-
-    /**
-     * @param offset the offset to set
-     */
-    public void setOffset(byte offset) {
+        this.command = fS20CommandValues;
         this.offset = offset;
     }
-
-    /**
-     * @return the command
-     */
-    public FS20CommandValues getCommand() {
-        return command;
-    }
-
-    /**
-     * @param command the command to set
-     */
-    public void setCommand(FS20CommandValues command) {
-        this.command = command;
-    }
-
-    public FS20DeviceType getDeviceType() {
-        return FS20DeviceType.valueOf(command);
-    }
-
-    public String getHousecodeStr() {
-        return String.format("%04X", housecode);
-    }
-
+ 
 }

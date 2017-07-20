@@ -38,41 +38,8 @@ import java.util.Set;
 public class Hms100RmMessage extends HmsMessage {
 
     public Hms100RmMessage(short housecode, Set<HmsDeviceStatus> deviceStatus) {
-        super(housecode, deviceStatus);
+        super(housecode, HmsDeviceType.HMS_100_RM, deviceStatus);
     }
-    private boolean smoke;
+    public boolean smoke;
 
-    @Override
-    public void toString(StringBuilder sb) {
-        super.toString(sb);
-        sb.append(" smoke: ").append(smoke);
-    }
-
-    /**
-     * @return the smoke
-     */
-    public boolean isSmoke() {
-        return smoke;
-    }
-
-    /**
-     * @param smoke the smoke to set
-     */
-    public void setSmoke(boolean smoke) {
-        this.smoke = smoke;
-    }
-
-    @Override
-    public boolean getBoolean(HmsProperty prop) {
-        switch (prop) {
-            case SMOKE_ALERT:
-                return isSmoke();
-        }
-        return super.getBoolean(prop);
-    }
-
-    @Override
-    public HmsDeviceType getDeviceType() {
-        return HmsDeviceType.HMS_100_RM;
-    }
 }

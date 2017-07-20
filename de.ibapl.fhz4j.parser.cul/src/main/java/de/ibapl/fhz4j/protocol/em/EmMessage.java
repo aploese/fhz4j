@@ -29,78 +29,22 @@ package de.ibapl.fhz4j.protocol.em;
  */
 
 import de.ibapl.fhz4j.api.FhzMessage;
+import de.ibapl.fhz4j.api.FhzProtocol;
 import java.util.Set;
 
 /**
  *
  * @author aploese
  */
-public abstract class EmMessage extends FhzMessage<EmProperty> {
+public abstract class EmMessage extends FhzMessage {
 
-    private short address;
-    private short counter;
-
-    @Override
-    protected void toString(StringBuilder sb) {
-        sb.append("type: ").append(getType().getLabel());
-        sb.append(", address: ").append(address);
-        sb.append(", counter: ").append(counter);
-    }
-
-    /**
-     * @return the type
-     */
-    public abstract EmDeviceType getType();
-
-    /**
-     * @return the address
-     */
-    public short getAddress() {
-        return address;
-    }
-
-    /**
-     * @param address the address to set
-     */
-    public void setAddress(short address) {
-        this.address = address;
-    }
-
-    /**
-     * @return the counter
-     */
-    public short getCounter() {
-        return counter;
-    }
-
-    /**
-     * @param counter the counter to set
-     */
-    public void setCounter(short counter) {
-        this.counter = counter;
-    }
-
-    /**
-     * 
-     * @param cummulatedValue the raw value from parser
-     */
-    public abstract void setCumulatedValue(int cummulatedValue);
-
-    /**
-     * 
-     * @param lastValue the raw value from parser
-     */
-    public abstract void setLastValue(int lastValue);
-
-    /**
-     * 
-     * @param maxLastValue the raw value from parser
-     */
-    public abstract void setMaxLastValue(int maxLastValue);
-
-    @Override
-    public Set<EmProperty> getSupportedProperties() {
-        return getType().getProperties(); 
-    }
+    public short address;
+    public short counter;
+    public EmDeviceType emDeviceType;
+    
+    protected EmMessage(EmDeviceType emDeviceType) {
+        super(FhzProtocol.EM);
+        this.emDeviceType = emDeviceType;
+    } 
 
 }

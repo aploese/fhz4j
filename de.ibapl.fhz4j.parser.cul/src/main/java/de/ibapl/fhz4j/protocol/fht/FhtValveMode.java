@@ -1,4 +1,4 @@
-package de.ibapl.fhz4j;
+package de.ibapl.fhz4j.protocol.fht;
 
 /*-
  * #%L
@@ -28,46 +28,18 @@ package de.ibapl.fhz4j;
  * #L%
  */
 
-
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-import static org.junit.Assert.*;
-
 /**
  *
  * @author aploese
  */
-public class Fhz1000Test {
-
-    public Fhz1000Test() {
-    }
-
-    @Before
-    public void setUp() {
-    }
-
-    @After
-    public void tearDown() {
-    }
-
-    @Test
-    public void testHouseCodeToStr() {
-        assertEquals("6794", Fhz1000.houseCodeToString((short)0x435E));
-        assertEquals("0000", Fhz1000.houseCodeToString((short)0x0000));
-        assertEquals("0001", Fhz1000.houseCodeToString((short)0x0001));
-
-        assertEquals("9752", Fhz1000.houseCodeToString((short)0x6134));
-        assertEquals(0X6134, Fhz1000.parseHouseCode("9752"));
-
-        assertEquals("1852", Fhz1000.houseCodeToString((short)0x1234));
-        assertEquals(0X1234, Fhz1000.parseHouseCode("1852"));
+public enum FhtValveMode {
+    OFF,
+    POSITION,
+    ON,
+    LIME_CYCLE,
+    END_OF_SYNC_SEQUENCE,
+    OFFSET_ADJUST,
+    BEEP,
+    PAIRING;
     
-    }
-
-    @Test
-    public void testparseHouseCode() {
-        assertEquals(0x435E, Fhz1000.parseHouseCode("6794"));
-        assertEquals(0x0001, Fhz1000.parseHouseCode("1"));
-    }
 }

@@ -1,4 +1,4 @@
-package de.ibapl.fhz4j.scada;
+package de.ibapl.fhz4j.protocol.fht;
 
 /*-
  * #%L
@@ -28,73 +28,23 @@ package de.ibapl.fhz4j.scada;
  * #L%
  */
 
-import java.util.Calendar;
-
+import java.time.LocalTime;
 
 /**
  *
  * @author aploese
  */
-public class Date {
-    private int year;
-    private byte month;
-    private byte day;
-
-    public Date(Calendar c) {
-        day = (byte)c.get(Calendar.DAY_OF_MONTH);
-        month = (byte)(c.get(Calendar.MONTH) + 1);
-        year = c.get(Calendar.YEAR);
-    }
-
-    public Date() {
+public class FhtTimeMessage extends Fht8bMessage {
     
-    }
-    
-    /**
-     * @return the year
-     */
-    public int getYear() {
-        return year;
-    }
+    public LocalTime time;
 
-    /**
-     * @param year the year to set
-     */
-    public void setYear(int year) {
-        this.year = year;
-    }
-
-    /**
-     * @return the month
-     */
-    public byte getMonth() {
-        return month;
-    }
-
-    /**
-     * @param month the month to set
-     */
-    public void setMonth(byte month) {
-        this.month = month;
-    }
-
-    /**
-     * @return the day
-     */
-    public byte getDay() {
-        return day;
-    }
-
-    /**
-     * @param day the day to set
-     */
-    public void setDay(byte day) {
-        this.day = day;
-    }
-    
-    @Override
-    public String toString() {
-        return String.format("%04d-%02d-%02d", year, month, day);
+    public FhtTimeMessage(short housecode, FhtProperty command, boolean fromFht_8B, boolean dataRegister, int hour, int minute) {
+        super(housecode, command,fromFht_8B, dataRegister);
+        if (hour == 24 && minute == 0) {
+            time = null;
+        } else {
+            time = LocalTime.of(hour, minute);
+        }
     }
 
 }

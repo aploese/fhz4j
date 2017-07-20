@@ -28,52 +28,19 @@ package de.ibapl.fhz4j.protocol.fht;
  * #L%
  */
 
-
-import java.util.Collection;
-import java.util.EnumSet;
-import org.junit.After;
-import org.junit.AfterClass;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
-import static org.junit.Assert.*;
-
 /**
  *
  * @author aploese
  */
-public class FhtPropertyTest {
+public class FhtValveSyncMessage extends FhtMessage {
 
-    public FhtPropertyTest() {
+    public float timeLeft;
+    public boolean bit5;
+    
+    public FhtValveSyncMessage(short housecode, FhtProperty command, float timeLeft, boolean bit5) {
+        super(housecode, command);
+        this.timeLeft = timeLeft;
+        this.bit5 = bit5;
     }
-
-    @BeforeClass
-    public static void setUpClass() throws Exception {
-    }
-
-    @AfterClass
-    public static void tearDownClass() throws Exception {
-    }
-
-    @Before
-    public void setUp() {
-    }
-
-    @After
-    public void tearDown() {
-    }
-
-
-    /**
-     * Test of getFhzPropertiesOf method, of class FhtProperty.
-     */
-    @Test
-    public void testGetFhzPropertiesOf() {
-        System.out.println("getFhzPropertiesOf");
-        FhtDeviceType type = FhtDeviceType.UNKNOWN;
-        Collection<FhtProperty> expResult = EnumSet.of(FhtProperty.UNKNOWN);
-        Collection<FhtProperty> result = FhtProperty.getFhtPropertiesOf(type);
-        assertArrayEquals(expResult.toArray(), result.toArray());
-    }
-
+    
 }

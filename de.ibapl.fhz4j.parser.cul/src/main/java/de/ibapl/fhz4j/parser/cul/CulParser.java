@@ -32,8 +32,6 @@ import de.ibapl.fhz4j.api.FhzDataListener;
 import de.ibapl.fhz4j.api.FhzMessage;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import de.ibapl.spsw.api.Baudrate;
@@ -43,17 +41,15 @@ import de.ibapl.spsw.api.Parity;
 import de.ibapl.spsw.api.SerialPortSocket;
 import de.ibapl.spsw.api.StopBits;
 import de.ibapl.fhz4j.protocol.em.EmMessage;
-import de.ibapl.fhz4j.protocol.fht.Fht80bModes;
-import de.ibapl.fhz4j.protocol.fht.FhtMultiMsgMessage;
 import de.ibapl.fhz4j.protocol.fht.FhtMessage;
-import de.ibapl.fhz4j.protocol.fht.FhtMultiMsgProperty;
-import de.ibapl.fhz4j.protocol.fht.FhtProperty;
 import de.ibapl.fhz4j.protocol.fs20.FS20Message;
 import de.ibapl.fhz4j.protocol.hms.HmsMessage;
 import de.ibapl.fhz4j.protocol.lacrosse.tx2.LaCrosseTx2Message;
 import de.ibapl.fhz4j.parser.api.Parser;
 import de.ibapl.fhz4j.parser.api.ParserListener;
-import de.ibapl.fhz4j.scada.ScadaProperty;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.OutputStream;
 
 /**
  * Parses CUL from www.busware.de
@@ -62,7 +58,9 @@ import de.ibapl.fhz4j.scada.ScadaProperty;
  *
  * @author aploese
  */
-public class CulParser extends Parser implements ParserListener {
+public class CulParser<T extends FhzMessage> extends Parser implements ParserListener<T> {
+
+    private T partialFhzMessage;
 
     public CulParser(FhzDataListener dataListener) {
         this.dataListener = dataListener;
@@ -71,6 +69,7 @@ public class CulParser extends Parser implements ParserListener {
     private static final Logger LOG = Logger.getLogger(LogUtils.FHZ_PARSER_CUL);
     private InputStream is;
     private final StreamListener streamListener = new StreamListener();
+
     private Thread t;
     private boolean closed;
     private final Object closeLock = new Object();
@@ -85,19 +84,33 @@ public class CulParser extends Parser implements ParserListener {
 
     @Override
     public void init() {
+        partialFhzMessage = null;
         fhzMessage = null;
     }
 
     @Override
-    public void success(FhzMessage<? extends ScadaProperty> fhzMessage) {
+    public void success(T fhzMessage) {
         this.fhzMessage = fhzMessage;
         setStackSize(2);
         state = State.SINGNAL_STRENGTH;
     }
 
     @Override
-    public void fail(Object o) {
+    public void fail(Throwable t) {
         state = State.IDLE;
+        dataListener.failed(t);
+    }
+
+    @Override
+    public void successPartial(T fhzMessage) {
+        this.partialFhzMessage = fhzMessage;
+        setStackSize(2);
+        state = State.SINGNAL_STRENGTH;
+    }
+
+    @Override
+    public void successPartialAssembled(T fhzMessage) {
+        this.fhzMessage = fhzMessage;
     }
 
     private enum State {
@@ -119,16 +132,14 @@ public class CulParser extends Parser implements ParserListener {
     private final HmsParser hmsParser = new HmsParser(this);
     private final LaCrosseTx2Parser laCrosseTx2Parser = new LaCrosseTx2Parser(this);
 
-    private FhzMessage<? extends ScadaProperty> fhzMessage;
-    private final Map<Short, FhtMessage> fhtTempMap = new HashMap<>();
-    private final Map<Short, FhtMessage> fhtHolidayMap = new HashMap<>();
-    private final Map<Short, FhtMessage> fhtModeMap = new HashMap<>();
+    private FhzMessage fhzMessage;
 
     @Override
     public void parse(char c) {
 //        LOG.info(String.format("XXX 0x%02X, %s", b, (char) b));
         switch (state) {
             case IDLE:
+                init();
                 switch (c) {
                     case 'E':
                         emParser.init();
@@ -184,7 +195,13 @@ public class CulParser extends Parser implements ParserListener {
                     parse(c); // try to recover
                 }
                 if (getStackpos() == 0) {
-                    fhzMessage.setSignalStrength((float) (((float) getByteValue()) / 2.0 - 74));
+                    if (partialFhzMessage != null) {
+                        partialFhzMessage.signalStrength = (float) (((float) getByteValue()) / 2.0 - 74);
+                    } else if (fhzMessage != null) {
+                        fhzMessage.signalStrength = (float) (((float) getByteValue()) / 2.0 - 74);
+                    } else {
+                        throw new RuntimeException("Should never happen");
+                    }
                     setStackSize(0);
                     state = State.END_CHAR_0X0D;
                 }
@@ -208,81 +225,13 @@ public class CulParser extends Parser implements ParserListener {
                     }
 
                     if (dataListener != null) {
+
+                        if (partialFhzMessage instanceof FhtMessage) {
+                           dataListener.fhtPartialDataParsed((FhtMessage)partialFhzMessage);
+                        }
+
                         if (fhzMessage instanceof FhtMessage) {
-                            final FhtMessage fhtMessage = (FhtMessage) fhzMessage;
-                            dataListener.fhtDataParsed(fhtMessage);
-                            switch (fhtMessage.getCommand()) {
-                                case MEASURED_LOW:
-                                    if (fhtTempMap.containsKey(fhtMessage.getHousecode())) {
-                                        FhtMessage high = fhtTempMap.get(fhtMessage.getHousecode());
-                                        if (FhtProperty.MEASURED_HIGH == high.getCommand()) {
-                                            fhtTempMap.remove(fhtMessage.getHousecode());
-                                            final FhtMultiMsgMessage temp = new FhtMultiMsgMessage(FhtMultiMsgProperty.TEMP, fhtMessage, high);
-                                            if (LOG.isLoggable(Level.FINE)) {
-                                                LOG.fine(temp.toString());
-                                            }
-                                            if (dataListener != null) {
-                                                dataListener.fhtMultiMsgParsed(temp);
-                                            }
-
-                                        } else {
-                                            fhtTempMap.put(fhtMessage.getHousecode(), fhtMessage);
-                                        }
-                                    } else {
-                                        fhtTempMap.put(fhtMessage.getHousecode(), fhtMessage);
-                                    }
-                                    break;
-                                case MEASURED_HIGH:
-                                    if (fhtTempMap.containsKey(fhtMessage.getHousecode())) {
-                                        FhtMessage low = fhtTempMap.get(fhtMessage.getHousecode());
-                                        if (FhtProperty.MEASURED_LOW == low.getCommand()) {
-                                            fhtTempMap.remove(fhtMessage.getHousecode());
-                                            final FhtMultiMsgMessage temp = new FhtMultiMsgMessage(FhtMultiMsgProperty.TEMP, low, fhtMessage);
-                                            if (LOG.isLoggable(Level.FINE)) {
-                                                LOG.fine(temp.toString());
-                                            }
-                                            if (dataListener != null) {
-                                                dataListener.fhtMultiMsgParsed(temp);
-                                            }
-
-                                        } else {
-                                            fhtTempMap.put(fhtMessage.getHousecode(), fhtMessage);
-                                        }
-                                    } else {
-                                        fhtTempMap.put(fhtMessage.getHousecode(), fhtMessage);
-                                    }
-                                    break;
-                                case MODE:
-                                    fhtModeMap.put(fhtMessage.getHousecode(), fhtMessage);
-                                    break;
-                                case HOLIDAY_1:
-                                    fhtHolidayMap.put(fhtMessage.getHousecode(), fhtMessage);
-                                    break;
-                                case HOLIDAY_2:
-                                    if (fhtModeMap.containsKey(fhtMessage.getHousecode())) {
-                                        FhtMultiMsgProperty p;
-                                        switch (Fht80bModes.valueOf(fhtModeMap.get(fhtMessage.getHousecode()).getRawValue())) {
-                                            case HOLIDAY:
-                                                p = FhtMultiMsgProperty.HOLIDAY_END;
-                                                break;
-                                            case PARTY:
-                                                p = FhtMultiMsgProperty.PARTY_END;
-                                                break;
-                                            default:
-                                                throw new RuntimeException();
-                                        }
-                                        FhtMultiMsgMessage hm = new FhtMultiMsgMessage(p, fhtHolidayMap.remove(fhtMessage.getHousecode()), fhtMessage);
-                                        if (LOG.isLoggable(Level.FINE)) {
-                                            LOG.fine(hm.toString());
-                                        }
-                                        if (dataListener != null) {
-                                            dataListener.fhtMultiMsgParsed(hm);
-                                        }
-                                    }
-                                    break;
-
-                                default:
-                            }
+                            dataListener.fhtDataParsed((FhtMessage) fhzMessage);
                         } else if (fhzMessage instanceof HmsMessage) {
                             dataListener.hmsDataParsed((HmsMessage) fhzMessage);
                         } else if (fhzMessage instanceof EmMessage) {
@@ -292,6 +241,7 @@ public class CulParser extends Parser implements ParserListener {
                         } else if (fhzMessage instanceof LaCrosseTx2Message) {
                             dataListener.laCrosseTxParsed((LaCrosseTx2Message) fhzMessage);
                         }
+
                     }
                 } else {
                     //ERRORhandling ???
@@ -359,7 +309,8 @@ public class CulParser extends Parser implements ParserListener {
                 }
             } finally {
             }
-        }
+        } 
+        
     }
 
     private void start() {

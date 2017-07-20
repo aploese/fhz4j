@@ -38,44 +38,9 @@ import java.util.Set;
 public class Hms100WdMessage extends HmsMessage {
     
     public Hms100WdMessage(short housecode, Set<HmsDeviceStatus> deviceStatus) {
-        super(housecode, deviceStatus);
+        super(housecode, HmsDeviceType.HMS_100_WD, deviceStatus);
     }
     
-    private boolean water;
-
-    @Override
-    public void toString(StringBuilder sb) {
-        super.toString(sb);
-        sb.append(" water: ").append(water);
-    }
-
-    /**
-     * @return the water
-     */
-    public boolean isWater() {
-        return water;
-    }
-
-    /**
-     * @param water the water to set
-     */
-    public void setWater(boolean water) {
-        this.water = water;
-    }
-
-    @Override
-    public boolean getBoolean(HmsProperty prop) {
-        switch (prop) {
-            case WATER:
-                return isWater();
-            default:
-                return super.getBoolean(prop);
-        }
-    }
-
-    @Override
-    public HmsDeviceType getDeviceType() {
-        return HmsDeviceType.HMS_100_WD;
-    }
+    public boolean water;
 
 }

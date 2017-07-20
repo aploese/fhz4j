@@ -34,91 +34,13 @@ package de.ibapl.fhz4j.protocol.em;
  */
 public class Em1000EmMessage extends EmMessage {
 
-    private float energy;
-    private float energyLast5Min;
-    private float maxPowerLast5Min;
+    public float energy;
+    public float energyLast5Min;
+    public float maxPowerLast5Min;
 
-    @Override
-    protected void toString(StringBuilder sb) {
-        super.toString(sb);
-        sb.append(", energy: ").append(energy);
-        sb.append(", energyLast5Min: ").append(energyLast5Min);
-        sb.append(", maxPowerLast5Min: ").append(maxPowerLast5Min);
+   
+    public Em1000EmMessage() {
+        super(EmDeviceType.EM_1000_EM);
     }
 
-    /**
-     * @return the energy
-     */
-    public float getEnergy() {
-        return energy;
-    }
-
-    /**
-     * @param energy the energy to set
-     */
-    public void setEnergy(float energy) {
-        this.energy = energy;
-    }
-
-    /**
-     * @return the energyLast5Min
-     */
-    public float getEnergyLast5Min() {
-        return energyLast5Min;
-    }
-
-    /**
-     * @param energyLast5Min the energyLast5Min to set
-     */
-    public void setEnergyLast5Min(float energyLast5Min) {
-        this.energyLast5Min = energyLast5Min;
-    }
-
-    /**
-     * @return the maxPowerLast5Min
-     */
-    public float getMaxPowerLast5Min() {
-        return maxPowerLast5Min;
-    }
-
-    /**
-     * @param maxPowerLast5Min the maxPowerLast5Min to set
-     */
-    public void setMaxPowerLast5Min(float maxPowerLast5Min) {
-        this.maxPowerLast5Min = maxPowerLast5Min;
-    }
-
-    @Override
-    public float getFloat(EmProperty property) {
-        switch (property) {
-            case ELECTRICAL_ENERGY:
-                return energy;
-            case ELECTRICAL_ENERGY_LAST_5_MIN:
-                return energyLast5Min;
-            case ELECTRICAL_POWER_LAST_5_MIN_MAX:
-                return maxPowerLast5Min;
-            default:
-                return super.getFloat(property);
-        }
-    }
-
-    @Override
-    public EmDeviceType getType() {
-        return EmDeviceType.EM_1000_EM;
-    }
-
-    @Override
-    public void setCumulatedValue(int cummulatedValue) {
-        energy = 0.001f * cummulatedValue;
-    }
-
-    @Override
-    public void setLastValue(int lastValue) {
-        energyLast5Min = 0.01f * lastValue;
-    }
-
-    @Override
-    public void setMaxLastValue(int maxLastValue) {
-        maxPowerLast5Min = 0.01f * maxLastValue;
-    }
 }

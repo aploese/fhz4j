@@ -33,19 +33,14 @@ package de.ibapl.fhz4j.protocol.fht;
  *
  * @author aploese
  */
-public enum Fht80bModes {
-    AUTO(0, "Auto"),
-    MANUAL(1, "Manu"),
-    HOLIDAY(2, "Holiday"),
-    PARTY(3, "Party");
+public enum Fht80bWarning {
+    BATT_LOW("Batt Low");
     
     
     final private String label;
-    final private byte value;
 
-    private Fht80bModes(int value, String label) {
+    private Fht80bWarning(String label) {
         this.label = label;
-        this.value = (byte) value;
     }
 
     /**
@@ -59,17 +54,4 @@ public enum Fht80bModes {
         return name();
     }
 
-    public final static Fht80bModes valueOf(int value) {
-        for (Fht80bModes prop : values()) {
-            if (prop.value == (byte) value) {
-                return prop;
-            }
-        }
-        return valueOf(String.valueOf(value));
-    }
-
-    public byte getValue() {
-        return value;
-    }
-    
 }

@@ -28,11 +28,17 @@ package de.ibapl.fhz4j.protocol.fht;
  * #L%
  */
 
-
 /**
  *
  * @author aploese
  */
-public class Fh80b {
+public class Fht80bRawMessage extends Fht8bMessage {
+    
+    public int data;
+
+    public Fht80bRawMessage(short housecode, FhtProperty command, boolean fromFht_8B, boolean dataRegister, int data) {
+        super(housecode, command,fromFht_8B, dataRegister);
+        this.data = data;
+    }
 
 }

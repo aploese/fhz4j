@@ -27,11 +27,9 @@ package de.ibapl.fhz4j.parser.cul;
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  * #L%
  */
-
-
 import java.util.logging.Logger;
 import de.ibapl.fhz4j.LogUtils;
-import de.ibapl.fhz4j.protocol.fs20.FS20CommandValues;
+import de.ibapl.fhz4j.protocol.fs20.FS20CommandValue;
 import de.ibapl.fhz4j.protocol.fs20.FS20Message;
 import de.ibapl.fhz4j.parser.api.Parser;
 import de.ibapl.fhz4j.parser.api.ParserListener;
@@ -46,7 +44,78 @@ public class FS20Parser extends Parser {
     public void init() {
         setStackSize(4);
         state = State.COLLECT_HOUSECODE;
-        fs20Message = new FS20Message();
+        fs20Message = null;
+    }
+
+    private FS20CommandValue getFS20CommandValue(int intValue) {
+        switch (intValue) {
+            case 0x00:
+                return FS20CommandValue.OFF;
+            case 0x01:
+                return FS20CommandValue.DIM_6_PERCENT;
+            case 0x02:
+                return FS20CommandValue.DIM_12_PERCENT;
+            case 0x03:
+                return FS20CommandValue.DIM_18_PERCENT;
+            case 0x04:
+                return FS20CommandValue.DIM_25_PERCENT;
+            case 0x05:
+                return FS20CommandValue.DIM_31_PERCENT;
+            case 0x06:
+                return FS20CommandValue.DIM_37_PERCENT;
+            case 0x07:
+                return FS20CommandValue.DIM_43_PERCENT;
+            case 0x08:
+                return FS20CommandValue.DIM_50_PERCENT;
+            case 0x09:
+                return FS20CommandValue.DIM_56_PERCENT;
+            case 0x0a:
+                return FS20CommandValue.DIM_62_PERCENT;
+            case 0x0b:
+                return FS20CommandValue.DIM_68_PERCENT;
+            case 0x0c:
+                return FS20CommandValue.DIM_75_PERCENT;
+            case 0x0d:
+                return FS20CommandValue.DIM_81_PERCENT;
+            case 0x0e:
+                return FS20CommandValue.DIM_87_PERCENT;
+            case 0x0f:
+                return FS20CommandValue.DIM_93_PERCENT;
+            case 0x10:
+                return FS20CommandValue.DIM_100_PERCENT;
+            case 0x11:
+                return FS20CommandValue.ON;
+            case 0x12:
+                return FS20CommandValue.TOGGLE;
+            case 0x13:
+                return FS20CommandValue.DIM_UP;
+            case 0x14:
+                return FS20CommandValue.DIM_DOWN;
+            case 0x15:
+                return FS20CommandValue.DIM_UP_DOWN;
+            case 0x16:
+                return FS20CommandValue.TIMER;
+            case 0x17:
+                return FS20CommandValue.SENDSATE;
+            case 0x18:
+                return FS20CommandValue.OFF_FOR_TIMER;
+            case 0x19:
+                return FS20CommandValue.ON_FOR_TIMER;
+            case 0x1a:
+                return FS20CommandValue.ON_OLD_FOR_TIMER;
+            case 0x1b:
+                return FS20CommandValue.RESET;
+            case 0x1c:
+                return FS20CommandValue.RAMP_ON_TIME;
+            case 0x1d:
+                return FS20CommandValue.RAMP_OFF_TIME;
+            case 0x1e:
+                return FS20CommandValue.ON_OLD_FOR_TIMER_PREV;
+            case 0x1f:
+                return FS20CommandValue.ON_100_FOR_TIMER_PREV;
+            default:
+                throw new RuntimeException();
+        }
     }
 
     private enum State {
@@ -57,84 +126,55 @@ public class FS20Parser extends Parser {
         PARSE_SUCCESS,
         PARSE_ERROR;
 
-        }
+    }
 
-    
-    
     public FS20Parser(ParserListener parserListener) {
         this.parserListener = parserListener;
     }
-    
+
     private static final Logger LOG = Logger.getLogger(LogUtils.FHZ_PARSER_CUL);
     private final ParserListener parserListener;
     private State state;
     private FS20Message fs20Message;
+    private short housecode;
+    private byte offset;
 
     @Override
     public void parse(char c) {
-        switch(state) {
-                        //FHT
-            case COLLECT_HOUSECODE:
-                try {
+        try {
+            switch (state) {
+                //FHT
+                case COLLECT_HOUSECODE:
                     push(digit2Int(c));
-                } catch (RuntimeException ex) {
-                    LOG.warning(String.format("Collect housecode - Wrong char: 0x%02x %s", (byte)c, c));
-                    state = State.PARSE_ERROR;
-                    parserListener.fail(fs20Message);
-                    return;
-                }
-                if (getStackpos() == 0) {
-                    fs20Message.setHousecode(getShortValue());
-                    setStackSize(2);
-                    state = State.COLLECT_OFFSET;
-                }
-                break;
-            case COLLECT_OFFSET:
-                try {
-                    push(digit2Int(c));
-                } catch (RuntimeException ex) {
-                    LOG.warning(String.format("Collect command - Wrong char: 0x%02x %s", (byte)c, c));
-                    state = State.PARSE_ERROR;
-                    parserListener.fail(fs20Message);
-                    return;
-                }
-                if (getStackpos() == 0) {
-                    try {
-                        fs20Message.setOffset(getByteValue());
-                    } catch (Exception ex) {
-                        LOG.warning(String.format("Wrong Command - Wrong number: 0x%04x", getIntValue()));
-                        state = State.PARSE_ERROR;
-                    parserListener.fail(fs20Message);
-                    return;
+                    if (getStackpos() == 0) {
+                        housecode = getShortValue();
+                        setStackSize(2);
+                        state = State.COLLECT_OFFSET;
                     }
-                    setStackSize(2);
-                    state = State.COLLECT_COMMAND;
-                }
-                break;
-            case COLLECT_COMMAND:
-                try {
+                    break;
+                case COLLECT_OFFSET:
                     push(digit2Int(c));
-                } catch (RuntimeException ex) {
-                    LOG.warning(String.format("Collect origin - Wrong char: 0x%02x %s", (byte)c, c));
-                    state = State.PARSE_ERROR;
-                    parserListener.fail(fs20Message);
-                    return;
-                }
-                if (getStackpos() == 0) {
-                    try {
-                        fs20Message.setCommand(FS20CommandValues.valueOf(getIntValue()));
+                    if (getStackpos() == 0) {
+                        offset = getByteValue();
+                        setStackSize(2);
+                        state = State.COLLECT_COMMAND;
+                    }
+                    break;
+                case COLLECT_COMMAND:
+                    push(digit2Int(c));
+                    if (getStackpos() == 0) {
+                        fs20Message = new FS20Message(housecode, getFS20CommandValue(getIntValue()), offset);
                         state = State.PARSE_SUCCESS;
                         parserListener.success(fs20Message);
-                    } catch (IllegalArgumentException ex) {
-                        LOG.severe(ex.getMessage());
-                        state = State.PARSE_ERROR;
-                        parserListener.fail(ex);
+                        setStackSize(0);
                     }
-                    setStackSize(0);
-                }
-                break;
+                    break;
 
+            }
+        } catch (Throwable t) {
+            parserListener.fail(new RuntimeException(String.format("State: %s last char %s", state, c), t));
+            state = State.PARSE_ERROR;
         }
     }
-    
+
 }

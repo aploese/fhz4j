@@ -29,45 +29,18 @@ package de.ibapl.fhz4j.protocol.fht;
  */
 
 
+
 /**
  *
  * @author aploese
  */
-public enum Fht80bWarnings {
-    NONE(0, "NONE"),
-    BATT_LOW(1, "Batt Low");
-    
-    
-    final private String label;
-    final private byte value;
+public class FhtModeMessage extends Fht8bMessage {
 
-    private Fht80bWarnings(int value, String label) {
-        this.label = label;
-        this.value = (byte) value;
-    }
+    public Fht80bMode mode;
 
-    /**
-     * @return the label
-     */
-    public String getLabel() {
-        return label;
-    }
-
-    public String getName() {
-        return name();
-    }
-
-    public final static Fht80bWarnings valueOf(int value) {
-        for (Fht80bWarnings prop : values()) {
-            if (prop.value == (byte) value) {
-                return prop;
-            }
-        }
-        return valueOf(String.valueOf(value));
-    }
-
-    public byte getValue() {
-        return value;
+    public FhtModeMessage(short housecode, boolean fromFht_8B, boolean dataRegister, Fht80bMode fhtMode) {
+        super(housecode, FhtProperty.MODE, fromFht_8B, dataRegister);
+        this.mode = fhtMode;
     }
     
 }

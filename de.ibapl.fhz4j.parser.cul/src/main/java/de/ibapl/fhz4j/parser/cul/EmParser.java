@@ -27,7 +27,6 @@ package de.ibapl.fhz4j.parser.cul;
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  * #L%
  */
-
 import java.util.logging.Logger;
 import de.ibapl.fhz4j.LogUtils;
 import de.ibapl.fhz4j.protocol.em.Em1000EmMessage;
@@ -62,6 +61,7 @@ public class EmParser extends Parser {
         emMessage = null;
     }
 
+    //swap bytes of short
     private int reorderBytes(int value) {
         // order in stack n, n+1, n+2, n+3, but we need n+2, n+3, n, n+1
         return (value & 0xFF00) >> 8 | (value & 0x00FF) << 8;
@@ -91,121 +91,93 @@ public class EmParser extends Parser {
 
     @Override
     public void parse(char c) {
-        switch (state) {
-            case COLLECT_TYPE:
-                try {
+        try {
+            switch (state) {
+                case COLLECT_TYPE:
                     push(digit2Int(c));
-                } catch (RuntimeException ex) {
-                    LOG.warning(String.format("Collect type - Wrong char: 0x%02x %s", (byte)c, c));
-                    state = State.PARSE_ERROR;
-                    parserListener.fail(emMessage);
-                    return;
-                }
-                if (getStackpos() == 0) {
-                    switch (getShortValue()) {
-                        case 1:
-                            emMessage = new Em1000SMessage();
-                            break;
-                        case 2:
-                            emMessage = new Em1000EmMessage();
-                            break;
-                        case 3:
-                            emMessage = new Em1000GzMessage();
-                            break;
-                        default:
-                            LOG.warning(String.format("Collect command - Wrong char: 0x%02x %s", (byte)c, c));
-                            state = State.PARSE_ERROR;
-                            parserListener.fail(emMessage);
-                            return;
+                    if (getStackpos() == 0) {
+                        switch (getShortValue()) {
+                            case 1:
+                                emMessage = new Em1000SMessage();
+                                break;
+                            case 2:
+                                emMessage = new Em1000EmMessage();
+                                break;
+                            case 3:
+                                emMessage = new Em1000GzMessage();
+                                break;
+                            default:
+                                throw new RuntimeException("Wrong Type");
+                        }
+                        setStackSize(2);
+                        state = State.COLLECT_ADDRESS;
                     }
-                    setStackSize(2);
-                    state = State.COLLECT_ADDRESS;
-                }
-                break;
-            case COLLECT_ADDRESS:
-                try {
+                    break;
+                case COLLECT_ADDRESS:
                     push(digit2Int(c));
-                } catch (RuntimeException ex) {
-                    LOG.warning(String.format("Collect address - Wrong char: 0x%02x %s", (byte)c, c));
-                    state = State.PARSE_ERROR;
-                    parserListener.fail(emMessage);
-                    return;
-                }
-                if (getStackpos() == 0) {
-                    try {
-                        emMessage.setAddress(getShortValue());
-                    } catch (Exception ex) {
-                        LOG.warning(String.format("Wrong address - Wrong number: 0x%02x", getShortValue()));
-                        state = State.PARSE_ERROR;
-                        parserListener.fail(emMessage);
-                        return;
+                    if (getStackpos() == 0) {
+                        emMessage.address = getShortValue();
+                        setStackSize(2);
+                        state = State.COLLECT_COUNTER;
                     }
-                    setStackSize(2);
-                    state = State.COLLECT_COUNTER;
-                }
-                break;
-            case COLLECT_COUNTER:
-                try {
+                    break;
+                case COLLECT_COUNTER:
                     push(digit2Int(c));
-                } catch (RuntimeException ex) {
-                    LOG.warning(String.format("Collect counter - Wrong char: 0x%02x %s", (byte)c, c));
-                    state = State.PARSE_ERROR;
-                    parserListener.fail(emMessage);
-                    return;
-                }
-                if (getStackpos() == 0) {
-                    emMessage.setCounter(getShortValue());
-                    setStackSize(4);
-                    state = State.COLLECT_CUMULATED_VALUE;
-                }
-                break;
-            case COLLECT_CUMULATED_VALUE:
-                try {
+                    if (getStackpos() == 0) {
+                        emMessage.counter = getShortValue();
+                        setStackSize(4);
+                        state = State.COLLECT_CUMULATED_VALUE;
+                    }
+                    break;
+                case COLLECT_CUMULATED_VALUE:
                     push(digit2Int(c));
-                } catch (RuntimeException ex) {
-                    LOG.warning(String.format("Collect cumulated value - Wrong char: 0x%02x %s", (byte)c, c));
-                    state = State.PARSE_ERROR;
-                    parserListener.fail(emMessage);
-                    return;
-                }
-                if (getStackpos() == 0) {
-                    emMessage.setCumulatedValue(reorderBytes(getIntValue()));
-                    setStackSize(4);
-                    state = State.COLLECT_LAST_VALUE;
-                }
-                break;
-            case COLLECT_LAST_VALUE:
-                try {
+                    if (getStackpos() == 0) {
+                        switch (emMessage.emDeviceType) {
+                            case EM_1000_EM:
+                                ((Em1000EmMessage) emMessage).energy = 0.001f * reorderBytes(getIntValue());
+                                break;
+                            default:
+                                throw new RuntimeException("Not implemented yet");
+                        }
+                        setStackSize(4);
+                        state = State.COLLECT_LAST_VALUE;
+                    }
+                    break;
+                case COLLECT_LAST_VALUE:
                     push(digit2Int(c));
-                } catch (RuntimeException ex) {
-                    LOG.warning(String.format("Collect last value - Wrong char: 0x%02x %s", (byte)c, c));
-                    state = State.PARSE_ERROR;
-                    parserListener.fail(emMessage);
-                    return;
-                }
-                if (getStackpos() == 0) {
-                    emMessage.setLastValue(reorderBytes(getIntValue()));
-                    setStackSize(4);
-                    state = State.COLLECT_LAST_MAX_VALUE;
-                }
-                break;
-            case COLLECT_LAST_MAX_VALUE:
-                try {
+                    if (getStackpos() == 0) {
+                        switch (emMessage.emDeviceType) {
+                            case EM_1000_EM:
+                                ((Em1000EmMessage) emMessage).energyLast5Min = 0.01f * reorderBytes(getIntValue());
+                                break;
+                            default:
+                                throw new RuntimeException("Not implemented yet");
+                        }
+                        setStackSize(4);
+                        state = State.COLLECT_LAST_MAX_VALUE;
+                    }
+                    break;
+                case COLLECT_LAST_MAX_VALUE:
                     push(digit2Int(c));
-                } catch (RuntimeException ex) {
-                    LOG.warning(String.format("Collect top value - Wrong char: 0x%02x %s", (byte)c, c));
-                    state = State.PARSE_ERROR;
-                    parserListener.fail(emMessage);
-                    return;
-                }
-                if (getStackpos() == 0) {
-                    emMessage.setMaxLastValue(reorderBytes(getIntValue()));
-                    setStackSize(2);
-                    state = State.PARSE_SUCCESS;
-                    parserListener.success(emMessage);
-                }
-                break;
+                    if (getStackpos() == 0) {
+                        switch (emMessage.emDeviceType) {
+                            case EM_1000_EM:
+                                ((Em1000EmMessage) emMessage).maxPowerLast5Min = 0.01f * reorderBytes(getIntValue());
+                                break;
+                            default:
+                                throw new RuntimeException("Not implemented yet");
+                        }
+                        setStackSize(2);
+                        state = State.PARSE_SUCCESS;
+                        parserListener.success(emMessage);
+                    }
+                    break;
+            }
+        } catch (Throwable t) {
+            parserListener.fail(new RuntimeException(String.format("State: %s last char %s", state, c), t));
+            state = State.PARSE_ERROR;
         }
+
     }
 
 }

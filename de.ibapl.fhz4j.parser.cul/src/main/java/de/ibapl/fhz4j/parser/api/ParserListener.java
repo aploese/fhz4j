@@ -1,7 +1,6 @@
 package de.ibapl.fhz4j.parser.api;
 
 import de.ibapl.fhz4j.api.FhzMessage;
-import de.ibapl.fhz4j.scada.ScadaProperty;
 
 /*-
  * #%L
@@ -36,10 +35,20 @@ import de.ibapl.fhz4j.scada.ScadaProperty;
  *
  * @author aploese
  */
-public interface ParserListener {
+public interface ParserListener<T extends FhzMessage> {
     
-    void success(FhzMessage<? extends ScadaProperty> fhzMessage);
+    void success(T fhzMessage);
     
-    void fail(Object o);
+    /**
+     * The partial message of multiple partial messages
+    */
+    void successPartial(T fhzMessage);
+    
+    /**
+     * The resulting message of multiple partial messages
+    */
+    void successPartialAssembled(T fhzMessage);
+
+    void fail(Throwable t);
 
 }

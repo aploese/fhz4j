@@ -37,63 +37,11 @@ import java.util.Set;
  */
 public class Hms100TfMessage extends HmsMessage {
 
-    private float temp;
-    private float humidy;
+    public float temp;
+    public float humidy;
 
     public Hms100TfMessage(short housecode, Set<HmsDeviceStatus> deviceStatus) {
-        super(housecode, deviceStatus);
-    }
-
-    /**
-     * @return the temp
-     */
-    public float getTemp() {
-        return temp;
-    }
-
-    /**
-     * @param temp the temp to set
-     */
-    public void setTemp(float temp) {
-        this.temp = temp;
-    }
-
-    /**
-     * @return the humidy
-     */
-    public float getHumidy() {
-        return humidy;
-    }
-
-    /**
-     * @param humidy the humidy to set
-     */
-    public void setHumidy(float humidy) {
-        this.humidy = humidy;
-    }
-
-    @Override
-    public void toString(StringBuilder sb) {
-        super.toString(sb);
-        sb.append(" temp: ").append(temp);
-        sb.append(", humidy: ").append(humidy);
-    }
-
-    @Override
-    public float getFloat(HmsProperty prop) {
-        switch (prop) {
-            case HUMIDY:
-                return getHumidy();
-            case TEMP:
-                return getTemp();
-            default:
-                return super.getFloat(prop);
-        }
-    }
-
-    @Override
-    public HmsDeviceType getDeviceType() {
-        return HmsDeviceType.HMS_100_TF;
+        super(housecode, HmsDeviceType.HMS_100_TF, deviceStatus);
     }
 
 }

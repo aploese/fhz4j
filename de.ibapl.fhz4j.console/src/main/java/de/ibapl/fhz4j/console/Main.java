@@ -27,7 +27,6 @@ package de.ibapl.fhz4j.console;
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  * #L%
  */
-
 import de.ibapl.fhz4j.LogUtils;
 import de.ibapl.fhz4j.api.FhzDataListener;
 import de.ibapl.fhz4j.parser.cul.CulParser;
@@ -37,19 +36,21 @@ import de.ibapl.spsw.api.SerialPortSocket;
 import de.ibapl.spsw.provider.SerialPortSocketFactoryImpl;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.text.SimpleDateFormat;
 
-import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import de.ibapl.fhz4j.protocol.fht.FhtMessage;
-import de.ibapl.fhz4j.protocol.fht.FhtMultiMsgMessage;
+import de.ibapl.fhz4j.protocol.fht.FhtProperty;
 import de.ibapl.fhz4j.protocol.fs20.FS20Message;
 
 import de.ibapl.fhz4j.protocol.hms.HmsMessage;
 import de.ibapl.fhz4j.protocol.lacrosse.tx2.LaCrosseTx2Message;
+import java.time.DayOfWeek;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.HelpFormatter;
@@ -58,7 +59,6 @@ import org.apache.commons.cli.OptionGroup;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 import org.apache.commons.cli.PosixParser;
-
 
 /**
  * DOCUMENT ME!
@@ -69,11 +69,17 @@ public class Main {
 
     private static final Logger LOG = Logger.getLogger(LogUtils.FHZ_CONSOLE);
 
-    static class FhzListener implements FhzDataListener {
+    private class FhzListener implements FhzDataListener {
 
         @Override
         public void fhtDataParsed(FhtMessage fhtMessage) {
-            DEVICES_HOME_CODE.add(fhtMessage.getHousecode());
+            if(DEVICES_HOME_CODE.add(fhtMessage.housecode)) {
+                try {
+                    culWriter.initFhtReporting(fhtMessage.housecode);
+                } catch (Throwable t) {
+                    //no-op
+                }
+            }
             printTimeStamp();
             System.out.println(fhtMessage.toString());
         }
@@ -81,13 +87,7 @@ public class Main {
         @Override
         public void hmsDataParsed(HmsMessage hmsMsg) {
             printTimeStamp();
-            System.out.println(hmsMsg);
-        }
-
-        @Override
-        public void fhtMultiMsgParsed(FhtMultiMsgMessage fhtTempMessage) {
-            printTimeStamp();
-            System.out.println(fhtTempMessage.toString());
+            System.out.println(hmsMsg.toString());
         }
 
         @Override
@@ -108,11 +108,28 @@ public class Main {
             System.out.println(laCrosseTx2Msg.toString());
         }
 
-        SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+        DateTimeFormatter df = DateTimeFormatter.ISO_LOCAL_DATE_TIME; //("yyyy-MM-dd hh:mm:ss");
 
         private void printTimeStamp() {
-            System.out.print(df.format(new Date()));
+            System.out.print(df.format(LocalDateTime.now()));
             System.out.print(": ");
+        }
+
+        @Override
+        public void fhtPartialDataParsed(FhtMessage fhtMessage) {
+            printTimeStamp();
+            System.out.println(fhtMessage.toString());
+        }
+
+        @Override
+        public void failed(Throwable t) {
+            System.err.print(df.format(LocalDateTime.now()));
+            System.err.print(": ");
+            while (t != null) {
+                t.printStackTrace();
+                System.err.println("");
+                t = t.getCause();
+            }
         }
 
     }
@@ -181,31 +198,37 @@ public class Main {
             return;
         }
 
-        Date startTime = new Date();
-        run(cmd.getOptionValue("port"));
+        new Main().run(cmd.getOptionValue("port"));
     }
 
-    private final static Set<Short> DEVICES_HOME_CODE = new HashSet<>();
+    private final Set<Short> DEVICES_HOME_CODE = new HashSet<>();
+    private SerialPortSocket serialPort;
+    private CulParser culParser;
+    private CulWriter culWriter;
 
     /**
      * DOCUMENT ME!
      *
      * @param port DOCUMENT ME!
      */
-    public static void run(String port) {
-        SerialPortSocket masterPort = SerialPortSocketFactoryImpl.singleton().createSerialPortSocket(port);
-        CulParser p = new CulParser(new FhzListener());
-        CulWriter w = new CulWriter();
+    public void run(String port) {
+        serialPort = SerialPortSocketFactoryImpl.singleton().createSerialPortSocket(port);
+        culParser = new CulParser(new FhzListener());
+        culWriter = new CulWriter();
         try {
-            CulParser.openPort(masterPort);
-            p.setInputStream(masterPort.getInputStream());
-            w.setOutputStream(masterPort.getOutputStream());
+            CulParser.openPort(serialPort);
+            culParser.setInputStream(serialPort.getInputStream());
+            culWriter.setOutputStream(serialPort.getOutputStream());
             try {
                 Thread.sleep(100);
             } catch (InterruptedException ex) {
                 LOG.log(Level.SEVERE, null, ex);
             }
-            w.initFhz((short) 1234);
+            culWriter.initFhz((short) 1234);
+//        culWriter.writeFhtCycle((short) 302, DayOfWeek.MONDAY, LocalTime.of(5, 0), LocalTime.of(8, 30), null, null);
+//            culWriter.writeFht((short)302, FhtProperty.DESIRED_TEMP, 24.0f);
+//            w.writeFhtModeManu((short)302);
+//            w.writeFhtModeHoliday((short) 302, 16.0f, LocalDate.now().plusMonths(2).plusDays(4));
         } catch (IOException ex) {
             LOG.log(Level.SEVERE, ex.getMessage(), ex);
             throw new RuntimeException(ex);
@@ -220,7 +243,7 @@ public class Main {
                         System.out.print("Bye will close down!");
                         break;
                     case 'r':
-                        w.initFhtReporting(DEVICES_HOME_CODE);
+                        culWriter.initFhtReporting(DEVICES_HOME_CODE);
                         break;
                     default:
                 }
@@ -231,13 +254,13 @@ public class Main {
         }
         System.out.println("CLOSE");
         try {
-            p.close();
+            culParser.close();
         } catch (InterruptedException ex) {
             LOG.log(Level.SEVERE, null, ex);
         }
 
         try {
-            masterPort.close();
+            serialPort.close();
         } catch (IOException e) {
             LOG.log(Level.SEVERE, "Ex during close", e);
         }

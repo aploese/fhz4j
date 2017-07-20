@@ -29,42 +29,22 @@ package de.ibapl.fhz4j.protocol.lacrosse.tx2;
  */
 
 import de.ibapl.fhz4j.api.FhzMessage;
-import java.util.Set;
+import de.ibapl.fhz4j.api.FhzProtocol;
 
 /**
  *
  * @author aploese
  */
-public class LaCrosseTx2Message extends FhzMessage<LaCrosseTx2Property>{
+public class LaCrosseTx2Message extends FhzMessage{
 
-    private LaCrosseTx2Property laCrosseTx2Property;
-    private short address;
-    private float value;
+    public LaCrosseTx2Property laCrosseTx2Property;
+    public short address;
+    public float value;
     
-    @Override
-    protected void toString(StringBuilder sb) {
-        sb.append("address: ").append(Integer.toHexString(address)).append(", type: ").append(laCrosseTx2Property).append(", value: ").append(value);
-    }
-
-    @Override
-    public Set<LaCrosseTx2Property> getSupportedProperties() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-    
-    public void setProperty(LaCrosseTx2Property laCrosseTx2Property) {
+ 
+    public LaCrosseTx2Message(LaCrosseTx2Property laCrosseTx2Property) {
+        super(FhzProtocol.LA_CROSSE_TX2);
         this.laCrosseTx2Property = laCrosseTx2Property;
-    }
-
-    public void setAddress(short address) {
-        this.address = address;
-    }
-    
-    public void setData(float value) {
-        this.value = value;
-    }
-
-    public LaCrosseTx2Property getProperty() {
-        return laCrosseTx2Property;
     }
     
 }

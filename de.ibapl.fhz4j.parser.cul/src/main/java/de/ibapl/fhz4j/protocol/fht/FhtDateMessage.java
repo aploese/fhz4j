@@ -1,4 +1,4 @@
-package de.ibapl.fhz4j.protocol.hms;
+package de.ibapl.fhz4j.protocol.fht;
 
 /*-
  * #%L
@@ -28,51 +28,21 @@ package de.ibapl.fhz4j.protocol.hms;
  * #L%
  */
 
-
-import java.util.EnumSet;
-import org.junit.After;
-import org.junit.AfterClass;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
-import static org.junit.Assert.*;
+import java.time.LocalDate;
 
 /**
  *
  * @author aploese
  */
-public class Hms100TfMessageTest {
+public class FhtDateMessage extends Fht8bMessage {
+    
+    public int day;
+    public int month;
 
-    public Hms100TfMessageTest() {
+    public FhtDateMessage(short housecode, FhtProperty command, boolean fromFht_8B, boolean dataRegister, int month, int day) {
+        super(housecode, command,fromFht_8B, dataRegister);
+        this.month = month;
+        this.day = day;
     }
 
-    @BeforeClass
-    public static void setUpClass() throws Exception {
-    }
-
-    @AfterClass
-    public static void tearDownClass() throws Exception {
-    }
-
-    @Before
-    public void setUp() {
-    }
-
-    @After
-    public void tearDown() {
-    }
-
-    /**
-     * Test get all props.
-     */
-    @Test
-    public void testGetProps() {
-        System.out.println("get props");
-        Hms100TfMessage instance = new Hms100TfMessage((short)1234, EnumSet.noneOf(HmsDeviceStatus.class));
-        instance.setTemp(45);
-        instance.setHumidy(22);
-        for (HmsProperty prop : HmsDeviceType.HMS_100_TF.getProperties()) {
-            instance.toString(prop);
-        }
-    }
 }

@@ -1,4 +1,4 @@
-package de.ibapl.fhz4j.protocol.hms;
+package de.ibapl.fhz4j.protocol.fht;
 
 /*-
  * #%L
@@ -28,51 +28,23 @@ package de.ibapl.fhz4j.protocol.hms;
  * #L%
  */
 
-
-import java.util.EnumSet;
-import org.junit.After;
-import org.junit.AfterClass;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
-import static org.junit.Assert.*;
-
 /**
  *
  * @author aploese
  */
-public class Hms100TfkMessageTest {
+public class FhtValvePosMessage extends FhtMessage {
     
-    public Hms100TfkMessageTest() {
-    }
+    public FhtValveMode mode;
+    public boolean repeated;
+    public float position;
+    public boolean allowLowBatteryBeep;
 
-    @BeforeClass
-    public static void setUpClass() throws Exception {
-    }
-
-    @AfterClass
-    public static void tearDownClass() throws Exception {
-    }
-    
-    @Before
-    public void setUp() {
+    public FhtValvePosMessage(short housecode, FhtProperty command, boolean repeated, FhtValveMode mode, float position, boolean allowLowBatteryBeep) {
+        super(housecode, command);
+        this.repeated = repeated;
+        this.mode = mode;
+        this.position = position;
+        this.allowLowBatteryBeep = allowLowBatteryBeep;
     }
     
-    @After
-    public void tearDown() {
-    }
-
-    /**
-     * Test get all props.
-     */
-    @Test
-    public void testGetProps() {
-        System.out.println("get props");
-        Hms100TfkMessage instance = new Hms100TfkMessage((short)1234, EnumSet.noneOf(HmsDeviceStatus.class));
-        instance.setOpen(true);
-        for (HmsProperty prop : HmsDeviceType.HMS_100_TFK.getProperties()) {
-                    instance.toString(prop);
-        }
-    }
-
 }

@@ -35,10 +35,10 @@ package de.ibapl.fhz4j.api;
  */
 public enum FhzProtocol {
     FHT("FHT"),
-    FHT_MULTI_MSG("FHT Multi Message"),
     FS20("FS 20"),
     EM("EM"),
     HMS("HMS"),
+    LA_CROSSE_TX2("LaCrosse Tx2"),
     UNKNOWN("Unknown");
     
     private final String label;

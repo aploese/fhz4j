@@ -38,42 +38,8 @@ import java.util.Set;
 public class Hms100TfkMessage extends HmsMessage {
 
     public Hms100TfkMessage(short housecode, Set<HmsDeviceStatus> deviceStatus) {
-        super(housecode, deviceStatus);
+        super(housecode, HmsDeviceType.HMS_100_TFK, deviceStatus);
     }
-    private boolean open;
+    public boolean open;
 
-    @Override
-    public void toString(StringBuilder sb) {
-        super.toString(sb);
-        sb.append(" open: ").append(open);
-    }
-
-    /**
-     * @return the open
-     */
-    public boolean isOpen() {
-        return open;
-    }
-
-    /**
-     * @param open the open to set
-     */
-    public void setOpen(boolean open) {
-        this.open = open;
-    }
-
-    @Override
-    public boolean getBoolean(HmsProperty prop) {
-        switch (prop) {
-            case DOOR_WINDOW_OPEN:
-                return isOpen();
-        }
-        return super.getBoolean(prop);
-
-    }
-
-    @Override
-    public HmsDeviceType getDeviceType() {
-        return HmsDeviceType.HMS_100_TFK;
-    }
 }

@@ -30,7 +30,6 @@ package de.ibapl.fhz4j.api;
 
 
 import de.ibapl.fhz4j.protocol.em.EmMessage;
-import de.ibapl.fhz4j.protocol.fht.FhtMultiMsgMessage;
 import de.ibapl.fhz4j.protocol.fht.FhtMessage;
 import de.ibapl.fhz4j.protocol.fs20.FS20Message;
 import de.ibapl.fhz4j.protocol.hms.HmsMessage;
@@ -46,12 +45,18 @@ public interface FhzDataListener {
 
     void fs20DataParsed(FS20Message fs20Msg);
 
-    void fhtDataParsed(FhtMessage fhtMessage);
+    /** some stuff is send in parts i.E. the measures temerature (low and high)
+     * 
+     * @param fhtMessage 
+     */
+    void fhtPartialDataParsed(FhtMessage fhtMessage);
 
-    void fhtMultiMsgParsed(FhtMultiMsgMessage fhtMultiMsgMessage);
+    void fhtDataParsed(FhtMessage fhtMessage);
 
     void hmsDataParsed(HmsMessage hmsMsg);
     
     void laCrosseTxParsed(LaCrosseTx2Message laCrosseTx2Msg);
+
+    void failed(Throwable t);
 
 }

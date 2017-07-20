@@ -27,10 +27,8 @@ package de.ibapl.fhz4j.parser.cul;
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  * #L%
  */
-
 import de.ibapl.fhz4j.api.FhzDataListener;
 import de.ibapl.fhz4j.protocol.em.EmMessage;
-import de.ibapl.fhz4j.protocol.fht.FhtMultiMsgMessage;
 import de.ibapl.fhz4j.protocol.fht.FhtMessage;
 import de.ibapl.fhz4j.protocol.fs20.FS20Message;
 import de.ibapl.fhz4j.protocol.hms.HmsMessage;
@@ -51,11 +49,12 @@ public class CulParserTest implements FhzDataListener {
 
     private CulParser parser;
     private FhtMessage fhtMessage;
-    private FhtMultiMsgMessage fhtMultiMsgMessage;
     private HmsMessage hmsMsg;
     private EmMessage emMsg;
     private FS20Message fs20Msg;
     private LaCrosseTx2Message laCrosseTx2Message;
+    private FhtMessage fhtPartialMessage;
+    private Throwable failed;
 
     public CulParserTest() {
     }
@@ -80,56 +79,23 @@ public class CulParserTest implements FhzDataListener {
 
     private void decode(String s) {
         fhtMessage = null;
-        fhtMultiMsgMessage = null;
+        fhtPartialMessage = null;
         hmsMsg = null;
         emMsg = null;
         laCrosseTx2Message = null;
+        failed = null;
         for (char c : s.toCharArray()) {
             parser.parse(c);
         }
     }
 
     @Test
-    public void testSomeMethod() {
-        decode("T1B0100A600\r\n");
-        assertNotNull(fhtMessage);
-        assertEquals("housecode: 2701, command: valve, description: same pos absolute, value: 0.0% signal strength: 0.0 dB", fhtMessage.toString());
-
-        decode("T4D5400A600\r\n");
-        assertNotNull(fhtMessage);
-        assertEquals("housecode: 7784, command: valve, description: same pos absolute, value: 0.0% signal strength: 0.0 dB", fhtMessage.toString());
-        decode("T435E002626\r\n");
-        assertNotNull(fhtMessage);
-        assertEquals("housecode: 6794, command: valve, description: changed pos absolute, value: 14.9% signal strength: 0.0 dB", fhtMessage.toString());
-        decode("T212700262C\r\n");
-        assertNotNull(fhtMessage);
-        assertEquals("housecode: 3339, command: valve, description: changed pos absolute, value: 17.3% signal strength: 0.0 dB", fhtMessage.toString());
-        decode("T1B0100A600\r\n");
-        assertNotNull(fhtMessage);
-        assertEquals("housecode: 2701, command: valve, description: same pos absolute, value: 0.0% signal strength: 0.0 dB", fhtMessage.toString());
-        decode("T4D5400A600\r\n");
-        assertNotNull(fhtMessage);
-        assertEquals("housecode: 7784, command: valve, description: same pos absolute, value: 0.0% signal strength: 0.0 dB", fhtMessage.toString());
-
-    }
-
-    @Test
-    public void decode_FHT_25_1_Degree_Centigrade() {
-        decode("T61344269FBFC\r\n");
-        assertNotNull(fhtMessage);
-        assertEquals("housecode: 9752, command: measured low, description: from FHT-B data register, value: 25.1°C signal strength: -76.0 dB", fhtMessage.toString());
-    }
-
-    @Test
     public void decode_FHT_26_0_Degree_Centigrade() {
         decode("T370A42690406\r\n");
-        assertNotNull(fhtMessage);
-        assertEquals("housecode: 5510, command: measured low, description: from FHT-B data register, value: 0.4°C signal strength: -71.0 dB", fhtMessage.toString());
+        assertNotNull(fhtPartialMessage);
         decode("T370A43690106\r\n");
+        assertNotNull(fhtPartialMessage);
         assertNotNull(fhtMessage);
-        assertEquals("housecode: 5510, command: measured high, description: from FHT-B data register, value: 25.6°C signal strength: -71.0 dB", fhtMessage.toString());
-        assertNotNull(fhtMultiMsgMessage);
-        assertEquals("housecode: 5510, measured temperature (combined): 26.0°C", fhtMultiMsgMessage.toString());
     }
 
     @Test
@@ -144,44 +110,13 @@ public class CulParserTest implements FhzDataListener {
         decode("T370A40010106\r\n");
         assertNotNull(fhtMessage);
         assertEquals("housecode: 5510, command: holiday 2, description:  0x0 0x1, value: 1 signal strength: -71.0 dB", fhtMessage.toString());
-        assertNotNull(fhtMultiMsgMessage);
-        assertEquals("", fhtMultiMsgMessage.toString());
+//        assertNotNull(fhtMultiMsgMessage);
+//        assertEquals("", fhtMultiMsgMessage.toString());
+        fail();
     }
 
     @Test
-    public void decode_LA_CROSSE_TX2() {
-        decode("tA00E73173D\r\n");
-        assertNotNull(laCrosseTx2Message);
-        assertEquals("address: 7, type: TEMP, value: 23.1 signal strength: 0.0 dB", laCrosseTx2Message.toString());
-        decode("tAECC60060C\r\n");
-        assertNotNull(laCrosseTx2Message);
-        assertEquals("address: 66, type: HUMIDITY, value: 60.0 signal strength: 0.0 dB", laCrosseTx2Message.toString());
-        decode("tA00AA002EAE5\r\n");
-        assertNull(laCrosseTx2Message);
-        decode("tAFA67B255EF9\r\n");
-        assertNull(laCrosseTx2Message);
-        decode("tA876900EF841\r\n");
-        assertNull(laCrosseTx2Message);
-        decode("tA003280104F3\r\n");
-        assertNull(laCrosseTx2Message);
-        decode("tAD267B251640\r\n");
-        assertNull(laCrosseTx2Message);
-        decode("tA00BA8032E3E\r\n");
-        assertNull(laCrosseTx2Message);
-        decode("tA9667B2496F2\r\n");
-        assertNull(laCrosseTx2Message);
-        decode("tAD267B251640\r\n");
-        assertNull(laCrosseTx2Message);
-        decode("tA003280104F2\r\n");
-        assertNull(laCrosseTx2Message);
-        decode("tA84690330A3C\r\n");
-        assertNull(laCrosseTx2Message);
-        decode("tAD267B250EF6\r\n");
-        assertNull(laCrosseTx2Message);
-    }
-
-    @Test
-    @Ignore//TODO inject calendar
+    @Ignore
     public void decode_FHT_Party_End() {
         decode("T370A3E690306\r\n");
         assertNotNull(fhtMessage);
@@ -192,168 +127,36 @@ public class CulParserTest implements FhzDataListener {
         decode("T370A40010106\r\n");
         assertNotNull(fhtMessage);
         assertEquals("housecode: 5510, command: holiday 2, description:  0x0 0x1, value: 1 signal strength: -71.0 dB", fhtMessage.toString());
-        assertNotNull(fhtMultiMsgMessage);
-        assertEquals("", fhtMultiMsgMessage.toString());
+//        assertNotNull(fhtMultiMsgMessage);
+//        assertEquals("", fhtMultiMsgMessage.toString());
+        fail();
     }
 
+    /**
+     * Only tests if the CulParser works with the HmsParser
+     */
     @Test
     public void decode_HMS_100_TF() {
         decode("H7758005282720F\r\n");
         assertNotNull(hmsMsg);
-        assertEquals("housecode: 7758, device type: HMS 100 TF status: [ ] temp: 25.2, humidy: 72.8 signal strength: -66.5 dB", hmsMsg.toString());
-
-        decode("HC25C00098262F6\r\n");
-        assertNotNull(hmsMsg);
-        assertEquals("housecode: C25C, device type: HMS 100 TF status: [ ] temp: 20.9, humidy: 62.8 signal strength: -79.0 dB", hmsMsg.toString());
-
-        decode("HC25C20128260EA\r\n");
-        assertNotNull(hmsMsg);
-        assertEquals("housecode: C25C, device type: HMS 100 TF status: [Batt low ] temp: 21.2, humidy: 60.8 signal strength: -85.0 dB", hmsMsg.toString());
+        assertTrue(hmsMsg instanceof HmsMessage);
     }
 
-    @Test
-    public void decode_HMS_100_TFK() {
-
-//        H 7AEF 0400 0000F3 off
-        decode("H7AEF04000000F3\r\n");
-        assertNotNull(hmsMsg);
-        assertEquals("housecode: 7AEF, device type: HMS 100 TFK status: [ ] open: false signal strength: -80.5 dB", hmsMsg.toString());
-//H 7AEF 0401 0000DD on
-        decode("H7AEF04010000DD\r\n");
-        assertNotNull(hmsMsg);
-        assertEquals("housecode: 7AEF, device type: HMS 100 TFK status: [ ] open: true signal strength: -91.5 dB", hmsMsg.toString());
-//H 7AEF 2400 0000E5 off, Bat low
-        decode("H7AEF24000000E5\r\n");
-        assertNotNull(hmsMsg);
-        assertEquals("housecode: 7AEF, device type: HMS 100 TFK status: [Batt low ] open: false signal strength: -87.5 dB", hmsMsg.toString());
-//H 7AEF 2401 0000DD on, Bat low
-        decode("H7AEF24010000DD\r\n");
-        assertNotNull(hmsMsg);
-        assertEquals("housecode: 7AEF, device type: HMS 100 TFK status: [Batt low ] open: true signal strength: -91.5 dB", hmsMsg.toString());
-    }
-
-    @Test
-    public void decode_HMS_100_WD() {
-
-//H 78D1 0200 FA00ED no water
-        decode("H78D10200FA00ED\r\n");
-        assertNotNull(hmsMsg);
-        assertEquals("housecode: 78D1, device type: HMS 100 WD status: [ ] water: false signal strength: -83.5 dB", hmsMsg.toString());
-//H 78D1 0201 0000F3 water
-        decode("H78D102010000F3\r\n");
-        assertNotNull(hmsMsg);
-        assertEquals("housecode: 78D1, device type: HMS 100 WD status: [ ] water: true signal strength: -80.5 dB", hmsMsg.toString());
-//H 78D1 2200 0000F2 no water, Bat low
-        decode("H78D122000000F2\r\n");
-        assertNotNull(hmsMsg);
-        assertEquals("housecode: 78D1, device type: HMS 100 WD status: [Batt low ] water: false signal strength: -81.0 dB", hmsMsg.toString());
-//H 78D1 2201 0000F3
-        decode("H78D122010000F3\r\n");
-        assertNotNull(hmsMsg);
-        assertEquals("housecode: 78D1, device type: HMS 100 WD status: [Batt low ] water: true signal strength: -80.5 dB", hmsMsg.toString());
-    }
-
-    @Test
-    public void decode_EM_1() {
-        decode("E020571241000000000F1\r\n");
-        assertNotNull(emMsg);
-        assertEquals("type: EM 1000 EM, address: 5, counter: 113, energy: 4.132, energyLast5Min: 0.0, maxPowerLast5Min: 0.0 signal strength: -81.5 dB", emMsg.toString());
-    }
-
-    @Test
-    public void decode_EM_2() {
-        decode("E0205ADC91008000B00F6\r\n");
-        assertNotNull(emMsg);
-        assertEquals("type: EM 1000 EM, address: 5, counter: 173, energy: 4.2970004, energyLast5Min: 0.08, maxPowerLast5Min: 0.11 signal strength: -79.0 dB", emMsg.toString());
-    }
-
-    /*
-     E0205AEC91000000000F8
-     E0205AFC91000000000F7
-     E0205B0CC100300B600F1
-     E0205B1D31009000A00F0
-     E0205B2D71004000900F0
-     E0205B3D71000000000F6        
-     E0205B4D71000000000F0
-    
-     E020514991100000000F2
-     E020515991100000000FB
-     */
-    
     @Test
     public void decode_FS20_1() {
         decode("FC04B01002B\r\n");
         assertNotNull(fs20Msg);
-        assertEquals("housecode: 19275, offset: 1, command: off signal strength: -52.5 dB", fs20Msg.toString());
+        assertTrue(fs20Msg instanceof FS20Message);
     }
 
+    
     @Test
-    public void decode_FS20_2() {
-        decode("FC04B01112C\r\n");
-        assertNotNull(fs20Msg);
-        assertEquals("housecode: 19275, offset: 1, command: on signal strength: -52.0 dB", fs20Msg.toString());
-    }
+    public void decode_LA_CROSSE_TX2() {
+        decode("tA00E73173D\r\n");
+        assertNotNull(laCrosseTx2Message);
 
-        @Test
-    public void decode_FS20_3() {
-        decode("FC04B03132C\r\n");
-        assertNotNull(fs20Msg);
-        assertEquals("housecode: 19275, offset: 3, command: dimup signal strength: -52.0 dB", fs20Msg.toString());
-    }
-
-    /*  
-     FC04B01002B 
-     FC04B01112C
-     FC04B02002C
-     FC04B02112C
-     FC04B03002B
-     FC04B03112F
-    */
-
-    @Ignore
-    @Test
-    public void decode_HMS_100_RM() {
-
-//H 707D 0300 FF00F6 kein Feuer
-        decode("H707D0300FF00F6\r\n");
-        assertNotNull(hmsMsg);
-        assertEquals("housecode: 707D, device type: HMS 100 RM status: [ ] smoke: false signal strength: -79.0 dB", hmsMsg.toString());
-//H DC87 0300 0000F6
-//H DC87 0300 0100F6
-//H DC87 0300 0500E6 21.16h
-//H DC87 0303 0100F2 Feuer, bat low
-        decode("HDC8703030100F2\r\n");
-        assertNotNull(hmsMsg);
-        assertEquals("housecode: 707D, device type: HMS 100 RM status: [Batt low ] smoke: false signal strength: -81.0 dB", hmsMsg.toString());
-//H DC87 0303 0200F4
-//H DC87 0303 0400F4 bis auf 2.8V runtergeregelt
-//H DC87 0303 0500F3 runter auf 2.5V
-//bei 2.1V Sendeabbruch, aber Device ID nicht verloren!
-//H DC87 0303 0600F7 wieder auf 4.5 Volt hochgeregelt.
-//H DC87 2300 0500F6 kein Feuer, jetzt erst Bat empty
-        decode("HDC8723000500F6\r\n");
-        assertNotNull(hmsMsg);
-        assertEquals("housecode: C25C, device type: HMS 100 TF temp: 20.9, humidy: 61.8 signal strength: -66.5 dB", hmsMsg.toString());
-//H DC87 2303 0200F8 Feuer
-        decode("HDC8723030200F8\r\n");
-        assertNotNull(hmsMsg);
-        assertEquals("housecode: C25C, device type: HMS 100 TF temp: 20.9, humidy: 61.8 signal strength: -66.5 dB", hmsMsg.toString());
-//H DC87 2300 0500F6 kein Feuer
-        decode("HDC8723000500F6\r\n");
-        assertNotNull(hmsMsg);
-        assertEquals("housecode: C25C, device type: HMS 100 TF temp: 20.9, humidy: 61.8 signal strength: -66.5 dB", hmsMsg.toString());
-
-        /*
-         Byte 9+10 könnte irgendeine Sequence Nr. sein ???
-
-         Ergebnis wäre:
-         Byte 1-4=Device ID
-         Byte 5 Bit 1 = Battery
-         Byte 8 bit 0 = Status
-
-         Gruß
-         Klaus
-         */
+        decode("tA00AA002EAE5\r\n");
+        assertNull(laCrosseTx2Message);
     }
 
     @Override
@@ -364,11 +167,6 @@ public class CulParserTest implements FhzDataListener {
     @Override
     public void fhtDataParsed(FhtMessage fhtMessage) {
         this.fhtMessage = fhtMessage;
-    }
-
-    @Override
-    public void fhtMultiMsgParsed(FhtMultiMsgMessage temp) {
-        this.fhtMultiMsgMessage = temp;
     }
 
     @Override
@@ -385,4 +183,16 @@ public class CulParserTest implements FhzDataListener {
     public void laCrosseTxParsed(LaCrosseTx2Message laCrosseTx2Msg) {
         this.laCrosseTx2Message = laCrosseTx2Msg;
     }
+
+    @Override
+    public void fhtPartialDataParsed(FhtMessage fhtMessage) {
+        this.fhtPartialMessage = fhtMessage;
+    }
+
+    @Override
+    public void failed(Throwable t) {
+        assertNotNull(t);
+        this.failed = t;
+    }
+
 }

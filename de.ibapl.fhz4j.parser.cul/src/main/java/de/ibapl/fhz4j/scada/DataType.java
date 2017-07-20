@@ -44,7 +44,7 @@ public enum DataType {
     BOOLEAN,
     CHAR,
     STRING,
-    TIME,
-    DATE,
+    LOCAL_TIME,
+    LOCAL_DATE,
     TIME_STAMP;
 }

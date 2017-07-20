@@ -39,17 +39,15 @@ import static de.ibapl.fhz4j.protocol.hms.HmsProperty.*;
  * @author aploese
  */
 public enum HmsDeviceType {
-    HMS_100_TF(0x00, "HMS 100 TF", TEMP, HUMIDY, BATT_STATUS),
-    HMS_100_WD(0x02, "HMS 100 WD", WATER, BATT_STATUS),
-    HMS_100_RM(0x03, "HMS 100 RM", SMOKE_ALERT, BATT_STATUS),
-    HMS_100_TFK(0x04, "HMS 100 TFK", DOOR_WINDOW_OPEN, BATT_STATUS);
+    HMS_100_TF("HMS 100 TF", TEMP, HUMIDY, BATT_STATUS),
+    HMS_100_WD("HMS 100 WD", WATER, BATT_STATUS),
+    HMS_100_RM("HMS 100 RM", SMOKE_ALERT, BATT_STATUS),
+    HMS_100_TFK("HMS 100 TFK", DOOR_WINDOW_OPEN, BATT_STATUS);
     
-    private final byte value;
     private final String label;
     private final Set<HmsProperty> hmsProperties;
 
-    private HmsDeviceType(int value, String label, HmsProperty... hmsProperties) {
-        this.value = (byte) value;
+    private HmsDeviceType(String label, HmsProperty... hmsProperties) {
         this.label = label;
         this.hmsProperties = EnumSet.copyOf(Arrays.asList(hmsProperties));
     }
@@ -60,19 +58,6 @@ public enum HmsDeviceType {
 
     public String getName() {
         return name();
-    }
-
-    public byte getValue() {
-        return value;
-    }
-
-        public static HmsDeviceType valueOf(int value) {
-        for (HmsDeviceType prop : values()) {
-            if (prop.value == value) {
-                return prop;
-            }
-        }
-        return valueOf(String.valueOf(value));
     }
 
     public static HmsDeviceType fromLabel(String label) {

@@ -1,4 +1,4 @@
-package de.ibapl.fhz4j.protocol.hms;
+package de.ibapl.fhz4j.protocol.fht;
 
 /*-
  * #%L
@@ -29,50 +29,32 @@ package de.ibapl.fhz4j.protocol.hms;
  */
 
 
-import java.util.EnumSet;
-import org.junit.After;
-import org.junit.AfterClass;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
-import static org.junit.Assert.*;
-
 /**
  *
  * @author aploese
  */
-public class Hms100WdMessageTest {
+public enum Fht80bMode {
+    AUTO("Auto"),
+    MANUAL("Manu"),
+    HOLIDAY("Holiday"),
+    PARTY("Party");
     
-    public Hms100WdMessageTest() {
-    }
+    
+    final private String label;
 
-    @BeforeClass
-    public static void setUpClass() throws Exception {
-    }
-
-    @AfterClass
-    public static void tearDownClass() throws Exception {
-    }
-    
-    @Before
-    public void setUp() {
-    }
-    
-    @After
-    public void tearDown() {
+    private Fht80bMode(String label) {
+        this.label = label;
     }
 
     /**
-     * Test get all props.
+     * @return the label
      */
-    @Test
-    public void testGetProps() {
-        System.out.println("get props");
-        Hms100WdMessage instance = new Hms100WdMessage((short)1234, EnumSet.noneOf(HmsDeviceStatus.class));
-        instance.setWater(true);
-        for (HmsProperty prop : HmsDeviceType.HMS_100_WD.getProperties()) {
-                    instance.toString(prop);
-        }
+    public String getLabel() {
+        return label;
+    }
+
+    public String getName() {
+        return name();
     }
 
 }
