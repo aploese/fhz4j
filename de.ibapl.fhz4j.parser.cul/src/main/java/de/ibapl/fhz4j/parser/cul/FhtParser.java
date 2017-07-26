@@ -38,12 +38,16 @@ import de.ibapl.fhz4j.protocol.fht.Fht80bMode;
 import de.ibapl.fhz4j.protocol.fht.Fht80bRawMessage;
 import de.ibapl.fhz4j.protocol.fht.Fht80bWarning;
 import de.ibapl.fhz4j.protocol.fht.FhtDateMessage;
+import de.ibapl.fhz4j.protocol.fht.FhtDateTimeMessage;
 import de.ibapl.fhz4j.protocol.fht.FhtModeMessage;
 import de.ibapl.fhz4j.protocol.fht.FhtTempMessage;
 import de.ibapl.fhz4j.protocol.fht.FhtTimeMessage;
 import de.ibapl.fhz4j.protocol.fht.FhtValveMode;
 import de.ibapl.fhz4j.protocol.fht.FhtValvePosMessage;
 import de.ibapl.fhz4j.protocol.fht.FhtWarningMessage;
+import java.time.LocalDateTime;
+import java.time.Month;
+import java.util.Arrays;
 import java.util.EnumSet;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -177,7 +181,7 @@ public class FhtParser extends Parser {
             case 0x61:
                 return FhtProperty.MONTH;
             case 0x62:
-                return FhtProperty.DAY;
+                return FhtProperty.DAY_OF_MONTH;
             case 0x63:
                 return FhtProperty.HOUR;
             case 0x64:
@@ -205,6 +209,19 @@ public class FhtParser extends Parser {
         }
     }
 
+    private boolean hasPartialMsgs (short housecode, FhtProperty ... fhtProperty) {
+        EnumSet props = EnumSet.copyOf(Arrays.asList(fhtProperty)); 
+        for (Fht80bRawMessage msg : partialMessages) {
+            if (msg.housecode == housecode) {
+                props.remove(msg.command);
+                if (props.isEmpty()) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+    
     private void addOrReplacePartial(Fht80bRawMessage fht80bRawMessage) {
         Iterator<Fht80bRawMessage> iter = partialMessages.iterator();
         while (iter.hasNext()) {
@@ -214,6 +231,38 @@ public class FhtParser extends Parser {
             }
         }
         partialMessages.add(fht80bRawMessage);
+    }
+
+    private void buildRawTimeAndDateMessage() {
+        final Fht80bRawMessage msg = new Fht80bRawMessage(housecode, command, isFromFht_8B(), isDataRegister(), getIntValue());
+        addOrReplacePartial(msg);
+        parserListener.successPartial(msg);
+        if (hasPartialMsgs(housecode, FhtProperty.YEAR, FhtProperty.MONTH, FhtProperty.DAY_OF_MONTH, FhtProperty.HOUR, FhtProperty.MINUTE)) {
+            final Fht80bRawMessage year = removePartialMsg(housecode, FhtProperty.YEAR);
+            final Fht80bRawMessage month = removePartialMsg(housecode, FhtProperty.MONTH);
+            final Fht80bRawMessage dayOfMonth = removePartialMsg(housecode, FhtProperty.DAY_OF_MONTH);
+            final Fht80bRawMessage hour = removePartialMsg(housecode, FhtProperty.HOUR);
+            final Fht80bRawMessage minute = removePartialMsg(housecode, FhtProperty.MINUTE);
+            
+            parserListener.successPartialAssembled(new FhtDateTimeMessage(housecode, FhtProperty.CURRENT_DATE_AND_TIME, isFromFht_8B(), isDataRegister(), LocalDateTime.of(year.data + 2000, Month.of(month.data), dayOfMonth.data, hour.data, minute.data)));
+        }
+    }
+
+    private void buildRawReportMessage() {
+        final Fht80bRawMessage msg = new Fht80bRawMessage(housecode, command, isFromFht_8B(), isDataRegister(), getIntValue());
+        parserListener.successPartial(msg);
+        if (command == FhtProperty.REPORT_1) {
+            Fht80bRawMessage msg_2 = removePartialMsg(housecode, FhtProperty.REPORT_2);
+            if (msg_2 != null) {
+                return;
+            }
+        } else {
+            Fht80bRawMessage msg_1 = removePartialMsg(housecode, FhtProperty.REPORT_2);
+            if (msg_1 != null) {
+                return;
+            }
+        }
+        addOrReplacePartial(msg);
     }
 
     private enum State {
@@ -354,26 +403,29 @@ public class FhtParser extends Parser {
             case SUN_TO_2:
                 parserListener.success(new FhtTimeMessage(housecode, command, isFromFht_8B(), isDataRegister(), getIntValue() / 6, (getIntValue() % 6) * 10));
                 break;
-//Sniffer Mode
-//            case MINUTE:
-//            case HOUR:
-//            case MONTH:
-//            case DAY:
-//            case YEAR:
+            case MINUTE:
+            case HOUR:
+            case MONTH:
+            case DAY_OF_MONTH:
+            case YEAR:
+                buildRawTimeAndDateMessage();
+                break;
 // collect FhtDateTime                
             case MODE:
                 buildModeMessage();
                 break;
 //Sniffer Mode
-//            case REPORT_1:
-//            case REPORT_2:
+            case REPORT_1:
+            case REPORT_2:
+                buildRawReportMessage();
+                break;
 //collect Report
             case HOLIDAY_1:
             case HOLIDAY_2:
                 buildRawHollidayMessage();
                 break;
             default:
-                throw new RuntimeException("Cant handle unknown value");
+                throw new RuntimeException("Cant handle unknown command: " + command);
         }
 
     }

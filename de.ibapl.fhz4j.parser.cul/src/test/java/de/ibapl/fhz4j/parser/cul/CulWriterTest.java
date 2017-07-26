@@ -141,6 +141,16 @@ public class CulWriterTest {
         assertEquals("T030265FF66FF\n", os.toString());
     }
 
+    @Test
+    public void testwriteDateAndTime() throws Exception {
+        System.out.println("testwriteDateAndTime");
+        CulWriter instance = new CulWriter();
+        ByteArrayOutputStream os = new ByteArrayOutputStream();
+        instance.setOutputStream(os);
+        instance.writeFhtTimeAndDate((short)302, LocalDateTime.of(2017, Month.JULY, 20, 14, 23));
+        assertEquals("T0302601161076214630E6417\n", os.toString());
+    }
+
     /**
      * Test of writeFhtMsg method, of class FhzWriter.
      */

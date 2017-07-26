@@ -47,13 +47,11 @@ import de.ibapl.fhz4j.protocol.hms.HmsMessage;
 import de.ibapl.fhz4j.protocol.lacrosse.tx2.LaCrosseTx2Message;
 import de.ibapl.fhz4j.parser.api.Parser;
 import de.ibapl.fhz4j.parser.api.ParserListener;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.OutputStream;
 
 /**
  * Parses CUL from www.busware.de
  * Commands see http://culfw.de/commandref.html
+ * and https://github.com/mhop/fhem-mirror/blob/master/fhem/FHEM/11_FHT.pm
  * partial implemented.
  *
  * @author aploese

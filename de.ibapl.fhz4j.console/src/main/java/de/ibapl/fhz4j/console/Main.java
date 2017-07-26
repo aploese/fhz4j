@@ -42,14 +42,15 @@ import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import de.ibapl.fhz4j.protocol.fht.FhtMessage;
-import de.ibapl.fhz4j.protocol.fht.FhtProperty;
 import de.ibapl.fhz4j.protocol.fs20.FS20Message;
 
 import de.ibapl.fhz4j.protocol.hms.HmsMessage;
 import de.ibapl.fhz4j.protocol.lacrosse.tx2.LaCrosseTx2Message;
-import java.time.DayOfWeek;
+import de.ibapl.spsw.logging.LoggingSerialPortSocket;
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
+import java.io.FileOutputStream;
 import java.time.LocalDateTime;
-import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
@@ -73,8 +74,9 @@ public class Main {
 
         @Override
         public void fhtDataParsed(FhtMessage fhtMessage) {
-            if(DEVICES_HOME_CODE.add(fhtMessage.housecode)) {
+            if (DEVICES_HOME_CODE.add(fhtMessage.housecode)) {
                 try {
+                    culWriter.writeFhtTimeAndDate(fhtMessage.housecode, LocalDateTime.now());
                     culWriter.initFhtReporting(fhtMessage.housecode);
                 } catch (Throwable t) {
                     //no-op
@@ -212,19 +214,24 @@ public class Main {
      * @param port DOCUMENT ME!
      */
     public void run(String port) {
-        serialPort = SerialPortSocketFactoryImpl.singleton().createSerialPortSocket(port);
+        try {
+            serialPort = new LoggingSerialPortSocket(SerialPortSocketFactoryImpl.singleton().createSerialPortSocket(port), new FileOutputStream("/tmp/cul.txt"), true, true);
+        } catch (FileNotFoundException ex) {
+            throw  new RuntimeException(ex);
+        }
         culParser = new CulParser(new FhzListener());
         culWriter = new CulWriter();
         try {
             CulParser.openPort(serialPort);
-            culParser.setInputStream(serialPort.getInputStream());
-            culWriter.setOutputStream(serialPort.getOutputStream());
+            culParser.setInputStream(new BufferedInputStream(serialPort.getInputStream(), 64));
+            culWriter.setOutputStream(new BufferedOutputStream(serialPort.getOutputStream(), 64));
             try {
                 Thread.sleep(100);
             } catch (InterruptedException ex) {
                 LOG.log(Level.SEVERE, null, ex);
             }
             culWriter.initFhz((short) 1234);
+//        culWriter.writeFhtTimeAndDate((short) 302, LocalDateTime.now());
 //        culWriter.writeFhtCycle((short) 302, DayOfWeek.MONDAY, LocalTime.of(5, 0), LocalTime.of(8, 30), null, null);
 //            culWriter.writeFht((short)302, FhtProperty.DESIRED_TEMP, 24.0f);
 //            w.writeFhtModeManu((short)302);

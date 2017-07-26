@@ -4,8 +4,6 @@ import de.ibapl.fhz4j.parser.api.ParserListener;
 import de.ibapl.fhz4j.protocol.fht.FhtDateMessage;
 import de.ibapl.fhz4j.protocol.fht.FhtMessage;
 import de.ibapl.fhz4j.protocol.fht.FhtProperty;
-import de.ibapl.fhz4j.protocol.fht.FhtTempMessage;
-import java.time.LocalDate;
 import org.junit.Test;
 import static org.junit.Assert.*;
 

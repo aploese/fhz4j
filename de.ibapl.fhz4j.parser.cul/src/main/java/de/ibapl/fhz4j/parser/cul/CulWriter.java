@@ -30,7 +30,6 @@ package de.ibapl.fhz4j.parser.cul;
 import de.ibapl.fhz4j.LogUtils;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.util.Arrays;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import de.ibapl.fhz4j.protocol.fht.FhtProperty;
@@ -38,7 +37,6 @@ import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.time.ZoneId;
 import java.util.EnumSet;
 import java.util.Set;
 
@@ -83,6 +81,7 @@ public class CulWriter {
     public void initFhz(short fhz100Housecode, Set<InitFlag> initFlags) throws IOException, InterruptedException {
         LOG.info("INIT 1");
         os.write("\r\n".getBytes());
+        os.flush();
         Thread.sleep(1000);
         LOG.info("INIT 2");
         byte flags = 0;
@@ -91,6 +90,7 @@ public class CulWriter {
         }
         final String data = String.format("X%02X\r\n", flags);
         os.write(data.getBytes());
+        os.flush();
         LOG.log(Level.INFO, "Data sent: {0}", new Object[]{data});
         Thread.sleep(1000);
         LOG.info("INIT Housecode");
@@ -118,10 +118,10 @@ public class CulWriter {
         startFhtMessage(housecode);
         writeFhtProperty(FhtProperty.YEAR, (byte) (ts.getYear() - 2000));
         writeFhtProperty(FhtProperty.MONTH, (byte) ts.getMonthValue());
-        writeFhtProperty(FhtProperty.DAY, (byte) ts.getDayOfMonth());
+        writeFhtProperty(FhtProperty.DAY_OF_MONTH, (byte) ts.getDayOfMonth());
         writeFhtProperty(FhtProperty.HOUR, (byte) ts.getHour());
         writeFhtProperty(FhtProperty.MINUTE, (byte) ts.getMinute());
-        os.write('\n');
+        finishFhtMessage();
     }
 
     public void initFhtReporting(Iterable<Short> housecodes) throws IOException {
@@ -137,6 +137,7 @@ public class CulWriter {
         writeByte(ownHousecode / 100);
         writeByte(ownHousecode % 100);
         os.write('\n');
+        os.flush();
     }
 
     public void writeFhtModeAuto(short housecode) throws IOException {
@@ -321,6 +322,7 @@ public class CulWriter {
 
     private void finishFhtMessage() throws IOException {
         os.write('\n');
+        os.flush();
     }
 
     private void writeByte(int value) throws IOException {
@@ -480,7 +482,7 @@ public class CulWriter {
             case MONTH:
                 writeByte(0x61);
                 break;
-            case DAY:
+            case DAY_OF_MONTH:
                 writeByte(0x62);
                 break;
             case HOUR:

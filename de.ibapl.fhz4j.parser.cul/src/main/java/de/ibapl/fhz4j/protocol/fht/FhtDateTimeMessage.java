@@ -1,4 +1,4 @@
-package de.ibapl.fhz4j.scada;
+package de.ibapl.fhz4j.protocol.fht;
 
 /*-
  * #%L
@@ -27,24 +27,19 @@ package de.ibapl.fhz4j.scada;
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  * #L%
  */
-
+import java.time.LocalDateTime;
 
 /**
- * 
  *
  * @author aploese
  */
-public enum DataType {
-    DOUBLE,
-    FLOAT,
-    LONG,
-    INT,
-    SHORT,
-    BYTE,
-    BOOLEAN,
-    CHAR,
-    STRING,
-    LOCAL_TIME,
-    LOCAL_DATE,
-    LOCAL_DATE_TIME;
+public class FhtDateTimeMessage extends Fht8bMessage {
+
+    public LocalDateTime ts;
+
+    public FhtDateTimeMessage(short housecode, FhtProperty command, boolean fromFht_8B, boolean dataRegister, LocalDateTime ts) {
+        super(housecode, command, fromFht_8B, dataRegister);
+        this.ts = ts;
+    }
+
 }
