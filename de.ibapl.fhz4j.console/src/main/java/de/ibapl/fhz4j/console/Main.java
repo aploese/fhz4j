@@ -49,6 +49,7 @@ import de.ibapl.fhz4j.protocol.lacrosse.tx2.LaCrosseTx2Message;
 import de.ibapl.spsw.logging.LoggingSerialPortSocket;
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
+import java.io.File;
 import java.io.FileOutputStream;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -215,14 +216,18 @@ public class Main {
      */
     public void run(String port) {
         try {
-            serialPort = new LoggingSerialPortSocket(SerialPortSocketFactoryImpl.singleton().createSerialPortSocket(port), new FileOutputStream("/tmp/cul.txt"), true, true);
-        } catch (FileNotFoundException ex) {
+            File logFile = File.createTempFile("cul_", ".txt");
+            LOG.info("LOG File: " + logFile.getAbsolutePath());
+            serialPort = new LoggingSerialPortSocket(SerialPortSocketFactoryImpl.singleton().createSerialPortSocket(port), new FileOutputStream(logFile), true, true);
+        } catch (IOException ex) {
             throw  new RuntimeException(ex);
         }
         culParser = new CulParser(new FhzListener());
         culWriter = new CulWriter();
         try {
             CulParser.openPort(serialPort);
+//            culParser.setInputStream(serialPort.getInputStream());
+//            culWriter.setOutputStream(serialPort.getOutputStream());
             culParser.setInputStream(new BufferedInputStream(serialPort.getInputStream(), 64));
             culWriter.setOutputStream(new BufferedOutputStream(serialPort.getOutputStream(), 64));
             try {

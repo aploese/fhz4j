@@ -48,7 +48,7 @@
                     </descriptorRefs>
                     <archive>
                         <manifest>
-                            <mainClass>net.sf.fhz4j.console.Main</mainClass>
+                            <mainClass>de.ibapl.fhz4j.console.Main</mainClass>
                         </manifest>
                     </archive>
                 </configuration>

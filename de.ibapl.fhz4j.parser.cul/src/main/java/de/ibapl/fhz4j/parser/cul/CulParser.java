@@ -49,8 +49,7 @@ import de.ibapl.fhz4j.parser.api.Parser;
 import de.ibapl.fhz4j.parser.api.ParserListener;
 
 /**
- * Parses CUL from www.busware.de
- * Commands see http://culfw.de/commandref.html
+ * Parses CUL from www.busware.de Commands see http://culfw.de/commandref.html
  * and https://github.com/mhop/fhem-mirror/blob/master/fhem/FHEM/11_FHT.pm
  * partial implemented.
  *
@@ -160,7 +159,7 @@ public class CulParser<T extends FhzMessage> extends Parser implements ParserLis
                         state = State.LA_CROSSE_TX2_PARSING;
                         break;
                     default:
-                        LOG.fine(String.format("Discarted: 0x%02x %s", (byte)c, c));
+                        LOG.fine(String.format("Discarted: 0x%02x %s", (byte) c, c));
                 }
                 break;
             case EM_PARSING:
@@ -188,7 +187,7 @@ public class CulParser<T extends FhzMessage> extends Parser implements ParserLis
                 try {
                     push(digit2Int(c));
                 } catch (RuntimeException ex) {
-                    LOG.severe(String.format("Signal strenght - Wrong char: 0x%02x %s", (byte)c, c));
+                    LOG.severe(String.format("Signal strenght - Wrong char: 0x%02x %s", (byte) c, c));
                     state = State.IDLE;
                     parse(c); // try to recover
                 }
@@ -225,7 +224,7 @@ public class CulParser<T extends FhzMessage> extends Parser implements ParserLis
                     if (dataListener != null) {
 
                         if (partialFhzMessage instanceof FhtMessage) {
-                           dataListener.fhtPartialDataParsed((FhtMessage)partialFhzMessage);
+                            dataListener.fhtPartialDataParsed((FhtMessage) partialFhzMessage);
                         }
 
                         if (fhzMessage instanceof FhtMessage) {
@@ -287,7 +286,7 @@ public class CulParser<T extends FhzMessage> extends Parser implements ParserLis
                             theData = is.read();
 
                             if (theData > -1) {
-                                parse((char)theData);
+                                parse((char) theData);
                             }
 
                         } catch (NullPointerException npe) {
@@ -300,15 +299,14 @@ public class CulParser<T extends FhzMessage> extends Parser implements ParserLis
                         closeLock.notifyAll();
                     }
                     LOG.info("closing down - finish waiting for new data");
-                } catch (IOException e) {
-                    LOG.log(Level.SEVERE, "run()", e);
-                } catch (RuntimeException e) {
-                    LOG.log(Level.SEVERE, "finished waiting for packages", e);
+                } catch (Throwable t) {
+                    LOG.log(Level.SEVERE, "finished waiting for packages", t);
                 }
             } finally {
+                LOG.log(Level.INFO, "finished waiting for packages");
             }
-        } 
-        
+        }
+
     }
 
     private void start() {
