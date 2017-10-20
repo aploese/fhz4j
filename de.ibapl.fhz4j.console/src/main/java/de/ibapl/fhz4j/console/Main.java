@@ -34,6 +34,8 @@ import de.ibapl.fhz4j.parser.cul.CulWriter;
 import de.ibapl.fhz4j.protocol.em.EmMessage;
 import de.ibapl.spsw.api.SerialPortSocket;
 import de.ibapl.spsw.provider.SerialPortSocketFactoryImpl;
+import de.ibapl.spsw.ser2net.Ser2NetProvider;
+
 import java.io.FileNotFoundException;
 import java.io.IOException;
 
@@ -47,6 +49,8 @@ import de.ibapl.fhz4j.protocol.fs20.FS20Message;
 import de.ibapl.fhz4j.protocol.hms.HmsMessage;
 import de.ibapl.fhz4j.protocol.lacrosse.tx2.LaCrosseTx2Message;
 import de.ibapl.spsw.logging.LoggingSerialPortSocket;
+import de.ibapl.spsw.logging.TimeStampLogging;
+
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.File;
@@ -161,6 +165,12 @@ public class Main {
         opt.setType(String.class);
         optg.addOption(opt);
 
+        opt = new Option("r", "ser2net", true, "ser2net host:port");
+        opt.setArgName("ser2net");
+        opt.setType(String.class);
+        optg.addOption(opt);
+
+
         opt = new Option("s", "scan", false, "scan for serial ports");
         optg.addOption(opt);
 
@@ -201,28 +211,46 @@ public class Main {
             return;
         }
 
-        new Main().run(cmd.getOptionValue("port"));
+        if (cmd.hasOption("ser2net")) {
+            new Main().runSer2Net(cmd.getOptionValue("ser2net"));
+        }
+        
+        if (cmd.hasOption("port")) {
+            new Main().runLocalPort(cmd.getOptionValue("port"));
+        }
+        
     }
 
     private final Set<Short> DEVICES_HOME_CODE = new HashSet<>();
     private SerialPortSocket serialPort;
-    private CulParser culParser;
+    private CulParser<?> culParser;
     private CulWriter culWriter;
 
-    /**
-     * DOCUMENT ME!
-     *
-     * @param port DOCUMENT ME!
-     */
-    public void run(String port) {
+    public void runSer2Net(String ser2net) {
         try {
             File logFile = File.createTempFile("cul_", ".txt");
             LOG.info("LOG File: " + logFile.getAbsolutePath());
-            serialPort = new LoggingSerialPortSocket(SerialPortSocketFactoryImpl.singleton().createSerialPortSocket(port), new FileOutputStream(logFile), true, true);
+            String[] split = ser2net.split(":"); 
+            serialPort = LoggingSerialPortSocket.wrapWithAsciiOutputStream(new Ser2NetProvider(split[0], Integer.valueOf(split[1])), new FileOutputStream(logFile), false, TimeStampLogging.NONE);
         } catch (IOException ex) {
             throw  new RuntimeException(ex);
         }
-        culParser = new CulParser(new FhzListener());
+    run();
+    }
+
+    public void runLocalPort(String port) {
+        try {
+            File logFile = File.createTempFile("cul_", ".txt");
+            LOG.info("LOG File: " + logFile.getAbsolutePath());
+            serialPort = LoggingSerialPortSocket.wrapWithAsciiOutputStream(SerialPortSocketFactoryImpl.singleton().createSerialPortSocket(port), new FileOutputStream(logFile), false, TimeStampLogging.NONE);
+        } catch (IOException ex) {
+            throw  new RuntimeException(ex);
+        }
+    run();
+    }
+    
+    public void run() {
+        culParser = new CulParser<>(new FhzListener());
         culWriter = new CulWriter();
         try {
             CulParser.openPort(serialPort);
@@ -230,6 +258,7 @@ public class Main {
 //            culWriter.setOutputStream(serialPort.getOutputStream());
             culParser.setInputStream(new BufferedInputStream(serialPort.getInputStream(), 64));
             culWriter.setOutputStream(new BufferedOutputStream(serialPort.getOutputStream(), 64));
+            
             try {
                 Thread.sleep(100);
             } catch (InterruptedException ex) {
