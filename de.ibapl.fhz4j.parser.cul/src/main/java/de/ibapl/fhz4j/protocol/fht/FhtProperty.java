@@ -84,13 +84,11 @@ public enum FhtProperty implements Serializable, ScadaProperty {
     SUN_TO_1("", LOCAL_TIME, FHT_80B),
     SUN_FROM_2("", LOCAL_TIME, FHT_80B),
     SUN_TO_2("", LOCAL_TIME, FHT_80B),
+    
     MODE("", SHORT, FHT_80B),
     HOLIDAY_1("", SHORT, FHT_80B), //raw value if mode == party the time and if mode == holiday the day of month of end
     HOLIDAY_2("", SHORT, FHT_80B), //raw value if mode == party the day of month and if mode == holiday the month of end
-    HOLIDAY_END_DATE("", LOCAL_DATE, FHT_80B),
-    PARTY_END_TIME("", LOCAL_TIME, FHT_80B),
     DESIRED_TEMP("°C", FLOAT, FHT_80B),
-    MEASURED_TEMP("°C", FLOAT, FHT_80B),		 //sum of next. two, never really sent
     MEASURED_LOW("°C", FLOAT, FHT_80B),
     MEASURED_HIGH("°C", FLOAT, FHT_80B),
     WARNINGS("", BYTE, FHT_80B),
@@ -101,7 +99,6 @@ public enum FhtProperty implements Serializable, ScadaProperty {
     YEAR("", SHORT, FHT_80B),
     MONTH("", SHORT, FHT_80B),
     DAY_OF_MONTH("", SHORT, FHT_80B),
-    CURRENT_DATE_AND_TIME("", LOCAL_DATE_TIME, FHT_80B),
     HOUR("", SHORT, FHT_80B),
     MINUTE("", SHORT, FHT_80B),
     REPORT_1("", SHORT, FHT_80B),
@@ -114,16 +111,33 @@ public enum FhtProperty implements Serializable, ScadaProperty {
     LOW_TEMP_OFFSET("", FLOAT, FHT_80B), //# Alarm-Temp.-Differenz
     WINDOW_OPEN_TEMP("", FLOAT, FHT_80B),
     UNKNOWN_0XFF("", BYTE, FHT_80B),
-    UNKNOWN("unknown", BYTE, FhtDeviceType.UNKNOWN);
+    UNKNOWN("unknown", BYTE, FhtDeviceType.UNKNOWN),
+
+    //Some synthetic messages
+    MONDAY_TIMES("", LOCAL_TIME, FHT_80B, MON_FROM_1, MON_TO_1, MON_FROM_2, MON_TO_2),
+    TUESDAY_TIMES("", LOCAL_TIME, FHT_80B, TUE_FROM_1, TUE_TO_1, TUE_FROM_2, TUE_TO_2),
+    WEDNESDAY_TIMES("", LOCAL_TIME, FHT_80B, WED_FROM_1, WED_TO_1, WED_FROM_2, WED_TO_2),
+    THURSDAY_TIMES("", LOCAL_TIME, FHT_80B, THU_FROM_1, THU_TO_1, THU_FROM_2, THU_TO_2),
+    FRIDAY_TIMES("", LOCAL_TIME, FHT_80B, FRI_FROM_1, FRI_TO_1, FRI_FROM_2, FRI_TO_2),
+    SATURDAYDAY_TIMES("", LOCAL_TIME, FHT_80B, SAT_FROM_1, SAT_TO_1, SAT_FROM_2, SAT_TO_2),
+    SUNDAYDAY_TIMES("", LOCAL_TIME, FHT_80B, SUN_FROM_1, SUN_TO_1, SUN_FROM_2, SUN_TO_2),
+
+    MEASURED_TEMP("°C", FLOAT, FHT_80B, MEASURED_LOW, MEASURED_HIGH),
+
+    HOLIDAY_END_DATE("", LOCAL_DATE, FHT_80B, HOLIDAY_1, HOLIDAY_2),
+    PARTY_END_TIME("", LOCAL_TIME, FHT_80B, HOLIDAY_1, HOLIDAY_2),
+    CURRENT_DATE_AND_TIME("", LOCAL_DATE, FHT_80B, YEAR, MONTH, DAY_OF_MONTH, HOUR, MINUTE);
     
     private final String unitOfmeasurement;
     private final FhtDeviceType targetDevice;
     private final DataType dataType;
+    public final FhtProperty[] parts;
         
-    private FhtProperty(String unitOfMeasurement, DataType dataType, FhtDeviceType targetDevice) {
+    private FhtProperty(String unitOfMeasurement, DataType dataType, FhtDeviceType targetDevice, FhtProperty ... parts) {
         this.unitOfmeasurement = unitOfMeasurement;
         this.dataType = dataType;
         this.targetDevice = targetDevice;
+        this.parts = parts;
     }
 
     public static FhtProperty fromLabel(String label) {

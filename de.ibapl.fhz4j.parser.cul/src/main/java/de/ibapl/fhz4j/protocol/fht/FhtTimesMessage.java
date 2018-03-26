@@ -1,4 +1,4 @@
-package de.ibapl.fhz4j.protocol.em;
+package de.ibapl.fhz4j.protocol.fht;
 
 /*-
  * #%L
@@ -28,15 +28,25 @@ package de.ibapl.fhz4j.protocol.em;
  * #L%
  */
 
+import java.time.LocalTime;
 
 /**
  *
  * @author aploese
  */
-public class Em1000SMessage extends EmMessage {
+public class FhtTimesMessage extends Fht8bMessage {
+    
+    public LocalTime timeFrom1;
+    public LocalTime timeTo1;
+    public LocalTime timeFrom2;
+    public LocalTime timeTo2;
 
-    public Em1000SMessage() {
-        super(EmDeviceType.EM_1000S);
+    public FhtTimesMessage(short housecode, FhtProperty command, boolean fromFht_8B, boolean dataRegister, LocalTime timeFrom1, LocalTime timeTo1, LocalTime timeFrom2, LocalTime timeTo2) {
+        super(housecode, command,fromFht_8B, dataRegister);
+        this.timeFrom1 = timeFrom1;
+        this.timeTo1 = timeTo1;
+        this.timeFrom2 = timeFrom2;
+        this.timeTo2 = timeTo2;
     }
 
 }

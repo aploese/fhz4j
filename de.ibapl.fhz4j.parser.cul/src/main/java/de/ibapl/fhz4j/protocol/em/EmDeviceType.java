@@ -38,29 +38,18 @@ import java.util.Set;
  * @author aploese
  */
 public enum EmDeviceType {
-    EM_1000S("EM 1000s"),
-    EM_1000_EM("EM 1000 EM", EmProperty.ELECTRICAL_ENERGY, EmProperty.ELECTRICAL_ENERGY_LAST_5_MIN, EmProperty.ELECTRICAL_POWER_LAST_5_MIN_MAX),
+    EM_1000_S("EM 1000-S"),
+    EM_1000_EM("EM 1000 EM"),
     EM_1000_GZ("EM 1000-GZ");
     
     final String label;
-    final Set<EmProperty> emProperties;
     
-    private EmDeviceType(String label, EmProperty ... emProperties) {
+    private EmDeviceType(String label) {
         this.label = label;
-        if (emProperties.length == 0) {
-            this.emProperties = EnumSet.noneOf(EmProperty.class);
-        }else {
-            this.emProperties = EnumSet.copyOf(Arrays.asList(emProperties));
-        }
     }
 
     public String getLabel() {
         return label;
     }
 
-    public Set<EmProperty> getProperties() {
-        return emProperties;
-    }
-    
-    
 }

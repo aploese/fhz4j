@@ -76,12 +76,12 @@ public class HmsParser extends Parser {
         PARSE_ERROR;
     }
 
-    public HmsParser(ParserListener parserListener) {
+    public HmsParser(ParserListener<HmsMessage> parserListener) {
         this.parserListener = parserListener;
     }
 
     private static final Logger LOG = Logger.getLogger(LogUtils.FHZ_PARSER_CUL);
-    private final ParserListener parserListener;
+    private final ParserListener<HmsMessage> parserListener;
     private State state;
     private HmsMessage hmsMessage;
     private short housecode;

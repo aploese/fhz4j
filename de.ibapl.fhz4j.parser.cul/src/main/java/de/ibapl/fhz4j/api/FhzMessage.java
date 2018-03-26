@@ -1,6 +1,5 @@
 package de.ibapl.fhz4j.api;
 
-import de.ibapl.fhz4j.protocol.fs20.FS20Message;
 import org.osgi.dto.DTO;
 
 /*-

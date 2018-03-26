@@ -29,12 +29,10 @@ package de.ibapl.fhz4j.parser.cul;
  */
 import java.util.logging.Logger;
 import de.ibapl.fhz4j.LogUtils;
-import de.ibapl.fhz4j.protocol.em.Em1000EmMessage;
-import de.ibapl.fhz4j.protocol.em.Em1000GzMessage;
-import de.ibapl.fhz4j.protocol.em.Em1000SMessage;
 import de.ibapl.fhz4j.protocol.em.EmMessage;
 import de.ibapl.fhz4j.parser.api.Parser;
 import de.ibapl.fhz4j.parser.api.ParserListener;
+import de.ibapl.fhz4j.protocol.em.EmDeviceType;
 
 /**
  *
@@ -73,19 +71,19 @@ public class EmParser extends Parser {
         COLLECT_ADDRESS,
         COLLECT_COUNTER,
         COLLECT_CUMULATED_VALUE,
-        COLLECT_LAST_VALUE,
-        COLLECT_LAST_MAX_VALUE,
+        COLLECT_5MIN_VALUE,
+        COLLECT_5MIN_PEAK_VALUE,
         PARSE_SUCCESS,
         PARSE_ERROR;
 
     }
 
-    public EmParser(ParserListener parserListener) {
+    public EmParser(ParserListener<EmMessage> parserListener) {
         this.parserListener = parserListener;
     }
 
     private static final Logger LOG = Logger.getLogger(LogUtils.FHZ_PARSER_CUL);
-    private final ParserListener parserListener;
+    private final ParserListener<EmMessage> parserListener;
     private State state;
     private EmMessage emMessage;
 
@@ -98,13 +96,13 @@ public class EmParser extends Parser {
                     if (getStackpos() == 0) {
                         switch (getShortValue()) {
                             case 1:
-                                emMessage = new Em1000SMessage();
+                                emMessage = new EmMessage(EmDeviceType.EM_1000_S);
                                 break;
                             case 2:
-                                emMessage = new Em1000EmMessage();
+                                emMessage = new EmMessage(EmDeviceType.EM_1000_EM);
                                 break;
                             case 3:
-                                emMessage = new Em1000GzMessage();
+                                emMessage = new EmMessage(EmDeviceType.EM_1000_GZ);
                                 break;
                             default:
                                 throw new RuntimeException("Wrong Type");
@@ -132,41 +130,23 @@ public class EmParser extends Parser {
                 case COLLECT_CUMULATED_VALUE:
                     push(digit2Int(c));
                     if (getStackpos() == 0) {
-                        switch (emMessage.emDeviceType) {
-                            case EM_1000_EM:
-                                ((Em1000EmMessage) emMessage).energy = 0.001f * reorderBytes(getIntValue());
-                                break;
-                            default:
-                                throw new RuntimeException("Not implemented yet");
-                        }
+                        emMessage.valueCummulated = reorderBytes(getIntValue());
                         setStackSize(4);
-                        state = State.COLLECT_LAST_VALUE;
+                        state = State.COLLECT_5MIN_VALUE;
                     }
                     break;
-                case COLLECT_LAST_VALUE:
+                case COLLECT_5MIN_VALUE:
                     push(digit2Int(c));
                     if (getStackpos() == 0) {
-                        switch (emMessage.emDeviceType) {
-                            case EM_1000_EM:
-                                ((Em1000EmMessage) emMessage).energyLast5Min = 0.01f * reorderBytes(getIntValue());
-                                break;
-                            default:
-                                throw new RuntimeException("Not implemented yet");
-                        }
+                        emMessage.value5Min = reorderBytes(getIntValue());
                         setStackSize(4);
-                        state = State.COLLECT_LAST_MAX_VALUE;
+                        state = State.COLLECT_5MIN_PEAK_VALUE;
                     }
                     break;
-                case COLLECT_LAST_MAX_VALUE:
+                case COLLECT_5MIN_PEAK_VALUE:
                     push(digit2Int(c));
                     if (getStackpos() == 0) {
-                        switch (emMessage.emDeviceType) {
-                            case EM_1000_EM:
-                                ((Em1000EmMessage) emMessage).maxPowerLast5Min = 0.01f * reorderBytes(getIntValue());
-                                break;
-                            default:
-                                throw new RuntimeException("Not implemented yet");
-                        }
+                        emMessage.value5MinPeak = reorderBytes(getIntValue());
                         setStackSize(2);
                         state = State.PARSE_SUCCESS;
                         parserListener.success(emMessage);

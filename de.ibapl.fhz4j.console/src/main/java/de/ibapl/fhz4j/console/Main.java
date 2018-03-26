@@ -29,17 +29,21 @@ package de.ibapl.fhz4j.console;
  */
 import de.ibapl.fhz4j.LogUtils;
 import de.ibapl.fhz4j.api.FhzDataListener;
+import de.ibapl.fhz4j.parser.cul.CulMessage;
 import de.ibapl.fhz4j.parser.cul.CulParser;
 import de.ibapl.fhz4j.parser.cul.CulWriter;
 import de.ibapl.fhz4j.protocol.em.EmMessage;
 import de.ibapl.spsw.api.SerialPortSocket;
-import de.ibapl.spsw.provider.SerialPortSocketFactoryImpl;
+import de.ibapl.spsw.api.SerialPortSocketFactory;
 import de.ibapl.spsw.ser2net.Ser2NetProvider;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
 
 import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.ServiceLoader;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -55,7 +59,10 @@ import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
+import java.time.DayOfWeek;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
@@ -79,6 +86,13 @@ public class Main {
 
         @Override
         public void fhtDataParsed(FhtMessage fhtMessage) {
+            printTimeStamp();
+            System.out.println(fhtMessage.toString());
+            //Just testing
+            if (true) {
+            	return;
+            }
+            
             if (DEVICES_HOME_CODE.add(fhtMessage.housecode)) {
                 try {
                     culWriter.writeFhtTimeAndDate(fhtMessage.housecode, LocalDateTime.now());
@@ -87,8 +101,6 @@ public class Main {
                     //no-op
                 }
             }
-            printTimeStamp();
-            System.out.println(fhtMessage.toString());
         }
 
         @Override
@@ -130,7 +142,7 @@ public class Main {
 
         @Override
         public void failed(Throwable t) {
-            System.err.print(df.format(LocalDateTime.now()));
+            printTimeStamp();
             System.err.print(": ");
             while (t != null) {
                 t.printStackTrace();
@@ -138,6 +150,12 @@ public class Main {
                 t = t.getCause();
             }
         }
+
+		@Override
+		public void culMessageParsed(CulMessage culMessage) {
+            printTimeStamp();
+            System.err.println(": CUL " + culMessage);
+		}
 
     }
 
@@ -158,7 +176,7 @@ public class Main {
         options.addOption(opt);
 
         optg = new OptionGroup();
-        optg.setRequired(true);
+        optg.setRequired(false);
 
         opt = new Option("p", "port", true, "serial port to use");
         opt.setArgName("port");
@@ -171,11 +189,12 @@ public class Main {
         optg.addOption(opt);
 
 
-        opt = new Option("s", "scan", false, "scan for serial ports");
-        optg.addOption(opt);
-
-        options.addOptionGroup(optg);
-
+       options.addOptionGroup(optg);
+       
+       opt = new Option("s", "scan", false, "scan for serial ports");
+ 
+        options.addOption(opt);
+ 
         opt = null;
         optg = null;
 
@@ -195,20 +214,26 @@ public class Main {
 
             return;
         }
+        ServiceLoader<SerialPortSocketFactory> sl = ServiceLoader.load(SerialPortSocketFactory.class);
+        Iterator<SerialPortSocketFactory> i = sl.iterator();
+        if (!i.hasNext()) {
+        	throw new RuntimeException("No provider for SerialPortSocketFactory found, pleas add one to you class path ");
+        }
+        final SerialPortSocketFactory serialPortSocketFactory = i.next();
 
         if (cmd.hasOption("scan")) {
             System.out.println("Java Properties:");
             System.getProperties().forEach((Object key, Object value) -> {
                 System.out.printf("\t\"%s\" = \"%s\"\n", key, value);
             });
-            final Set<String> ports = SerialPortSocketFactoryImpl.singleton().getPortNames(false);
+            
+            final List<String> ports = serialPortSocketFactory.getPortNames(false);
             System.out.println("Serial ports available");
             for (String port : ports) {
                 System.out.println("Serial port: " + port);
             }
             System.out.println("Done.");
 
-            return;
         }
 
         if (cmd.hasOption("ser2net")) {
@@ -240,9 +265,16 @@ public class Main {
 
     public void runLocalPort(String port) {
         try {
+            ServiceLoader<SerialPortSocketFactory> sl = ServiceLoader.load(SerialPortSocketFactory.class);
+            Iterator<SerialPortSocketFactory> i = sl.iterator();
+            if (!i.hasNext()) {
+            	throw new RuntimeException("No provider for SerialPortSocketFactory found, pleas add one to you class path ");
+            }
+            final SerialPortSocketFactory serialPortSocketFactory = i.next();
+
             File logFile = File.createTempFile("cul_", ".txt");
             LOG.info("LOG File: " + logFile.getAbsolutePath());
-            serialPort = LoggingSerialPortSocket.wrapWithAsciiOutputStream(SerialPortSocketFactoryImpl.singleton().createSerialPortSocket(port), new FileOutputStream(logFile), false, TimeStampLogging.NONE);
+            serialPort = LoggingSerialPortSocket.wrapWithAsciiOutputStream(serialPortSocketFactory.createSerialPortSocket(port), new FileOutputStream(logFile), false, TimeStampLogging.NONE);
         } catch (IOException ex) {
             throw  new RuntimeException(ex);
         }
@@ -264,12 +296,13 @@ public class Main {
             } catch (InterruptedException ex) {
                 LOG.log(Level.SEVERE, null, ex);
             }
-            culWriter.initFhz((short) 1234);
+            culWriter.initFhz((short) 0001);
+//            culWriter.initFhtReporting((short)302);
 //        culWriter.writeFhtTimeAndDate((short) 302, LocalDateTime.now());
 //        culWriter.writeFhtCycle((short) 302, DayOfWeek.MONDAY, LocalTime.of(5, 0), LocalTime.of(8, 30), null, null);
 //            culWriter.writeFht((short)302, FhtProperty.DESIRED_TEMP, 24.0f);
 //            w.writeFhtModeManu((short)302);
-//            w.writeFhtModeHoliday((short) 302, 16.0f, LocalDate.now().plusMonths(2).plusDays(4));
+//            culWriter.writeFhtModeHoliday((short) 302, 16.0f, LocalDate.now().plusMonths(2).plusDays(4));
         } catch (IOException ex) {
             LOG.log(Level.SEVERE, ex.getMessage(), ex);
             throw new RuntimeException(ex);

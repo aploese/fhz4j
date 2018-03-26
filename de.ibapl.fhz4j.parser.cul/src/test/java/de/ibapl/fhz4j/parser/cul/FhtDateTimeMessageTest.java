@@ -9,6 +9,7 @@ import de.ibapl.fhz4j.protocol.fht.FhtTimeMessage;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.Month;
+import org.junit.Assert;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
@@ -49,6 +50,35 @@ public class FhtDateTimeMessageTest implements ParserListener<FhtMessage> {
         FhtTempMessageTest.assertRawMessage(partialFhtMessage, 302, FhtProperty.MINUTE, true, true, 23);
         assertDateTimeMessage(assembledfhtMessage, 302, FhtProperty.CURRENT_DATE_AND_TIME, true, true, LocalDateTime.of(2017, Month.JULY, 20, 14, 23));
     }
+    
+    @Test
+    public void decodeDateTime_WrongOrder() {
+        decode("0401606912");
+        decode("0401626911");
+        decode("0401616901");
+        decode("040163690B");
+        decode("0401646930");
+        assertNull(assembledfhtMessage);
+    }
+
+    @Test
+    public void decodeDate_Incomplete() {
+        decode("0401606912");
+        decode("0401626911");
+        decode("040163690B");
+        decode("0401646930");
+        assertNull(assembledfhtMessage);
+    }
+    
+    @Test
+    public void decodeDate_No_Start() {
+        decode("0401616901");
+        decode("0401626911");
+        decode("040163690B");
+        decode("0401646930");
+        assertNull(assembledfhtMessage);
+    }
+
 
     @Override
     public void success(FhtMessage fhzMessage) {

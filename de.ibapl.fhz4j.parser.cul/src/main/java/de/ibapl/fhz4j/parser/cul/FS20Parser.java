@@ -128,12 +128,12 @@ public class FS20Parser extends Parser {
 
     }
 
-    public FS20Parser(ParserListener parserListener) {
+    public FS20Parser(ParserListener<FS20Message> parserListener) {
         this.parserListener = parserListener;
     }
 
     private static final Logger LOG = Logger.getLogger(LogUtils.FHZ_PARSER_CUL);
-    private final ParserListener parserListener;
+    private final ParserListener<FS20Message> parserListener;
     private State state;
     private FS20Message fs20Message;
     private short housecode;

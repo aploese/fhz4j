@@ -29,6 +29,7 @@ package de.ibapl.fhz4j.api;
  */
 
 
+import de.ibapl.fhz4j.parser.cul.CulMessage;
 import de.ibapl.fhz4j.protocol.em.EmMessage;
 import de.ibapl.fhz4j.protocol.fht.FhtMessage;
 import de.ibapl.fhz4j.protocol.fs20.FS20Message;
@@ -56,6 +57,8 @@ public interface FhzDataListener {
     void hmsDataParsed(HmsMessage hmsMsg);
     
     void laCrosseTxParsed(LaCrosseTx2Message laCrosseTx2Msg);
+    
+    void culMessageParsed(CulMessage culMessage);
 
     void failed(Throwable t);
 

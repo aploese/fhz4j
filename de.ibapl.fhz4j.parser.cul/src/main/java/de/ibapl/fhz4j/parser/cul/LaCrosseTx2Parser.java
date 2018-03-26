@@ -52,16 +52,15 @@ class LaCrosseTx2Parser extends Parser {
         CHECKSUM,
         PARSE_SUCCESS,
         PARSE_ERROR;
-    ;
-
+    
     }
 
-    LaCrosseTx2Parser(ParserListener parserListener) {
+    LaCrosseTx2Parser(ParserListener<LaCrosseTx2Message> parserListener) {
         this.parserListener = parserListener;
     }
 
     private static final Logger LOG = Logger.getLogger(LogUtils.FHZ_PARSER_CUL);
-    private final ParserListener parserListener;
+    private final ParserListener<LaCrosseTx2Message> parserListener;
     private LaCrosseTx2Message laCrosseTx2Message;
     private State state;
     private int cs;
@@ -131,7 +130,10 @@ class LaCrosseTx2Parser extends Parser {
                         state = State.PARSE_SUCCESS;
                         parserListener.success(laCrosseTx2Message);
                     } else {
-                        throw new RuntimeException("Check sum mismatch");
+                        state = State.PARSE_SUCCESS;
+                        parserListener.success(laCrosseTx2Message);
+                        // TODO Checksum ????
+//                        throw new RuntimeException("Check sum mismatch");
                     }
 
                     break;

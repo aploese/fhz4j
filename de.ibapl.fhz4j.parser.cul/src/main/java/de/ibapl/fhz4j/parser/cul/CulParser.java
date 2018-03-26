@@ -34,7 +34,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import de.ibapl.spsw.api.Baudrate;
+import de.ibapl.spsw.api.Speed;
 import de.ibapl.spsw.api.DataBits;
 import de.ibapl.spsw.api.FlowControl;
 import de.ibapl.spsw.api.Parity;
@@ -108,6 +108,8 @@ public class CulParser<T extends FhzMessage> extends Parser implements ParserLis
     @Override
     public void successPartialAssembled(T fhzMessage) {
         this.fhzMessage = fhzMessage;
+        setStackSize(2);
+        state = State.SINGNAL_STRENGTH;
     }
 
     private enum State {
@@ -118,16 +120,26 @@ public class CulParser<T extends FhzMessage> extends Parser implements ParserLis
         FHT_PARSING,
         HMS_PARSING,
         LA_CROSSE_TX2_PARSING,
+        CUL_L_PARSED,
+        CUL_LO_PARSED,
+        CUL_LOV_PARSED,
+        CUL_E_PARSED,
+        CUL_EO_PARSED,
         SINGNAL_STRENGTH,
         END_CHAR_0X0D,
         END_CHAR_0X0A;
     }
     private State state = State.IDLE;
-    private final EmParser emParser = new EmParser(this);
-    private final FS20Parser fs20Parser = new FS20Parser(this);
-    private final FhtParser fhtParser = new FhtParser(this);
-    private final HmsParser hmsParser = new HmsParser(this);
-    private final LaCrosseTx2Parser laCrosseTx2Parser = new LaCrosseTx2Parser(this);
+    @SuppressWarnings("unchecked")
+    private final EmParser emParser = new EmParser((ParserListener<EmMessage>) this);
+    @SuppressWarnings("unchecked")
+    private final FS20Parser fs20Parser = new FS20Parser((ParserListener<FS20Message>) this);
+    @SuppressWarnings("unchecked")
+    private final FhtParser fhtParser = new FhtParser((ParserListener<FhtMessage>) this);
+    @SuppressWarnings("unchecked")
+    private final HmsParser hmsParser = new HmsParser((ParserListener<HmsMessage>) this);
+    @SuppressWarnings("unchecked")
+    private final LaCrosseTx2Parser laCrosseTx2Parser = new LaCrosseTx2Parser((ParserListener<LaCrosseTx2Message>) this);
 
     private FhzMessage fhzMessage;
 
@@ -139,8 +151,7 @@ public class CulParser<T extends FhzMessage> extends Parser implements ParserLis
                 init();
                 switch (c) {
                     case 'E':
-                        emParser.init();
-                        state = State.EM_PARSING;
+                        state = State.CUL_E_PARSED;
                         break;
                     case 'F':
                         fs20Parser.init();
@@ -157,6 +168,9 @@ public class CulParser<T extends FhzMessage> extends Parser implements ParserLis
                     case 't':
                         laCrosseTx2Parser.init();
                         state = State.LA_CROSSE_TX2_PARSING;
+                        break;
+                    case 'L':
+                        state = State.CUL_L_PARSED;
                         break;
                     default:
                         LOG.fine(String.format("Discarted: 0x%02x %s", (byte) c, c));
@@ -177,7 +191,49 @@ public class CulParser<T extends FhzMessage> extends Parser implements ParserLis
             case LA_CROSSE_TX2_PARSING:
                 laCrosseTx2Parser.parse(c);
                 break;
-
+            case CUL_E_PARSED:
+                if (c == 'O') {
+                    state = State.CUL_EO_PARSED;
+                } else {
+                    emParser.init();
+                    state = State.EM_PARSING;
+                    emParser.parse(c);
+                }
+                break;
+            case CUL_EO_PARSED:
+                if (c == 'B') {
+                    state = State.END_CHAR_0X0D;
+                    fhzMessage = CulMessage.EOB;
+                } else {
+                    //ERROR???
+                    state = State.IDLE;
+                }
+                break;
+            case CUL_L_PARSED:
+                if (c == 'O') {
+                    state = State.CUL_LO_PARSED;
+                } else {
+                    //ERROR???
+                    state = State.IDLE;
+                }
+                break;
+            case CUL_LO_PARSED:
+                if (c == 'V') {
+                    state = State.CUL_LOV_PARSED;
+                } else {
+                    //ERROR???
+                    state = State.IDLE;
+                }
+                break;
+            case CUL_LOV_PARSED:
+                if (c == 'F') {
+                    state = State.END_CHAR_0X0D;
+                    fhzMessage = CulMessage.LOVF;
+                } else {
+                    //ERROR???
+                    state = State.IDLE;
+                }
+                break;
             case SINGNAL_STRENGTH:
                 if (c == '\r') {
                     setStackSize(0);
@@ -207,11 +263,14 @@ public class CulParser<T extends FhzMessage> extends Parser implements ParserLis
             case END_CHAR_0X0D:
                 if (c == '\r') {
                     state = State.END_CHAR_0X0A;
+                    break;
+                } else if (c == '\n') {
+                //Fall trough
                 } else {
                     //ERRORhandling
                     state = State.IDLE;
+                    break;
                 }
-                break;
             case END_CHAR_0X0A:
                 if (c == '\n') {
                     state = State.IDLE;
@@ -237,6 +296,8 @@ public class CulParser<T extends FhzMessage> extends Parser implements ParserLis
                             dataListener.fs20DataParsed((FS20Message) fhzMessage);
                         } else if (fhzMessage instanceof LaCrosseTx2Message) {
                             dataListener.laCrosseTxParsed((LaCrosseTx2Message) fhzMessage);
+                        } else if (fhzMessage instanceof CulMessage) {
+                            dataListener.culMessageParsed((CulMessage) fhzMessage);
                         }
 
                     }
@@ -266,7 +327,7 @@ public class CulParser<T extends FhzMessage> extends Parser implements ParserLis
         // wants to.
         LOG.log(Level.FINE, "open port {0}", serialPortSocket.getPortName());
 
-        serialPortSocket.openRaw(Baudrate.B9600, DataBits.DB_8, StopBits.SB_2, Parity.EVEN, FlowControl.getFC_NONE());
+        serialPortSocket.open(Speed._9600_BPS, DataBits.DB_8, StopBits.SB_1, Parity.NONE, FlowControl.getFC_NONE());
         LOG.log(Level.FINE, "port opend {0}", serialPortSocket.getPortName());
 
         return serialPortSocket;

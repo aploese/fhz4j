@@ -4,6 +4,8 @@ import de.ibapl.fhz4j.parser.api.ParserListener;
 import de.ibapl.fhz4j.protocol.fht.FhtDateMessage;
 import de.ibapl.fhz4j.protocol.fht.FhtMessage;
 import de.ibapl.fhz4j.protocol.fht.FhtProperty;
+import java.time.LocalDateTime;
+import org.junit.Assert;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
@@ -37,7 +39,7 @@ public class FhtDateMessageTest implements ParserListener<FhtMessage> {
         decode("03023E6902");
         assertDateMessage(fhtMessage, (short)302, FhtProperty.HOLIDAY_END_DATE, true, true, 7, 13 );
     }
-
+    
     @Override
     public void success(FhtMessage fhzMessage) {
         this.fhtMessage = fhzMessage;

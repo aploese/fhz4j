@@ -30,6 +30,7 @@ package de.ibapl.fhz4j.parser.cul;
 import de.ibapl.fhz4j.api.FhzDataListener;
 import de.ibapl.fhz4j.protocol.em.EmMessage;
 import de.ibapl.fhz4j.protocol.fht.FhtMessage;
+import de.ibapl.fhz4j.protocol.fht.FhtProperty;
 import de.ibapl.fhz4j.protocol.fs20.FS20Message;
 import de.ibapl.fhz4j.protocol.hms.HmsMessage;
 import de.ibapl.fhz4j.protocol.lacrosse.tx2.LaCrosseTx2Message;
@@ -40,6 +41,9 @@ import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Test;
 import static org.junit.Assert.*;
+
+import java.time.LocalDate;
+import java.time.LocalTime;
 
 /**
  *
@@ -54,6 +58,7 @@ public class CulParserTest implements FhzDataListener {
     private FS20Message fs20Msg;
     private LaCrosseTx2Message laCrosseTx2Message;
     private FhtMessage fhtPartialMessage;
+    private CulMessage culMessage;
     private Throwable failed;
 
     public CulParserTest() {
@@ -83,10 +88,44 @@ public class CulParserTest implements FhzDataListener {
         hmsMsg = null;
         emMsg = null;
         laCrosseTx2Message = null;
+        culMessage = null;
         failed = null;
         for (char c : s.toCharArray()) {
             parser.parse(c);
         }
+    }
+
+    @Test
+    public void decode_CUL_LOVF() {
+        decode("LOVF\r\n");
+        assertEquals(CulMessage.LOVF, culMessage);
+    }
+
+    @Test
+    public void decode_CUL_EOB() {
+        decode("EOB\r\n");
+        assertEquals(CulMessage.EOB, culMessage);
+    }
+
+    @Test
+    public void decodeModay_Times() {
+//        fail();
+    }
+
+    
+    @Test
+    public void decodeDateAndTime() {
+        decode("T0401606912EF\r\n");
+        assertNotNull(fhtPartialMessage);
+        decode("T0401616901EF\r\n");
+        assertNotNull(fhtPartialMessage);
+        decode("T0401626911EF\r\n");
+        assertNotNull(fhtPartialMessage);
+        decode("T040163690BEE\r\n");
+        assertNotNull(fhtPartialMessage);
+        decode("T0401646930EF\r\n");
+        assertNotNull(fhtPartialMessage);
+        assertNotNull(fhtMessage);
     }
 
     @Test
@@ -99,39 +138,33 @@ public class CulParserTest implements FhzDataListener {
     }
 
     @Test
-    @Ignore//TODO inject calendar
     public void decode_FHT_Holiday_End() {
+        decode("T370A3F010106\r\n");
+        assertNotNull(fhtPartialMessage);
+        decode("T370A40010106\r\n");
+        assertNotNull(fhtPartialMessage);
         decode("T370A3E690206\r\n");
         assertNotNull(fhtMessage);
-        assertEquals("housecode: 5510, command: mode, description: from FHT-B data register, value: 2 signal strength: -71.0 dB", fhtMessage.toString());
-        decode("T370A3F010106\r\n");
-        assertNotNull(fhtMessage);
-        assertEquals("housecode: 5510, command: holiday 1, description:  0x0 0x1, value: 1 signal strength: -71.0 dB", fhtMessage.toString());
-        decode("T370A40010106\r\n");
-        assertNotNull(fhtMessage);
-        assertEquals("housecode: 5510, command: holiday 2, description:  0x0 0x1, value: 1 signal strength: -71.0 dB", fhtMessage.toString());
-//        assertNotNull(fhtMultiMsgMessage);
-//        assertEquals("", fhtMultiMsgMessage.toString());
-        fail();
+        FhtDateMessageTest.assertDateMessage(fhtMessage, 5510, FhtProperty.HOLIDAY_END_DATE, true, true, 1, 1);
     }
 
     @Test
-    @Ignore
     public void decode_FHT_Party_End() {
-        decode("T370A3E690306\r\n");
-        assertNotNull(fhtMessage);
-        assertEquals("housecode: 5510, command: mode, description: from FHT-B data register, value: 3 signal strength: -71.0 dB", fhtMessage.toString());
         decode("T370A3F010106\r\n");
-        assertNotNull(fhtMessage);
-        assertEquals("housecode: 5510, command: holiday 1, description:  0x0 0x1, value: 1 signal strength: -71.0 dB", fhtMessage.toString());
+        assertNotNull(fhtPartialMessage);
         decode("T370A40010106\r\n");
-        assertNotNull(fhtMessage);
-        assertEquals("housecode: 5510, command: holiday 2, description:  0x0 0x1, value: 1 signal strength: -71.0 dB", fhtMessage.toString());
-//        assertNotNull(fhtMultiMsgMessage);
-//        assertEquals("", fhtMultiMsgMessage.toString());
-        fail();
+        assertNotNull(fhtPartialMessage);
+        decode("T370A3E690306\r\n");
+        FhtTimeMessageTest.assertTimeMessage(fhtMessage, 5510, FhtProperty.PARTY_END_TIME, true, true, LocalTime.of(0, 10));
     }
 
+    
+    @Test
+    public void testFHT_HC9876() {
+        decode("T624C012F003D\r\n");
+        assertNotNull(fhtMessage);
+        assertEquals(9876, fhtMessage.housecode);
+    }
     /**
      * Only tests if the CulParser works with the HmsParser
      */
@@ -149,14 +182,26 @@ public class CulParserTest implements FhzDataListener {
         assertTrue(fs20Msg instanceof FS20Message);
     }
 
-    
     @Test
     public void decode_LA_CROSSE_TX2() {
         decode("tA00E73173D\r\n");
         assertNotNull(laCrosseTx2Message);
 
         decode("tA00AA002EAE5\r\n");
-        assertNull(laCrosseTx2Message);
+        assertNotNull(laCrosseTx2Message);
+    }
+    
+    @Test
+    public void decode_EM() {
+        decode("E010201040004000F0047\r\n");
+        assertNotNull(emMsg);
+    }
+    
+    @Test
+    @Ignore
+    public void decode_FHT() {
+        decode("T01010069B6F8\n");
+        assertNotNull(fhtMessage);
     }
 
     @Override
@@ -193,6 +238,11 @@ public class CulParserTest implements FhzDataListener {
     public void failed(Throwable t) {
         assertNotNull(t);
         this.failed = t;
+    }
+
+    @Override
+    public void culMessageParsed(CulMessage culMessage) {
+        this.culMessage = culMessage;
     }
 
 }

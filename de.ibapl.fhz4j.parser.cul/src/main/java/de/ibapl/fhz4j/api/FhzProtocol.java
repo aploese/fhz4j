@@ -39,6 +39,7 @@ public enum FhzProtocol {
     EM("EM"),
     HMS("HMS"),
     LA_CROSSE_TX2("LaCrosse Tx2"),
+    CUL("CUL"),
     UNKNOWN("Unknown");
     
     private final String label;

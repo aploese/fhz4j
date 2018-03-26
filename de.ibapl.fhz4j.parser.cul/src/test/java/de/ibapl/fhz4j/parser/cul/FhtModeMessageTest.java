@@ -49,7 +49,6 @@ public class FhtModeMessageTest implements ParserListener<FhtMessage> {
         decode("0302406913");
         FhtTempMessageTest.assertRawMessage(partialFhtMessage, 302, FhtProperty.HOLIDAY_2, true, true, 0x13);
         decode("03023E6903");
-        FhtModeMessageTest.assertModeMessage(fhtMessage, 302, true, true, Fht80bMode.PARTY);
         FhtTimeMessageTest.assertTimeMessage(assembledFhtMessage, 302, FhtProperty.PARTY_END_TIME, true, true, LocalTime.of(23, 30));
     }
 

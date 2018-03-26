@@ -63,7 +63,9 @@ public class LaCrosseTx2MessageTest implements ParserListener<LaCrosseTx2Message
         decode("AECC60060C");
         assertLaCrosseTx2Message(laCrosseTx2Message, 198, LaCrosseTx2Property.HUMIDITY, 60.0f);
         decode("A00AA002EA");
-        assertNull(laCrosseTx2Message);
+        assertLaCrosseTx2Message(laCrosseTx2Message, 5, LaCrosseTx2Property.TEMP, 50.0f);
+        decode("A00A678E9E");
+        assertLaCrosseTx2Message(laCrosseTx2Message, 5, LaCrosseTx2Property.TEMP, 17.800001f);
     }
 
 

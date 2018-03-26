@@ -1,7 +1,6 @@
 package de.ibapl.fhz4j.parser.cul;
 
 import de.ibapl.fhz4j.parser.api.ParserListener;
-import de.ibapl.fhz4j.protocol.em.Em1000EmMessage;
 import de.ibapl.fhz4j.protocol.em.EmDeviceType;
 import de.ibapl.fhz4j.protocol.em.EmMessage;
 import org.junit.Test;
@@ -49,29 +48,38 @@ public class EmMessageTest implements ParserListener<EmMessage> {
         throw new RuntimeException("No partial message expected."); 
     }
 
-     public static void assertEm1000EmMessage(EmMessage emMsg, int address, short counter, float energy, float energyLast5Min, float maxPowerLast5Min) {
+     public static void assertEm1000Message(EmMessage emMsg, EmDeviceType emDeviceType, int address, short counter, int valueCummulated, int value5Min, int value5MinPeak) {
         assertNotNull(emMsg);
         assertEquals("address", (short)address, emMsg.address);
-        assertEquals("emDeviceType", EmDeviceType.EM_1000_EM, emMsg.emDeviceType);
-        final Em1000EmMessage msg = (Em1000EmMessage)emMsg;
-        assertEquals("counter", counter, msg.counter);
-        assertEquals("energy", energy, msg.energy, Float.MIN_NORMAL);
-        assertEquals("energyLast5Min", energyLast5Min, msg.energyLast5Min, Float.MIN_NORMAL);
-        assertEquals("maxPowerLast5Min", maxPowerLast5Min, msg.maxPowerLast5Min, Float.MIN_NORMAL);
-   
+        assertEquals("emDeviceType", emDeviceType, emMsg.emDeviceType);
+        assertEquals("counter", counter, emMsg.counter);
+        assertEquals("valueCummulated", valueCummulated, emMsg.valueCummulated);
+        assertEquals("value5Min", value5Min, emMsg.value5Min);
+        assertEquals("value5MinPeak", value5MinPeak, emMsg.value5MinPeak);
     }
 
     @Test
     public void decode_EM_1() {
         decode("020571241000000000");
-        assertEm1000EmMessage(emMessage, 5, (short)113, 4.132f, 0.0f, 0.0f);
+        assertEm1000Message(emMessage, EmDeviceType.EM_1000_EM, 5, (short)113, 4132, 0, 0);
     }
 
     @Test
     public void decode_EM_2() {
         decode("0205ADC91008000B00");
-        assertEm1000EmMessage(emMessage, 5,(short)173, 4.2970004f, 0.08f, 0.11f);
+        assertEm1000Message(emMessage, EmDeviceType.EM_1000_EM, 5,(short)173, 4297, 8, 11);
     }
 
+    @Test
+    public void decode_EM_3() {
+        decode("010201040004000F00");
+        assertEm1000Message(emMessage, EmDeviceType.EM_1000_S, 2,(short)1, 4, 4, 15); 
+    }
+    
+        @Test
+    public void decode_EM_4() {
+        decode("010229ED0003005200");
+        assertEm1000Message(emMessage, EmDeviceType.EM_1000_S, 2,(short)41, 237, 3, 82); 
+    }
 
 }
