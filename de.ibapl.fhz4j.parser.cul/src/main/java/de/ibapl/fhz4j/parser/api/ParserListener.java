@@ -1,12 +1,8 @@
-package de.ibapl.fhz4j.parser.api;
-
-import de.ibapl.fhz4j.api.FhzMessage;
-
 /*-
  * #%L
  * FHZ4J Core
  * %%
- * Copyright (C) 2009 - 2017 Arne Plöse
+ * Copyright (C) 2009 - 2018 Arne Plöse
  * %%
  * FHZ4J - Drivers for the Wireless FS20, FHT and HMS protocol https://github.com/aploese/fhz4j/
  * Copyright (C) 2009, 2017, Arne Plöse and individual contributors as indicated
@@ -29,26 +25,28 @@ import de.ibapl.fhz4j.api.FhzMessage;
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  * #L%
  */
+package de.ibapl.fhz4j.parser.api;
 
+import de.ibapl.fhz4j.api.FhzMessage;
 
 /**
  *
- * @author aploese
+ * @author Arne Plöse
  */
 public interface ParserListener<T extends FhzMessage> {
-    
-    void success(T fhzMessage);
-    
-    /**
-     * The partial message of multiple partial messages
-    */
-    void successPartial(T fhzMessage);
-    
-    /**
-     * The resulting message of multiple partial messages
-    */
-    void successPartialAssembled(T fhzMessage);
 
-    void fail(Throwable t);
+	void success(T fhzMessage);
+
+	/**
+	 * The partial message of multiple partial messages
+	 */
+	void successPartial(T fhzMessage);
+
+	/**
+	 * The resulting message of multiple partial messages
+	 */
+	void successPartialAssembled(T fhzMessage);
+
+	void fail(Throwable t);
 
 }

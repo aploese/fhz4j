@@ -1,10 +1,8 @@
-package de.ibapl.fhz4j.protocol.hms;
-
 /*-
  * #%L
  * FHZ4J Core
  * %%
- * Copyright (C) 2009 - 2017 Arne Plöse
+ * Copyright (C) 2009 - 2018 Arne Plöse
  * %%
  * FHZ4J - Drivers for the Wireless FS20, FHT and HMS protocol https://github.com/aploese/fhz4j/
  * Copyright (C) 2009, 2017, Arne Plöse and individual contributors as indicated
@@ -27,20 +25,20 @@ package de.ibapl.fhz4j.protocol.hms;
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  * #L%
  */
+package de.ibapl.fhz4j.protocol.hms;
 
 import java.util.Set;
 
-
 /**
  *
- * @author aploese
+ * @author Arne Plöse
  */
 public class Hms100WdMessage extends HmsMessage {
-    
-    public Hms100WdMessage(short housecode, Set<HmsDeviceStatus> deviceStatus) {
-        super(housecode, HmsDeviceType.HMS_100_WD, deviceStatus);
-    }
-    
-    public boolean water;
+
+	public Hms100WdMessage(short housecode, Set<HmsDeviceStatus> deviceStatus) {
+		super(housecode, HmsDeviceType.HMS_100_WD, deviceStatus);
+	}
+
+	public boolean water;
 
 }

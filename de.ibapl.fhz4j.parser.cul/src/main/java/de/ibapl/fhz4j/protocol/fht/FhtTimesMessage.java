@@ -1,10 +1,8 @@
-package de.ibapl.fhz4j.protocol.fht;
-
 /*-
  * #%L
  * FHZ4J Core
  * %%
- * Copyright (C) 2009 - 2017 Arne Plöse
+ * Copyright (C) 2009 - 2018 Arne Plöse
  * %%
  * FHZ4J - Drivers for the Wireless FS20, FHT and HMS protocol https://github.com/aploese/fhz4j/
  * Copyright (C) 2009, 2017, Arne Plöse and individual contributors as indicated
@@ -27,26 +25,28 @@ package de.ibapl.fhz4j.protocol.fht;
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  * #L%
  */
+package de.ibapl.fhz4j.protocol.fht;
 
 import java.time.LocalTime;
 
 /**
  *
- * @author aploese
+ * @author Arne Plöse
  */
 public class FhtTimesMessage extends Fht8bMessage {
-    
-    public LocalTime timeFrom1;
-    public LocalTime timeTo1;
-    public LocalTime timeFrom2;
-    public LocalTime timeTo2;
 
-    public FhtTimesMessage(short housecode, FhtProperty command, boolean fromFht_8B, boolean dataRegister, LocalTime timeFrom1, LocalTime timeTo1, LocalTime timeFrom2, LocalTime timeTo2) {
-        super(housecode, command,fromFht_8B, dataRegister);
-        this.timeFrom1 = timeFrom1;
-        this.timeTo1 = timeTo1;
-        this.timeFrom2 = timeFrom2;
-        this.timeTo2 = timeTo2;
-    }
+	public LocalTime timeFrom1;
+	public LocalTime timeTo1;
+	public LocalTime timeFrom2;
+	public LocalTime timeTo2;
+
+	public FhtTimesMessage(short housecode, FhtProperty command, boolean fromFht_8B, boolean dataRegister,
+			LocalTime timeFrom1, LocalTime timeTo1, LocalTime timeFrom2, LocalTime timeTo2) {
+		super(housecode, command, fromFht_8B, dataRegister);
+		this.timeFrom1 = timeFrom1;
+		this.timeTo1 = timeTo1;
+		this.timeFrom2 = timeFrom2;
+		this.timeTo2 = timeTo2;
+	}
 
 }

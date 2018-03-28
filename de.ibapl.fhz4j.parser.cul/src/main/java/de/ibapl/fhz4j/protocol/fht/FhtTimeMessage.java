@@ -1,10 +1,8 @@
-package de.ibapl.fhz4j.protocol.fht;
-
 /*-
  * #%L
  * FHZ4J Core
  * %%
- * Copyright (C) 2009 - 2017 Arne Plöse
+ * Copyright (C) 2009 - 2018 Arne Plöse
  * %%
  * FHZ4J - Drivers for the Wireless FS20, FHT and HMS protocol https://github.com/aploese/fhz4j/
  * Copyright (C) 2009, 2017, Arne Plöse and individual contributors as indicated
@@ -27,24 +25,26 @@ package de.ibapl.fhz4j.protocol.fht;
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  * #L%
  */
+package de.ibapl.fhz4j.protocol.fht;
 
 import java.time.LocalTime;
 
 /**
  *
- * @author aploese
+ * @author Arne Plöse
  */
 public class FhtTimeMessage extends Fht8bMessage {
-    
-    public LocalTime time;
 
-    public FhtTimeMessage(short housecode, FhtProperty command, boolean fromFht_8B, boolean dataRegister, int hour, int minute) {
-        super(housecode, command,fromFht_8B, dataRegister);
-        if (hour == 24 && minute == 0) {
-            time = null;
-        } else {
-            time = LocalTime.of(hour, minute);
-        }
-    }
+	public LocalTime time;
+
+	public FhtTimeMessage(short housecode, FhtProperty command, boolean fromFht_8B, boolean dataRegister, int hour,
+			int minute) {
+		super(housecode, command, fromFht_8B, dataRegister);
+		if (hour == 24 && minute == 0) {
+			time = null;
+		} else {
+			time = LocalTime.of(hour, minute);
+		}
+	}
 
 }

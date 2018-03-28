@@ -1,17 +1,8 @@
-package de.ibapl.fhz4j.parser.cul;
-
-import de.ibapl.fhz4j.LogUtils;
-import de.ibapl.fhz4j.protocol.lacrosse.tx2.LaCrosseTx2Message;
-import de.ibapl.fhz4j.protocol.lacrosse.tx2.LaCrosseTx2Property;
-import de.ibapl.fhz4j.parser.api.Parser;
-import de.ibapl.fhz4j.parser.api.ParserListener;
-import java.util.logging.Logger;
-
 /*-
  * #%L
  * FHZ4J Core
  * %%
- * Copyright (C) 2009 - 2017 Arne Plöse
+ * Copyright (C) 2009 - 2018 Arne Plöse
  * %%
  * FHZ4J - Drivers for the Wireless FS20, FHT and HMS protocol https://github.com/aploese/fhz4j/
  * Copyright (C) 2009, 2017, Arne Plöse and individual contributors as indicated
@@ -34,122 +25,123 @@ import java.util.logging.Logger;
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  * #L%
  */
+package de.ibapl.fhz4j.parser.cul;
+
+import java.util.logging.Logger;
+
+import de.ibapl.fhz4j.LogUtils;
+import de.ibapl.fhz4j.parser.api.Parser;
+import de.ibapl.fhz4j.parser.api.ParserListener;
+import de.ibapl.fhz4j.protocol.lacrosse.tx2.LaCrosseTx2Message;
+import de.ibapl.fhz4j.protocol.lacrosse.tx2.LaCrosseTx2Property;
+
 /**
  *
- * @author aploese
+ * @author Arne Plöse
  */
 class LaCrosseTx2Parser extends Parser {
 
-    private enum State {
+	private enum State {
 
-        START_SEQUENCE_A,
-        SENSOR_TYTE,
-        COLLECT_SENSOR_ADDRESS_HIGH,
-        COLLECT_SENSOR_ADDRESS_LOW,
-        COLLECT_DATA_1_3,
-        COLLECT_DATA_4,
-        COLLECT_DATA_5,
-        CHECKSUM,
-        PARSE_SUCCESS,
-        PARSE_ERROR;
-    
-    }
+		START_SEQUENCE_A, SENSOR_TYTE, COLLECT_SENSOR_ADDRESS_HIGH, COLLECT_SENSOR_ADDRESS_LOW, COLLECT_DATA_1_3, COLLECT_DATA_4, COLLECT_DATA_5, CHECKSUM, PARSE_SUCCESS, PARSE_ERROR;
 
-    LaCrosseTx2Parser(ParserListener<LaCrosseTx2Message> parserListener) {
-        this.parserListener = parserListener;
-    }
+	}
 
-    private static final Logger LOG = Logger.getLogger(LogUtils.FHZ_PARSER_CUL);
-    private final ParserListener<LaCrosseTx2Message> parserListener;
-    private LaCrosseTx2Message laCrosseTx2Message;
-    private State state;
-    private int cs;
+	LaCrosseTx2Parser(ParserListener<LaCrosseTx2Message> parserListener) {
+		this.parserListener = parserListener;
+	}
 
-    @Override
-    public void parse(char c) {
-        try {
-            cs += digit2Int(c);
-            switch (state) {
-                case START_SEQUENCE_A:
-                    if (c == 'A') {
-                        state = State.SENSOR_TYTE;
-                    } else {
-                        throw new RuntimeException("Wrong start sequence");
-                    }
-                    break;
-                case SENSOR_TYTE:
-                    switch (c) {
-                        case '0':
-                            laCrosseTx2Message = new LaCrosseTx2Message(LaCrosseTx2Property.TEMP);
-                            break;
-                        case 'E':
-                            laCrosseTx2Message = new LaCrosseTx2Message(LaCrosseTx2Property.HUMIDITY);
-                            break;
-                        default:
-                            throw new RuntimeException("Can't figure out the sensortype");
-                    }
-                    setStackSize(2);
-                    state = State.COLLECT_SENSOR_ADDRESS_HIGH;
-                    break;
-                case COLLECT_SENSOR_ADDRESS_HIGH:
-                    push(digit2Int(c));
-                    state = State.COLLECT_SENSOR_ADDRESS_LOW;
-                    break;
-                case COLLECT_SENSOR_ADDRESS_LOW:
-                    push(digit2Int(c) >> 1);
-                    laCrosseTx2Message.address = (short) (getShortValue());
-                    setStackSize(3);
-                    state = State.COLLECT_DATA_1_3;
-                    break;
-                case COLLECT_DATA_1_3:
-                    pushBCD(digit2Int(c));
-                    if (getStackpos() == 0) {
-                        switch (laCrosseTx2Message.laCrosseTx2Property) {
-                            case TEMP:
-                                laCrosseTx2Message.value = 0.1f * (getIntValue() - 500);
-                                break;
-                            case HUMIDITY:
-                                laCrosseTx2Message.value = 0.1f * getIntValue();
-                                break;
-                            default:
-                                throw new RuntimeException("Unknown Property: " + laCrosseTx2Message.laCrosseTx2Property);
-                        }
-                        state = State.COLLECT_DATA_4;
-                    }
-                    break;
-                case COLLECT_DATA_4:
-                    state = State.COLLECT_DATA_5;
-                    // data byte 1 repeated
-                    break;
-                case COLLECT_DATA_5:
-                    state = State.CHECKSUM;
-                    // data byte 2 repeated
-                    break;
-                case CHECKSUM:
-                    if (((cs - digit2Int(c)) & 0X0F) == digit2Int(c)) {
-                        state = State.PARSE_SUCCESS;
-                        parserListener.success(laCrosseTx2Message);
-                    } else {
-                        state = State.PARSE_SUCCESS;
-                        parserListener.success(laCrosseTx2Message);
-                        // TODO Checksum ????
-//                        throw new RuntimeException("Check sum mismatch");
-                    }
+	private static final Logger LOG = Logger.getLogger(LogUtils.FHZ_PARSER_CUL);
+	private final ParserListener<LaCrosseTx2Message> parserListener;
+	private LaCrosseTx2Message laCrosseTx2Message;
+	private State state;
+	private int cs;
 
-                    break;
-                default:
-            }
-        } catch (Throwable t) {
-            parserListener.fail(new RuntimeException(String.format("State: %s last char %s", state, c), t));
-            state = State.PARSE_ERROR;
-        }
-    }
+	@Override
+	public void parse(char c) {
+		try {
+			cs += digit2Int(c);
+			switch (state) {
+			case START_SEQUENCE_A:
+				if (c == 'A') {
+					state = State.SENSOR_TYTE;
+				} else {
+					throw new RuntimeException("Wrong start sequence");
+				}
+				break;
+			case SENSOR_TYTE:
+				switch (c) {
+				case '0':
+					laCrosseTx2Message = new LaCrosseTx2Message(LaCrosseTx2Property.TEMP);
+					break;
+				case 'E':
+					laCrosseTx2Message = new LaCrosseTx2Message(LaCrosseTx2Property.HUMIDITY);
+					break;
+				default:
+					throw new RuntimeException("Can't figure out the sensortype");
+				}
+				setStackSize(2);
+				state = State.COLLECT_SENSOR_ADDRESS_HIGH;
+				break;
+			case COLLECT_SENSOR_ADDRESS_HIGH:
+				push(digit2Int(c));
+				state = State.COLLECT_SENSOR_ADDRESS_LOW;
+				break;
+			case COLLECT_SENSOR_ADDRESS_LOW:
+				push(digit2Int(c) >> 1);
+				laCrosseTx2Message.address = (getShortValue());
+				setStackSize(3);
+				state = State.COLLECT_DATA_1_3;
+				break;
+			case COLLECT_DATA_1_3:
+				pushBCD(digit2Int(c));
+				if (getStackpos() == 0) {
+					switch (laCrosseTx2Message.laCrosseTx2Property) {
+					case TEMP:
+						laCrosseTx2Message.value = 0.1f * (getIntValue() - 500);
+						break;
+					case HUMIDITY:
+						laCrosseTx2Message.value = 0.1f * getIntValue();
+						break;
+					default:
+						throw new RuntimeException("Unknown Property: " + laCrosseTx2Message.laCrosseTx2Property);
+					}
+					state = State.COLLECT_DATA_4;
+				}
+				break;
+			case COLLECT_DATA_4:
+				state = State.COLLECT_DATA_5;
+				// data byte 1 repeated
+				break;
+			case COLLECT_DATA_5:
+				state = State.CHECKSUM;
+				// data byte 2 repeated
+				break;
+			case CHECKSUM:
+				if (((cs - digit2Int(c)) & 0X0F) == digit2Int(c)) {
+					state = State.PARSE_SUCCESS;
+					parserListener.success(laCrosseTx2Message);
+				} else {
+					state = State.PARSE_SUCCESS;
+					parserListener.success(laCrosseTx2Message);
+					// TODO Checksum ????
+					// throw new RuntimeException("Check sum mismatch");
+				}
 
-    @Override
-    public void init() {
-        state = State.START_SEQUENCE_A;
-        cs = 0;
-        laCrosseTx2Message = null;
-    }
+				break;
+			default:
+			}
+		} catch (Throwable t) {
+			parserListener.fail(new RuntimeException(String.format("State: %s last char %s", state, c), t));
+			state = State.PARSE_ERROR;
+		}
+	}
+
+	@Override
+	public void init() {
+		state = State.START_SEQUENCE_A;
+		cs = 0;
+		laCrosseTx2Message = null;
+	}
 
 }

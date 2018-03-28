@@ -1,10 +1,8 @@
-package de.ibapl.fhz4j.console;
-
 /*-
  * #%L
  * FHZ4J Console
  * %%
- * Copyright (C) 2009 - 2017 Arne Plöse
+ * Copyright (C) 2009 - 2018 Arne Plöse
  * %%
  * FHZ4J - Drivers for the Wireless FS20, FHT and HMS protocol https://github.com/aploese/fhz4j/
  * Copyright (C) 2009, 2017, Arne Plöse and individual contributors as indicated
@@ -27,19 +25,14 @@ package de.ibapl.fhz4j.console;
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  * #L%
  */
-import de.ibapl.fhz4j.LogUtils;
-import de.ibapl.fhz4j.api.FhzDataListener;
-import de.ibapl.fhz4j.parser.cul.CulMessage;
-import de.ibapl.fhz4j.parser.cul.CulParser;
-import de.ibapl.fhz4j.parser.cul.CulWriter;
-import de.ibapl.fhz4j.protocol.em.EmMessage;
-import de.ibapl.spsw.api.SerialPortSocket;
-import de.ibapl.spsw.api.SerialPortSocketFactory;
-import de.ibapl.spsw.ser2net.Ser2NetProvider;
+package de.ibapl.fhz4j.console;
 
+import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
-
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -47,23 +40,7 @@ import java.util.ServiceLoader;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import de.ibapl.fhz4j.protocol.fht.FhtMessage;
-import de.ibapl.fhz4j.protocol.fs20.FS20Message;
 
-import de.ibapl.fhz4j.protocol.hms.HmsMessage;
-import de.ibapl.fhz4j.protocol.lacrosse.tx2.LaCrosseTx2Message;
-import de.ibapl.spsw.logging.LoggingSerialPortSocket;
-import de.ibapl.spsw.logging.TimeStampLogging;
-
-import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.time.DayOfWeek;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
-import java.time.format.DateTimeFormatter;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.HelpFormatter;
@@ -73,10 +50,25 @@ import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 import org.apache.commons.cli.PosixParser;
 
+import de.ibapl.fhz4j.LogUtils;
+import de.ibapl.fhz4j.api.FhzAdapter;
+import de.ibapl.fhz4j.api.FhzDataListener;
+import de.ibapl.fhz4j.parser.cul.CulMessage;
+import de.ibapl.fhz4j.protocol.em.EmMessage;
+import de.ibapl.fhz4j.protocol.fht.FhtMessage;
+import de.ibapl.fhz4j.protocol.fs20.FS20Message;
+import de.ibapl.fhz4j.protocol.hms.HmsMessage;
+import de.ibapl.fhz4j.protocol.lacrosse.tx2.LaCrosseTx2Message;
+import de.ibapl.spsw.api.SerialPortSocket;
+import de.ibapl.spsw.api.SerialPortSocketFactory;
+import de.ibapl.spsw.logging.LoggingSerialPortSocket;
+import de.ibapl.spsw.logging.TimeStampLogging;
+import de.ibapl.spsw.ser2net.Ser2NetProvider;
+
 /**
  * DOCUMENT ME!
  *
- * @author aploese
+ * @author Arne Plöse
  */
 public class Main {
 
@@ -95,8 +87,8 @@ public class Main {
             
             if (DEVICES_HOME_CODE.add(fhtMessage.housecode)) {
                 try {
-                    culWriter.writeFhtTimeAndDate(fhtMessage.housecode, LocalDateTime.now());
-                    culWriter.initFhtReporting(fhtMessage.housecode);
+//TODO                	fhzAdapter.writeFhtTimeAndDate(fhtMessage.housecode, LocalDateTime.now());
+//TODO                	fhzAdapter.initFhtReporting(fhtMessage.housecode);
                 } catch (Throwable t) {
                     //no-op
                 }
@@ -209,7 +201,7 @@ public class Main {
             return;
         }
 
-        if (cmd.hasOption("help")) {
+        if (cmd.hasOption("help")  || args.length == 0) {
             printHelp(options);
 
             return;
@@ -221,6 +213,7 @@ public class Main {
         }
         final SerialPortSocketFactory serialPortSocketFactory = i.next();
 
+        
         if (cmd.hasOption("scan")) {
             System.out.println("Java Properties:");
             System.getProperties().forEach((Object key, Object value) -> {
@@ -247,20 +240,17 @@ public class Main {
     }
 
     private final Set<Short> DEVICES_HOME_CODE = new HashSet<>();
-    private SerialPortSocket serialPort;
-    private CulParser<?> culParser;
-    private CulWriter culWriter;
 
     public void runSer2Net(String ser2net) {
         try {
             File logFile = File.createTempFile("cul_", ".txt");
             LOG.info("LOG File: " + logFile.getAbsolutePath());
             String[] split = ser2net.split(":"); 
-            serialPort = LoggingSerialPortSocket.wrapWithAsciiOutputStream(new Ser2NetProvider(split[0], Integer.valueOf(split[1])), new FileOutputStream(logFile), false, TimeStampLogging.NONE);
-        } catch (IOException ex) {
+            SerialPortSocket serialPort = LoggingSerialPortSocket.wrapWithAsciiOutputStream(new Ser2NetProvider(split[0], Integer.valueOf(split[1])), new FileOutputStream(logFile), false, TimeStampLogging.NONE);
+            run(serialPort);
+        } catch (Exception ex) {
             throw  new RuntimeException(ex);
         }
-    run();
     }
 
     public void runLocalPort(String port) {
@@ -274,38 +264,32 @@ public class Main {
 
             File logFile = File.createTempFile("cul_", ".txt");
             LOG.info("LOG File: " + logFile.getAbsolutePath());
-            serialPort = LoggingSerialPortSocket.wrapWithAsciiOutputStream(serialPortSocketFactory.createSerialPortSocket(port), new FileOutputStream(logFile), false, TimeStampLogging.NONE);
-        } catch (IOException ex) {
+            SerialPortSocket serialPort = LoggingSerialPortSocket.wrapWithAsciiOutputStream(serialPortSocketFactory.createSerialPortSocket(port), new FileOutputStream(logFile), false, TimeStampLogging.NONE);
+            run(serialPort);
+        } catch (Exception ex) {
             throw  new RuntimeException(ex);
         }
-    run();
     }
     
-    public void run() {
-        culParser = new CulParser<>(new FhzListener());
-        culWriter = new CulWriter();
+    public void run(SerialPortSocket serialPortSocket) throws Exception {
+        try (FhzAdapter fhzAddapter = FhzAdapter.open(serialPortSocket, new FhzListener())) {
         try {
-            CulParser.openPort(serialPort);
-//            culParser.setInputStream(serialPort.getInputStream());
-//            culWriter.setOutputStream(serialPort.getOutputStream());
-            culParser.setInputStream(new BufferedInputStream(serialPort.getInputStream(), 64));
-            culWriter.setOutputStream(new BufferedOutputStream(serialPort.getOutputStream(), 64));
-            
             try {
                 Thread.sleep(100);
             } catch (InterruptedException ex) {
                 LOG.log(Level.SEVERE, null, ex);
             }
-            culWriter.initFhz((short) 0001);
-//            culWriter.initFhtReporting((short)302);
-//        culWriter.writeFhtTimeAndDate((short) 302, LocalDateTime.now());
-//        culWriter.writeFhtCycle((short) 302, DayOfWeek.MONDAY, LocalTime.of(5, 0), LocalTime.of(8, 30), null, null);
-//            culWriter.writeFht((short)302, FhtProperty.DESIRED_TEMP, 24.0f);
-//            w.writeFhtModeManu((short)302);
-//            culWriter.writeFhtModeHoliday((short) 302, 16.0f, LocalDate.now().plusMonths(2).plusDays(4));
+            fhzAddapter.initFhz((short) 0001);
+//            fhzAddapter.initFhtReporting((short)302);
+//            fhzAddapter.writeFhtTimeAndDate((short) 302, LocalDateTime.now());
+//            fhzAddapter.writeFhtCycle((short) 302, DayOfWeek.MONDAY, LocalTime.of(5, 0), LocalTime.of(8, 30), null, null);
+//            fhzAddapter.writeFht((short)302, FhtProperty.DESIRED_TEMP, 24.0f);
+//            fhzAddapter.writeFhtModeManu((short)302);
+//            fhzAddapter.writeFhtModeHoliday((short) 302, 16.0f, LocalDate.now().plusMonths(2).plusDays(4));
+
         } catch (IOException ex) {
             LOG.log(Level.SEVERE, ex.getMessage(), ex);
-            throw new RuntimeException(ex);
+            throw new RuntimeException("Can't init fhzAdapter" + ex);
         }
         try {
             char c;
@@ -317,7 +301,7 @@ public class Main {
                         System.out.print("Bye will close down!");
                         break;
                     case 'r':
-                        culWriter.initFhtReporting(DEVICES_HOME_CODE);
+                    	fhzAddapter.initFhtReporting(DEVICES_HOME_CODE);
                         break;
                     default:
                 }
@@ -327,19 +311,9 @@ public class Main {
             LOG.log(Level.SEVERE, null, ex);
         }
         System.out.println("CLOSE");
-        try {
-            culParser.close();
-        } catch (InterruptedException ex) {
-            LOG.log(Level.SEVERE, null, ex);
-        }
 
-        try {
-            serialPort.close();
-        } catch (IOException e) {
-            LOG.log(Level.SEVERE, "Ex during close", e);
-        }
     }
-
+    }
     private static void printHelp(Options opts) {
         HelpFormatter formatter = new HelpFormatter();
         formatter.setWidth(300);

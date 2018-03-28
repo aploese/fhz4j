@@ -1,10 +1,8 @@
-package de.ibapl.fhz4j.protocol.hms;
-
 /*-
  * #%L
  * FHZ4J Core
  * %%
- * Copyright (C) 2009 - 2017 Arne Plöse
+ * Copyright (C) 2009 - 2018 Arne Plöse
  * %%
  * FHZ4J - Drivers for the Wireless FS20, FHT and HMS protocol https://github.com/aploese/fhz4j/
  * Copyright (C) 2009, 2017, Arne Plöse and individual contributors as indicated
@@ -27,55 +25,55 @@ package de.ibapl.fhz4j.protocol.hms;
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  * #L%
  */
-
+package de.ibapl.fhz4j.protocol.hms;
 
 import java.util.EnumSet;
 import java.util.Set;
 
 /**
  *
- * @author aploese
+ * @author Arne Plöse
  */
 public enum HmsDeviceStatus {
-    BATT_LOW(0x02, "Batt low");
-    
-    private final byte value;
-    private final String label;
+	BATT_LOW(0x02, "Batt low");
 
-    private HmsDeviceStatus(int value, String label) {
-        this.value = (byte) value;
-        this.label = label;
-    }
+	private final byte value;
+	private final String label;
 
-    public String getLabel() {
-        return label;
-    }
+	private HmsDeviceStatus(int value, String label) {
+		this.value = (byte) value;
+		this.label = label;
+	}
 
-    public String getName() {
-        return name();
-    }
+	public String getLabel() {
+		return label;
+	}
 
-    public byte getValue() {
-        return value;
-    }
+	public String getName() {
+		return name();
+	}
 
-        public static Set<HmsDeviceStatus> valueOf(int value) {
-        Set<HmsDeviceStatus> result = EnumSet.noneOf(HmsDeviceStatus.class);
-            for (HmsDeviceStatus prop : values()) {
-            if (prop.value == value) {
-                result.add(prop);
-            }
-        }
-        return result;
-    }
+	public byte getValue() {
+		return value;
+	}
 
-    public static HmsDeviceStatus fromLabel(String label) {
-        for (HmsDeviceStatus prop : values()) {
-            if (prop.getLabel().equals(label)) {
-                return prop;
-            }
-        }
-        return valueOf(label);
-    }
+	public static Set<HmsDeviceStatus> valueOf(int value) {
+		Set<HmsDeviceStatus> result = EnumSet.noneOf(HmsDeviceStatus.class);
+		for (HmsDeviceStatus prop : values()) {
+			if (prop.value == value) {
+				result.add(prop);
+			}
+		}
+		return result;
+	}
+
+	public static HmsDeviceStatus fromLabel(String label) {
+		for (HmsDeviceStatus prop : values()) {
+			if (prop.getLabel().equals(label)) {
+				return prop;
+			}
+		}
+		return valueOf(label);
+	}
 
 }

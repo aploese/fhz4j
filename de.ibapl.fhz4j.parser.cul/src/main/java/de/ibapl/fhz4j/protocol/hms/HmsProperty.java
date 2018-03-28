@@ -1,10 +1,8 @@
-package de.ibapl.fhz4j.protocol.hms;
-
 /*-
  * #%L
  * FHZ4J Core
  * %%
- * Copyright (C) 2009 - 2017 Arne Plöse
+ * Copyright (C) 2009 - 2018 Arne Plöse
  * %%
  * FHZ4J - Drivers for the Wireless FS20, FHT and HMS protocol https://github.com/aploese/fhz4j/
  * Copyright (C) 2009, 2017, Arne Plöse and individual contributors as indicated
@@ -27,62 +25,61 @@ package de.ibapl.fhz4j.protocol.hms;
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  * #L%
  */
+package de.ibapl.fhz4j.protocol.hms;
 
+import static de.ibapl.fhz4j.scada.DataType.BOOLEAN;
+import static de.ibapl.fhz4j.scada.DataType.FLOAT;
 
 import java.io.Serializable;
+
 import de.ibapl.fhz4j.scada.DataType;
 import de.ibapl.fhz4j.scada.ScadaProperty;
-import static de.ibapl.fhz4j.scada.DataType.*;
 
 /**
  *
- * @author aploese
+ * @author Arne Plöse
  */
 public enum HmsProperty implements Serializable, ScadaProperty {
-        TEMP("temp", "°C", FLOAT),
-        HUMIDY("humidy", "%", FLOAT),
-        BATT_STATUS("batt low", "", BOOLEAN),
-        WATER("water", "", BOOLEAN),
-        SMOKE_ALERT("smoke", "", BOOLEAN),
-        DOOR_WINDOW_OPEN("window open", "", BOOLEAN);
-        
-        final private String label;
-        final private DataType dataType;
-        final private String unitOfMeasurement; 
-        
-        private HmsProperty(String label, String unitOfMeasurement, DataType dataType) {
-                this.label = label;
-                this.unitOfMeasurement = unitOfMeasurement;
-                this.dataType = dataType;
-        }
+	TEMP("temp", "°C", FLOAT), HUMIDY("humidy", "%", FLOAT), BATT_STATUS("batt low", "", BOOLEAN), WATER("water", "",
+			BOOLEAN), SMOKE_ALERT("smoke", "", BOOLEAN), DOOR_WINDOW_OPEN("window open", "", BOOLEAN);
 
-    /**
-     * @return the label
-     */
-    @Override
-    public String getLabel() {
-        return label;
-    }
+	final private String label;
+	final private DataType dataType;
+	final private String unitOfMeasurement;
 
-    /**
-     * @return the dataType
-     */
-    @Override
-    public DataType getDataType() {
-        return dataType;
-    }
+	private HmsProperty(String label, String unitOfMeasurement, DataType dataType) {
+		this.label = label;
+		this.unitOfMeasurement = unitOfMeasurement;
+		this.dataType = dataType;
+	}
 
-    /**
-     * @return the unitOfMeasurement
-     */
-    @Override
-    public String getUnitOfMeasurement() {
-        return unitOfMeasurement;
-    }
+	/**
+	 * @return the label
+	 */
+	@Override
+	public String getLabel() {
+		return label;
+	}
 
-    @Override
-    public String getName() {
-        return name();
-    }
+	/**
+	 * @return the dataType
+	 */
+	@Override
+	public DataType getDataType() {
+		return dataType;
+	}
+
+	/**
+	 * @return the unitOfMeasurement
+	 */
+	@Override
+	public String getUnitOfMeasurement() {
+		return unitOfMeasurement;
+	}
+
+	@Override
+	public String getName() {
+		return name();
+	}
 
 }

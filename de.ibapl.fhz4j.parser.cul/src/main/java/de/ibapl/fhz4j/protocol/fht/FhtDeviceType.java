@@ -1,10 +1,8 @@
-package de.ibapl.fhz4j.protocol.fht;
-
 /*-
  * #%L
  * FHZ4J Core
  * %%
- * Copyright (C) 2009 - 2017 Arne Plöse
+ * Copyright (C) 2009 - 2018 Arne Plöse
  * %%
  * FHZ4J - Drivers for the Wireless FS20, FHT and HMS protocol https://github.com/aploese/fhz4j/
  * Copyright (C) 2009, 2017, Arne Plöse and individual contributors as indicated
@@ -27,47 +25,48 @@ package de.ibapl.fhz4j.protocol.fht;
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  * #L%
  */
+package de.ibapl.fhz4j.protocol.fht;
 
+import static de.ibapl.fhz4j.api.FhzProtocol.FHT;
 
 import java.io.Serializable;
+
 import de.ibapl.fhz4j.api.FhzProtocol;
-import static de.ibapl.fhz4j.api.FhzProtocol.*;
 
 /**
  *
- * @author aploese
+ * @author Arne Plöse
  */
 public enum FhtDeviceType implements Serializable {
 
-    FHT_8V("FHT V", FHT),
-    FHT_80B("FHT 80B", FHT),
-    UNKNOWN("Unknown", FhzProtocol.UNKNOWN);
+	FHT_8V("FHT V", FHT), FHT_80B("FHT 80B", FHT), UNKNOWN("Unknown", FhzProtocol.UNKNOWN);
 
-    public static FhtDeviceType fromLabel(String label) {
-        for (FhtDeviceType deviceType : values()) {
-            if (deviceType.getLabel().equals(label)) {
-                return deviceType;
-            }
-        }
-        return valueOf(label);
-    }
-    private final String label;
-    private final FhzProtocol protocol;
+	public static FhtDeviceType fromLabel(String label) {
+		for (FhtDeviceType deviceType : values()) {
+			if (deviceType.getLabel().equals(label)) {
+				return deviceType;
+			}
+		}
+		return valueOf(label);
+	}
 
-    private FhtDeviceType(String label, FhzProtocol protocol) {
-        this.label = label;
-        this.protocol = protocol;
-    }
+	private final String label;
+	private final FhzProtocol protocol;
 
-    public String getLabel() {
-        return label;
-    }
+	private FhtDeviceType(String label, FhzProtocol protocol) {
+		this.label = label;
+		this.protocol = protocol;
+	}
 
-    public FhzProtocol getProtocol() {
-        return protocol;
-    }
+	public String getLabel() {
+		return label;
+	}
 
-    public String getName() {
-        return name();
-    }
+	public FhzProtocol getProtocol() {
+		return protocol;
+	}
+
+	public String getName() {
+		return name();
+	}
 }

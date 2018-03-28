@@ -1,4 +1,4 @@
-fhz4j-core/target/
-fhz4j-memory-image/target/
-target/
-*/nbactions.xml
+target
+.settings
+.project
+.classpath

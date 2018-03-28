@@ -1,10 +1,8 @@
-package de.ibapl.fhz4j.protocol.hms;
-
 /*-
  * #%L
  * FHZ4J Core
  * %%
- * Copyright (C) 2009 - 2017 Arne Plöse
+ * Copyright (C) 2009 - 2018 Arne Plöse
  * %%
  * FHZ4J - Drivers for the Wireless FS20, FHT and HMS protocol https://github.com/aploese/fhz4j/
  * Copyright (C) 2009, 2017, Arne Plöse and individual contributors as indicated
@@ -27,29 +25,29 @@ package de.ibapl.fhz4j.protocol.hms;
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  * #L%
  */
-
+package de.ibapl.fhz4j.protocol.hms;
 
 import java.util.EnumSet;
 import java.util.Set;
+
 import de.ibapl.fhz4j.api.FhzMessage;
 import de.ibapl.fhz4j.api.FhzProtocol;
 
 /**
  *
- * @author aploese
+ * @author Arne Plöse
  */
 public abstract class HmsMessage extends FhzMessage {
 
-    public short housecode;
-    public Set<HmsDeviceStatus> deviceStatus = EnumSet.noneOf(HmsDeviceStatus.class);
-    public HmsDeviceType hmsDeviceType;
+	public short housecode;
+	public Set<HmsDeviceStatus> deviceStatus = EnumSet.noneOf(HmsDeviceStatus.class);
+	public HmsDeviceType hmsDeviceType;
 
-    protected HmsMessage(short housecode, HmsDeviceType hmsDeviceType, Set<HmsDeviceStatus> deviceStatus) {
-        super(FhzProtocol.HMS);
-        this.housecode = housecode;
-        this.hmsDeviceType = hmsDeviceType;
-        this.deviceStatus = deviceStatus;
-    }
+	protected HmsMessage(short housecode, HmsDeviceType hmsDeviceType, Set<HmsDeviceStatus> deviceStatus) {
+		super(FhzProtocol.HMS);
+		this.housecode = housecode;
+		this.hmsDeviceType = hmsDeviceType;
+		this.deviceStatus = deviceStatus;
+	}
 
- 
 }

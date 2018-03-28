@@ -1,10 +1,8 @@
-package de.ibapl.fhz4j.protocol.fht;
-
 /*-
  * #%L
  * FHZ4J Core
  * %%
- * Copyright (C) 2009 - 2017 Arne Plöse
+ * Copyright (C) 2009 - 2018 Arne Plöse
  * %%
  * FHZ4J - Drivers for the Wireless FS20, FHT and HMS protocol https://github.com/aploese/fhz4j/
  * Copyright (C) 2009, 2017, Arne Plöse and individual contributors as indicated
@@ -27,34 +25,30 @@ package de.ibapl.fhz4j.protocol.fht;
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  * #L%
  */
-
+package de.ibapl.fhz4j.protocol.fht;
 
 /**
  *
- * @author aploese
+ * @author Arne Plöse
  */
 public enum Fht80bMode {
-    AUTO("Auto"),
-    MANUAL("Manu"),
-    HOLIDAY("Holiday"),
-    PARTY("Party");
-    
-    
-    final private String label;
+	AUTO("Auto"), MANUAL("Manu"), HOLIDAY("Holiday"), PARTY("Party");
 
-    private Fht80bMode(String label) {
-        this.label = label;
-    }
+	final private String label;
 
-    /**
-     * @return the label
-     */
-    public String getLabel() {
-        return label;
-    }
+	private Fht80bMode(String label) {
+		this.label = label;
+	}
 
-    public String getName() {
-        return name();
-    }
+	/**
+	 * @return the label
+	 */
+	public String getLabel() {
+		return label;
+	}
+
+	public String getName() {
+		return name();
+	}
 
 }

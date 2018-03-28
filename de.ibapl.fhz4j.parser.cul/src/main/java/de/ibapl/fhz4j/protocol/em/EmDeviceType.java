@@ -1,10 +1,8 @@
-package de.ibapl.fhz4j.protocol.em;
-
 /*-
  * #%L
  * FHZ4J Core
  * %%
- * Copyright (C) 2009 - 2017 Arne Plöse
+ * Copyright (C) 2009 - 2018 Arne Plöse
  * %%
  * FHZ4J - Drivers for the Wireless FS20, FHT and HMS protocol https://github.com/aploese/fhz4j/
  * Copyright (C) 2009, 2017, Arne Plöse and individual contributors as indicated
@@ -27,29 +25,23 @@ package de.ibapl.fhz4j.protocol.em;
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  * #L%
  */
-
-
-import java.util.Arrays;
-import java.util.EnumSet;
-import java.util.Set;
+package de.ibapl.fhz4j.protocol.em;
 
 /**
  *
- * @author aploese
+ * @author Arne Plöse
  */
 public enum EmDeviceType {
-    EM_1000_S("EM 1000-S"),
-    EM_1000_EM("EM 1000 EM"),
-    EM_1000_GZ("EM 1000-GZ");
-    
-    final String label;
-    
-    private EmDeviceType(String label) {
-        this.label = label;
-    }
+	EM_1000_S("EM 1000-S"), EM_1000_EM("EM 1000 EM"), EM_1000_GZ("EM 1000-GZ");
 
-    public String getLabel() {
-        return label;
-    }
+	final String label;
+
+	private EmDeviceType(String label) {
+		this.label = label;
+	}
+
+	public String getLabel() {
+		return label;
+	}
 
 }

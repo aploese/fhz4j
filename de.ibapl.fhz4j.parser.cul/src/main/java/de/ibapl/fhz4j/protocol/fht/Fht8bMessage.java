@@ -1,10 +1,8 @@
-package de.ibapl.fhz4j.protocol.fht;
-
 /*-
  * #%L
  * FHZ4J Core
  * %%
- * Copyright (C) 2009 - 2017 Arne Plöse
+ * Copyright (C) 2009 - 2018 Arne Plöse
  * %%
  * FHZ4J - Drivers for the Wireless FS20, FHT and HMS protocol https://github.com/aploese/fhz4j/
  * Copyright (C) 2009, 2017, Arne Plöse and individual contributors as indicated
@@ -27,20 +25,21 @@ package de.ibapl.fhz4j.protocol.fht;
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  * #L%
  */
+package de.ibapl.fhz4j.protocol.fht;
 
 /**
  *
- * @author aploese
+ * @author Arne Plöse
  */
 public class Fht8bMessage extends FhtMessage {
 
-    public boolean fromFht_8B;
-    public boolean dataRegister;
+	public boolean fromFht_8B;
+	public boolean dataRegister;
 
-    public Fht8bMessage(short housecode, FhtProperty command, boolean fromFht_8B, boolean dataRegister) {
-        super(housecode, command);
-        this.fromFht_8B = fromFht_8B;
-        this.dataRegister = dataRegister;
-    }
+	public Fht8bMessage(short housecode, FhtProperty command, boolean fromFht_8B, boolean dataRegister) {
+		super(housecode, command);
+		this.fromFht_8B = fromFht_8B;
+		this.dataRegister = dataRegister;
+	}
 
 }

@@ -1,10 +1,8 @@
-package de.ibapl.fhz4j.protocol.fht;
-
 /*-
  * #%L
  * FHZ4J Core
  * %%
- * Copyright (C) 2009 - 2017 Arne Plöse
+ * Copyright (C) 2009 - 2018 Arne Plöse
  * %%
  * FHZ4J - Drivers for the Wireless FS20, FHT and HMS protocol https://github.com/aploese/fhz4j/
  * Copyright (C) 2009, 2017, Arne Plöse and individual contributors as indicated
@@ -27,22 +25,25 @@ package de.ibapl.fhz4j.protocol.fht;
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  * #L%
  */
+package de.ibapl.fhz4j.protocol.fht;
 
+/*-
 import java.time.LocalDate;
 
 /**
  *
- * @author aploese
+ * @author Arne Plöse
  */
 public class FhtDateMessage extends Fht8bMessage {
-    
-    public int day;
-    public int month;
 
-    public FhtDateMessage(short housecode, FhtProperty command, boolean fromFht_8B, boolean dataRegister, int month, int day) {
-        super(housecode, command,fromFht_8B, dataRegister);
-        this.month = month;
-        this.day = day;
-    }
+	public int day;
+	public int month;
+
+	public FhtDateMessage(short housecode, FhtProperty command, boolean fromFht_8B, boolean dataRegister, int month,
+			int day) {
+		super(housecode, command, fromFht_8B, dataRegister);
+		this.month = month;
+		this.day = day;
+	}
 
 }

@@ -1,10 +1,8 @@
-package de.ibapl.fhz4j.protocol.fht;
-
 /*-
  * #%L
  * FHZ4J Core
  * %%
- * Copyright (C) 2009 - 2017 Arne Plöse
+ * Copyright (C) 2009 - 2018 Arne Plöse
  * %%
  * FHZ4J - Drivers for the Wireless FS20, FHT and HMS protocol https://github.com/aploese/fhz4j/
  * Copyright (C) 2009, 2017, Arne Plöse and individual contributors as indicated
@@ -27,20 +25,21 @@ package de.ibapl.fhz4j.protocol.fht;
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  * #L%
  */
+package de.ibapl.fhz4j.protocol.fht;
 
 /**
  *
- * @author aploese
+ * @author Arne Plöse
  */
 public class FhtValveSyncMessage extends FhtMessage {
 
-    public float timeLeft;
-    public boolean bit5;
-    
-    public FhtValveSyncMessage(short housecode, FhtProperty command, float timeLeft, boolean bit5) {
-        super(housecode, command);
-        this.timeLeft = timeLeft;
-        this.bit5 = bit5;
-    }
-    
+	public float timeLeft;
+	public boolean bit5;
+
+	public FhtValveSyncMessage(short housecode, FhtProperty command, float timeLeft, boolean bit5) {
+		super(housecode, command);
+		this.timeLeft = timeLeft;
+		this.bit5 = bit5;
+	}
+
 }

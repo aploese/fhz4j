@@ -1,10 +1,8 @@
-package de.ibapl.fhz4j.protocol.hms;
-
 /*-
  * #%L
  * FHZ4J Core
  * %%
- * Copyright (C) 2009 - 2017 Arne Plöse
+ * Copyright (C) 2009 - 2018 Arne Plöse
  * %%
  * FHZ4J - Drivers for the Wireless FS20, FHT and HMS protocol https://github.com/aploese/fhz4j/
  * Copyright (C) 2009, 2017, Arne Plöse and individual contributors as indicated
@@ -27,50 +25,54 @@ package de.ibapl.fhz4j.protocol.hms;
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  * #L%
  */
+package de.ibapl.fhz4j.protocol.hms;
 
+import static de.ibapl.fhz4j.protocol.hms.HmsProperty.BATT_STATUS;
+import static de.ibapl.fhz4j.protocol.hms.HmsProperty.DOOR_WINDOW_OPEN;
+import static de.ibapl.fhz4j.protocol.hms.HmsProperty.HUMIDY;
+import static de.ibapl.fhz4j.protocol.hms.HmsProperty.SMOKE_ALERT;
+import static de.ibapl.fhz4j.protocol.hms.HmsProperty.TEMP;
+import static de.ibapl.fhz4j.protocol.hms.HmsProperty.WATER;
 
 import java.util.Arrays;
 import java.util.EnumSet;
 import java.util.Set;
-import static de.ibapl.fhz4j.protocol.hms.HmsProperty.*;
 
 /**
  *
- * @author aploese
+ * @author Arne Plöse
  */
 public enum HmsDeviceType {
-    HMS_100_TF("HMS 100 TF", TEMP, HUMIDY, BATT_STATUS),
-    HMS_100_WD("HMS 100 WD", WATER, BATT_STATUS),
-    HMS_100_RM("HMS 100 RM", SMOKE_ALERT, BATT_STATUS),
-    HMS_100_TFK("HMS 100 TFK", DOOR_WINDOW_OPEN, BATT_STATUS);
-    
-    private final String label;
-    private final Set<HmsProperty> hmsProperties;
+	HMS_100_TF("HMS 100 TF", TEMP, HUMIDY, BATT_STATUS), HMS_100_WD("HMS 100 WD", WATER, BATT_STATUS), HMS_100_RM(
+			"HMS 100 RM", SMOKE_ALERT, BATT_STATUS), HMS_100_TFK("HMS 100 TFK", DOOR_WINDOW_OPEN, BATT_STATUS);
 
-    private HmsDeviceType(String label, HmsProperty... hmsProperties) {
-        this.label = label;
-        this.hmsProperties = EnumSet.copyOf(Arrays.asList(hmsProperties));
-    }
+	private final String label;
+	private final Set<HmsProperty> hmsProperties;
 
-    public String getLabel() {
-        return label;
-    }
+	private HmsDeviceType(String label, HmsProperty... hmsProperties) {
+		this.label = label;
+		this.hmsProperties = EnumSet.copyOf(Arrays.asList(hmsProperties));
+	}
 
-    public String getName() {
-        return name();
-    }
+	public String getLabel() {
+		return label;
+	}
 
-    public static HmsDeviceType fromLabel(String label) {
-        for (HmsDeviceType prop : values()) {
-            if (prop.getLabel().equals(label)) {
-                return prop;
-            }
-        }
-        return valueOf(label);
-    }
+	public String getName() {
+		return name();
+	}
 
-    public Set<HmsProperty> getProperties() {
-        return hmsProperties;
-    }
+	public static HmsDeviceType fromLabel(String label) {
+		for (HmsDeviceType prop : values()) {
+			if (prop.getLabel().equals(label)) {
+				return prop;
+			}
+		}
+		return valueOf(label);
+	}
+
+	public Set<HmsProperty> getProperties() {
+		return hmsProperties;
+	}
 
 }

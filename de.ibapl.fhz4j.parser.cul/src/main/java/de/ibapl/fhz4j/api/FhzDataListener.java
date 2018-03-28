@@ -1,10 +1,8 @@
-package de.ibapl.fhz4j.api;
-
 /*-
  * #%L
  * FHZ4J Core
  * %%
- * Copyright (C) 2009 - 2017 Arne Plöse
+ * Copyright (C) 2009 - 2018 Arne Plöse
  * %%
  * FHZ4J - Drivers for the Wireless FS20, FHT and HMS protocol https://github.com/aploese/fhz4j/
  * Copyright (C) 2009, 2017, Arne Plöse and individual contributors as indicated
@@ -27,7 +25,7 @@ package de.ibapl.fhz4j.api;
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  * #L%
  */
-
+package de.ibapl.fhz4j.api;
 
 import de.ibapl.fhz4j.parser.cul.CulMessage;
 import de.ibapl.fhz4j.protocol.em.EmMessage;
@@ -38,28 +36,29 @@ import de.ibapl.fhz4j.protocol.lacrosse.tx2.LaCrosseTx2Message;
 
 /**
  *
- * @author aploese
+ * @author Arne Plöse
  */
 public interface FhzDataListener {
 
-    void emDataParsed(EmMessage emMsg);
+	void emDataParsed(EmMessage emMsg);
 
-    void fs20DataParsed(FS20Message fs20Msg);
+	void fs20DataParsed(FS20Message fs20Msg);
 
-    /** some stuff is send in parts i.E. the measures temerature (low and high)
-     * 
-     * @param fhtMessage 
-     */
-    void fhtPartialDataParsed(FhtMessage fhtMessage);
+	/**
+	 * some stuff is send in parts i.E. the measures temerature (low and high)
+	 * 
+	 * @param fhtMessage
+	 */
+	void fhtPartialDataParsed(FhtMessage fhtMessage);
 
-    void fhtDataParsed(FhtMessage fhtMessage);
+	void fhtDataParsed(FhtMessage fhtMessage);
 
-    void hmsDataParsed(HmsMessage hmsMsg);
-    
-    void laCrosseTxParsed(LaCrosseTx2Message laCrosseTx2Msg);
-    
-    void culMessageParsed(CulMessage culMessage);
+	void hmsDataParsed(HmsMessage hmsMsg);
 
-    void failed(Throwable t);
+	void laCrosseTxParsed(LaCrosseTx2Message laCrosseTx2Msg);
+
+	void culMessageParsed(CulMessage culMessage);
+
+	void failed(Throwable t);
 
 }

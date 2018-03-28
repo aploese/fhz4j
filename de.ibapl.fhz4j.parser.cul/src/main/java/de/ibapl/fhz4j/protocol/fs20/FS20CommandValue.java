@@ -1,10 +1,8 @@
-package de.ibapl.fhz4j.protocol.fs20;
-
 /*-
  * #%L
  * FHZ4J Core
  * %%
- * Copyright (C) 2009 - 2017 Arne Plöse
+ * Copyright (C) 2009 - 2018 Arne Plöse
  * %%
  * FHZ4J - Drivers for the Wireless FS20, FHT and HMS protocol https://github.com/aploese/fhz4j/
  * Copyright (C) 2009, 2017, Arne Plöse and individual contributors as indicated
@@ -27,63 +25,59 @@ package de.ibapl.fhz4j.protocol.fs20;
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  * #L%
  */
+package de.ibapl.fhz4j.protocol.fs20;
 
 import java.io.Serializable;
 
 /**
  *
- * @author aploese
+ * @author Arne Plöse
  */
 public enum FS20CommandValue implements Serializable {
 
-    OFF("off"),
-    DIM_6_PERCENT("dim06%"),
-    DIM_12_PERCENT("dim12%"),
-    DIM_18_PERCENT("dim18%"),
-    DIM_25_PERCENT("dim25%"),
-    DIM_31_PERCENT("dim31%"),
-    DIM_37_PERCENT("dim37%"),
-    DIM_43_PERCENT("dim43%"),
-    DIM_50_PERCENT("dim50%"),
-    DIM_56_PERCENT("dim56%"),
-    DIM_62_PERCENT("dim62%"),
-    DIM_68_PERCENT("dim68%"),
-    DIM_75_PERCENT("dim75%"),
-    DIM_81_PERCENT("dim81%"),
-    DIM_87_PERCENT("dim87%"),
-    DIM_93_PERCENT("dim93%"),
-    DIM_100_PERCENT("dim100%"),
-    ON("on"), // Set to previous dim value (before switching it off)
-    TOGGLE("toggle"), // between off and previous dim val
-    DIM_UP("dimup"),
-    DIM_DOWN("dimdown"),
-    DIM_UP_DOWN("dimupdown"),
-    TIMER("timer"),
-    SENDSATE("sendstate"),
-    OFF_FOR_TIMER("off-for-timer"),
-    ON_FOR_TIMER("on-for-timer"),
-    ON_OLD_FOR_TIMER("on-old-for-timer"),
-    RESET("reset"),
-    RAMP_ON_TIME("ramp-on-time"), //time to reach the desired dim value on dimmers
-    RAMP_OFF_TIME("ramp-off-time"), //time to reach the off state on dimmers
-    ON_OLD_FOR_TIMER_PREV("on-old-for-timer-prev"), // old val for timer, then go to prev. state
-    ON_100_FOR_TIMER_PREV("on-100-for-timer-prev"); // 100% for timer, then go to previous state
+	OFF("off"), DIM_6_PERCENT("dim06%"), DIM_12_PERCENT("dim12%"), DIM_18_PERCENT("dim18%"), DIM_25_PERCENT(
+			"dim25%"), DIM_31_PERCENT("dim31%"), DIM_37_PERCENT("dim37%"), DIM_43_PERCENT("dim43%"), DIM_50_PERCENT(
+					"dim50%"), DIM_56_PERCENT("dim56%"), DIM_62_PERCENT("dim62%"), DIM_68_PERCENT(
+							"dim68%"), DIM_75_PERCENT("dim75%"), DIM_81_PERCENT("dim81%"), DIM_87_PERCENT(
+									"dim87%"), DIM_93_PERCENT("dim93%"), DIM_100_PERCENT("dim100%"), ON("on"), // Set to
+																												// previous
+																												// dim
+																												// value
+																												// (before
+																												// switching
+																												// it
+																												// off)
+	TOGGLE("toggle"), // between off and previous dim val
+	DIM_UP("dimup"), DIM_DOWN("dimdown"), DIM_UP_DOWN("dimupdown"), TIMER("timer"), SENDSATE(
+			"sendstate"), OFF_FOR_TIMER("off-for-timer"), ON_FOR_TIMER(
+					"on-for-timer"), ON_OLD_FOR_TIMER("on-old-for-timer"), RESET("reset"), RAMP_ON_TIME("ramp-on-time"), // time
+																															// to
+																															// reach
+																															// the
+																															// desired
+																															// dim
+																															// value
+																															// on
+																															// dimmers
+	RAMP_OFF_TIME("ramp-off-time"), // time to reach the off state on dimmers
+	ON_OLD_FOR_TIMER_PREV("on-old-for-timer-prev"), // old val for timer, then go to prev. state
+	ON_100_FOR_TIMER_PREV("on-100-for-timer-prev"); // 100% for timer, then go to previous state
 
-    final private String label;
+	final private String label;
 
-    private FS20CommandValue(String label) {
-        this.label = label;
-    }
+	private FS20CommandValue(String label) {
+		this.label = label;
+	}
 
-    /**
-     * @return the label
-     */
-    public String getLabel() {
-        return label;
-    }
+	/**
+	 * @return the label
+	 */
+	public String getLabel() {
+		return label;
+	}
 
-    public String getName() {
-        return name();
-    }
+	public String getName() {
+		return name();
+	}
 
 }

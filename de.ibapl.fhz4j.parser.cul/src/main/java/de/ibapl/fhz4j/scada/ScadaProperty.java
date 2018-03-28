@@ -1,10 +1,8 @@
-package de.ibapl.fhz4j.scada;
-
 /*-
  * #%L
  * FHZ4J Core
  * %%
- * Copyright (C) 2009 - 2017 Arne Plöse
+ * Copyright (C) 2009 - 2018 Arne Plöse
  * %%
  * FHZ4J - Drivers for the Wireless FS20, FHT and HMS protocol https://github.com/aploese/fhz4j/
  * Copyright (C) 2009, 2017, Arne Plöse and individual contributors as indicated
@@ -27,22 +25,22 @@ package de.ibapl.fhz4j.scada;
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  * #L%
  */
-
+package de.ibapl.fhz4j.scada;
 
 import java.io.Serializable;
 
 /**
  *
- * @author aploese
+ * @author Arne Plöse
  */
 public interface ScadaProperty extends Serializable {
-    
-    String getUnitOfMeasurement();
-    
-    DataType getDataType();
-    
-    String getName();
-    
-    String getLabel();
-    
+
+	String getUnitOfMeasurement();
+
+	DataType getDataType();
+
+	String getName();
+
+	String getLabel();
+
 }
