@@ -25,5 +25,5 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  * #L%
  */
-@org.osgi.annotation.versioning.Version("1.0.0")
+@org.osgi.annotation.versioning.Version("1.1.0")
 package de.ibapl.fhz4j.api;

@@ -51,6 +51,7 @@ import de.ibapl.spsw.api.Parity;
 import de.ibapl.spsw.api.SerialPortSocket;
 import de.ibapl.spsw.api.Speed;
 import de.ibapl.spsw.api.StopBits;
+import java.nio.ByteBuffer;
 
 public class CulAdapter implements FhzAdapter {
 	private class StreamListener implements Runnable {
@@ -62,14 +63,12 @@ public class CulAdapter implements FhzAdapter {
 
 			try {
 				while (open) {
-					theData = is.read();
-
-					if (theData > -1) {
-						culParser.parse((char) theData);
-					} else {
-						LOG.info("Received: " + theData);
-					}
-
+                                    int i = serialPortSocket.read(inBuffer);
+                                    inBuffer.flip();
+                                    while (inBuffer.hasRemaining()) {
+						culParser.parse((char) inBuffer.get());
+                                    }
+                                    inBuffer.clear();
 				}
 				LOG.info("closing down - finish waiting for new data");
 			} catch (Throwable t) {
@@ -84,7 +83,7 @@ public class CulAdapter implements FhzAdapter {
 	private CulParser<?> culParser;
 	private CulWriter culWriter;
 	private FhzDataListener fhzDataListener;
-	private InputStream is;
+	private final ByteBuffer inBuffer = ByteBuffer.allocateDirect(64); 
 	private boolean open;
 	private Thread parserThread;
 	private final SerialPortSocket serialPortSocket;
@@ -122,8 +121,7 @@ public class CulAdapter implements FhzAdapter {
 		serialPortSocket.open(Speed._9600_BPS, DataBits.DB_8, StopBits.SB_1, Parity.NONE, FlowControl.getFC_NONE());
 		open = true;
 		culParser = new CulParser<>(fhzDataListener);
-		culWriter = new CulWriter(new BufferedOutputStream(serialPortSocket.getOutputStream(), 64));
-		is = new BufferedInputStream(serialPortSocket.getInputStream(), 64);
+		culWriter = new CulWriter(serialPortSocket, 64);
 		parserThread = new Thread(streamListener);
 		parserThread.setDaemon(true);
 		parserThread.start();

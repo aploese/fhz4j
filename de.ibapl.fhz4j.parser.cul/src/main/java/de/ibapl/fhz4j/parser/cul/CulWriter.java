@@ -40,6 +40,8 @@ import java.util.logging.Logger;
 
 import de.ibapl.fhz4j.LogUtils;
 import de.ibapl.fhz4j.protocol.fht.FhtProperty;
+import java.nio.ByteBuffer;
+import java.nio.channels.WritableByteChannel;
 
 /**
  *
@@ -59,11 +61,13 @@ public class CulWriter implements AutoCloseable {
 
 	private final static Logger LOG = Logger.getLogger(LogUtils.FHZ_PARSER_CUL);
 	final static byte ALL_REPORTS = (byte) 0xFF;
-	private final OutputStream os;
+	private final WritableByteChannel wbc;
+        private final ByteBuffer buffer;
 	private boolean open;
 
-	public CulWriter(OutputStream os) {
-		this.os = os;
+	public CulWriter(WritableByteChannel wbc, int bufferSize) {
+		this.wbc = wbc;
+                this.buffer = ByteBuffer.allocateDirect(bufferSize);
 		open = true;
 	}
 
@@ -75,22 +79,28 @@ public class CulWriter implements AutoCloseable {
 		}
 	}
 
+        void doWrite() throws IOException {
+        buffer.flip();
+        wbc.write(buffer);
+        buffer.clear();
+    }
+
 	public void initFhz(short fhz100Housecode, Set<InitFlag> initFlags) throws IOException, InterruptedException {
 		if (!open) {
 			throw new IllegalStateException("Closed!");
 		}
 		LOG.info("INIT 1");
-		os.write("\r\n".getBytes());
-		os.flush();
-		Thread.sleep(1000);
+		buffer.put("\r\n".getBytes());
+		doWrite();
+                Thread.sleep(1000);
 		LOG.info("INIT 2");
 		byte flags = 0;
 		for (InitFlag flag : initFlags) {
 			flags |= flag.value;
 		}
 		final String data = String.format("X%02X\r\n", flags);
-		os.write(data.getBytes());
-		os.flush();
+		buffer.put(data.getBytes());
+		doWrite();
 		LOG.log(Level.INFO, "Data sent: {0}", new Object[] { data });
 		Thread.sleep(1000);
 		LOG.info("INIT Housecode");
@@ -143,13 +153,13 @@ public class CulWriter implements AutoCloseable {
 	}
 
 	private void setFhzHousecode(short ownHousecode) throws IOException {
-		os.write('T');
-		os.write('0');
-		os.write('1');
-		writeByte(ownHousecode / 100);
-		writeByte(ownHousecode % 100);
-		os.write('\n');
-		os.flush();
+		buffer.put((byte)'T');
+		buffer.put((byte)'0');
+		buffer.put((byte)'1');
+		putByte(ownHousecode / 100);
+		putByte(ownHousecode % 100);
+		buffer.put((byte)'\n');
+		doWrite();
 	}
 
 	public void writeFhtModeAuto(short housecode) throws IOException {
@@ -349,264 +359,264 @@ public class CulWriter implements AutoCloseable {
 	}
 
 	private void startFhtMessage(short housecode) throws IOException {
-		os.write('T');
-		writeByte(housecode / 100);
-		writeByte(housecode % 100);
+		buffer.put((byte)'T');
+		putByte(housecode / 100);
+		putByte(housecode % 100);
 	}
 
 	private void finishFhtMessage() throws IOException {
-		os.write('\n');
-		os.flush();
+		buffer.put((byte)'\n');
+		doWrite();
 	}
 
-	private void writeByte(int value) throws IOException {
-		writeNibble((0xF0 & value) >> 4);
-		writeNibble(0x0F & value);
+	private void putByte(int value) throws IOException {
+		putNibble((0xF0 & value) >> 4);
+		putNibble(0x0F & value);
 	}
 
 	private void writeFhtProperty(FhtProperty fhtProperty, byte value) throws IOException {
 		switch (fhtProperty) {
 		case VALVE:
-			writeByte(0x00);
+			putByte(0x00);
 			break;
 		case OFFSET_VALVE_1:
-			writeByte(0x01);
+			putByte(0x01);
 			break;
 		case OFFSET_VALVE_2:
-			writeByte(0x02);
+			putByte(0x02);
 			break;
 		case OFFSET_VALVE_3:
-			writeByte(0x03);
+			putByte(0x03);
 			break;
 		case OFFSET_VALVE_4:
-			writeByte(0x04);
+			putByte(0x04);
 			break;
 		case OFFSET_VALVE_5:
-			writeByte(0x05);
+			putByte(0x05);
 			break;
 		case OFFSET_VALVE_6:
-			writeByte(0x06);
+			putByte(0x06);
 			break;
 		case OFFSET_VALVE_7:
-			writeByte(0x07);
+			putByte(0x07);
 			break;
 		case OFFSET_VALVE_8:
-			writeByte(0x08);
+			putByte(0x08);
 			break;
 		case MON_FROM_1:
-			writeByte(0x14);
+			putByte(0x14);
 			break;
 		case MON_TO_1:
-			writeByte(0x15);
+			putByte(0x15);
 			break;
 		case MON_FROM_2:
-			writeByte(0x16);
+			putByte(0x16);
 			break;
 		case MON_TO_2:
-			writeByte(0x17);
+			putByte(0x17);
 			break;
 		case TUE_FROM_1:
-			writeByte(0x18);
+			putByte(0x18);
 			break;
 		case TUE_TO_1:
-			writeByte(0x19);
+			putByte(0x19);
 			break;
 		case TUE_FROM_2:
-			writeByte(0x1a);
+			putByte(0x1a);
 			break;
 		case TUE_TO_2:
-			writeByte(0x1b);
+			putByte(0x1b);
 			break;
 		case WED_FROM_1:
-			writeByte(0x1c);
+			putByte(0x1c);
 			break;
 		case WED_TO_1:
-			writeByte(0x1d);
+			putByte(0x1d);
 			break;
 		case WED_FROM_2:
-			writeByte(0x1e);
+			putByte(0x1e);
 			break;
 		case WED_TO_2:
-			writeByte(0x1f);
+			putByte(0x1f);
 			break;
 		case THU_FROM_1:
-			writeByte(0x20);
+			putByte(0x20);
 			break;
 		case THU_TO_1:
-			writeByte(0x21);
+			putByte(0x21);
 			break;
 		case THU_FROM_2:
-			writeByte(0x22);
+			putByte(0x22);
 			break;
 		case THU_TO_2:
-			writeByte(0x23);
+			putByte(0x23);
 			break;
 		case FRI_FROM_1:
-			writeByte(0x24);
+			putByte(0x24);
 			break;
 		case FRI_TO_1:
-			writeByte(0x25);
+			putByte(0x25);
 			break;
 		case FRI_FROM_2:
-			writeByte(0x26);
+			putByte(0x26);
 			break;
 		case FRI_TO_2:
-			writeByte(0x27);
+			putByte(0x27);
 			break;
 		case SAT_FROM_1:
-			writeByte(0x28);
+			putByte(0x28);
 			break;
 		case SAT_TO_1:
-			writeByte(0x29);
+			putByte(0x29);
 			break;
 		case SAT_FROM_2:
-			writeByte(0x2a);
+			putByte(0x2a);
 			break;
 		case SAT_TO_2:
-			writeByte(0x2b);
+			putByte(0x2b);
 			break;
 		case SUN_FROM_1:
-			writeByte(0x2c);
+			putByte(0x2c);
 			break;
 		case SUN_TO_1:
-			writeByte(0x2d);
+			putByte(0x2d);
 			break;
 		case SUN_FROM_2:
-			writeByte(0x2e);
+			putByte(0x2e);
 			break;
 		case SUN_TO_2:
-			writeByte(0x2f);
+			putByte(0x2f);
 			break;
 		case MODE:
-			writeByte(0x3e);
+			putByte(0x3e);
 			break;
 		case HOLIDAY_1:
-			writeByte(0x3f);
+			putByte(0x3f);
 			break;
 		case HOLIDAY_2:
-			writeByte(0x40);
+			putByte(0x40);
 			break;
 		case DESIRED_TEMP:
-			writeByte(0x41);
+			putByte(0x41);
 			break;
 		case MEASURED_LOW:
-			writeByte(0x42);
+			putByte(0x42);
 			break;
 		case MEASURED_HIGH:
-			writeByte(0x43);
+			putByte(0x43);
 			break;
 		case WARNINGS:
-			writeByte(0x44);
+			putByte(0x44);
 			break;
 		case MANU_TEMP:
-			writeByte(0x45);
+			putByte(0x45);
 			break;
 		case ACK:
-			writeByte(0x4b);
+			putByte(0x4b);
 			break;
 		case CAN_CMIT:
-			writeByte(0x53);
+			putByte(0x53);
 			break;
 		case CAN_RCV:
-			writeByte(0x54);
+			putByte(0x54);
 			break;
 		case YEAR:
-			writeByte(0x60);
+			putByte(0x60);
 			break;
 		case MONTH:
-			writeByte(0x61);
+			putByte(0x61);
 			break;
 		case DAY_OF_MONTH:
-			writeByte(0x62);
+			putByte(0x62);
 			break;
 		case HOUR:
-			writeByte(0x63);
+			putByte(0x63);
 			break;
 		case MINUTE:
-			writeByte(0x64);
+			putByte(0x64);
 			break;
 		case REPORT_1:
-			writeByte(0x65);
+			putByte(0x65);
 			break;
 		case REPORT_2:
-			writeByte(0x66);
+			putByte(0x66);
 			break;
 		case ACK_2:
-			writeByte(0x69);
+			putByte(0x69);
 			break;
 		case START_XMIT:
-			writeByte(0x7d);
+			putByte(0x7d);
 			break;
 		case END_XMIT:
-			writeByte(0x7e);
+			putByte(0x7e);
 			break;
 		case DAY_TEMP:
-			writeByte(0x82);
+			putByte(0x82);
 			break;
 		case NIGHT_TEMP:
-			writeByte(0x84);
+			putByte(0x84);
 			break;
 		case LOW_TEMP_OFFSET:
-			writeByte(0x85);
+			putByte(0x85);
 			break;
 		case WINDOW_OPEN_TEMP:
-			writeByte(0x8a);
+			putByte(0x8a);
 			break;
 		default:
 			throw new UnsupportedOperationException("Not supported yet.");
 		}
-		writeByte(value);
+		putByte(value);
 	}
 
-	private void writeNibble(int value) throws IOException {
+	private void putNibble(int value) throws IOException {
 		switch (value) {
 		case 0x00:
-			os.write('0');
+			buffer.put((byte)'0');
 			break;
 		case 0x01:
-			os.write('1');
+			buffer.put((byte)'1');
 			break;
 		case 0x02:
-			os.write('2');
+			buffer.put((byte)'2');
 			break;
 		case 0x03:
-			os.write('3');
+			buffer.put((byte)'3');
 			break;
 		case 0x04:
-			os.write('4');
+			buffer.put((byte)'4');
 			break;
 		case 0x05:
-			os.write('5');
+			buffer.put((byte)'5');
 			break;
 		case 0x06:
-			os.write('6');
+			buffer.put((byte)'6');
 			break;
 		case 0x07:
-			os.write('7');
+			buffer.put((byte)'7');
 			break;
 		case 0x08:
-			os.write('8');
+			buffer.put((byte)'8');
 			break;
 		case 0x09:
-			os.write('9');
+			buffer.put((byte)'9');
 			break;
 		case 0x0A:
-			os.write('A');
+			buffer.put((byte)'A');
 			break;
 		case 0x0B:
-			os.write('B');
+			buffer.put((byte)'B');
 			break;
 		case 0x0C:
-			os.write('C');
+			buffer.put((byte)'C');
 			break;
 		case 0x0D:
-			os.write('D');
+			buffer.put((byte)'D');
 			break;
 		case 0x0E:
-			os.write('E');
+			buffer.put((byte)'E');
 			break;
 		case 0x0F:
-			os.write('F');
+			buffer.put((byte)'F');
 			break;
 		default:
 			throw new IllegalArgumentException("Not a Number: " + value);
@@ -616,7 +626,7 @@ public class CulWriter implements AutoCloseable {
 	@Override
 	public void close() throws Exception {
 		open = false;
-		os.close();
+		wbc.close();
 	}
 
 }
