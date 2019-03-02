@@ -59,7 +59,7 @@ public class FhtDateMessageTest implements ParserListener<FhtMessage> {
 	}
 
 	@Test
-	public void testHollidayEnd() {
+	public void testHolidayEnd() {
 		decode("03023F690D");
 		decode("0302406907");
 		decode("03023E6902");

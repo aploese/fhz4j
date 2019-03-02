@@ -27,7 +27,7 @@
  */
 package de.ibapl.fhz4j.parser.cul;
 
-import static org.junit.Assert.assertEquals;
+import de.ibapl.fhz4j.writer.cul.CulWriter;
 import static org.junit.Assert.fail;
 
 /*-
@@ -56,11 +56,7 @@ import static org.junit.Assert.fail;
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  * #L%
  */
-import java.io.ByteArrayOutputStream;
-import java.time.DayOfWeek;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.LocalTime;
 import java.time.Month;
 import java.util.EnumSet;
 import java.util.Set;
@@ -72,7 +68,6 @@ import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Test;
 
-import de.ibapl.fhz4j.protocol.fht.FhtProperty;
 import java.nio.channels.WritableByteChannel;
 
 /**
@@ -109,7 +104,7 @@ public class CulWriterTest {
 		System.out.println("initFhz");
 		short fhzHousecode = 0;
 		          WritableByteChannel wbc = null;
-		CulWriter instance = new CulWriter(wbc, 64);
+		          CulWriter instance = new CulWriter(wbc, 64);
 
 		instance.initFhz(fhzHousecode);
 		// TODO review the generated test code and remove the default call to fail.

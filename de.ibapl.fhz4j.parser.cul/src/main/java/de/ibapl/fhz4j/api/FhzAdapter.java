@@ -62,6 +62,10 @@ public interface FhzAdapter extends AutoCloseable {
 
 	void writeFhtModeHoliday(short housecode, float temp, LocalDate date) throws IOException;
 
+	void writeFhtModeParty(short housecode, float temp, LocalDateTime to) throws IOException;
+
+	void writeFhtModeAuto(short housecode) throws IOException;
+
 	void writeFhtModeManu(short housecode) throws IOException;
 
 	void writeFhtTimeAndDate(short housecode, LocalDateTime ts) throws IOException;

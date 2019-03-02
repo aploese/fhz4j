@@ -27,10 +27,7 @@
  */
 package de.ibapl.fhz4j.cul;
 
-import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -43,7 +40,7 @@ import de.ibapl.fhz4j.LogUtils;
 import de.ibapl.fhz4j.api.FhzAdapter;
 import de.ibapl.fhz4j.api.FhzDataListener;
 import de.ibapl.fhz4j.parser.cul.CulParser;
-import de.ibapl.fhz4j.parser.cul.CulWriter;
+import de.ibapl.fhz4j.writer.cul.CulWriter;
 import de.ibapl.fhz4j.protocol.fht.FhtProperty;
 import de.ibapl.spsw.api.DataBits;
 import de.ibapl.spsw.api.FlowControl;
@@ -141,6 +138,16 @@ public class CulAdapter implements FhzAdapter {
 	@Override
 	public void writeFhtModeHoliday(short housecode, float temp, LocalDate date) throws IOException {
 		culWriter.writeFhtModeHoliday(housecode, temp, date);
+	}
+
+	@Override
+	public void writeFhtModeParty(short housecode, float temp, LocalDateTime to) throws IOException {
+		culWriter.writeFhtModeParty(housecode, temp, to);
+	}
+
+	@Override
+	public void writeFhtModeAuto(short housecode) throws IOException {
+		culWriter.writeFhtModeAuto(housecode);
 	}
 
 	@Override

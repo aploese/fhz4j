@@ -25,10 +25,9 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  * #L%
  */
-package de.ibapl.fhz4j.parser.cul;
+package de.ibapl.fhz4j.writer.cul;
 
 import java.io.IOException;
-import java.io.OutputStream;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -113,10 +112,12 @@ public class CulWriter implements AutoCloseable {
 		if (!open) {
 			throw new IllegalStateException("Closed!");
 		}
-		startFhtMessage(housecode);
+                synchronized (buffer) {
+		                  startFhtMessage(housecode);
 		writeFhtProperty(FhtProperty.REPORT_1, ALL_REPORTS);
 		writeFhtProperty(FhtProperty.REPORT_2, ALL_REPORTS);
 		finishFhtMessage();
+                }
 	}
 
 	public void syncFhtClocks(Iterable<Short> fhtDeviceHomeCodes, LocalDateTime ts) throws IOException {
@@ -134,6 +135,7 @@ public class CulWriter implements AutoCloseable {
 		if (!open) {
 			throw new IllegalStateException("Closed!");
 		}
+                synchronized (buffer) {
 		startFhtMessage(housecode);
 		writeFhtProperty(FhtProperty.YEAR, (byte) (ts.getYear() - 2000));
 		writeFhtProperty(FhtProperty.MONTH, (byte) ts.getMonthValue());
@@ -141,6 +143,7 @@ public class CulWriter implements AutoCloseable {
 		writeFhtProperty(FhtProperty.HOUR, (byte) ts.getHour());
 		writeFhtProperty(FhtProperty.MINUTE, (byte) ts.getMinute());
 		finishFhtMessage();
+                }
 	}
 
 	public void initFhtReporting(Iterable<Short> housecodes) throws IOException {
@@ -166,30 +169,36 @@ public class CulWriter implements AutoCloseable {
 		if (!open) {
 			throw new IllegalStateException("Closed!");
 		}
-		startFhtMessage(housecode);
+		synchronized (buffer) {
+                startFhtMessage(housecode);
 		writeFhtProperty(FhtProperty.MODE, (byte) 0x00);
 		finishFhtMessage();
+                }
 	}
 
 	public void writeFhtModeManu(short housecode) throws IOException {
 		if (!open) {
 			throw new IllegalStateException("Closed!");
 		}
+                synchronized (buffer) {
 		startFhtMessage(housecode);
 		writeFhtProperty(FhtProperty.MODE, (byte) 0x01);
 		finishFhtMessage();
+                }
 	}
 
 	public void writeFhtModeHoliday(short housecode, float temp, LocalDate date) throws IOException {
 		if (!open) {
 			throw new IllegalStateException("Closed!");
 		}
+                synchronized (buffer) {
 		startFhtMessage(housecode);
 		writeFhtProperty(FhtProperty.DESIRED_TEMP, (byte) (temp * 2));
 		writeFhtProperty(FhtProperty.HOLIDAY_1, (byte) date.getDayOfMonth());
 		writeFhtProperty(FhtProperty.HOLIDAY_2, (byte) date.getMonthValue());
 		writeFhtProperty(FhtProperty.MODE, (byte) 0x02);
 		finishFhtMessage();
+                }
 	}
 
 	public void writeFhtModeParty(short housecode, float temp, LocalDateTime ts) throws IOException {
@@ -197,12 +206,14 @@ public class CulWriter implements AutoCloseable {
 			throw new IllegalStateException("Closed!");
 		}
 		// Check date against ???
+                synchronized (buffer) {
 		startFhtMessage(housecode);
 		writeFhtProperty(FhtProperty.DESIRED_TEMP, (byte) (temp * 2));
 		writeFhtProperty(FhtProperty.HOLIDAY_1, (byte) (ts.getHour() * 6 + ts.getMinute() / 10));
 		writeFhtProperty(FhtProperty.HOLIDAY_2, (byte) ts.getDayOfMonth());
 		writeFhtProperty(FhtProperty.MODE, (byte) 0x03);
 		finishFhtMessage();
+                }
 	}
 
 	public void writeFhtCycle(short housecode, DayOfWeek dayOfWeek, LocalTime from1, LocalTime to1, LocalTime from2,
@@ -210,6 +221,7 @@ public class CulWriter implements AutoCloseable {
 		if (!open) {
 			throw new IllegalStateException("Closed!");
 		}
+                synchronized (buffer) {
 		startFhtMessage(housecode);
 		FhtProperty from1Property, to1Property, from2Property, to2Property;
 		byte from1Value, to1Value, from2Value, to2Value;
@@ -290,12 +302,14 @@ public class CulWriter implements AutoCloseable {
 		writeFhtProperty(from2Property, from2Value);
 		writeFhtProperty(to2Property, to2Value);
 		finishFhtMessage();
+                }
 	}
 
 	public void writeFht(short housecode, FhtProperty fhtProperty, float value) throws IOException {
 		if (!open) {
 			throw new IllegalStateException("Closed!");
 		}
+                synchronized (buffer) {
 		startFhtMessage(housecode);
 		switch (fhtProperty) {
 		case DAY_TEMP:
@@ -310,12 +324,14 @@ public class CulWriter implements AutoCloseable {
 			throw new IllegalArgumentException("Wrong fht property for temp: " + fhtProperty);
 		}
 		finishFhtMessage();
+                }
 	}
 
 	public void writeFht(short housecode, FhtProperty fhtProperty, LocalTime value) throws IOException {
 		if (!open) {
 			throw new IllegalStateException("Closed!");
 		}
+                synchronized (buffer) {
 		startFhtMessage(housecode);
 		switch (fhtProperty) {
 		case MON_FROM_1:
@@ -356,6 +372,7 @@ public class CulWriter implements AutoCloseable {
 			throw new IllegalArgumentException("Wrong fht property for temp: " + fhtProperty);
 		}
 		finishFhtMessage();
+                }
 	}
 
 	private void startFhtMessage(short housecode) throws IOException {

@@ -75,6 +75,8 @@ public class Main {
     private static final Logger LOG = Logger.getLogger(LogUtils.FHZ_CONSOLE);
 
     private class FhzListener implements FhzDataListener {
+        
+        FhzAdapter fhzAdapter;
 
         @Override
         public void fhtDataParsed(FhtMessage fhtMessage) {
@@ -87,8 +89,10 @@ public class Main {
             
             if (DEVICES_HOME_CODE.add(fhtMessage.housecode)) {
                 try {
-//TODO                	fhzAdapter.writeFhtTimeAndDate(fhtMessage.housecode, LocalDateTime.now());
-//TODO                	fhzAdapter.initFhtReporting(fhtMessage.housecode);
+                    if (fhzAdapter != null) {
+                	fhzAdapter.writeFhtTimeAndDate(fhtMessage.housecode, LocalDateTime.now());
+                	fhzAdapter.initFhtReporting(fhtMessage.housecode);
+                    }
                 } catch (Throwable t) {
                     //no-op
                 }
@@ -272,7 +276,9 @@ public class Main {
     }
     
     public void run(SerialPortSocket serialPortSocket) throws Exception {
-        try (FhzAdapter fhzAddapter = FhzAdapter.open(serialPortSocket, new FhzListener())) {
+        final FhzListener listener = new FhzListener();
+        try (FhzAdapter fhzAddapter = FhzAdapter.open(serialPortSocket, listener)) {
+            listener.fhzAdapter = fhzAddapter;
         try {
             try {
                 Thread.sleep(100);
@@ -280,7 +286,7 @@ public class Main {
                 LOG.log(Level.SEVERE, null, ex);
             }
             fhzAddapter.initFhz((short) 0001);
-//            fhzAddapter.initFhtReporting((short)302);
+            fhzAddapter.initFhtReporting((short)302);
 //            fhzAddapter.writeFhtTimeAndDate((short) 302, LocalDateTime.now());
 //            fhzAddapter.writeFhtCycle((short) 302, DayOfWeek.MONDAY, LocalTime.of(5, 0), LocalTime.of(8, 30), null, null);
 //            fhzAddapter.writeFht((short)302, FhtProperty.DESIRED_TEMP, 24.0f);
