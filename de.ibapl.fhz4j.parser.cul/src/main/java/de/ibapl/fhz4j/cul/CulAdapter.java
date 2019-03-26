@@ -51,113 +51,117 @@ import de.ibapl.spsw.api.StopBits;
 import java.nio.ByteBuffer;
 
 public class CulAdapter implements FhzAdapter {
-	private class StreamListener implements Runnable {
 
-		@Override
-		public void run() {
-			LOG.log(Level.INFO, "THREAD START {0}", open);
-			int theData;
+    private class StreamListener implements Runnable {
 
-			try {
-				while (open) {
-                                    int i = serialPortSocket.read(inBuffer);
-                                    inBuffer.flip();
-                                    while (inBuffer.hasRemaining()) {
-						culParser.parse((char) inBuffer.get());
-                                    }
-                                    inBuffer.clear();
-				}
-				LOG.info("closing down - finish waiting for new data");
-			} catch (Throwable t) {
-				LOG.log(Level.SEVERE, "finished waiting for packages", t);
-			}
-		}
+        @Override
+        public void run() {
+            LOG.log(Level.INFO, "THREAD START {0}", open);
+            int theData;
 
-	}
+            try {
+                while (open) {
+                    int i = serialPortSocket.read(inBuffer);
+                    inBuffer.flip();
+                    while (inBuffer.hasRemaining()) {
+                        culParser.parse((char) inBuffer.get());
+                    }
+                    inBuffer.clear();
+                }
+                LOG.info("closing down - finish waiting for new data");
+            } catch (Throwable t) {
+                LOG.log(Level.SEVERE, "finished waiting for packages", t);
+            }
+        }
 
-	private static final Logger LOG = Logger.getLogger(LogUtils.FHZ_PARSER_CUL);
+    }
 
-	private CulParser<?> culParser;
-	private CulWriter culWriter;
-	private FhzDataListener fhzDataListener;
-	private final ByteBuffer inBuffer = ByteBuffer.allocateDirect(64); 
-	private boolean open;
-	private Thread parserThread;
-	private final SerialPortSocket serialPortSocket;
-	private final StreamListener streamListener = new StreamListener();
+    private static final Logger LOG = Logger.getLogger(LogUtils.FHZ_PARSER_CUL);
 
-	public CulAdapter(SerialPortSocket serialPortSocket, FhzDataListener fhzDataListener) {
-		this.serialPortSocket = serialPortSocket;
-		this.fhzDataListener = fhzDataListener;
-	}
+    private CulParser<?> culParser;
+    private CulWriter culWriter;
+    private final FhzDataListener fhzDataListener;
+    private final ByteBuffer inBuffer = ByteBuffer.allocateDirect(64);
+    private boolean open;
+    private Thread parserThread;
+    private final SerialPortSocket serialPortSocket;
+    private final StreamListener streamListener = new StreamListener();
 
-	@Override
-	public void close() throws Exception {
-		open = false;
-		culWriter.close();
-		serialPortSocket.close();
-	}
+    public CulAdapter(SerialPortSocket serialPortSocket, FhzDataListener fhzDataListener) {
+        this.serialPortSocket = serialPortSocket;
+        this.fhzDataListener = fhzDataListener;
+    }
 
-	@Override
-	public void initFhtReporting(Set<Short> housecode) throws IOException {
-		culWriter.initFhtReporting(housecode);
-	}
+    @Override
+    public void close() throws Exception {
+        open = false;
+        try {
+            culWriter.close();
+        } finally {
+            serialPortSocket.close();
+        }
+    }
 
-	@Override
-	public void initFhtReporting(short housecode) throws IOException {
-		culWriter.initFhtReporting(housecode);
-	}
+    @Override
+    public void initFhtReporting(Set<Short> housecode) throws IOException {
+        culWriter.initFhtReporting(housecode);
+    }
 
-	@Override
-	public void initFhz(short fhzHousecode) throws IOException {
-		culWriter.initFhz(fhzHousecode);
-	}
+    @Override
+    public void initFhtReporting(short housecode) throws IOException {
+        culWriter.initFhtReporting(housecode);
+    }
 
-	@Override
-	public void open() throws IOException {
-		serialPortSocket.open(Speed._9600_BPS, DataBits.DB_8, StopBits.SB_1, Parity.NONE, FlowControl.getFC_NONE());
-		open = true;
-		culParser = new CulParser<>(fhzDataListener);
-		culWriter = new CulWriter(serialPortSocket, 64);
-		parserThread = new Thread(streamListener);
-		parserThread.setDaemon(true);
-		parserThread.start();
-	}
+    @Override
+    public void initFhz(short fhzHousecode) throws IOException {
+        culWriter.initFhz(fhzHousecode);
+    }
 
-	@Override
-	public void writeFht(short housecode, FhtProperty fhtProperty, float value) throws IOException {
-		culWriter.writeFht(housecode, fhtProperty, value);
-	}
+    @Override
+    public void open() throws IOException {
+        serialPortSocket.open(Speed._9600_BPS, DataBits.DB_8, StopBits.SB_1, Parity.NONE, FlowControl.getFC_NONE());
+        open = true;
+        culParser = new CulParser<>(fhzDataListener);
+        culWriter = new CulWriter(serialPortSocket, 64);
+        parserThread = new Thread(streamListener);
+        parserThread.setDaemon(true);
+        parserThread.start();
+    }
 
-	@Override
-	public void writeFhtCycle(short housecode, DayOfWeek dayOfWeek, LocalTime from1, LocalTime to1, LocalTime from2,
-			LocalTime to2) throws IOException {
-		culWriter.writeFhtCycle(housecode, dayOfWeek, from1, to1, from2, to2);
-	}
+    @Override
+    public void writeFht(short housecode, FhtProperty fhtProperty, float value) throws IOException {
+        culWriter.writeFht(housecode, fhtProperty, value);
+    }
 
-	@Override
-	public void writeFhtModeHoliday(short housecode, float temp, LocalDate date) throws IOException {
-		culWriter.writeFhtModeHoliday(housecode, temp, date);
-	}
+    @Override
+    public void writeFhtCycle(short housecode, DayOfWeek dayOfWeek, LocalTime from1, LocalTime to1, LocalTime from2,
+            LocalTime to2) throws IOException {
+        culWriter.writeFhtCycle(housecode, dayOfWeek, from1, to1, from2, to2);
+    }
 
-	@Override
-	public void writeFhtModeParty(short housecode, float temp, LocalDateTime to) throws IOException {
-		culWriter.writeFhtModeParty(housecode, temp, to);
-	}
+    @Override
+    public void writeFhtModeHoliday(short housecode, float temp, LocalDate date) throws IOException {
+        culWriter.writeFhtModeHoliday(housecode, temp, date);
+    }
 
-	@Override
-	public void writeFhtModeAuto(short housecode) throws IOException {
-		culWriter.writeFhtModeAuto(housecode);
-	}
+    @Override
+    public void writeFhtModeParty(short housecode, float temp, LocalDateTime to) throws IOException {
+        culWriter.writeFhtModeParty(housecode, temp, to);
+    }
 
-	@Override
-	public void writeFhtModeManu(short housecode) throws IOException {
-		culWriter.writeFhtModeManu(housecode);
-	}
+    @Override
+    public void writeFhtModeAuto(short housecode) throws IOException {
+        culWriter.writeFhtModeAuto(housecode);
+    }
 
-	@Override
-	public void writeFhtTimeAndDate(short housecode, LocalDateTime ts) throws IOException {
-		culWriter.writeFhtTimeAndDate(housecode, ts);
-	}
+    @Override
+    public void writeFhtModeManu(short housecode) throws IOException {
+        culWriter.writeFhtModeManu(housecode);
+    }
+
+    @Override
+    public void writeFhtTimeAndDate(short housecode, LocalDateTime ts) throws IOException {
+        culWriter.writeFhtTimeAndDate(housecode, ts);
+    }
 
 }
