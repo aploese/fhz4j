@@ -49,6 +49,7 @@ import de.ibapl.spsw.api.SerialPortSocket;
 import de.ibapl.spsw.api.Speed;
 import de.ibapl.spsw.api.StopBits;
 import java.nio.ByteBuffer;
+import java.nio.channels.AsynchronousCloseException;
 
 public class CulAdapter implements FhzAdapter {
 
@@ -56,21 +57,21 @@ public class CulAdapter implements FhzAdapter {
 
         @Override
         public void run() {
-            LOG.log(Level.INFO, "THREAD START {0}", open);
-            int theData;
-
-            try {
-                while (open) {
-                    int i = serialPortSocket.read(inBuffer);
+            LOG.log(Level.FINE, "THREAD START {0}", open);
+            while (open) {
+                try {
+                    serialPortSocket.read(inBuffer);
                     inBuffer.flip();
                     while (inBuffer.hasRemaining()) {
                         culParser.parse((char) inBuffer.get());
                     }
                     inBuffer.clear();
+                    LOG.info("closing down - finish waiting for new data");
+                } catch (AsynchronousCloseException ace) {
+                    LOG.log(Level.FINE, "caught AsynchronousCloseException during waiting for packages", ace);
+                } catch (Throwable t) {
+                    LOG.log(Level.SEVERE, "caught unexcpected exception during waiting for packages", t);
                 }
-                LOG.info("closing down - finish waiting for new data");
-            } catch (Throwable t) {
-                LOG.log(Level.SEVERE, "finished waiting for packages", t);
             }
         }
 
