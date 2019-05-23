@@ -1,14 +1,12 @@
 
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
 	<groupId>de.ibapl.fhz4j</groupId>
 	<artifactId>fhz4j-project</artifactId>
 
 	<packaging>pom</packaging>
-	<version>1.0.0-SNAPSHOT</version>
+	<version>1.0.0</version>
 	<name>FHZ4J Project</name>
 	<inceptionYear>2009</inceptionYear>
 	<url>https://github.com/aploese/fhz4j</url>
@@ -55,7 +53,8 @@
 		<url>http://github.com/aploese/fhz4j</url>
 		<connection>scm:git:git://github.com/aploese/fhz4j.git</connection>
 		<developerConnection>scm:git:git@github.com:aploese/fhz4j.git</developerConnection>
-	</scm>
+	  <tag>fhz4j-project-1.0.0</tag>
+  </scm>
 
 	<modules>
 		<module>de.ibapl.fhz4j.parser.cul</module>
