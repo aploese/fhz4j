@@ -1,44 +1,38 @@
-/*-
- * #%L
- * FHZ4J Core
- * %%
- * Copyright (C) 2009 - 2018 Arne Plöse
- * %%
+/*
  * FHZ4J - Drivers for the Wireless FS20, FHT and HMS protocol https://github.com/aploese/fhz4j/
- * Copyright (C) 2009, 2017, Arne Plöse and individual contributors as indicated
+ * Copyright (C) 2009-2019, Arne Plöse and individual contributors as indicated
  * by the @authors tag. See the copyright.txt in the distribution for a
  * full listing of individual contributors.
- * 
+ *
  * This is free software; you can redistribute it and/or modify it
- * under the terms of the GNU General Public License as
+ * under the terms of the GNU Lesser General Public License as
  * published by the Free Software Foundation; either version 3 of
  * the License, or (at your option) any later version.
- * 
+ *
  * This software is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
  * Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public
  * License along with this software; if not, write to the Free
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
- * #L%
  */
 package de.ibapl.fhz4j.parser.cul;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+
 
 import java.time.LocalTime;
-
-import org.junit.Test;
 
 import de.ibapl.fhz4j.parser.api.ParserListener;
 import de.ibapl.fhz4j.protocol.fht.FhtMessage;
 import de.ibapl.fhz4j.protocol.fht.FhtProperty;
 import de.ibapl.fhz4j.protocol.fht.FhtTimeMessage;
 import de.ibapl.fhz4j.protocol.fht.FhtTimesMessage;
+import org.junit.jupiter.api.Test;
 
 /**
  *
@@ -99,28 +93,28 @@ public class FhtTimeMessageTest implements ParserListener<FhtMessage> {
 
 	public static void assertTimeMessage(FhtMessage fhtMessage, int housecode, FhtProperty fhtProperty,
 			boolean dataRegister, boolean fromFht_8B, LocalTime time) {
-		assertNotNull(fhtMessage);
+	 assertNotNull(fhtMessage);
 		final FhtTimeMessage msg = (FhtTimeMessage) fhtMessage;
-		assertEquals("housecode", (short) housecode, msg.housecode);
-		assertEquals("command", fhtProperty, msg.command);
-		assertEquals("fromFht_8B", fromFht_8B, msg.fromFht_8B);
-		assertEquals("dataRegister", dataRegister, msg.dataRegister);
-		assertEquals("time", time, msg.time);
+	 assertEquals((short) housecode, msg.housecode, "housecode");
+	 assertEquals(fhtProperty, msg.command, "command");
+	 assertEquals(fromFht_8B, msg.fromFht_8B, "fromFht_8B");
+	 assertEquals(dataRegister, msg.dataRegister, "dataRegister");
+	 assertEquals(time, msg.time, "time");
 	}
 
 	public static void assertTimesMessage(FhtMessage fhtMessage, int housecode, FhtProperty fhtProperty,
 			boolean dataRegister, boolean fromFht_8B, LocalTime timeFrom1, LocalTime timeTo1, LocalTime timeFrom2,
 			LocalTime timeTo2) {
-		assertNotNull(fhtMessage);
+	 assertNotNull(fhtMessage);
 		final FhtTimesMessage msg = (FhtTimesMessage) fhtMessage;
-		assertEquals("housecode", (short) housecode, msg.housecode);
-		assertEquals("command", fhtProperty, msg.command);
-		assertEquals("fromFht_8B", fromFht_8B, msg.fromFht_8B);
-		assertEquals("dataRegister", dataRegister, msg.dataRegister);
-		assertEquals("timeFrom1", timeFrom1, msg.timeFrom1);
-		assertEquals("timeTo1", timeTo1, msg.timeTo1);
-		assertEquals("timeFrom2", timeFrom2, msg.timeFrom2);
-		assertEquals("timeTo2", timeTo2, msg.timeTo2);
+	 assertEquals((short) housecode, msg.housecode, "housecode");
+	 assertEquals(fhtProperty, msg.command, "command");
+	 assertEquals(fromFht_8B, msg.fromFht_8B, "fromFht_8B");
+	 assertEquals(dataRegister, msg.dataRegister, "dataRegister");
+	 assertEquals(timeFrom1, msg.timeFrom1, "timeFrom1");
+	 assertEquals(timeTo1, msg.timeTo1, "timeTo1");
+	 assertEquals(timeFrom2, msg.timeFrom2, "timeFrom2");
+	 assertEquals(timeTo2, msg.timeTo2, "timeTo2");
 	}
 
 	@Override

@@ -1,45 +1,38 @@
-/*-
- * #%L
- * FHZ4J Core
- * %%
- * Copyright (C) 2009 - 2018 Arne Plöse
- * %%
+/*
  * FHZ4J - Drivers for the Wireless FS20, FHT and HMS protocol https://github.com/aploese/fhz4j/
- * Copyright (C) 2009, 2017, Arne Plöse and individual contributors as indicated
+ * Copyright (C) 2009-2019, Arne Plöse and individual contributors as indicated
  * by the @authors tag. See the copyright.txt in the distribution for a
  * full listing of individual contributors.
- * 
+ *
  * This is free software; you can redistribute it and/or modify it
- * under the terms of the GNU General Public License as
+ * under the terms of the GNU Lesser General Public License as
  * published by the Free Software Foundation; either version 3 of
  * the License, or (at your option) any later version.
- * 
+ *
  * This software is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
  * Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public
  * License along with this software; if not, write to the Free
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
- * #L%
  */
 package de.ibapl.fhz4j.parser.cul;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 import java.time.LocalDateTime;
 import java.time.Month;
-
-import org.junit.Test;
 
 import de.ibapl.fhz4j.parser.api.ParserListener;
 import de.ibapl.fhz4j.protocol.fht.FhtDateTimeMessage;
 import de.ibapl.fhz4j.protocol.fht.FhtMessage;
 import de.ibapl.fhz4j.protocol.fht.FhtProperty;
+import org.junit.jupiter.api.Test;
 
 /**
  *
@@ -76,7 +69,7 @@ public class FhtDateTimeMessageTest implements ParserListener<FhtMessage> {
 		FhtTempMessageTest.assertRawMessage(partialFhtMessage, 302, FhtProperty.HOUR, true, true, 14);
 		decode("0302646917");
 		FhtTempMessageTest.assertRawMessage(partialFhtMessage, 302, FhtProperty.MINUTE, true, true, 23);
-		assertDateTimeMessage(assembledfhtMessage, 302, FhtProperty.CURRENT_DATE_AND_TIME, true, true,
+	 assertDateTimeMessage(assembledfhtMessage, 302, FhtProperty.CURRENT_DATE_AND_TIME, true, true,
 				LocalDateTime.of(2017, Month.JULY, 20, 14, 23));
 	}
 
@@ -87,7 +80,7 @@ public class FhtDateTimeMessageTest implements ParserListener<FhtMessage> {
 		decode("0401616901");
 		decode("040163690B");
 		decode("0401646930");
-		assertNull(assembledfhtMessage);
+	 assertNull(assembledfhtMessage);
 	}
 
 	@Test
@@ -96,7 +89,7 @@ public class FhtDateTimeMessageTest implements ParserListener<FhtMessage> {
 		decode("0401626911");
 		decode("040163690B");
 		decode("0401646930");
-		assertNull(assembledfhtMessage);
+	 assertNull(assembledfhtMessage);
 	}
 
 	@Test
@@ -105,7 +98,7 @@ public class FhtDateTimeMessageTest implements ParserListener<FhtMessage> {
 		decode("0401626911");
 		decode("040163690B");
 		decode("0401646930");
-		assertNull(assembledfhtMessage);
+	 assertNull(assembledfhtMessage);
 	}
 
 	@Override
@@ -125,13 +118,13 @@ public class FhtDateTimeMessageTest implements ParserListener<FhtMessage> {
 
 	public static void assertDateTimeMessage(FhtMessage fhtMessage, int housecode, FhtProperty fhtProperty,
 			boolean dataRegister, boolean fromFht_8B, LocalDateTime ts) {
-		assertNotNull(fhtMessage);
+	 assertNotNull(fhtMessage);
 		final FhtDateTimeMessage msg = (FhtDateTimeMessage) fhtMessage;
-		assertEquals("housecode", (short) housecode, msg.housecode);
-		assertEquals("command", fhtProperty, msg.command);
-		assertEquals("fromFht_8B", fromFht_8B, msg.fromFht_8B);
-		assertEquals("dataRegister", dataRegister, msg.dataRegister);
-		assertEquals("ts", ts, msg.ts);
+	 assertEquals((short) housecode, msg.housecode, "housecode");
+	 assertEquals(fhtProperty, msg.command, "command");
+	 assertEquals(fromFht_8B, msg.fromFht_8B, "fromFht_8B");
+	 assertEquals(dataRegister, msg.dataRegister, "dataRegister");
+	 assertEquals(ts, msg.ts, "ts");
 	}
 
 	@Override

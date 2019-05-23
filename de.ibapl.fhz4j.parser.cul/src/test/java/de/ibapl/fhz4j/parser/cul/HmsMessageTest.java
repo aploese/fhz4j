@@ -1,41 +1,33 @@
-/*-
- * #%L
- * FHZ4J Core
- * %%
- * Copyright (C) 2009 - 2018 Arne Plöse
- * %%
+/*
  * FHZ4J - Drivers for the Wireless FS20, FHT and HMS protocol https://github.com/aploese/fhz4j/
- * Copyright (C) 2009, 2017, Arne Plöse and individual contributors as indicated
+ * Copyright (C) 2009-2019, Arne Plöse and individual contributors as indicated
  * by the @authors tag. See the copyright.txt in the distribution for a
  * full listing of individual contributors.
- * 
+ *
  * This is free software; you can redistribute it and/or modify it
- * under the terms of the GNU General Public License as
+ * under the terms of the GNU Lesser General Public License as
  * published by the Free Software Foundation; either version 3 of
  * the License, or (at your option) any later version.
- * 
+ *
  * This software is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
  * Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public
  * License along with this software; if not, write to the Free
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
- * #L%
  */
 package de.ibapl.fhz4j.parser.cul;
 
-import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+
 
 import java.util.EnumSet;
 import java.util.Set;
-
-import org.junit.Ignore;
-import org.junit.Test;
 
 import de.ibapl.fhz4j.parser.api.ParserListener;
 import de.ibapl.fhz4j.protocol.hms.Hms100RmMessage;
@@ -44,6 +36,8 @@ import de.ibapl.fhz4j.protocol.hms.Hms100TfkMessage;
 import de.ibapl.fhz4j.protocol.hms.Hms100WdMessage;
 import de.ibapl.fhz4j.protocol.hms.HmsDeviceStatus;
 import de.ibapl.fhz4j.protocol.hms.HmsMessage;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 
 /**
  *
@@ -75,19 +69,19 @@ public class HmsMessageTest implements ParserListener<HmsMessage> {
 	}
 
 	@Test
-	@Ignore
+	@Disabled
 	public void decode_HMS_100_RM() {
 		decode("DC8723000500");
-		assertHmsRmMessage(hmsMessage, 0xDC87, EnumSet.noneOf(HmsDeviceStatus.class), false);
+	 assertHmsRmMessage(hmsMessage, 0xDC87, EnumSet.noneOf(HmsDeviceStatus.class), false);
 		decode("DC8723030200");
-		assertHmsRmMessage(hmsMessage, 0xDC87, EnumSet.noneOf(HmsDeviceStatus.class), false);
+	 assertHmsRmMessage(hmsMessage, 0xDC87, EnumSet.noneOf(HmsDeviceStatus.class), false);
 		decode("DC8723000500");
-		assertHmsRmMessage(hmsMessage, 0xDC87, EnumSet.noneOf(HmsDeviceStatus.class), false);
+	 assertHmsRmMessage(hmsMessage, 0xDC87, EnumSet.noneOf(HmsDeviceStatus.class), false);
 
 		decode("707D0300FF00");
-		assertHmsRmMessage(hmsMessage, 0x707D, EnumSet.noneOf(HmsDeviceStatus.class), false);
+	 assertHmsRmMessage(hmsMessage, 0x707D, EnumSet.noneOf(HmsDeviceStatus.class), false);
 		decode("DC8703030100");
-		assertHmsRmMessage(hmsMessage, 0x707D, EnumSet.of(HmsDeviceStatus.BATT_LOW), false);
+	 assertHmsRmMessage(hmsMessage, 0x707D, EnumSet.of(HmsDeviceStatus.BATT_LOW), false);
 
 		/*
 		 * Byte 9+10 könnte irgendeine Sequence Nr. sein ???
@@ -101,76 +95,76 @@ public class HmsMessageTest implements ParserListener<HmsMessage> {
 
 	public static void assertHmsTfMessage(HmsMessage hmsMsg, int housecode, Set<HmsDeviceStatus> deviceStatus,
 			float temp, float humidy) {
-		assertNotNull(hmsMsg);
+	 assertNotNull(hmsMsg);
 		final Hms100TfMessage msg = (Hms100TfMessage) hmsMsg;
-		assertArrayEquals("deviceStatus", deviceStatus.toArray(), deviceStatus.toArray());
-		assertEquals("housecode", (short) housecode, msg.housecode);
-		assertEquals("temp", temp, msg.temp, Float.MIN_NORMAL);
-		assertEquals("humidy", humidy, msg.humidy, Float.MIN_NORMAL);
+	 assertArrayEquals(deviceStatus.toArray(), deviceStatus.toArray(), "deviceStatus");
+	 assertEquals((short) housecode, msg.housecode, "housecode");
+	 assertEquals(temp, msg.temp, Float.MIN_NORMAL, "temp");
+	 assertEquals(humidy, msg.humidy, Float.MIN_NORMAL, "humidy");
 	}
 
 	public static void assertHmsWdMessage(HmsMessage hmsMsg, int housecode, Set<HmsDeviceStatus> deviceStatus,
 			boolean water) {
-		assertNotNull(hmsMsg);
+	 assertNotNull(hmsMsg);
 		final Hms100WdMessage msg = (Hms100WdMessage) hmsMsg;
-		assertArrayEquals("deviceStatus", deviceStatus.toArray(), deviceStatus.toArray());
-		assertEquals("housecode", (short) housecode, msg.housecode);
-		assertEquals("water", water, msg.water);
+	 assertArrayEquals(deviceStatus.toArray(), deviceStatus.toArray(), "deviceStatus");
+	 assertEquals((short) housecode, msg.housecode, "housecode");
+	 assertEquals(water, msg.water, "water");
 	}
 
 	public static void assertHmsTkfMessage(HmsMessage hmsMsg, int housecode, Set<HmsDeviceStatus> deviceStatus,
 			boolean open) {
-		assertNotNull(hmsMsg);
+	 assertNotNull(hmsMsg);
 		final Hms100TfkMessage msg = (Hms100TfkMessage) hmsMsg;
-		assertArrayEquals("deviceStatus", deviceStatus.toArray(), deviceStatus.toArray());
-		assertEquals("housecode", (short) housecode, msg.housecode);
-		assertEquals("open", open, msg.open);
+	 assertArrayEquals(deviceStatus.toArray(), deviceStatus.toArray(), "deviceStatus");
+	 assertEquals((short) housecode, msg.housecode, "housecode");
+	 assertEquals(open, msg.open, "open");
 	}
 
 	public static void assertHmsRmMessage(HmsMessage hmsMsg, int housecode, Set<HmsDeviceStatus> deviceStatus,
 			boolean smoke) {
-		assertNotNull(hmsMsg);
+	 assertNotNull(hmsMsg);
 		final Hms100RmMessage msg = (Hms100RmMessage) hmsMsg;
-		assertArrayEquals("deviceStatus", deviceStatus.toArray(), deviceStatus.toArray());
-		assertEquals("housecode", (short) housecode, msg.housecode);
-		assertEquals("smoke", smoke, msg.smoke);
+	 assertArrayEquals(deviceStatus.toArray(), deviceStatus.toArray(), "deviceStatus");
+	 assertEquals((short) housecode, msg.housecode, "housecode");
+	 assertEquals(smoke, msg.smoke, "smoke");
 	}
 
 	@Test
 	public void decode_HMS_100_TF() {
 
 		decode("775800528272");
-		assertHmsTfMessage(hmsMessage, 0x7758, EnumSet.noneOf(HmsDeviceStatus.class), 25.2f, 72.8f);
+	 assertHmsTfMessage(hmsMessage, 0x7758, EnumSet.noneOf(HmsDeviceStatus.class), 25.2f, 72.8f);
 
 		decode("C25C00098262");
-		assertHmsTfMessage(hmsMessage, 0xC25C, EnumSet.noneOf(HmsDeviceStatus.class), 20.9f, 62.8f);
+	 assertHmsTfMessage(hmsMessage, 0xC25C, EnumSet.noneOf(HmsDeviceStatus.class), 20.9f, 62.8f);
 
 		decode("C25C20128260");
-		assertHmsTfMessage(hmsMessage, 0xC25C, EnumSet.of(HmsDeviceStatus.BATT_LOW), 21.2f, 60.8f);
+	 assertHmsTfMessage(hmsMessage, 0xC25C, EnumSet.of(HmsDeviceStatus.BATT_LOW), 21.2f, 60.8f);
 	}
 
 	@Test
 	public void decode_HMS_100_TFK() {
 		decode("7AEF04000000");
-		assertHmsTkfMessage(hmsMessage, 0x7AEF, EnumSet.noneOf(HmsDeviceStatus.class), false);
+	 assertHmsTkfMessage(hmsMessage, 0x7AEF, EnumSet.noneOf(HmsDeviceStatus.class), false);
 		decode("7AEF04010000");
-		assertHmsTkfMessage(hmsMessage, 0x7AEF, EnumSet.noneOf(HmsDeviceStatus.class), true);
+	 assertHmsTkfMessage(hmsMessage, 0x7AEF, EnumSet.noneOf(HmsDeviceStatus.class), true);
 		decode("7AEF24000000");
-		assertHmsTkfMessage(hmsMessage, 0x7AEF, EnumSet.of(HmsDeviceStatus.BATT_LOW), false);
+	 assertHmsTkfMessage(hmsMessage, 0x7AEF, EnumSet.of(HmsDeviceStatus.BATT_LOW), false);
 		decode("7AEF24010000");
-		assertHmsTkfMessage(hmsMessage, 0x7AEF, EnumSet.of(HmsDeviceStatus.BATT_LOW), true);
+	 assertHmsTkfMessage(hmsMessage, 0x7AEF, EnumSet.of(HmsDeviceStatus.BATT_LOW), true);
 	}
 
 	@Test
 	public void decode_HMS_100_WD() {
 		decode("78D10200FA00");
-		assertHmsWdMessage(hmsMessage, 0x78D1, EnumSet.noneOf(HmsDeviceStatus.class), false);
+	 assertHmsWdMessage(hmsMessage, 0x78D1, EnumSet.noneOf(HmsDeviceStatus.class), false);
 		decode("78D102010000");
-		assertHmsWdMessage(hmsMessage, 0x78D1, EnumSet.noneOf(HmsDeviceStatus.class), true);
+	 assertHmsWdMessage(hmsMessage, 0x78D1, EnumSet.noneOf(HmsDeviceStatus.class), true);
 		decode("78D122000000");
-		assertHmsWdMessage(hmsMessage, 0x78D1, EnumSet.of(HmsDeviceStatus.BATT_LOW), false);
+	 assertHmsWdMessage(hmsMessage, 0x78D1, EnumSet.of(HmsDeviceStatus.BATT_LOW), false);
 		decode("78D122010000");
-		assertHmsWdMessage(hmsMessage, 0x78D1, EnumSet.of(HmsDeviceStatus.BATT_LOW), true);
+	 assertHmsWdMessage(hmsMessage, 0x78D1, EnumSet.of(HmsDeviceStatus.BATT_LOW), true);
 	}
 
 	@Override

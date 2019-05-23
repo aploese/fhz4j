@@ -18,11 +18,6 @@
 
     <dependencies>
         <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
             <groupId>de.ibapl.spsw</groupId>
             <artifactId>de.ibapl.spsw.jniprovider</artifactId>
             <scope>runtime</scope>
