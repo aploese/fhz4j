@@ -19,26 +19,30 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package de.ibapl.fhz4j.api;
+package de.ibapl.fhz4j.protocol.evohome;
+
+import java.time.LocalDateTime;
 
 /**
+ * 7 BYTES TEMP 1(3) TEM2 (3) and flags (1)
  *
  * @author Arne Plöse
  */
-public enum FhzProtocol {
-	FHT("FHT"), FS20("FS 20"), EM("EM"), HMS("HMS"), LA_CROSSE_TX2("LaCrosse Tx2"), CUL("CUL"), EVO_HOME("Evo Home"), UNKNOWN("Unknown");
+public class EvoHome_0x18_0x2349_0x0D_ZONE_SETPOINT_UNTIL_Message extends EvoHomeDeviceMessage {
+	
+	public float temperature;
+	public int unknown;
+	public LocalDateTime until;
 
-	private final String label;
-
-	private FhzProtocol(String label) {
-		this.label = label;
+	public EvoHome_0x18_0x2349_0x0D_ZONE_SETPOINT_UNTIL_Message() {
+		super(EvoHomeProperty.ZONE_SETPOINT_UNTIL);
 	}
-
-	/**
-	 * @return the label
-	 */
-	public String getLabel() {
-		return label;
+	
+	@Override
+	protected void addToString(StringBuilder sb) {
+		super.addToString(sb);
+		sb.append(", temperature:").append(temperature);
+		sb.append(String.format(", unknown: 0x%08x", unknown));
+		sb.append(", until:").append(until);
 	}
-
 }

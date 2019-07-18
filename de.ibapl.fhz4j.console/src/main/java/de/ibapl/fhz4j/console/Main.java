@@ -27,6 +27,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.EnumSet;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -42,13 +43,16 @@ import org.apache.commons.cli.Option;
 import org.apache.commons.cli.OptionGroup;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
-import org.apache.commons.cli.PosixParser;
+import org.apache.commons.cli.DefaultParser;
 
 import de.ibapl.fhz4j.LogUtils;
 import de.ibapl.fhz4j.api.FhzAdapter;
 import de.ibapl.fhz4j.api.FhzDataListener;
+import de.ibapl.fhz4j.api.Protocol;
+import de.ibapl.fhz4j.cul.CulAdapter;
 import de.ibapl.fhz4j.parser.cul.CulMessage;
 import de.ibapl.fhz4j.protocol.em.EmMessage;
+import de.ibapl.fhz4j.protocol.evohome.EvoHomeMessage;
 import de.ibapl.fhz4j.protocol.fht.FhtMessage;
 import de.ibapl.fhz4j.protocol.fs20.FS20Message;
 import de.ibapl.fhz4j.protocol.hms.HmsMessage;
@@ -147,6 +151,12 @@ public class Main {
             System.err.println(": CUL " + culMessage);
 		}
 
+		@Override
+		public void evoHomeParsed(EvoHomeMessage evoHomeMsg) {
+            printTimeStamp();
+            System.out.println(evoHomeMsg.toString());
+		}
+
     }
 
     /**
@@ -178,9 +188,14 @@ public class Main {
         opt.setType(String.class);
         optg.addOption(opt);
 
+        options.addOptionGroup(optg);
+        
+        opt = new Option(null, "enable-fhz", false, "enable receive of fhz messages");
+        options.addOption(opt);
 
-       options.addOptionGroup(optg);
-       
+        opt = new Option(null, "enable-evo-home", false, "enable receive of evo home messages");
+        options.addOption(opt);
+
        opt = new Option("s", "scan", false, "scan for serial ports");
  
         options.addOption(opt);
@@ -188,7 +203,7 @@ public class Main {
         opt = null;
         optg = null;
 
-        CommandLineParser cmdParser = new PosixParser();
+        CommandLineParser cmdParser = new DefaultParser();
         CommandLine cmd = null;
 
         try {
@@ -227,31 +242,40 @@ public class Main {
 
         }
 
-        if (cmd.hasOption("ser2net")) {
-            new Main().runSer2Net(cmd.getOptionValue("ser2net"));
+        Set<Protocol> protocols = EnumSet.noneOf(Protocol.class);
+        if (cmd.hasOption("enable-fhz")) {
+        	protocols.add(Protocol.FHZ);
         }
         
+        if (cmd.hasOption("enable-evo-home")) {
+        	protocols.add(Protocol.EVO_HOME);
+        }
+        
+        if (cmd.hasOption("ser2net")) {
+            new Main().runSer2Net(cmd.getOptionValue("ser2net"), protocols);
+        }
+
         if (cmd.hasOption("port")) {
-            new Main().runLocalPort(cmd.getOptionValue("port"));
+            new Main().runLocalPort(cmd.getOptionValue("port"), protocols);
         }
         
     }
 
     private final Set<Short> DEVICES_HOME_CODE = new HashSet<>();
 
-    public void runSer2Net(String ser2net) {
+    public void runSer2Net(String ser2net, Set<Protocol> protocols) {
         try {
             File logFile = File.createTempFile("cul_", ".txt");
             LOG.info("LOG File: " + logFile.getAbsolutePath());
             String[] split = ser2net.split(":"); 
             SerialPortSocket serialPort = LoggingSerialPortSocket.wrapWithAsciiOutputStream(new Ser2NetProvider(split[0], Integer.valueOf(split[1])), new FileOutputStream(logFile), false, TimeStampLogging.NONE);
-            run(serialPort);
+            run(serialPort, protocols);
         } catch (Exception ex) {
             throw  new RuntimeException(ex);
         }
     }
 
-    public void runLocalPort(String port) {
+    public void runLocalPort(String port, Set<Protocol> protocols) {
         try {
             ServiceLoader<SerialPortSocketFactory> sl = ServiceLoader.load(SerialPortSocketFactory.class);
             Iterator<SerialPortSocketFactory> i = sl.iterator();
@@ -262,25 +286,30 @@ public class Main {
 
             File logFile = File.createTempFile("cul_", ".txt");
             LOG.info("LOG File: " + logFile.getAbsolutePath());
-            SerialPortSocket serialPort = LoggingSerialPortSocket.wrapWithAsciiOutputStream(serialPortSocketFactory.createSerialPortSocket(port), new FileOutputStream(logFile), false, TimeStampLogging.NONE);
-            run(serialPort);
+            SerialPortSocket serialPort = LoggingSerialPortSocket.wrapWithAsciiOutputStream(serialPortSocketFactory.createSerialPortSocket(port), new FileOutputStream(logFile), false, TimeStampLogging.UTC);
+            run(serialPort, protocols);
         } catch (Exception ex) {
             throw  new RuntimeException(ex);
         }
     }
     
-    public void run(SerialPortSocket serialPortSocket) throws Exception {
+    public void run(SerialPortSocket serialPortSocket, Set<Protocol> protocols) throws Exception {
         final FhzListener listener = new FhzListener();
-        try (FhzAdapter fhzAddapter = FhzAdapter.open(serialPortSocket, listener)) {
-            listener.fhzAdapter = fhzAddapter;
+        try (CulAdapter culAddapter = FhzAdapter.open(serialPortSocket, listener)) {
+            listener.fhzAdapter = culAddapter;
         try {
             try {
                 Thread.sleep(100);
             } catch (InterruptedException ex) {
                 LOG.log(Level.SEVERE, null, ex);
             }
-            fhzAddapter.initFhz((short) 0001);
-            fhzAddapter.initFhtReporting((short)302);
+            if (protocols.contains(Protocol.FHZ)) {
+            	culAddapter.initFhz((short) 0001);
+            }
+            if (protocols.contains(Protocol.EVO_HOME)) {
+            	culAddapter.initEvoHome();
+            }
+            culAddapter.initFhtReporting((short)302);
 //            fhzAddapter.writeFhtTimeAndDate((short) 302, LocalDateTime.now());
 //            fhzAddapter.writeFhtCycle((short) 302, DayOfWeek.MONDAY, LocalTime.of(5, 0), LocalTime.of(8, 30), null, null);
 //            fhzAddapter.writeFht((short)302, FhtProperty.DESIRED_TEMP, 24.0f);
@@ -301,7 +330,7 @@ public class Main {
                         System.out.print("Bye will close down!");
                         break;
                     case 'r':
-                    	fhzAddapter.initFhtReporting(DEVICES_HOME_CODE);
+                    	culAddapter.initFhtReporting(DEVICES_HOME_CODE);
                         break;
                     default:
                 }

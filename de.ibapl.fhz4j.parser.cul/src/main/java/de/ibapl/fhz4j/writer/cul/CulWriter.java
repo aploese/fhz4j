@@ -72,7 +72,7 @@ public class CulWriter implements AutoCloseable {
 		}
 	}
 
-        void doWrite() throws IOException {
+    void doWrite() throws IOException {
         buffer.flip();
         wbc.write(buffer);
         buffer.clear();
@@ -638,6 +638,27 @@ public class CulWriter implements AutoCloseable {
 	public void close() throws Exception {
 		open = false;
 		wbc.close();
+	}
+
+	public void initEvoHome() throws IOException {
+		try {
+		if (!open) {
+			throw new IllegalStateException("Closed!");
+		}
+		LOG.info("INIT Evo Home");
+		buffer.put("\r\n".getBytes());
+		doWrite();
+        Thread.sleep(1000);
+		byte flags = 0;
+		final String data = String.format("vd\r\n", flags);
+		buffer.put(data.getBytes());
+		doWrite();
+		LOG.log(Level.INFO, "Data sent: {0}", new Object[] { data });
+		Thread.sleep(1000);
+		LOG.info("INIT Evo Home End");
+		} catch (InterruptedException ex) {
+			LOG.log(Level.SEVERE, "EX during Evo Home init", ex);
+		}
 	}
 
 }

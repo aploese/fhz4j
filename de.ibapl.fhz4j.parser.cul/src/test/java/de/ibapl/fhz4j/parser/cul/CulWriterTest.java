@@ -184,8 +184,8 @@ public class CulWriterTest {
 		instance.writeFht((short) 302, FhtProperty.THU_TO_2, null);
 	 assertEquals("T03022390\n", os.toString());
 
-		instance.close();
 */
+		instance.close();
 	}
 
 	@Test
@@ -210,8 +210,8 @@ public class CulWriterTest {
 		instance.writeFhtModeHoliday((short) 302, 17.0f, LocalDate.of(2017, Month.JULY, 19));
 	 assertEquals("T030241223F1340073E02\n", os.toString());
 
-		instance.close();
 */
+		instance.close();
 	}
 
 }

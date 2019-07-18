@@ -24,7 +24,9 @@ package de.ibapl.fhz4j.parser.cul;
 import java.time.LocalTime;
 
 import de.ibapl.fhz4j.api.FhzDataListener;
+import de.ibapl.fhz4j.api.FhzMessage;
 import de.ibapl.fhz4j.protocol.em.EmMessage;
+import de.ibapl.fhz4j.protocol.evohome.EvoHomeMessage;
 import de.ibapl.fhz4j.protocol.fht.FhtMessage;
 import de.ibapl.fhz4j.protocol.fht.FhtProperty;
 import de.ibapl.fhz4j.protocol.fs20.FS20Message;
@@ -46,7 +48,7 @@ import org.junit.jupiter.api.Disabled;
  */
 public class CulParserTest implements FhzDataListener {
 
-	private CulParser parser;
+	private CulParser<FhzMessage> parser;
 	private FhtMessage fhtMessage;
 	private HmsMessage hmsMsg;
 	private EmMessage emMsg;
@@ -54,6 +56,7 @@ public class CulParserTest implements FhzDataListener {
 	private LaCrosseTx2Message laCrosseTx2Message;
 	private FhtMessage fhtPartialMessage;
 	private CulMessage culMessage;
+	private EvoHomeMessage evoHomeMsg;
 	private Throwable failed;
 
 	public CulParserTest() {
@@ -61,7 +64,7 @@ public class CulParserTest implements FhzDataListener {
 
 	@BeforeEach
 	public void setUp() {
-		parser = new CulParser(this);
+		parser = new CulParser<>(this);
 	}
 
 	@AfterEach
@@ -190,6 +193,12 @@ public class CulParserTest implements FhzDataListener {
 		decode("T01010069B6F8\n");
 	 assertNotNull(fhtMessage);
 	}
+	
+	@Test
+	public void decode_EvoHome() {
+		decode("vr18067AEC067AEC1F0903FF057D\r\n");
+		assertNotNull(evoHomeMsg);
+	}
 
 	@Override
 	public void emDataParsed(EmMessage emMsg) {
@@ -230,6 +239,11 @@ public class CulParserTest implements FhzDataListener {
 	@Override
 	public void culMessageParsed(CulMessage culMessage) {
 		this.culMessage = culMessage;
+	}
+
+	@Override
+	public void evoHomeParsed(EvoHomeMessage evoHomeMsg) {
+		this.evoHomeMsg = evoHomeMsg;
 	}
 
 }

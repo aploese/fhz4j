@@ -19,26 +19,41 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package de.ibapl.fhz4j.api;
+package de.ibapl.fhz4j.protocol.evohome;
 
-/**
- *
- * @author Arne Plöse
- */
-public enum FhzProtocol {
-	FHT("FHT"), FS20("FS 20"), EM("EM"), HMS("HMS"), LA_CROSSE_TX2("LaCrosse Tx2"), CUL("CUL"), EVO_HOME("Evo Home"), UNKNOWN("Unknown");
-
-	private final String label;
-
-	private FhzProtocol(String label) {
-		this.label = label;
-	}
-
-	/**
-	 * @return the label
-	 */
-	public String getLabel() {
-		return label;
-	}
-
+public enum EvoHomeProperty {
+	_0C_0004,
+	_0C_000A,
+	_0C_0016,
+	_0C_0100,
+	REQUEST_0C_1F09,
+	_0C_2309,
+	REQUEST_0C_313F,
+	_18_0004,
+	_18_0005,
+	_18_0008,
+	_18_0009,
+	ZONES_PARAMS,
+	_18_000E,
+	_18_042F,
+	_18_1060,
+	_18_10E0,
+	_18_1100,
+	_18_12B0,
+	BROADCAST_18_1F09,
+	ROOM_MEASURED_TEMP,
+	ZONE_SETPOINT_UNTIL	,
+	ZONE_SETPOINT_PERMANENT,
+	ROOM_DESIRED_TEMP,
+	_18_1FC9,
+	HEAT_DEMAND,
+	_18_3B00,
+	_1C_1FC9,
+	_28_0001,
+	_28_1F09,
+	_2C_1FC9,
+	_3C_0004,
+	_3C_0100,
+	RESPONSE_3C_1F09,
+	RESPONSE_3C_313F;
 }

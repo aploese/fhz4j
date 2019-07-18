@@ -19,26 +19,34 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package de.ibapl.fhz4j.api;
+package de.ibapl.fhz4j.protocol.evohome;
 
 /**
  *
  * @author Arne Plöse
  */
-public enum FhzProtocol {
-	FHT("FHT"), FS20("FS 20"), EM("EM"), HMS("HMS"), LA_CROSSE_TX2("LaCrosse Tx2"), CUL("CUL"), EVO_HOME("Evo Home"), UNKNOWN("Unknown");
+public class EvoHome_0x18_0x1FC9_0x12_Message extends EvoHomeDeviceMessage {
+	
+	public int unknownFlags1;
+	public int unknownDeviceId1;
+	public int unknownFlags2;
+	public int unknownDeviceId2;
+	public int unknownFlags3;
+	public int unknownDeviceId3;
+	
 
-	private final String label;
-
-	private FhzProtocol(String label) {
-		this.label = label;
+	public EvoHome_0x18_0x1FC9_0x12_Message() {
+		super(EvoHomeProperty._18_1FC9);
 	}
 
-	/**
-	 * @return the label
-	 */
-	public String getLabel() {
-		return label;
+	@Override
+	protected void addToString(StringBuilder sb) {
+		super.addToString(sb);
+		sb.append(String.format(", unknownFlags1 : 0x%06x", unknownFlags1));
+		sb.append(String.format(", unknownDeviceId1 : 0x%06x", unknownDeviceId1));
+		sb.append(String.format(", unknownFlags2 : 0x%06x", unknownFlags2));
+		sb.append(String.format(", unknownDeviceId2 : 0x%06x", unknownDeviceId2));
+		sb.append(String.format(", unknownFlags3 : 0x%06x", unknownFlags3));
+		sb.append(String.format(", unknownDeviceId3 : 0x%06x", unknownDeviceId3));
 	}
-
 }

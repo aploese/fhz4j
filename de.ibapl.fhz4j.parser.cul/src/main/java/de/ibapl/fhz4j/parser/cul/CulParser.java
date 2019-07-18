@@ -30,6 +30,7 @@ import de.ibapl.fhz4j.api.FhzMessage;
 import de.ibapl.fhz4j.parser.api.Parser;
 import de.ibapl.fhz4j.parser.api.ParserListener;
 import de.ibapl.fhz4j.protocol.em.EmMessage;
+import de.ibapl.fhz4j.protocol.evohome.EvoHomeMessage;
 import de.ibapl.fhz4j.protocol.fht.FhtMessage;
 import de.ibapl.fhz4j.protocol.fs20.FS20Message;
 import de.ibapl.fhz4j.protocol.hms.HmsMessage;
@@ -95,7 +96,7 @@ public class CulParser<T extends FhzMessage> extends Parser implements ParserLis
 
 	private enum State {
 
-		IDLE, EM_PARSING, FS20_PARSING, FHT_PARSING, HMS_PARSING, LA_CROSSE_TX2_PARSING, CUL_L_PARSED, CUL_LO_PARSED, CUL_LOV_PARSED, CUL_E_PARSED, CUL_EO_PARSED, SINGNAL_STRENGTH, END_CHAR_0X0D, END_CHAR_0X0A;
+		IDLE, EM_PARSING, FS20_PARSING, FHT_PARSING, HMS_PARSING, LA_CROSSE_TX2_PARSING, CUL_L_PARSED, CUL_LO_PARSED, CUL_LOV_PARSED, CUL_E_PARSED, CUL_EO_PARSED, EVO_HOME_START, EVO_HOME_READ_PARSING, EVO_HOME_READ_GARBAGE, SINGNAL_STRENGTH, END_CHAR_0X0D, END_CHAR_0X0A;
 	}
 
 	private State state = State.IDLE;
@@ -110,6 +111,8 @@ public class CulParser<T extends FhzMessage> extends Parser implements ParserLis
 	@SuppressWarnings("unchecked")
 	private final LaCrosseTx2Parser laCrosseTx2Parser = new LaCrosseTx2Parser(
 			(ParserListener<LaCrosseTx2Message>) this);
+	@SuppressWarnings("unchecked")
+	private final EvoHomeParser evoHomeParser = new EvoHomeParser((ParserListener<EvoHomeMessage>) this);
 
 	private FhzMessage fhzMessage;
 
@@ -141,9 +144,37 @@ public class CulParser<T extends FhzMessage> extends Parser implements ParserLis
 			case 'L':
 				state = State.CUL_L_PARSED;
 				break;
+			case 'v':
+				evoHomeParser.init();
+				state = State.EVO_HOME_START;
+				break;
 			default:
 				LOG.fine(String.format("Discarted: 0x%02x %s", (byte) c, c));
 			}
+			break;
+		case EVO_HOME_START:
+			switch (c) {
+			case 'r':
+				state = State.EVO_HOME_READ_PARSING;
+				break;
+			case 'a':
+				//TODO how to handle this?? we switched to Evo Home in the CUL device ... notify ???
+				state = State.IDLE;
+				break;
+			case '!':
+				state = State.EVO_HOME_READ_GARBAGE;
+				break;
+			default:
+				throw new IllegalArgumentException(String.format("unexpected char EVO_HOME_START: 0x%02x %s", (byte) c, c));
+			}
+			break;
+		case EVO_HOME_READ_GARBAGE:
+			//Do nothing, just wait for msg end;
+			if (c == '\n' || c == '\r') {
+				state = State.IDLE;
+			}
+		case EVO_HOME_READ_PARSING:
+			evoHomeParser.parse(c);
 			break;
 		case EM_PARSING:
 			emParser.parse(c);
@@ -253,22 +284,35 @@ public class CulParser<T extends FhzMessage> extends Parser implements ParserLis
 
 					if (partialFhzMessage instanceof FhtMessage) {
 						dataListener.fhtPartialDataParsed((FhtMessage) partialFhzMessage);
-					}
+					} 
 
-					if (fhzMessage instanceof FhtMessage) {
+					if (fhzMessage != null) {
+					switch (fhzMessage.fhzProtocol) {
+					case FHT:
 						dataListener.fhtDataParsed((FhtMessage) fhzMessage);
-					} else if (fhzMessage instanceof HmsMessage) {
+						break;
+					case HMS: 
 						dataListener.hmsDataParsed((HmsMessage) fhzMessage);
-					} else if (fhzMessage instanceof EmMessage) {
+						break;
+					case EM:
 						dataListener.emDataParsed((EmMessage) fhzMessage);
-					} else if (fhzMessage instanceof FS20Message) {
+						break;
+					case FS20:
 						dataListener.fs20DataParsed((FS20Message) fhzMessage);
-					} else if (fhzMessage instanceof LaCrosseTx2Message) {
+						break;
+					case LA_CROSSE_TX2:
 						dataListener.laCrosseTxParsed((LaCrosseTx2Message) fhzMessage);
-					} else if (fhzMessage instanceof CulMessage) {
+						break;
+					case CUL:
 						dataListener.culMessageParsed((CulMessage) fhzMessage);
+						break;
+					case EVO_HOME:
+						dataListener.evoHomeParsed((EvoHomeMessage) fhzMessage);
+						break;
+						default:
+							throw new RuntimeException();
+				}
 					}
-
 				}
 			} else {
 				// ERRORhandling ???

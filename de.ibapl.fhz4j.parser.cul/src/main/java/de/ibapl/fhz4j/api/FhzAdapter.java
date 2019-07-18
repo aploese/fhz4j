@@ -32,11 +32,11 @@ import de.ibapl.fhz4j.cul.CulAdapter;
 import de.ibapl.fhz4j.protocol.fht.FhtProperty;
 import de.ibapl.spsw.api.SerialPortSocket;
 
-public interface FhzAdapter extends AutoCloseable {
+public interface FhzAdapter {
 
-	static public FhzAdapter open(SerialPortSocket serialPortSocket, FhzDataListener fhzDataListener)
+	static public CulAdapter open(SerialPortSocket serialPortSocket, FhzDataListener fhzDataListener)
 			throws IOException {
-		FhzAdapter result = new CulAdapter(serialPortSocket, fhzDataListener);
+		CulAdapter result = new CulAdapter(serialPortSocket, fhzDataListener);
 		result.open();
 		return result;
 	}
@@ -46,8 +46,6 @@ public interface FhzAdapter extends AutoCloseable {
 	void initFhtReporting(short housecode) throws IOException;
 
 	void initFhz(short fhzHousecode) throws IOException;
-
-	void open() throws IOException;
 
 	void writeFht(short housecode, FhtProperty fhtProperty, float value) throws IOException;
 

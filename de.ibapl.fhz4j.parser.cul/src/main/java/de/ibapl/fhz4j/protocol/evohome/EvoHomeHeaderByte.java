@@ -19,26 +19,14 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package de.ibapl.fhz4j.api;
+package de.ibapl.fhz4j.protocol.evohome;
 
-/**
- *
- * @author Arne Plöse
- */
-public enum FhzProtocol {
-	FHT("FHT"), FS20("FS 20"), EM("EM"), HMS("HMS"), LA_CROSSE_TX2("LaCrosse Tx2"), CUL("CUL"), EVO_HOME("Evo Home"), UNKNOWN("Unknown");
-
-	private final String label;
-
-	private FhzProtocol(String label) {
-		this.label = label;
-	}
-
-	/**
-	 * @return the label
-	 */
-	public String getLabel() {
-		return label;
-	}
-
+public enum EvoHomeHeaderByte {
+	_18,
+	_0C,
+	_1C,
+	_2C,
+	_28,
+	_3C;
+	
 }

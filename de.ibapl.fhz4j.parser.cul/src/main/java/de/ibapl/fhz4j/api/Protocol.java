@@ -21,24 +21,8 @@
  */
 package de.ibapl.fhz4j.api;
 
-/**
- *
- * @author Arne Plöse
- */
-public enum FhzProtocol {
-	FHT("FHT"), FS20("FS 20"), EM("EM"), HMS("HMS"), LA_CROSSE_TX2("LaCrosse Tx2"), CUL("CUL"), EVO_HOME("Evo Home"), UNKNOWN("Unknown");
-
-	private final String label;
-
-	private FhzProtocol(String label) {
-		this.label = label;
-	}
-
-	/**
-	 * @return the label
-	 */
-	public String getLabel() {
-		return label;
-	}
+public enum Protocol {
+	EVO_HOME,
+	FHZ;
 
 }

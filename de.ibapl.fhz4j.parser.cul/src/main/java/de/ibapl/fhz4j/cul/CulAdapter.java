@@ -31,6 +31,8 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import de.ibapl.fhz4j.LogUtils;
+import de.ibapl.fhz4j.api.Adapter;
+import de.ibapl.fhz4j.api.EvoHomeAdapter;
 import de.ibapl.fhz4j.api.FhzAdapter;
 import de.ibapl.fhz4j.api.FhzDataListener;
 import de.ibapl.fhz4j.parser.cul.CulParser;
@@ -45,7 +47,7 @@ import de.ibapl.spsw.api.StopBits;
 import java.nio.ByteBuffer;
 import java.nio.channels.AsynchronousCloseException;
 
-public class CulAdapter implements FhzAdapter {
+public class CulAdapter implements Adapter, FhzAdapter, EvoHomeAdapter {
 
     private class StreamListener implements Runnable {
 
@@ -57,16 +59,20 @@ public class CulAdapter implements FhzAdapter {
                     serialPortSocket.read(inBuffer);
                     inBuffer.flip();
                     while (inBuffer.hasRemaining()) {
-                        culParser.parse((char) inBuffer.get());
+                    	try {
+                    		culParser.parse((char) inBuffer.get());
+                    	} catch (Exception e) {
+                            LOG.log(Level.SEVERE, "caught unexcpected exception during waiting for packages", e);
+						}
                     }
                     inBuffer.clear();
-                    LOG.info("closing down - finish waiting for new data");
                 } catch (AsynchronousCloseException ace) {
                     LOG.log(Level.FINE, "caught AsynchronousCloseException during waiting for packages", ace);
                 } catch (Throwable t) {
                     LOG.log(Level.SEVERE, "caught unexcpected exception during waiting for packages", t);
                 }
             }
+            LOG.info("closing down - finish waiting for new data");
         }
 
     }
@@ -158,5 +164,11 @@ public class CulAdapter implements FhzAdapter {
     public void writeFhtTimeAndDate(short housecode, LocalDateTime ts) throws IOException {
         culWriter.writeFhtTimeAndDate(housecode, ts);
     }
+
+	@Override
+	public void initEvoHome() throws IOException {
+        culWriter.initEvoHome();
+        //TODO wait for "va" for success or handle error
+	}
 
 }
