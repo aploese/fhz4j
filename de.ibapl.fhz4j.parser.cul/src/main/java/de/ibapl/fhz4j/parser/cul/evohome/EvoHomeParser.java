@@ -39,10 +39,11 @@ import de.ibapl.fhz4j.protocol.evohome.EvoHome_0x0C_0x1F09_0x01_REQUEST_0C_1F09_
 import de.ibapl.fhz4j.protocol.evohome.EvoHome_0x0C_0x2309_0x01_Message;
 import de.ibapl.fhz4j.protocol.evohome.EvoHome_0x0C_0x313F_0x01_REQUEST_0C_313F_Message;
 import de.ibapl.fhz4j.protocol.evohome.EvoHome_0x18_0x0004_0x16_Message;
-import de.ibapl.fhz4j.protocol.evohome.EvoHome_0x18_0x0005_0x04_Message;
+import de.ibapl.fhz4j.protocol.evohome.EvoHome_0x18_0x0005_0xXX_Message;
 import de.ibapl.fhz4j.protocol.evohome.EvoHome_0x18_0x0008_0x02_Message;
 import de.ibapl.fhz4j.protocol.evohome.EvoHome_0x18_0x0009_0x03_Message;
 import de.ibapl.fhz4j.protocol.evohome.EvoHome_0x18_0x000A_0xXX_ZONES_PARAMS_Message;
+import de.ibapl.fhz4j.protocol.evohome.EvoHome_0x18_0x000C_0x12_Message;
 import de.ibapl.fhz4j.protocol.evohome.EvoHome_0x18_0x000E_0x03_Message;
 import de.ibapl.fhz4j.protocol.evohome.EvoHome_0x18_0x042F_0x08_Message;
 import de.ibapl.fhz4j.protocol.evohome.EvoHome_0x18_0x1060_0x03_Message;
@@ -55,19 +56,27 @@ import de.ibapl.fhz4j.protocol.evohome.EvoHome_0x18_0x2309_0xXX_ROOM_DESIRED_TEM
 import de.ibapl.fhz4j.protocol.evohome.EvoHome_0x18_0x2349_0x07_ZONE_SETPOINT_PERMANENT_Message;
 import de.ibapl.fhz4j.protocol.evohome.EvoHome_0x18_0x2349_0x0D_ZONE_SETPOINT_UNTIL_Message;
 import de.ibapl.fhz4j.protocol.evohome.EvoHome_0x18_0x30C9_0xXX_ROOM_MEASURED_TEMP_Message;
+import de.ibapl.fhz4j.protocol.evohome.EvoHome_0x18_0x3120_0x07_Message;
 import de.ibapl.fhz4j.protocol.evohome.EvoHome_0x18_0x3150_0x02_HEAT_DEMAND_Message;
 import de.ibapl.fhz4j.protocol.evohome.EvoHome_0x18_0x3B00_0x02_Message;
-import de.ibapl.fhz4j.protocol.evohome.EvoHome_0x1C_0x1FC9_0x06_Message;
+import de.ibapl.fhz4j.protocol.evohome.EvoHome_0x1C_0x10E0_0x26_Message;
+import de.ibapl.fhz4j.protocol.evohome.EvoHome_0x1C_0x1FC9_0xXX_Message;
+import de.ibapl.fhz4j.protocol.evohome.EvoHome_0x1C_0x2309_0xXX_ROOM_DESIRED_TEMP_Message;
 import de.ibapl.fhz4j.protocol.evohome.EvoHomeCommand;
 import de.ibapl.fhz4j.protocol.evohome.EvoHomeDeviceMessage;
 import de.ibapl.fhz4j.protocol.evohome.EvoHome_0x28_0x0001_0x05_Message;
 import de.ibapl.fhz4j.protocol.evohome.EvoHome_0x28_0x1F09_0x03_Message;
-import de.ibapl.fhz4j.protocol.evohome.EvoHome_0x2C_0x1FC9_0x06_Message;
+import de.ibapl.fhz4j.protocol.evohome.EvoHome_0x2C_0x1FC9_0xXX_Message;
+import de.ibapl.fhz4j.protocol.evohome.EvoHome_0x2C_0x2309_0xXX_ROOM_DESIRED_TEMP_Message;
 import de.ibapl.fhz4j.protocol.evohome.EvoHome_0x3C_0x0004_0x16_Message;
+import de.ibapl.fhz4j.protocol.evohome.EvoHome_0x3C_0x000A_0xXX_ZONES_PARAMS_Message;
 import de.ibapl.fhz4j.protocol.evohome.EvoHome_0x3C_0x0100_0x05_Message;
 import de.ibapl.fhz4j.protocol.evohome.EvoHome_0x3C_0x1F09_0x03_RESPONSE_3C_1F09_Message;
+import de.ibapl.fhz4j.protocol.evohome.EvoHome_0x3C_0x2309_0xXX_ROOM_DESIRED_TEMP_Message;
 import de.ibapl.fhz4j.protocol.evohome.EvoHome_0x3C_0x313F_0x09_RESPONSE_3C_313F_Message;
 import de.ibapl.fhz4j.protocol.evohome.EvoHome_0xXX_0x0004_0x16_Message;
+import de.ibapl.fhz4j.protocol.evohome.EvoHome_0xXX_0x000A_0xXX_ZONES_PARAMS_Message;
+import de.ibapl.fhz4j.protocol.evohome.EvoHome_0xXX_0x1FC9_0xXX_Message;
 import de.ibapl.fhz4j.protocol.evohome.EvoHome_AbstractZonesTemperature_Message;
 import de.ibapl.fhz4j.protocol.evohome.ZoneTemperature;
 
@@ -110,43 +119,7 @@ public class EvoHomeParser extends Parser {
 		/**
 		 * 
 		 */
-		COLLECT_18_1FC9_12_UNKNOWN_FLAGS_1,
-		/**
-		 * 
-		 */
-		COLLECT_18_1FC9_12_UNKNOWN_DEVICEID_1,
-		/**
-		 * 
-		 */
-		COLLECT_18_1FC9_12_UNKNOWN_FLAGS_2,
-		/**
-		 * 
-		 */
-		COLLECT_18_1FC9_12_UNKNOWN_DEVICEID_2,
-		/**
-		 * 
-		 */
-		COLLECT_18_1FC9_12_UNKNOWN_FLAGS_3,
-		/**
-		 * 
-		 */
-		COLLECT_18_1FC9_12_UNKNOWN_DEVICEID_3,
-		/**
-		 * 
-		 */
-		COLLECT_1C_1FC9_06_UNKNOWN,
-		/**
-		 * 
-		 */
-		COLLECT_1C_1FC9_06_DEVICEID,
-		/**
-		 * 
-		 */
-		COLLECT_2C_1FC9_06_UNKNOWN,
-		/**
-		 * 
-		 */
-		COLLECT_2C_1FC9_06_DEVICEID,
+		PARSE_XX_1FC9_XX_ELEMENTS,
 		/**
 		 * 
 		 */
@@ -232,6 +205,7 @@ public class EvoHomeParser extends Parser {
 	private ZonesParamParser zonesParamParser = new ZonesParamParser();
 	private ZoneTemperaturesParser zoneTemperatureParser = new ZoneTemperaturesParser();
 	private _XX_0004_16_Parser _18_0004_16_Parser = new _XX_0004_16_Parser();
+	private _XX_1FC9_XX_Parser _XX_1FC9_XX_Parser = new _XX_1FC9_XX_Parser();
 	private EvoHomeMessage evoHomeMessage;
 	private EvoHomeHeaderByte evoHomeHeaderByte;
 	private EvoHomeCommand evoHomeCommand;
@@ -319,82 +293,10 @@ public class EvoHomeParser extends Parser {
 					state = State.PARSE_SUCCESS;
 				}
 				break;
-			case COLLECT_18_1FC9_12_UNKNOWN_FLAGS_1:
-				push(digit2Int(c));
-				if (getStackpos() == 0) {
-					((EvoHome_0x18_0x1FC9_0x12_Message) evoHomeMessage).unknownFlags1 = getIntValue();
-					setStackSize(6);
-					state = State.COLLECT_18_1FC9_12_UNKNOWN_DEVICEID_1;
-				}
-				break;
-			case COLLECT_18_1FC9_12_UNKNOWN_DEVICEID_1:
-				push(digit2Int(c));
-				if (getStackpos() == 0) {
-					((EvoHome_0x18_0x1FC9_0x12_Message) evoHomeMessage).unknownDeviceId1 = getIntValue();
-					setStackSize(6);
-					state = State.COLLECT_18_1FC9_12_UNKNOWN_FLAGS_2;
-				}
-				break;
-			case COLLECT_18_1FC9_12_UNKNOWN_FLAGS_2:
-				push(digit2Int(c));
-				if (getStackpos() == 0) {
-					((EvoHome_0x18_0x1FC9_0x12_Message) evoHomeMessage).unknownFlags2 = getIntValue();
-					setStackSize(6);
-					state = State.COLLECT_18_1FC9_12_UNKNOWN_DEVICEID_2;
-				}
-				break;
-			case COLLECT_18_1FC9_12_UNKNOWN_DEVICEID_2:
-				push(digit2Int(c));
-				if (getStackpos() == 0) {
-					((EvoHome_0x18_0x1FC9_0x12_Message) evoHomeMessage).unknownDeviceId2 = getIntValue();
-					setStackSize(6);
-					state = State.COLLECT_18_1FC9_12_UNKNOWN_FLAGS_3;
-				}
-				break;
-			case COLLECT_18_1FC9_12_UNKNOWN_FLAGS_3:
-				push(digit2Int(c));
-				if (getStackpos() == 0) {
-					((EvoHome_0x18_0x1FC9_0x12_Message) evoHomeMessage).unknownFlags3 = getIntValue();
-					setStackSize(6);
-					state = State.COLLECT_18_1FC9_12_UNKNOWN_DEVICEID_3;
-				}
-				break;
-			case COLLECT_18_1FC9_12_UNKNOWN_DEVICEID_3:
-				push(digit2Int(c));
-				if (getStackpos() == 0) {
-					((EvoHome_0x18_0x1FC9_0x12_Message) evoHomeMessage).unknownDeviceId3 = getIntValue();
-					parserListener.success(evoHomeMessage);
-					state = State.PARSE_SUCCESS;
-				}
-				break;
-			case COLLECT_1C_1FC9_06_UNKNOWN:
-				push(digit2Int(c));
-				if (getStackpos() == 0) {
-					((EvoHome_0x1C_0x1FC9_0x06_Message) evoHomeMessage).unknown = getIntValue();
-					setStackSize(6);
-					state = State.COLLECT_1C_1FC9_06_DEVICEID;
-				}
-				break;
-			case COLLECT_1C_1FC9_06_DEVICEID:
-				push(digit2Int(c));
-				if (getStackpos() == 0) {
-					((EvoHome_0x1C_0x1FC9_0x06_Message) evoHomeMessage).deviceId = getIntValue();
-					parserListener.success(evoHomeMessage);
-					state = State.PARSE_SUCCESS;
-				}
-				break;
-			case COLLECT_2C_1FC9_06_UNKNOWN:
-				push(digit2Int(c));
-				if (getStackpos() == 0) {
-					((EvoHome_0x2C_0x1FC9_0x06_Message) evoHomeMessage).unknown = getIntValue();
-					setStackSize(6);
-					state = State.COLLECT_2C_1FC9_06_DEVICEID;
-				}
-				break;
-			case COLLECT_2C_1FC9_06_DEVICEID:
-				push(digit2Int(c));
-				if (getStackpos() == 0) {
-					((EvoHome_0x2C_0x1FC9_0x06_Message) evoHomeMessage).deviceId = getIntValue();
+			case PARSE_XX_1FC9_XX_ELEMENTS:
+				_XX_1FC9_XX_Parser.parse(c);
+				if (_XX_1FC9_XX_Parser.state == _XX_1FC9_XX_Parser.state.PARSE_SUCCESS) {
+					((EvoHome_0xXX_0x1FC9_0xXX_Message) evoHomeMessage).elements = _XX_1FC9_XX_Parser.elements;
 					parserListener.success(evoHomeMessage);
 					state = State.PARSE_SUCCESS;
 				}
@@ -537,7 +439,7 @@ public class EvoHomeParser extends Parser {
 			case PARSE_ZONES_PARAMS_ELEMENTS:
 				zonesParamParser.parse(c);
 				if (zonesParamParser.state == ZonesParamParser.State.PARSE_SUCCESS) {
-					((EvoHome_0x18_0x000A_0xXX_ZONES_PARAMS_Message) evoHomeMessage).zones = zonesParamParser.zoneParams;
+					((EvoHome_0xXX_0x000A_0xXX_ZONES_PARAMS_Message) evoHomeMessage).zones = zonesParamParser.zoneParams;
 					parserListener.success(evoHomeMessage);
 					state = State.PARSE_SUCCESS;
 				}
@@ -572,9 +474,17 @@ public class EvoHomeParser extends Parser {
 			}
 			break;
 		case _18_0005:
-			((EvoHome_0x18_0x0005_0x04_Message) evoHomeMessage).value[copyDataIndex++] = getByteValue();
+			((EvoHome_0x18_0x0005_0xXX_Message) evoHomeMessage).value[copyDataIndex++] = getByteValue();
 			setStackSize(2);
-			if (((EvoHome_0x18_0x0005_0x04_Message) evoHomeMessage).value.length == copyDataIndex) {
+			if (((EvoHome_0x18_0x0005_0xXX_Message) evoHomeMessage).value.length == copyDataIndex) {
+				parserListener.success(evoHomeMessage);
+				state = State.PARSE_SUCCESS;
+			}
+			break;
+		case _18_000C:
+			((EvoHome_0x18_0x000C_0x12_Message) evoHomeMessage).value[copyDataIndex++] = getByteValue();
+			setStackSize(2);
+			if (((EvoHome_0x18_0x000C_0x12_Message) evoHomeMessage).value.length == copyDataIndex) {
 				parserListener.success(evoHomeMessage);
 				state = State.PARSE_SUCCESS;
 			}
@@ -599,6 +509,22 @@ public class EvoHomeParser extends Parser {
 			((EvoHome_0x18_0x1100_0x08_Message) evoHomeMessage).value[copyDataIndex++] = getByteValue();
 			setStackSize(2);
 			if (((EvoHome_0x18_0x1100_0x08_Message) evoHomeMessage).value.length == copyDataIndex) {
+				parserListener.success(evoHomeMessage);
+				state = State.PARSE_SUCCESS;
+			}
+			break;
+		case _18_3120:
+			((EvoHome_0x18_0x3120_0x07_Message) evoHomeMessage).value[copyDataIndex++] = getByteValue();
+			setStackSize(2);
+			if (((EvoHome_0x18_0x3120_0x07_Message) evoHomeMessage).value.length == copyDataIndex) {
+				parserListener.success(evoHomeMessage);
+				state = State.PARSE_SUCCESS;
+			}
+			break;
+		case _1C_10E0:
+			((EvoHome_0x1C_0x10E0_0x26_Message) evoHomeMessage).value[copyDataIndex++] = getByteValue();
+			setStackSize(2);
+			if (((EvoHome_0x1C_0x10E0_0x26_Message) evoHomeMessage).value.length == copyDataIndex) {
 				parserListener.success(evoHomeMessage);
 				state = State.PARSE_SUCCESS;
 			}
@@ -652,6 +578,9 @@ public class EvoHomeParser extends Parser {
 		case 0x000A:
 			evoHomeCommand = EvoHomeCommand._000A;
 			break;
+		case 0x000C:
+			evoHomeCommand = EvoHomeCommand._000C;
+			break;
 		case 0x000E:
 			evoHomeCommand = EvoHomeCommand._000E;
 			break;
@@ -690,6 +619,9 @@ public class EvoHomeParser extends Parser {
 			break;
 		case 0x30c9:
 			evoHomeCommand = EvoHomeCommand._30C9;
+			break;
+		case 0x3120:
+			evoHomeCommand = EvoHomeCommand._3120;
 			break;
 		case 0x313f:
 			evoHomeCommand = EvoHomeCommand._313F;
@@ -772,8 +704,8 @@ public class EvoHomeParser extends Parser {
 				state = State.PARSE_XX_0004_16_DATA;
 				break;
 			case _0005:
-				checkLength(0x04, length, "EvoHome_0x18_0x0005_0x04_Message");
-				evoHomeMessage = new EvoHome_0x18_0x0005_0x04_Message();
+				//checkLength(0x04, length, "EvoHome_0x18_0x0005_0x04_Message");
+				evoHomeMessage = new EvoHome_0x18_0x0005_0xXX_Message(length);
 				setStackSize(2);
 				state = State.COLLECT_DATA_BYTES;
 				break;
@@ -794,6 +726,12 @@ public class EvoHomeParser extends Parser {
 				evoHomeMessage = new EvoHome_0x18_0x000A_0xXX_ZONES_PARAMS_Message();
 				zonesParamParser.init(getShortValue());
 				state = State.PARSE_ZONES_PARAMS_ELEMENTS;
+				break;
+			case _000C:
+				checkLength(0x12, length, "EvoHome_0x18_0x000C_0x12_Message");
+				evoHomeMessage = new EvoHome_0x18_0x000C_0x12_Message();
+				setStackSize(2);
+				state = State.COLLECT_DATA_BYTES;
 				break;
 			case _000E:
 				checkLength(0x03, length, "EvoHome_0x18_0x000E_0x03_Message");
@@ -838,10 +776,10 @@ public class EvoHomeParser extends Parser {
 				state = State.COLLECT_SINGLE_VALUE;
 				break;
 			case _1FC9:
-				checkLength(0x12, length, "EvoHome_0x1C_0x1FC9_0x06_Message");
+				//TODO checkLength(0x12, length, "EvoHome_0x1C_0x1FC9_0x06_Message");
 				evoHomeMessage = new EvoHome_0x18_0x1FC9_0x12_Message();
-				setStackSize(6);
-				state = State.COLLECT_18_1FC9_12_UNKNOWN_FLAGS_1;
+				_XX_1FC9_XX_Parser.init(getShortValue());
+				state = State.PARSE_XX_1FC9_XX_ELEMENTS;
 				break;
 			case _2309:
 				//TODO ??? multiple of 3 ??? checkLength(0x03, length, "EvoHome_0x18_0x2309_0x02_Message");
@@ -868,6 +806,12 @@ public class EvoHomeParser extends Parser {
 				zoneTemperatureParser.init(getShortValue());
 				state = State.PARSE_ZONE_TEMPERATURE_ELEMENTS;
 				break;
+			case _3120:
+				checkLength(0x07, length, "EvoHome_0x18_0x3120_0x07_Message");
+				evoHomeMessage = new EvoHome_0x18_0x3120_0x07_Message();
+				setStackSize(2);
+				state = State.COLLECT_DATA_BYTES;
+				break;
 			case _3150:
 				checkLength(0x02, length, "EvoHome_0x18_0x3150_0x02_Message");
 				evoHomeMessage = new EvoHome_0x18_0x3150_0x02_HEAT_DEMAND_Message();
@@ -888,10 +832,22 @@ public class EvoHomeParser extends Parser {
 		case _1C:
 			switch (evoHomeCommand) {
 			case _1FC9:
-				checkLength(0x06, length, "EvoHome_0x1C_0x1FC9_0x06_Message");
-				evoHomeMessage = new EvoHome_0x1C_0x1FC9_0x06_Message();
-				setStackSize(6);
-				state = State.COLLECT_1C_1FC9_06_UNKNOWN;
+				//TODO checkLength(0x06, length, "EvoHome_0x1C_0x1FC9_0x06_Message");
+				evoHomeMessage = new EvoHome_0x1C_0x1FC9_0xXX_Message();
+				_XX_1FC9_XX_Parser.init(getShortValue());
+				state = State.PARSE_XX_1FC9_XX_ELEMENTS;
+				break;
+			case _10E0:
+				checkLength(0x26, length, "EvoHome_0x18_0x10E0_0x26_Message");
+				evoHomeMessage = new EvoHome_0x1C_0x10E0_0x26_Message();
+				setStackSize(2);
+				state = State.COLLECT_DATA_BYTES;
+				break;
+			case _2309:
+				//TODO ??? multiple of 3 ??? checkLength(0x03, length, "EvoHome_0x1C_0x2309_0x02_Message");
+				evoHomeMessage = new EvoHome_0x1C_0x2309_0xXX_ROOM_DESIRED_TEMP_Message();
+				zoneTemperatureParser.init(getShortValue());
+				state = State.PARSE_ZONE_TEMPERATURE_ELEMENTS;
 				break;
 			default:
 				throw new IllegalArgumentException(String.format("Can't handle header %s Command %s and length %d",
@@ -920,12 +876,18 @@ public class EvoHomeParser extends Parser {
 		case _2C:
 			switch (evoHomeCommand) {
 			case _1FC9:
-				checkLength(0x06, length, "EvoHome_0x2C_0x1FC9_0x06_Message");
-				evoHomeMessage = new EvoHome_0x2C_0x1FC9_0x06_Message();
-				setStackSize(6);
-				state = State.COLLECT_2C_1FC9_06_UNKNOWN;
+				//TODO checkLength(0x06, length, "EvoHome_0x2C_0x1FC9_0x06_Message");
+				evoHomeMessage = new EvoHome_0x2C_0x1FC9_0xXX_Message();
+				_XX_1FC9_XX_Parser.init(getShortValue());
+				state = State.PARSE_XX_1FC9_XX_ELEMENTS;
 				break;
-			default:
+			case _2309:
+				//TODO ??? multiple of 3 ??? checkLength(0x03, length, "EvoHome_0x2C_0x2309_0x02_Message");
+				evoHomeMessage = new EvoHome_0x2C_0x2309_0xXX_ROOM_DESIRED_TEMP_Message();
+				zoneTemperatureParser.init(getShortValue());
+				state = State.PARSE_ZONE_TEMPERATURE_ELEMENTS;
+				break;
+default:
 				throw new IllegalArgumentException(String.format("Can't handle header %s Command %s and length %d",
 						evoHomeHeaderByte, evoHomeCommand, length));
 			}
@@ -938,6 +900,12 @@ public class EvoHomeParser extends Parser {
 				_18_0004_16_Parser.init(getShortValue());
 				state = State.PARSE_XX_0004_16_DATA;
 				break;
+			case _000A:
+				//TODO ??? multiple of 6 ??? checkLength(0x06, length, "EvoHome_0x3C_0x000A_0xXX_ZONES_PARAMS_Message");
+				evoHomeMessage = new EvoHome_0x3C_0x000A_0xXX_ZONES_PARAMS_Message();
+				zonesParamParser.init(getShortValue());
+				state = State.PARSE_ZONES_PARAMS_ELEMENTS;
+				break;
 			case _0100:
 				checkLength(0x05, length, "EvoHome_0x3C_0x0100_0x05_Message");
 				evoHomeMessage = new EvoHome_0x3C_0x0100_0x05_Message();
@@ -949,6 +917,12 @@ public class EvoHomeParser extends Parser {
 				evoHomeMessage = new EvoHome_0x3C_0x1F09_0x03_RESPONSE_3C_1F09_Message();
 				setStackSize(6);
 				state = State.COLLECT_SINGLE_VALUE;
+				break;
+			case _2309:
+				//TODO ??? multiple of 3 ??? checkLength(0x03, length, "EvoHome_0x3C_0x2309_0x02_Message");
+				evoHomeMessage = new EvoHome_0x3C_0x2309_0xXX_ROOM_DESIRED_TEMP_Message();
+				zoneTemperatureParser.init(getShortValue());
+				state = State.PARSE_ZONE_TEMPERATURE_ELEMENTS;
 				break;
 			case _313F:
 				checkLength(0x09, length, "EvoHome_0x3C_0x313F_0x09_Message");

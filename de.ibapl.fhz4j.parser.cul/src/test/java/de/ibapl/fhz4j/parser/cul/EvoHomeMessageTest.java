@@ -44,11 +44,11 @@ import de.ibapl.fhz4j.protocol.evohome.EvoHome_0x0C_0x1F09_0x01_REQUEST_0C_1F09_
 import de.ibapl.fhz4j.protocol.evohome.EvoHome_0x0C_0x2309_0x01_Message;
 import de.ibapl.fhz4j.protocol.evohome.EvoHome_0x0C_0x313F_0x01_REQUEST_0C_313F_Message;
 import de.ibapl.fhz4j.protocol.evohome.EvoHome_0x18_0x0004_0x16_Message;
-import de.ibapl.fhz4j.protocol.evohome.EvoHome_0x18_0x0005_0x04_Message;
+import de.ibapl.fhz4j.protocol.evohome.EvoHome_0x18_0x0005_0xXX_Message;
 import de.ibapl.fhz4j.protocol.evohome.EvoHome_0x18_0x0008_0x02_Message;
 import de.ibapl.fhz4j.protocol.evohome.EvoHome_0x18_0x0009_0x03_Message;
 import de.ibapl.fhz4j.protocol.evohome.EvoHome_0x18_0x000A_0xXX_ZONES_PARAMS_Message;
-import de.ibapl.fhz4j.protocol.evohome.EvoHome_0x18_0x000A_0xXX_ZONES_PARAMS_Message.ZoneParams;
+import de.ibapl.fhz4j.protocol.evohome.EvoHome_0x18_0x000C_0x12_Message;
 import de.ibapl.fhz4j.protocol.evohome.EvoHome_0x18_0x000E_0x03_Message;
 import de.ibapl.fhz4j.protocol.evohome.EvoHome_0x18_0x042F_0x08_Message;
 import de.ibapl.fhz4j.protocol.evohome.EvoHome_0x18_0x1060_0x03_Message;
@@ -61,17 +61,28 @@ import de.ibapl.fhz4j.protocol.evohome.EvoHome_0x18_0x2309_0xXX_ROOM_DESIRED_TEM
 import de.ibapl.fhz4j.protocol.evohome.EvoHome_0x18_0x2349_0x07_ZONE_SETPOINT_PERMANENT_Message;
 import de.ibapl.fhz4j.protocol.evohome.EvoHome_0x18_0x2349_0x0D_ZONE_SETPOINT_UNTIL_Message;
 import de.ibapl.fhz4j.protocol.evohome.EvoHome_0x18_0x30C9_0xXX_ROOM_MEASURED_TEMP_Message;
+import de.ibapl.fhz4j.protocol.evohome.EvoHome_0x18_0x3120_0x07_Message;
 import de.ibapl.fhz4j.protocol.evohome.EvoHome_0x18_0x3150_0x02_HEAT_DEMAND_Message;
 import de.ibapl.fhz4j.protocol.evohome.EvoHome_0x18_0x3B00_0x02_Message;
-import de.ibapl.fhz4j.protocol.evohome.EvoHome_0x1C_0x1FC9_0x06_Message;
+import de.ibapl.fhz4j.protocol.evohome.EvoHome_0x1C_0x10E0_0x26_Message;
+import de.ibapl.fhz4j.protocol.evohome.EvoHome_0x1C_0x1FC9_0xXX_Message;
+import de.ibapl.fhz4j.protocol.evohome.EvoHome_0x1C_0x2309_0xXX_ROOM_DESIRED_TEMP_Message;
 import de.ibapl.fhz4j.protocol.evohome.EvoHome_0x28_0x0001_0x05_Message;
 import de.ibapl.fhz4j.protocol.evohome.EvoHome_0x28_0x1F09_0x03_Message;
-import de.ibapl.fhz4j.protocol.evohome.EvoHome_0x2C_0x1FC9_0x06_Message;
+import de.ibapl.fhz4j.protocol.evohome.EvoHome_0x2C_0x1FC9_0xXX_Message;
+import de.ibapl.fhz4j.protocol.evohome.EvoHome_0x2C_0x2309_0xXX_ROOM_DESIRED_TEMP_Message;
 import de.ibapl.fhz4j.protocol.evohome.EvoHome_0x3C_0x0004_0x16_Message;
+import de.ibapl.fhz4j.protocol.evohome.EvoHome_0x3C_0x000A_0xXX_ZONES_PARAMS_Message;
 import de.ibapl.fhz4j.protocol.evohome.EvoHome_0x3C_0x0100_0x05_Message;
 import de.ibapl.fhz4j.protocol.evohome.EvoHome_0x3C_0x1F09_0x03_RESPONSE_3C_1F09_Message;
+import de.ibapl.fhz4j.protocol.evohome.EvoHome_0x3C_0x2309_0xXX_ROOM_DESIRED_TEMP_Message;
 import de.ibapl.fhz4j.protocol.evohome.EvoHome_0x3C_0x313F_0x09_RESPONSE_3C_313F_Message;
 import de.ibapl.fhz4j.protocol.evohome.EvoHome_0xXX_0x0004_0x16_Message;
+import de.ibapl.fhz4j.protocol.evohome.EvoHome_0xXX_0x000A_0xXX_ZONES_PARAMS_Message;
+import de.ibapl.fhz4j.protocol.evohome.EvoHome_0xXX_0x000A_0xXX_ZONES_PARAMS_Message.ZoneParams;
+import de.ibapl.fhz4j.protocol.evohome.EvoHome_0xXX_0x10E0_0x26_Message;
+import de.ibapl.fhz4j.protocol.evohome.EvoHome_0xXX_0x1FC9_0xXX_Message;
+import de.ibapl.fhz4j.protocol.evohome.EvoHome_0xXX_0x1FC9_0xXX_Message.Data;
 import de.ibapl.fhz4j.protocol.evohome.ZoneTemperature;
 
 import org.junit.jupiter.api.Test;
@@ -155,7 +166,19 @@ public class EvoHomeMessageTest implements ParserListener<EvoHomeMessage> {
 		assertEquals(zoneName, evoHomeMessage.zoneName, "zoneName");
 	}
 
-	public static void assertEvoHome_0x0005_Message(EvoHome_0x18_0x0005_0x04_Message evoHomeMessage, int deviceId1,
+	public static void assertEvoHome_0x0005_Message(EvoHome_0x18_0x0005_0xXX_Message evoHomeMessage, int deviceId1,
+			int deviceId2, byte[] value) {
+		assertEvoHomeDeviceMessage(evoHomeMessage, deviceId1, deviceId2);
+		assertArrayEquals(value, evoHomeMessage.value, "value");
+	}
+
+	public static void assertEvoHome_0x000C_Message(EvoHome_0x18_0x000C_0x12_Message evoHomeMessage, int deviceId1,
+			int deviceId2, byte[] value) {
+		assertEvoHomeDeviceMessage(evoHomeMessage, deviceId1, deviceId2);
+		assertArrayEquals(value, evoHomeMessage.value, "value");
+	}
+
+	public static void assertEvoHome_0x3120_Message(EvoHome_0x18_0x3120_0x07_Message evoHomeMessage, int deviceId1,
 			int deviceId2, byte[] value) {
 		assertEvoHomeDeviceMessage(evoHomeMessage, deviceId1, deviceId2);
 		assertArrayEquals(value, evoHomeMessage.value, "value");
@@ -215,7 +238,7 @@ public class EvoHomeMessageTest implements ParserListener<EvoHomeMessage> {
 		assertEquals(value, evoHomeMessage.value, "value");
 	}
 
-	public static void assertEvoHome_0x000A_Message(EvoHome_0x18_0x000A_0xXX_ZONES_PARAMS_Message evoHomeMessage, int deviceId1,
+	public static void assertEvoHome_0x000A_Message(EvoHome_0xXX_0x000A_0xXX_ZONES_PARAMS_Message evoHomeMessage, int deviceId1,
 			int deviceId2, List<ZoneParams> zones) {
 		assertEvoHomeDeviceMessage(evoHomeMessage, deviceId1, deviceId2);
 		Iterator<ZoneParams> expectedZoneParams = zones.iterator();
@@ -250,7 +273,7 @@ public class EvoHomeMessageTest implements ParserListener<EvoHomeMessage> {
 		assertEquals(value, evoHomeMessage.value, "value");
 	}
 
-	public static void assertEvoHome_0x10E0_Message(EvoHome_0x18_0x10E0_0x26_Message evoHomeMessage, int deviceId1,
+	public static void assertEvoHome_0x10E0_Message(EvoHome_0xXX_0x10E0_0x26_Message evoHomeMessage, int deviceId1,
 			int deviceId2, byte[] value) {
 		assertEvoHomeDeviceMessage(evoHomeMessage, deviceId1, deviceId2);
 		assertArrayEquals(value, evoHomeMessage.value, "value");
@@ -269,6 +292,24 @@ public class EvoHomeMessageTest implements ParserListener<EvoHomeMessage> {
 	}
 
 	public static void assertEvoHome_0x2309_Message(EvoHome_0x18_0x2309_0xXX_ROOM_DESIRED_TEMP_Message evoHomeMessage, int deviceId1,
+			int deviceId2, ZoneTemperature ...zoneTemperatures) {
+		assertEvoHomeDeviceMessage(evoHomeMessage, deviceId1, deviceId2);
+		assertArrayEquals(zoneTemperatures, evoHomeMessage.zoneTemperatures.toArray(new ZoneTemperature[0]), "zoneTemperatures");
+	}
+
+	public static void assertEvoHome_0x2309_Message(EvoHome_0x1C_0x2309_0xXX_ROOM_DESIRED_TEMP_Message evoHomeMessage, int deviceId1,
+			int deviceId2, ZoneTemperature ...zoneTemperatures) {
+		assertEvoHomeDeviceMessage(evoHomeMessage, deviceId1, deviceId2);
+		assertArrayEquals(zoneTemperatures, evoHomeMessage.zoneTemperatures.toArray(new ZoneTemperature[0]), "zoneTemperatures");
+	}
+
+	public static void assertEvoHome_0x2309_Message(EvoHome_0x2C_0x2309_0xXX_ROOM_DESIRED_TEMP_Message evoHomeMessage, int deviceId1,
+			int deviceId2, ZoneTemperature ...zoneTemperatures) {
+		assertEvoHomeDeviceMessage(evoHomeMessage, deviceId1, deviceId2);
+		assertArrayEquals(zoneTemperatures, evoHomeMessage.zoneTemperatures.toArray(new ZoneTemperature[0]), "zoneTemperatures");
+	}
+
+	public static void assertEvoHome_0x2309_Message(EvoHome_0x3C_0x2309_0xXX_ROOM_DESIRED_TEMP_Message evoHomeMessage, int deviceId1,
 			int deviceId2, ZoneTemperature ...zoneTemperatures) {
 		assertEvoHomeDeviceMessage(evoHomeMessage, deviceId1, deviceId2);
 		assertArrayEquals(zoneTemperatures, evoHomeMessage.zoneTemperatures.toArray(new ZoneTemperature[0]), "zoneTemperatures");
@@ -314,29 +355,10 @@ public class EvoHomeMessageTest implements ParserListener<EvoHomeMessage> {
 		assertArrayEquals(value, evoHomeMessage.value, "value");
 	}
 
-	public static void assertEvoHome_0x1FC9_Message(EvoHome_0x1C_0x1FC9_0x06_Message evoHomeMessage, int deviceId1,
-			int deviceId2, int unknown, int deviceId) {
+	public static void assertEvoHome_0x1FC9_Message(EvoHome_0xXX_0x1FC9_0xXX_Message evoHomeMessage, int deviceId1,
+			int deviceId2, Data ...elements ) {
 		assertEvoHomeDeviceMessage(evoHomeMessage, deviceId1, deviceId2);
-		assertEquals(unknown, evoHomeMessage.unknown, "unknown");
-		assertEquals(deviceId, evoHomeMessage.deviceId, "deviceId");
-	}
-
-	public static void assertEvoHome_0x1FC9_Message(EvoHome_0x2C_0x1FC9_0x06_Message evoHomeMessage, int deviceId1,
-			int deviceId2, int unknown, int deviceId) {
-		assertEvoHomeDeviceMessage(evoHomeMessage, deviceId1, deviceId2);
-		assertEquals(unknown, evoHomeMessage.unknown, "unknown");
-		assertEquals(deviceId, evoHomeMessage.deviceId, "deviceId");
-	}
-
-	public static void assertEvoHome_0x1FC9_Message(EvoHome_0x18_0x1FC9_0x12_Message evoHomeMessage, int deviceId1,
-			int deviceId2, int unknownFlags1, int unknownDeviceId1, int unknownFlags2, int unknownDeviceId2, int unknownFlags3, int unknownDeviceId3) {
-		assertEvoHomeDeviceMessage(evoHomeMessage, deviceId1, deviceId2);
-		assertEquals(unknownFlags1, evoHomeMessage.unknownFlags1, "unknownFlags1");
-		assertEquals(unknownDeviceId1, evoHomeMessage.unknownDeviceId1, "unknownDeviceId1");
-		assertEquals(unknownFlags2, evoHomeMessage.unknownFlags2, "unknownFlags2");
-		assertEquals(unknownDeviceId2, evoHomeMessage.unknownDeviceId2, "unknownDeviceId2");
-		assertEquals(unknownFlags3, evoHomeMessage.unknownFlags3, "unknownFlags3");
-		assertEquals(unknownDeviceId3, evoHomeMessage.unknownDeviceId3, "unknownDeviceId3");
+		assertArrayEquals(elements, evoHomeMessage.elements.toArray(new Data[0]), "elements");
 	}
 
 	public static void assertEvoHome_0x3B00_Message(EvoHome_0x18_0x3B00_0x02_Message evoHomeMessage, int deviceId1,
@@ -371,7 +393,7 @@ public class EvoHomeMessageTest implements ParserListener<EvoHomeMessage> {
 
 	@Test
 	public void decode_EvoHome_0x18_0x000A() {
-		decode("18 067AEC 067AEC 000A 06 001001F40DAC");
+		decode("18 067AEC 067AEC 000A 06 00 10 01F4 0DAC");
 		ZoneParams zoneParam = new ZoneParams();
 		zoneParam.zoneId = 0;
 		zoneParam.flags = 0x10;
@@ -380,6 +402,18 @@ public class EvoHomeMessageTest implements ParserListener<EvoHomeMessage> {
 		List<ZoneParams> zoneParams = new LinkedList<>();
 		zoneParams.add(zoneParam);
 		assertEvoHome_0x000A_Message((EvoHome_0x18_0x000A_0xXX_ZONES_PARAMS_Message) evoHomeMessage, 0x067AEC, 0x067AEC, zoneParams);
+	}
+	@Test
+	public void decode_EvoHome_0x3C_0x000A() {
+		decode("3C 067AEC 895E5D 000A 06 00 10 01F4 0DAC");
+		ZoneParams zoneParam = new ZoneParams();
+		zoneParam.zoneId = 0;
+		zoneParam.flags = 0x10;
+		zoneParam.minTemperature = 5.0f;
+		zoneParam.maxTemperature = 35.0f;
+		List<ZoneParams> zoneParams = new LinkedList<>();
+		zoneParams.add(zoneParam);
+		assertEvoHome_0x000A_Message((EvoHome_0x3C_0x000A_0xXX_ZONES_PARAMS_Message) evoHomeMessage, 0x067AEC, 0x895E5D, zoneParams);
 	}
 
 	@Test
@@ -397,6 +431,25 @@ public class EvoHomeMessageTest implements ParserListener<EvoHomeMessage> {
 		decode("18 067AEC 067AEC 2309 06 00 02EE 01 0708");
 		assertEvoHome_0x2309_Message((EvoHome_0x18_0x2309_0xXX_ROOM_DESIRED_TEMP_Message) evoHomeMessage, 0x067AEC, 0x067AEC, new ZoneTemperature((byte)0x00, 7.5f), new ZoneTemperature((byte)0x01, 18.0f));
 	}
+
+	@Test
+	public void decode_EvoHome_0x3C_0x2309() {
+		decode("3C 067AEC 895E5D 2309 03 00 0226");
+		assertEvoHome_0x2309_Message((EvoHome_0x3C_0x2309_0xXX_ROOM_DESIRED_TEMP_Message) evoHomeMessage, 0x067AEC, 0x895E5D, new ZoneTemperature((byte)0x00, 5.5f));
+	}
+	
+	@Test
+	public void decode_EvoHome_0x1C_0x2309() {
+		decode("1C 067AEC 895E5D 2309 03 00 047E");
+		assertEvoHome_0x2309_Message((EvoHome_0x1C_0x2309_0xXX_ROOM_DESIRED_TEMP_Message) evoHomeMessage, 0x067AEC, 0x895E5D, new ZoneTemperature((byte)0x00, 11.5f));
+	}
+	
+	@Test
+	public void decode_EvoHome_0x2C_0x2309() {
+		decode("2C 895E5D 067AEC 2309 03 00 047E");
+		assertEvoHome_0x2309_Message((EvoHome_0x2C_0x2309_0xXX_ROOM_DESIRED_TEMP_Message) evoHomeMessage, 0x895E5D, 0x067AEC, new ZoneTemperature((byte)0x00, 11.5f));
+	}
+	
 
 	@Test
 	public void decode_EvoHome_0x18_0x30C9() {
@@ -446,7 +499,7 @@ public class EvoHomeMessageTest implements ParserListener<EvoHomeMessage> {
 	}
 
 	@Test
-	public void decode_EvoHome_0x18_0x10E0() {
+	public void decode_EvoHome_0x18_0x10E0_0x26() {
 		decode("18 114977 114977 10E0 26 000002FF0412FFFFFFFF0D0207E20D0307DE48523932205261646961746F72204374726C2E00");
 		assertEvoHome_0x10E0_Message((EvoHome_0x18_0x10E0_0x26_Message) evoHomeMessage, 0x114977, 0x114977,
 				new byte[] { 0x00, 0x00, 0x02, (byte) 0xFF, 0x04, 0x12, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF,
@@ -454,6 +507,14 @@ public class EvoHomeMessageTest implements ParserListener<EvoHomeMessage> {
 						0x32, 0x20, 0x52, 0x61, 0x64, 0x69, 0x61, 0x74, 0x6F, 0x72, 0x20, 0x43, 0x74, 0x72, 0x6C, 0x2E,
 						0x00 });
 	}
+
+	@Test
+	public void decode_EvoHome_0x1C_0x10E0_0x26() {
+		decode("1C 895E5D FFFFFE 10E0 26 000001C8380F0100F1FF140B07E2030507E15438375246323032350000000000000000000000");
+		assertEvoHome_0x10E0_Message((EvoHome_0x1C_0x10E0_0x26_Message) evoHomeMessage, 0x895E5D, 0xFFFFFE,
+				new byte[] { 0x00, 0x00, 0x01, (byte)0xC8, 0x38, 0x0F, 0x01, 0x00, (byte)0xF1, (byte)0xFF, 0x14, 0x0B, 0x07, (byte)0xE2, 0x03, 0x05, 0x07, (byte)0xE1, 0x54, 0x38, 0x37, 0x52, 0x46, 0x32, 0x30, 0x32, 0x35, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 });
+	}
+	
 
 	@Test
 	public void decode_EvoHome_0x0C_0x0004() {
@@ -579,35 +640,51 @@ public class EvoHomeMessageTest implements ParserListener<EvoHomeMessage> {
 	}
 
 	@Test
-	public void decode_EvoHome_0x0C_0x0100_0x05() {
+	public void decode_EvoHome_0x0C_0x0005_0x05() {
 		decode("18 067AEC 067AEC 0005 04 00000300");
-		assertEvoHome_0x0005_Message((EvoHome_0x18_0x0005_0x04_Message) evoHomeMessage, 0x067AEC, 0x067AEC,
+		assertEvoHome_0x0005_Message((EvoHome_0x18_0x0005_0xXX_Message) evoHomeMessage, 0x067AEC, 0x067AEC,
 				new byte[] { 0x00, 0x00, 0x03, 0x00});
+		
+		decode("18 895E5D 895E5D 0005 0C 000A0000 000F0000 00100000");
+		assertEvoHome_0x0005_Message((EvoHome_0x18_0x0005_0xXX_Message) evoHomeMessage, 0x895E5D, 0x895E5D,
+				new byte[] {0x00, 0x0A, 0x00, 0x00, 0x00, 0x0F, 0x00, 0x00, 0x00, 0x10, 0x00, 0x00});
 	}
 
 	@Test
-	public void decode_EvoHome_0x1C_0x1CF9_0x06() {
-		decode("1C 131589 FFFFFE 1FC9 06 0030C9 131589");
-		assertEvoHome_0x1FC9_Message((EvoHome_0x1C_0x1FC9_0x06_Message) evoHomeMessage, 0x131589, 0xFFFFFE,
-				0x0030C9, 0x131589);
+	public void decode_EvoHome_0x1C_0x1CF9_0xXX() {
+		decode("1C 131589 FFFFFE 1FC9 06 00 30C9 131589");
+		assertEvoHome_0x1FC9_Message((EvoHome_0x1C_0x1FC9_0xXX_Message) evoHomeMessage, 0x131589, 0xFFFFFE,
+				new Data((byte)0x00, (short)0x30C9, 0x131589));
 
 		decode("1C 067AEC 131589 1FC9 06 00FFFF 067AEC");
-		assertEvoHome_0x1FC9_Message((EvoHome_0x1C_0x1FC9_0x06_Message) evoHomeMessage, 0x067AEC, 0x131589,
-				0x00FFFF, 0x067AEC);
+		assertEvoHome_0x1FC9_Message((EvoHome_0x1C_0x1FC9_0xXX_Message) evoHomeMessage, 0x067AEC, 0x131589,
+				new Data((byte)0x00, (short)0xFFFF, 0x067AEC));
 	}
 
 	@Test
-	public void decode_EvoHome_0x18_0x1CF9_0x12() {
-		decode("18 067AEC 067AEC 1FC9 12 012309 067AEC 0130C9 067AEC 011FC9 067AEC");
+	public void decode_EvoHome_0x18_0x1CF9_0xXX() {
+		decode("18 067AEC 067AEC 1FC9 12 01 2309 067AEC 01 30C9 067AEC 01 1FC9 067AEC");
 		assertEvoHome_0x1FC9_Message((EvoHome_0x18_0x1FC9_0x12_Message) evoHomeMessage, 0x067AEC, 0x067AEC,
-				0x012309, 0x067AEC, 0x0130C9, 0x067AEC, 0x011FC9, 0x067AEC);
+				new Data((byte)0x01, (short)0x2309, 0x067AEC), new Data((byte)0x01, (short)0x30C9, 0x067AEC), new Data((byte)0x01, (short)0x1FC9, 0x067AEC));
+
+		decode("18 895E5D 895E5D 1FC9 12 00 0008 895E5D 00 3150 895E5D 00 1FC9 895E5D");
+		assertEvoHome_0x1FC9_Message((EvoHome_0x18_0x1FC9_0x12_Message) evoHomeMessage, 0x895E5D, 0x895E5D,
+				new Data((byte)0x00, (short)0x0008, 0x895E5D), new Data((byte)0x00,(short)0x3150, 0x895E5D), new Data((byte)0x00, (short)0x1FC9, 0x895E5D));
+
+		decode("18 895E5D 895E5D 1FC9 18 00 2309 895E5D 00 30C9 895E5D 00 0008 895E5D 00 1FC9 895E5D");
+		assertEvoHome_0x1FC9_Message((EvoHome_0x18_0x1FC9_0x12_Message) evoHomeMessage, 0x895E5D, 0x895E5D,
+				new Data((byte)0x00, (short)0x2309, 0x895E5D), new Data((byte)0x00, (short)0x30C9, 0x895E5D), new Data((byte)0x00, (short)0x0008, 0x895E5D), new Data((byte)0x00, (short)0x1FC9, 0x895E5D));
+
+		decode("18 895E5D 895E5D 1FC9 0C 00 2309 895E5D 00 30C9 895E5D");
+		assertEvoHome_0x1FC9_Message((EvoHome_0x18_0x1FC9_0x12_Message) evoHomeMessage, 0x895E5D, 0x895E5D,
+				new Data((byte)0x00, (short)0x2309, 0x895E5D), new Data((byte)0x00, (short)0x30C9, 0x895E5D));
 	}
-	
+
 	@Test
-	public void decode_EvoHome_0x2C_0x1CF9_0x06() {
+	public void decode_EvoHome_0x2C_0x1CF9_0xXX() {
 		decode("2C 131589 067AEC 1FC9 06 0030C9 131589");
-		assertEvoHome_0x1FC9_Message((EvoHome_0x2C_0x1FC9_0x06_Message) evoHomeMessage, 0x131589, 0x067AEC,
-				0x0030C9, 0x131589);
+		assertEvoHome_0x1FC9_Message((EvoHome_0x2C_0x1FC9_0xXX_Message) evoHomeMessage, 0x131589, 0x067AEC,
+				new Data((byte)0x00, (short)0x30C9, 0x131589));
 	}	
 	
 	@Test
@@ -645,25 +722,31 @@ public class EvoHomeMessageTest implements ParserListener<EvoHomeMessage> {
 		assertEvoHome_0x2309_Message((EvoHome_0x0C_0x2309_0x01_Message) evoHomeMessage, 0x895E5D, 0x067AEC, (byte)0x01);
 	}
 	
+	@Test
+	public void decode_EvoHome_0x18_0x3120_0x07() {
+		decode("18 895E5D 895E5D 3120 07 0070B0000000FF");
+		assertEvoHome_0x3120_Message((EvoHome_0x18_0x3120_0x07_Message) evoHomeMessage, 0x895E5D, 0x895E5D, 
+				new byte[]{0x00, 0x70, (byte)0xB0, 0x00, 0x00, 0x00, (byte)0xFF});
+	}
+	
+	@Test
+	public void decode_EvoHome_0x18_0x000C_0x12() {
+		decode("18 895E5D 895E5D 000C 12 00 0A7FFFFFFF 00 0F7FFFFFFF 00 107FFFFFFF");
+		assertEvoHome_0x000C_Message((EvoHome_0x18_0x000C_0x12_Message) evoHomeMessage, 0x895E5D, 0x895E5D, 
+				new byte[]{0x00, 0x0A, 0x7F, (byte)0xFF, (byte)0xFF, (byte)0xFF, 0x00, 0x0F, 0x7F, (byte)0xFF, (byte)0xFF, (byte)0xFF, 0x00, 0x10, 0x7F, (byte)0xFF, (byte)0xFF, (byte)0xFF});
+	}
 	
 	/*
 	
 	//TODO Thermostat
 	/*
 	
-	1C 895E5D FFFFFE 10E0 26 000001C8380F0100F1FF140B07E2030507E15438375246323032350000000000000000000000
 	
-	18 895E5D 895E5D 3120 07 0070B0000000FF
 	
-	18 895E5D 895E5D 1FC9 18 00 2309 895E5D 0030C9 895E5D 000008 895E5D 00 1FC9 895E5D
 	
-	18 895E5D 895E5D 1FC9 12 000008 895E5D 003150 895E5D 00 1FC9 895E5D
 	
-	18 895E5D 895E5D 1FC9 0C 00 2309 895E5D 00 30C9 895E5D
 	
-	18 895E5D 895E5D 0005 0C 000A0000000F000000100000
 	
-	18 895E5D 895E5D 000C 12 000A7FFFFFFF000F7FFFFFFF00107FFFFFFF
 	*/
 	
 }

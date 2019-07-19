@@ -25,28 +25,10 @@ package de.ibapl.fhz4j.protocol.evohome;
  *
  * @author Arne Plöse
  */
-public class EvoHome_0x18_0x1FC9_0x12_Message extends EvoHomeDeviceMessage {
+public class EvoHome_0x18_0x1FC9_0x12_Message extends EvoHome_0xXX_0x1FC9_0xXX_Message {
 	
-	public int unknownFlags1;
-	public int unknownDeviceId1;
-	public int unknownFlags2;
-	public int unknownDeviceId2;
-	public int unknownFlags3;
-	public int unknownDeviceId3;
-	
-
 	public EvoHome_0x18_0x1FC9_0x12_Message() {
 		super(EvoHomeProperty._18_1FC9);
 	}
 
-	@Override
-	protected void addToString(StringBuilder sb) {
-		super.addToString(sb);
-		sb.append(String.format(", unknownFlags1 : 0x%06x", unknownFlags1));
-		sb.append(String.format(", unknownDeviceId1 : 0x%06x", unknownDeviceId1));
-		sb.append(String.format(", unknownFlags2 : 0x%06x", unknownFlags2));
-		sb.append(String.format(", unknownDeviceId2 : 0x%06x", unknownDeviceId2));
-		sb.append(String.format(", unknownFlags3 : 0x%06x", unknownFlags3));
-		sb.append(String.format(", unknownDeviceId3 : 0x%06x", unknownDeviceId3));
-	}
 }

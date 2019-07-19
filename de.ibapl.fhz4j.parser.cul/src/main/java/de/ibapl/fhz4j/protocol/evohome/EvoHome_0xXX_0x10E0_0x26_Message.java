@@ -21,16 +21,21 @@
  */
 package de.ibapl.fhz4j.protocol.evohome;
 
-import java.util.List;
-
 /**
  *
  * @author Arne Plöse
  */
-public class EvoHome_0x18_0x000A_0xXX_ZONES_PARAMS_Message extends EvoHome_0xXX_0x000A_0xXX_ZONES_PARAMS_Message {
+public class EvoHome_0xXX_0x10E0_0x26_Message extends EvoHomeDeviceMessage {
 	
-	public EvoHome_0x18_0x000A_0xXX_ZONES_PARAMS_Message() {
-		super(EvoHomeProperty._18_000A_ZONES_PARAMS);
+	public final byte[] value = new byte[0x26];
+
+	public EvoHome_0xXX_0x10E0_0x26_Message(EvoHomeProperty evoHomeProperty) {
+		super(evoHomeProperty);
 	}
 	
+	@Override
+	protected void addToString(StringBuilder sb) {
+		super.addToString(sb);
+		appendByteArray(sb, "value", value);
+	}
 }

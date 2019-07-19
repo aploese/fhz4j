@@ -22,24 +22,14 @@
 package de.ibapl.fhz4j.protocol.evohome;
 
 /**
- * TODO Maybe equal to EvoHome_0x1C_0x1FC9_0x06_Message
- *
+ * Room Desired Temp
+ * 
  * @author Arne Plöse
  */
-public class EvoHome_0x2C_0x1FC9_0x06_Message extends EvoHomeDeviceMessage {
-	
-	public int unknown;
-	public int deviceId;
-	
+public class EvoHome_0x2C_0x2309_0xXX_ROOM_DESIRED_TEMP_Message extends EvoHome_AbstractZonesTemperature_Message {
 
-	public EvoHome_0x2C_0x1FC9_0x06_Message() {
-		super(EvoHomeProperty._2C_1FC9);
+	public EvoHome_0x2C_0x2309_0xXX_ROOM_DESIRED_TEMP_Message() {
+		super(EvoHomeProperty._2C_2309_ROOM_DESIRED_TEMP);
 	}
 
-	@Override
-	protected void addToString(StringBuilder sb) {
-		super.addToString(sb);
-		sb.append(String.format(", unknown : 0x%06x", unknown));
-		sb.append(String.format(", deviceId : 0x%06x", deviceId));
-	}
 }

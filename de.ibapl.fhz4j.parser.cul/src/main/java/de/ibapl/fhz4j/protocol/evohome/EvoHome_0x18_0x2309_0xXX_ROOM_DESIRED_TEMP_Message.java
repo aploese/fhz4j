@@ -21,8 +21,6 @@
  */
 package de.ibapl.fhz4j.protocol.evohome;
 
-import java.util.List;
-
 /**
  * Room Desired Temp
  * 

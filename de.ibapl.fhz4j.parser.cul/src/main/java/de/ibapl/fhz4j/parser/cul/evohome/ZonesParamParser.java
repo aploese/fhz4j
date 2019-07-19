@@ -24,7 +24,7 @@ package de.ibapl.fhz4j.parser.cul.evohome;
 import java.util.LinkedList;
 
 import de.ibapl.fhz4j.parser.api.Parser;
-import de.ibapl.fhz4j.protocol.evohome.EvoHome_0x18_0x000A_0xXX_ZONES_PARAMS_Message.ZoneParams;
+import de.ibapl.fhz4j.protocol.evohome.EvoHome_0xXX_0x000A_0xXX_ZONES_PARAMS_Message.ZoneParams;
 
 class ZonesParamParser extends Parser {
 

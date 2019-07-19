@@ -21,16 +21,16 @@
  */
 package de.ibapl.fhz4j.protocol.evohome;
 
-import java.util.List;
-
 /**
+ * TODO Maybe equal to EvoHome_0x2C_0x1FC9_0x06_Message
+ *
  *
  * @author Arne Plöse
  */
-public class EvoHome_0x18_0x000A_0xXX_ZONES_PARAMS_Message extends EvoHome_0xXX_0x000A_0xXX_ZONES_PARAMS_Message {
+public class EvoHome_0x1C_0x1FC9_0xXX_Message extends EvoHome_0xXX_0x1FC9_0xXX_Message {
 	
-	public EvoHome_0x18_0x000A_0xXX_ZONES_PARAMS_Message() {
-		super(EvoHomeProperty._18_000A_ZONES_PARAMS);
+	public EvoHome_0x1C_0x1FC9_0xXX_Message() {
+		super(EvoHomeProperty._1C_1FC9);
 	}
-	
+
 }

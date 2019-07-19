@@ -27,10 +27,39 @@ import java.util.List;
  *
  * @author Arne Plöse
  */
-public class EvoHome_0x18_0x000A_0xXX_ZONES_PARAMS_Message extends EvoHome_0xXX_0x000A_0xXX_ZONES_PARAMS_Message {
+public class EvoHome_0xXX_0x000A_0xXX_ZONES_PARAMS_Message extends EvoHomeDeviceMessage {
 	
-	public EvoHome_0x18_0x000A_0xXX_ZONES_PARAMS_Message() {
-		super(EvoHomeProperty._18_000A_ZONES_PARAMS);
+	public static class ZoneParams {
+		public byte zoneId;
+		public byte flags;
+		public float minTemperature;
+		public float maxTemperature;
 	}
 	
+	public List<ZoneParams> zones;
+ 
+	public EvoHome_0xXX_0x000A_0xXX_ZONES_PARAMS_Message(EvoHomeProperty evoHomeProperty) {
+		super(evoHomeProperty);
+	}
+	
+	@Override
+	protected void addToString(StringBuilder sb) {
+		super.addToString(sb);
+		sb.append(", zones:[");
+		boolean first = true;
+		for (ZoneParams zp: zones) {
+			if (!first) {
+				sb.append(", ");
+			} else {
+				first = false;
+			}
+			sb.append("{");
+			sb.append(String.format("zoneId: 0x%02x", zp.zoneId));
+			sb.append(String.format(", flags: 0x%02x", zp.flags));
+			sb.append(", minTemperature: ").append(zp.minTemperature);
+			sb.append(", maxTemperature: ").append(zp.maxTemperature);
+			sb.append("}");
+		}
+		sb.append("]");
+	}
 }

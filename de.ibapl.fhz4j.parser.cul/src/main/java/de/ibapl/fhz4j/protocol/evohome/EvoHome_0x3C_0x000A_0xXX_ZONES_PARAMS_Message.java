@@ -27,10 +27,10 @@ import java.util.List;
  *
  * @author Arne Plöse
  */
-public class EvoHome_0x18_0x000A_0xXX_ZONES_PARAMS_Message extends EvoHome_0xXX_0x000A_0xXX_ZONES_PARAMS_Message {
+public class EvoHome_0x3C_0x000A_0xXX_ZONES_PARAMS_Message extends EvoHome_0xXX_0x000A_0xXX_ZONES_PARAMS_Message {
 	
-	public EvoHome_0x18_0x000A_0xXX_ZONES_PARAMS_Message() {
-		super(EvoHomeProperty._18_000A_ZONES_PARAMS);
+	public EvoHome_0x3C_0x000A_0xXX_ZONES_PARAMS_Message() {
+		super(EvoHomeProperty._3C_000A_ZONES_PARAMS);
 	}
 	
 }

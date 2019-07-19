@@ -21,16 +21,15 @@
  */
 package de.ibapl.fhz4j.protocol.evohome;
 
-import java.util.List;
-
 /**
- *
+ * Room Desired Temp
+ * 
  * @author Arne Plöse
  */
-public class EvoHome_0x18_0x000A_0xXX_ZONES_PARAMS_Message extends EvoHome_0xXX_0x000A_0xXX_ZONES_PARAMS_Message {
-	
-	public EvoHome_0x18_0x000A_0xXX_ZONES_PARAMS_Message() {
-		super(EvoHomeProperty._18_000A_ZONES_PARAMS);
+public class EvoHome_0x1C_0x2309_0xXX_ROOM_DESIRED_TEMP_Message extends EvoHome_AbstractZonesTemperature_Message {
+
+	public EvoHome_0x1C_0x2309_0xXX_ROOM_DESIRED_TEMP_Message() {
+		super(EvoHomeProperty._1C_2309_ROOM_DESIRED_TEMP);
 	}
-	
+
 }
