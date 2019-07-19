@@ -27,7 +27,8 @@ package de.ibapl.fhz4j.protocol.evohome;
  */
 public class EvoHome_0x0C_0x0004_0x02_Message extends EvoHomeDeviceMessage {
 	
-	public int value;
+	public byte zoneId;
+	public byte unknown;
 
 	public EvoHome_0x0C_0x0004_0x02_Message() {
 		super(EvoHomeProperty._0C_0004);
@@ -36,7 +37,8 @@ public class EvoHome_0x0C_0x0004_0x02_Message extends EvoHomeDeviceMessage {
 	@Override
 	protected void addToString(StringBuilder sb) {
 		super.addToString(sb);
-		sb.append(String.format("value:0x%04x", value));
+		sb.append(String.format("zoneId:0x%02x", zoneId));
+		sb.append(String.format("unknown:0x%02x", unknown));
 	}
 	
 }

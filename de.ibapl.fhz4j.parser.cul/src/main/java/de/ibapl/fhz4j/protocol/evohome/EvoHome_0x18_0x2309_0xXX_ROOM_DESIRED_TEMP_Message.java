@@ -28,27 +28,10 @@ import java.util.List;
  * 
  * @author Arne Plöse
  */
-public class EvoHome_0x18_0x2309_0xXX_ROOM_DESIRED_TEMP_Message extends EvoHomeDeviceMessage {
-
-	public List<ZoneTemperature> zoneTemperatures;
+public class EvoHome_0x18_0x2309_0xXX_ROOM_DESIRED_TEMP_Message extends EvoHome_AbstractZonesTemperature_Message {
 
 	public EvoHome_0x18_0x2309_0xXX_ROOM_DESIRED_TEMP_Message() {
 		super(EvoHomeProperty._18_2309_ROOM_DESIRED_TEMP);
 	}
 
-	@Override
-	protected void addToString(StringBuilder sb) {
-		super.addToString(sb);
-		sb.append(", zoneTemperatures : [");
-		boolean first = true;
-		for (ZoneTemperature zt : zoneTemperatures) {
-			if (first) {
-				first = false;
-			} else {
-				sb.append(", ");
-			}
-			sb.append(zt);
-		}
-		sb.append("]");
-	}
 }

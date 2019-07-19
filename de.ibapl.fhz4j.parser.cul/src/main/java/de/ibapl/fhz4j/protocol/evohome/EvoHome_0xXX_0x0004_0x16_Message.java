@@ -21,50 +21,25 @@
  */
 package de.ibapl.fhz4j.protocol.evohome;
 
-import java.util.Objects;
-
-public class ZoneTemperature {
-	public byte zone;
-	public float temperature;
+/**
+ *
+ * @author Arne Plöse
+ */
+public class EvoHome_0xXX_0x0004_0x16_Message extends EvoHomeDeviceMessage {
 	
-	public ZoneTemperature() {
+	public byte zoneId;
+	public byte unknown;
+	public String zoneName;
+
+	public EvoHome_0xXX_0x0004_0x16_Message(EvoHomeProperty evoHomeProperty) {
+		super(evoHomeProperty);
 	}
 
-	public ZoneTemperature(byte zone, float temperature) {
-		this.zone = zone;
-		this.temperature = temperature;
-	}
-
+	@Override
 	protected void addToString(StringBuilder sb) {
-		//no-op must be overwritten ... in subclasses
+		super.addToString(sb);
+		sb.append(String.format("zoneId : 0x%02x", zoneId));
+		sb.append(String.format("unknown : 0x%02x", unknown));
+		sb.append(", zoneName : ").append(zoneName);
 	}
-
-	@Override
-	public String toString() {
-		StringBuilder sb = new StringBuilder();
-		sb.append("{");
-		sb.append(String.format("zone : 0x%02x", zone ));
-		sb.append(", temperature : ").append(temperature);
-		addToString(sb);
-		sb.append("}");
-		return sb.toString();
-	}
-
-	@Override
-	public int hashCode() {
-		return Objects.hash(temperature, zone);
-	}
-
-	@Override
-	public boolean equals(Object obj) {
-		if (this == obj)
-			return true;
-		if (obj == null)
-			return false;
-		if (getClass() != obj.getClass())
-			return false;
-		ZoneTemperature other = (ZoneTemperature) obj;
-		return Float.floatToIntBits(temperature) == Float.floatToIntBits(other.temperature) && zone == other.zone;
-	}
-	
 }

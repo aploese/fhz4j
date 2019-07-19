@@ -21,21 +21,34 @@
  */
 package de.ibapl.fhz4j.protocol.evohome;
 
+import java.util.List;
+
 /**
- * Room Measured Temp
+ * Room Desired Temp
+ * 
  * @author Arne Plöse
  */
-public class EvoHome_0x18_0x30C9_0x03_ROOM_MEASURED_TEMP_Message extends EvoHomeDeviceMessage {
-	
-	public ZoneTemperature temperature;
-	
-	public EvoHome_0x18_0x30C9_0x03_ROOM_MEASURED_TEMP_Message() {
-		super(EvoHomeProperty._18_30C9_ROOM_MEASURED_TEMP);
+public class EvoHome_AbstractZonesTemperature_Message extends EvoHomeDeviceMessage {
+
+	public List<ZoneTemperature> zoneTemperatures;
+
+	public EvoHome_AbstractZonesTemperature_Message(EvoHomeProperty evoHomeProperty) {
+		super(evoHomeProperty);
 	}
-	
+
 	@Override
 	protected void addToString(StringBuilder sb) {
 		super.addToString(sb);
-		sb.append(", temperature").append(temperature);
+		sb.append(", zoneTemperatures : [");
+		boolean first = true;
+		for (ZoneTemperature zt : zoneTemperatures) {
+			if (first) {
+				first = false;
+			} else {
+				sb.append(", ");
+			}
+			sb.append(zt);
+		}
+		sb.append("]");
 	}
 }

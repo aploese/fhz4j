@@ -21,14 +21,19 @@
  */
 package de.ibapl.fhz4j.parser.cul.evohome;
 
-import java.util.LinkedList;
-
 import de.ibapl.fhz4j.parser.api.Parser;
-import de.ibapl.fhz4j.protocol.evohome.EvoHome_0x18_0x000A_0xXX_ZONES_PARAMS_Message.ZoneParams;
 
-class ZonesParamParser extends Parser {
+/**
+ * Header 3C or 18 command 0004
+ * 
+ * @author aploese
+ *
+ */
+class _XX_0004_16_Parser extends Parser {
 
-	LinkedList<ZoneParams> zoneParams;
+	StringBuilder zoneNameBuilder = new StringBuilder();
+	byte zoneId;
+	byte unknown;
 
 	enum State {
 
@@ -39,15 +44,15 @@ class ZonesParamParser extends Parser {
 		/**
 		 * 
 		 */
-		COLLECT_FLAGS,
+		COLLECT_UNKNOWN,
 		/**
 		 * 
 		 */
-		COLLECT_MIN_TEMP,
+		COLLECT_ZONE_NAME,
 		/**
 		 * 
 		 */
-		COLLECT_MAX_TEMP, PARSE_SUCCESS, PARSE_ERROR;
+		PARSE_SUCCESS, PARSE_ERROR;
 
 	}
 
@@ -62,37 +67,30 @@ class ZonesParamParser extends Parser {
 		case COLLECT_ZONEID:
 			push(digit2Int(c));
 			if (getStackpos() == 0) {
-				zoneParams.addLast(new ZoneParams());
-				zoneParams.getLast().zoneId = getByteValue();
+				zoneId = getByteValue();
 				setStackSize(2);
-				state = State.COLLECT_FLAGS;
+				state = State.COLLECT_UNKNOWN;
 			}
 			break;
-		case COLLECT_FLAGS:
+		case COLLECT_UNKNOWN:
 			push(digit2Int(c));
 			if (getStackpos() == 0) {
-				zoneParams.getLast().flags = getByteValue();
-				setStackSize(4);
-				state = State.COLLECT_MIN_TEMP;
+				unknown = getByteValue();
+				setStackSize(2);
+				state = State.COLLECT_ZONE_NAME;
 			}
 			break;
-		case COLLECT_MIN_TEMP:
+		case COLLECT_ZONE_NAME:
 			push(digit2Int(c));
 			if (getStackpos() == 0) {
-				zoneParams.getLast().minTemperature = 0.01f * getShortValue();
-				setStackSize(4);
-				state = State.COLLECT_MAX_TEMP;
-			}
-			break;
-		case COLLECT_MAX_TEMP:
-			push(digit2Int(c));
-			if (getStackpos() == 0) {
-				zoneParams.getLast().maxTemperature = 0.01f * getShortValue();
+				byte b = getByteValue();
+				if (b != 0) {
+					zoneNameBuilder.append((char)b);
+				}
 				if (nibblesConsumed == nibblesToConsume) {
 					state = State.PARSE_SUCCESS;
 				} else {
 					setStackSize(2);
-					state = State.COLLECT_ZONEID;
 				}
 			}
 			break;
@@ -107,7 +105,9 @@ class ZonesParamParser extends Parser {
 	public void init(short bytesToConsume) {
 		setStackSize(2);
 		state = State.COLLECT_ZONEID;
-		zoneParams = new LinkedList<>();
+		zoneNameBuilder.setLength(0);
+		zoneId = 0;
+		unknown = 0;
 		this.nibblesConsumed = 0;
 		this.nibblesToConsume = (short) (bytesToConsume * 2);
 	}
