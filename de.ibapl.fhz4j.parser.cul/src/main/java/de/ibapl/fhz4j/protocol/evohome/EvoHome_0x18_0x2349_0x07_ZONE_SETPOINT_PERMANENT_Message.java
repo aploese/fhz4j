@@ -28,11 +28,11 @@ package de.ibapl.fhz4j.protocol.evohome;
  */
 public class EvoHome_0x18_0x2349_0x07_ZONE_SETPOINT_PERMANENT_Message extends EvoHomeDeviceMessage {
 	
-	public float temperature;
+	public ZoneTemperature temperature;
 	public int unknown;
 
 	public EvoHome_0x18_0x2349_0x07_ZONE_SETPOINT_PERMANENT_Message() {
-		super(EvoHomeProperty.ZONE_SETPOINT_PERMANENT);
+		super(EvoHomeProperty._18_2349_ZONE_SETPOINT_PERMANENT);
 	}
 	
 	@Override

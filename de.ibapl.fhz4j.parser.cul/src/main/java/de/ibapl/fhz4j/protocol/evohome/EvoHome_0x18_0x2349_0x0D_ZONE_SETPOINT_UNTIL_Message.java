@@ -30,12 +30,12 @@ import java.time.LocalDateTime;
  */
 public class EvoHome_0x18_0x2349_0x0D_ZONE_SETPOINT_UNTIL_Message extends EvoHomeDeviceMessage {
 	
-	public float temperature;
+	public ZoneTemperature temperature;
 	public int unknown;
 	public LocalDateTime until;
 
 	public EvoHome_0x18_0x2349_0x0D_ZONE_SETPOINT_UNTIL_Message() {
-		super(EvoHomeProperty.ZONE_SETPOINT_UNTIL);
+		super(EvoHomeProperty._18_2349_ZONE_SETPOINT_UNTIL);
 	}
 	
 	@Override

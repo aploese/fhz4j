@@ -30,7 +30,7 @@ public class EvoHome_0x18_0x1F09_0x03_BROADCAST_18_1F09_Message extends EvoHomeD
 	public int value;
 
 	public EvoHome_0x18_0x1F09_0x03_BROADCAST_18_1F09_Message() {
-		super(EvoHomeProperty.BROADCAST_18_1F09);
+		super(EvoHomeProperty._18_1F09_BROADCAST_18_1F09_);
 	}
 
 	

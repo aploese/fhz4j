@@ -30,7 +30,7 @@ public class EvoHome_0x0C_0x1F09_0x01_REQUEST_0C_1F09_Message extends EvoHomeDev
 	public byte value;
 
 	public EvoHome_0x0C_0x1F09_0x01_REQUEST_0C_1F09_Message() {
-		super(EvoHomeProperty.REQUEST_0C_1F09);
+		super(EvoHomeProperty._0C_1F09_REQUEST_FOR_3C_1F09_);
 	}
 
 	

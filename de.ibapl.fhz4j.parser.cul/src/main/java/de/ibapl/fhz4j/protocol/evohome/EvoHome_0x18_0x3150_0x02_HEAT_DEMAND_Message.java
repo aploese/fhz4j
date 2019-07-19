@@ -34,7 +34,7 @@ public class EvoHome_0x18_0x3150_0x02_HEAT_DEMAND_Message extends EvoHomeDeviceM
 	public short heatDemand;
 
 	public EvoHome_0x18_0x3150_0x02_HEAT_DEMAND_Message() {
-		super(EvoHomeProperty.HEAT_DEMAND);
+		super(EvoHomeProperty._18_3150_HEAT_DEMAND);
 	}
 	
 	@Override

@@ -33,6 +33,8 @@ import java.util.LinkedList;
 import java.util.List;
 
 import de.ibapl.fhz4j.parser.api.ParserListener;
+import de.ibapl.fhz4j.parser.cul.evohome.EvoHomeParser;
+import de.ibapl.fhz4j.protocol.evohome.EvoHomeDeviceMessage;
 import de.ibapl.fhz4j.protocol.evohome.EvoHomeMessage;
 import de.ibapl.fhz4j.protocol.evohome.EvoHome_0x0C_0x0004_0x02_Message;
 import de.ibapl.fhz4j.protocol.evohome.EvoHome_0x0C_0x000A_0x01_Message;
@@ -55,7 +57,7 @@ import de.ibapl.fhz4j.protocol.evohome.EvoHome_0x18_0x1100_0x08_Message;
 import de.ibapl.fhz4j.protocol.evohome.EvoHome_0x18_0x12B0_0x03_Message;
 import de.ibapl.fhz4j.protocol.evohome.EvoHome_0x18_0x1F09_0x03_BROADCAST_18_1F09_Message;
 import de.ibapl.fhz4j.protocol.evohome.EvoHome_0x18_0x1FC9_0x12_Message;
-import de.ibapl.fhz4j.protocol.evohome.EvoHome_0x18_0x2309_0x03_ROOM_DESIRED_TEMP_Message;
+import de.ibapl.fhz4j.protocol.evohome.EvoHome_0x18_0x2309_0xXX_ROOM_DESIRED_TEMP_Message;
 import de.ibapl.fhz4j.protocol.evohome.EvoHome_0x18_0x2349_0x07_ZONE_SETPOINT_PERMANENT_Message;
 import de.ibapl.fhz4j.protocol.evohome.EvoHome_0x18_0x2349_0x0D_ZONE_SETPOINT_UNTIL_Message;
 import de.ibapl.fhz4j.protocol.evohome.EvoHome_0x18_0x30C9_0x03_ROOM_MEASURED_TEMP_Message;
@@ -69,6 +71,7 @@ import de.ibapl.fhz4j.protocol.evohome.EvoHome_0x3C_0x0004_0x16_Message;
 import de.ibapl.fhz4j.protocol.evohome.EvoHome_0x3C_0x0100_0x05_Message;
 import de.ibapl.fhz4j.protocol.evohome.EvoHome_0x3C_0x1F09_0x03_RESPONSE_3C_1F09_Message;
 import de.ibapl.fhz4j.protocol.evohome.EvoHome_0x3C_0x313F_0x09_RESPONSE_3C_313F_Message;
+import de.ibapl.fhz4j.protocol.evohome.ZoneTemperature;
 
 import org.junit.jupiter.api.Test;
 
@@ -118,131 +121,105 @@ public class EvoHomeMessageTest implements ParserListener<EvoHomeMessage> {
 		throw new RuntimeException("No partial message expected.");
 	}
 
-	public static void assertEvoHome_0x0001_Message(EvoHome_0x28_0x0001_0x05_Message evoHomeMessage, int deviceId1,
-			int deviceId2, byte[] value) {
+	public static void assertEvoHomeDeviceMessage(EvoHomeDeviceMessage evoHomeMessage, int deviceId1, int deviceId2) {
 		assertNotNull(evoHomeMessage);
 		assertEquals(deviceId1, evoHomeMessage.deviceId1, "deviceId1");
 		assertEquals(deviceId2, evoHomeMessage.deviceId2, "deviceId2");
+	}
+	
+	public static void assertEvoHome_0x0001_Message(EvoHome_0x28_0x0001_0x05_Message evoHomeMessage, int deviceId1,
+			int deviceId2, byte[] value) {
+		assertEvoHomeDeviceMessage(evoHomeMessage, deviceId1, deviceId2);
 		assertArrayEquals(value, evoHomeMessage.value, "value");
 	}
 
 	public static void assertEvoHome_0x0004_Message(EvoHome_0x0C_0x0004_0x02_Message evoHomeMessage, int deviceId1,
 			int deviceId2, int value) {
-		assertNotNull(evoHomeMessage);
-		assertEquals(deviceId1, evoHomeMessage.deviceId1, "deviceId1");
-		assertEquals(deviceId2, evoHomeMessage.deviceId2, "deviceId2");
+		assertEvoHomeDeviceMessage(evoHomeMessage, deviceId1, deviceId2);
 		assertEquals(value, evoHomeMessage.value, "value");
 	}
 
 	public static void assertEvoHome_0x042F_Message(EvoHome_0x18_0x042F_0x08_Message evoHomeMessage, int deviceId1,
 			int deviceId2, byte[] value) {
-		assertNotNull(evoHomeMessage);
-		assertEquals(deviceId1, evoHomeMessage.deviceId1, "deviceId1");
-		assertEquals(deviceId2, evoHomeMessage.deviceId2, "deviceId2");
+		assertEvoHomeDeviceMessage(evoHomeMessage, deviceId1, deviceId2);
 		assertArrayEquals(value, evoHomeMessage.value, "value");
 	}
 
 	public static void assertEvoHome_0x0004_Message(EvoHome_0x18_0x0004_0x16_Message evoHomeMessage, int deviceId1,
 			int deviceId2, byte[] value) {
-		assertNotNull(evoHomeMessage);
-		assertEquals(deviceId1, evoHomeMessage.deviceId1, "deviceId1");
-		assertEquals(deviceId2, evoHomeMessage.deviceId2, "deviceId2");
+		assertEvoHomeDeviceMessage(evoHomeMessage, deviceId1, deviceId2);
 		assertArrayEquals(value, evoHomeMessage.value, "value");
 	}
 
 	public static void assertEvoHome_0x0004_Message(EvoHome_0x3C_0x0004_0x16_Message evoHomeMessage, int deviceId1,
 			int deviceId2, byte[] value) {
-		assertNotNull(evoHomeMessage);
-		assertEquals(deviceId1, evoHomeMessage.deviceId1, "deviceId1");
-		assertEquals(deviceId2, evoHomeMessage.deviceId2, "deviceId2");
+		assertEvoHomeDeviceMessage(evoHomeMessage, deviceId1, deviceId2);
 		assertArrayEquals(value, evoHomeMessage.value, "value");
 	}
 
 	public static void assertEvoHome_0x0005_Message(EvoHome_0x18_0x0005_0x04_Message evoHomeMessage, int deviceId1,
 			int deviceId2, byte[] value) {
-		assertNotNull(evoHomeMessage);
-		assertEquals(deviceId1, evoHomeMessage.deviceId1, "deviceId1");
-		assertEquals(deviceId2, evoHomeMessage.deviceId2, "deviceId2");
+		assertEvoHomeDeviceMessage(evoHomeMessage, deviceId1, deviceId2);
 		assertArrayEquals(value, evoHomeMessage.value, "value");
 	}
 
 	public static void assertEvoHome_0x0016_Message(EvoHome_0x0C_0x0016_0x02_Message evoHomeMessage, int deviceId1,
 			int deviceId2, int value) {
-		assertNotNull(evoHomeMessage);
-		assertEquals(deviceId1, evoHomeMessage.deviceId1, "deviceId1");
-		assertEquals(deviceId2, evoHomeMessage.deviceId2, "deviceId2");
+		assertEvoHomeDeviceMessage(evoHomeMessage, deviceId1, deviceId2);
 		assertEquals(value, evoHomeMessage.value, "value");
 	}
 
 	public static void assertEvoHome_0x0100_Message(EvoHome_0x0C_0x0100_0x05_Message evoHomeMessage, int deviceId1,
 			int deviceId2, byte[] value) {
-		assertNotNull(evoHomeMessage);
-		assertEquals(deviceId1, evoHomeMessage.deviceId1, "deviceId1");
-		assertEquals(deviceId2, evoHomeMessage.deviceId2, "deviceId2");
+		assertEvoHomeDeviceMessage(evoHomeMessage, deviceId1, deviceId2);
 		assertArrayEquals(value, evoHomeMessage.value, "value");
 	}
 
 	public static void assertEvoHome_0x0100_Message(EvoHome_0x3C_0x0100_0x05_Message evoHomeMessage, int deviceId1,
 			int deviceId2, byte[] value) {
-		assertNotNull(evoHomeMessage);
-		assertEquals(deviceId1, evoHomeMessage.deviceId1, "deviceId1");
-		assertEquals(deviceId2, evoHomeMessage.deviceId2, "deviceId2");
+		assertEvoHomeDeviceMessage(evoHomeMessage, deviceId1, deviceId2);
 		assertArrayEquals(value, evoHomeMessage.value, "value");
 	}
 
 	public static void assertEvoHome_0x1F09_Message(EvoHome_0x0C_0x1F09_0x01_REQUEST_0C_1F09_Message evoHomeMessage, int deviceId1,
 			int deviceId2, byte value) {
-		assertNotNull(evoHomeMessage);
-		assertEquals(deviceId1, evoHomeMessage.deviceId1, "deviceId1");
-		assertEquals(deviceId2, evoHomeMessage.deviceId2, "deviceId2");
+		assertEvoHomeDeviceMessage(evoHomeMessage, deviceId1, deviceId2);
 		assertEquals(value, evoHomeMessage.value, "value");
 	}
 
 	public static void assertEvoHome_0x1F09_Message(EvoHome_0x28_0x1F09_0x03_Message evoHomeMessage, int deviceId1,
 			int deviceId2, int unknown) {
-		assertNotNull(evoHomeMessage);
-		assertEquals(deviceId1, evoHomeMessage.deviceId1, "deviceId1");
-		assertEquals(deviceId2, evoHomeMessage.deviceId2, "deviceId2");
+		assertEvoHomeDeviceMessage(evoHomeMessage, deviceId1, deviceId2);
 		assertEquals(unknown, evoHomeMessage.unknown, "unknown");
 	}
 
 	public static void assertEvoHome_0x1F09_Message(EvoHome_0x3C_0x1F09_0x03_RESPONSE_3C_1F09_Message evoHomeMessage, int deviceId1,
 			int deviceId2, int value) {
-		assertNotNull(evoHomeMessage);
-		assertEquals(deviceId1, evoHomeMessage.deviceId1, "deviceId1");
-		assertEquals(deviceId2, evoHomeMessage.deviceId2, "deviceId2");
+		assertEvoHomeDeviceMessage(evoHomeMessage, deviceId1, deviceId2);
 		assertEquals(value, evoHomeMessage.value, "value");
 	}
 
 	public static void assertEvoHome_0x1F09_Message(EvoHome_0x18_0x1F09_0x03_BROADCAST_18_1F09_Message evoHomeMessage, int deviceId1,
 			int deviceId2, int value) {
-		assertNotNull(evoHomeMessage);
-		assertEquals(deviceId1, evoHomeMessage.deviceId1, "deviceId1");
-		assertEquals(deviceId2, evoHomeMessage.deviceId2, "deviceId2");
+		assertEvoHomeDeviceMessage(evoHomeMessage, deviceId1, deviceId2);
 		assertEquals(value, evoHomeMessage.value, "value");
 	}
 
 	public static void assertEvoHome_0x0008_Message(EvoHome_0x18_0x0008_0x02_Message evoHomeMessage, int deviceId1,
 			int deviceId2, int value) {
-		assertNotNull(evoHomeMessage);
-		assertEquals(deviceId1, evoHomeMessage.deviceId1, "deviceId1");
-		assertEquals(deviceId2, evoHomeMessage.deviceId2, "deviceId2");
+		assertEvoHomeDeviceMessage(evoHomeMessage, deviceId1, deviceId2);
 		assertEquals(value, evoHomeMessage.value, "value");
 	}
 
 	public static void assertEvoHome_0x0009_Message(EvoHome_0x18_0x0009_0x03_Message evoHomeMessage, int deviceId1,
 			int deviceId2, int value) {
-		assertNotNull(evoHomeMessage);
-		assertEquals(deviceId1, evoHomeMessage.deviceId1, "deviceId1");
-		assertEquals(deviceId2, evoHomeMessage.deviceId2, "deviceId2");
+		assertEvoHomeDeviceMessage(evoHomeMessage, deviceId1, deviceId2);
 		assertEquals(value, evoHomeMessage.value, "value");
 	}
 
 	public static void assertEvoHome_0x000A_Message(EvoHome_0x18_0x000A_0xXX_ZONES_PARAMS_Message evoHomeMessage, int deviceId1,
 			int deviceId2, List<ZoneParams> zones) {
-		assertNotNull(evoHomeMessage);
-		assertEquals(deviceId1, evoHomeMessage.deviceId1, "deviceId1");
-		assertEquals(deviceId2, evoHomeMessage.deviceId2, "deviceId2");
+		assertEvoHomeDeviceMessage(evoHomeMessage, deviceId1, deviceId2);
 		Iterator<ZoneParams> expectedZoneParams = zones.iterator();
 		Iterator<ZoneParams> actualZoneParams = evoHomeMessage.zones.iterator();
 		while (expectedZoneParams.hasNext()) {
@@ -259,137 +236,103 @@ public class EvoHomeMessageTest implements ParserListener<EvoHomeMessage> {
 
 	public static void assertEvoHome_0x000A_Message(EvoHome_0x0C_0x000A_0x01_Message evoHomeMessage, int deviceId1,
 			int deviceId2, byte value) {
-		assertNotNull(evoHomeMessage);
-		assertEquals(deviceId1, evoHomeMessage.deviceId1, "deviceId1");
-		assertEquals(deviceId2, evoHomeMessage.deviceId2, "deviceId2");
+		assertEvoHomeDeviceMessage(evoHomeMessage, deviceId1, deviceId2);
 		assertEquals(value, evoHomeMessage.value, "value");
 	}
 
 	public static void assertEvoHome_0x2309_Message(EvoHome_0x0C_0x2309_0x01_Message evoHomeMessage, int deviceId1,
 			int deviceId2, byte value) {
-		assertNotNull(evoHomeMessage);
-		assertEquals(deviceId1, evoHomeMessage.deviceId1, "deviceId1");
-		assertEquals(deviceId2, evoHomeMessage.deviceId2, "deviceId2");
+		assertEvoHomeDeviceMessage(evoHomeMessage, deviceId1, deviceId2);
 		assertEquals(value, evoHomeMessage.value, "value");
 	}
 
 	public static void assertEvoHome_0x1060_Message(EvoHome_0x18_0x1060_0x03_Message evoHomeMessage, int deviceId1,
 			int deviceId2, int value) {
-		assertNotNull(evoHomeMessage);
-		assertEquals(deviceId1, evoHomeMessage.deviceId1, "deviceId1");
-		assertEquals(deviceId2, evoHomeMessage.deviceId2, "deviceId2");
+		assertEvoHomeDeviceMessage(evoHomeMessage, deviceId1, deviceId2);
 		assertEquals(value, evoHomeMessage.value, "value");
 	}
 
 	public static void assertEvoHome_0x10E0_Message(EvoHome_0x18_0x10E0_0x26_Message evoHomeMessage, int deviceId1,
 			int deviceId2, byte[] value) {
-		assertNotNull(evoHomeMessage);
-		assertEquals(deviceId1, evoHomeMessage.deviceId1, "deviceId1");
-		assertEquals(deviceId2, evoHomeMessage.deviceId2, "deviceId2");
+		assertEvoHomeDeviceMessage(evoHomeMessage, deviceId1, deviceId2);
 		assertArrayEquals(value, evoHomeMessage.value, "value");
 	}
 
 	public static void assertEvoHome_0x1100_Message(EvoHome_0x18_0x1100_0x08_Message evoHomeMessage, int deviceId1,
 			int deviceId2, byte[] value) {
-		assertNotNull(evoHomeMessage);
-		assertEquals(deviceId1, evoHomeMessage.deviceId1, "deviceId1");
-		assertEquals(deviceId2, evoHomeMessage.deviceId2, "deviceId2");
+		assertEvoHomeDeviceMessage(evoHomeMessage, deviceId1, deviceId2);
 		assertArrayEquals(value, evoHomeMessage.value, "value");
 	}
 
 	public static void assertEvoHome_0x12B0_Message(EvoHome_0x18_0x12B0_0x03_Message evoHomeMessage, int deviceId1,
 			int deviceId2, int value) {
-		assertNotNull(evoHomeMessage);
-		assertEquals(deviceId1, evoHomeMessage.deviceId1, "deviceId1");
-		assertEquals(deviceId2, evoHomeMessage.deviceId2, "deviceId2");
+		assertEvoHomeDeviceMessage(evoHomeMessage, deviceId1, deviceId2);
 		assertEquals(value, evoHomeMessage.value, "value");
 	}
 
-	public static void assertEvoHome_0x2309_Message(EvoHome_0x18_0x2309_0x03_ROOM_DESIRED_TEMP_Message evoHomeMessage, int deviceId1,
-			int deviceId2, byte zone, float temperature) {
-		assertNotNull(evoHomeMessage);
-		assertEquals(deviceId1, evoHomeMessage.deviceId1, "deviceId1");
-		assertEquals(deviceId2, evoHomeMessage.deviceId2, "deviceId2");
-		assertEquals(zone, evoHomeMessage.zone, "zone");
-		assertEquals(temperature, evoHomeMessage.temperature, "temperature");
+	public static void assertEvoHome_0x2309_Message(EvoHome_0x18_0x2309_0xXX_ROOM_DESIRED_TEMP_Message evoHomeMessage, int deviceId1,
+			int deviceId2, ZoneTemperature ...zoneTemperatures) {
+		assertEvoHomeDeviceMessage(evoHomeMessage, deviceId1, deviceId2);
+		assertArrayEquals(zoneTemperatures, evoHomeMessage.zoneTemperatures.toArray(new ZoneTemperature[0]), "zoneTemperatures");
 	}
 
 	public static void assertEvoHome_0x2349_Message(EvoHome_0x18_0x2349_0x0D_ZONE_SETPOINT_UNTIL_Message evoHomeMessage, int deviceId1,
-			int deviceId2, float temperature, int unknown, LocalDateTime until) {
-		assertNotNull(evoHomeMessage);
-		assertEquals(deviceId1, evoHomeMessage.deviceId1, "deviceId1");
-		assertEquals(deviceId2, evoHomeMessage.deviceId2, "deviceId2");
+			int deviceId2, ZoneTemperature temperature, int unknown, LocalDateTime until) {
+		assertEvoHomeDeviceMessage(evoHomeMessage, deviceId1, deviceId2);
 		assertEquals(temperature, evoHomeMessage.temperature, "temperature");
 		assertEquals(unknown, evoHomeMessage.unknown, "unknown");
 		assertEquals(until, evoHomeMessage.until, "until");
 	}
 
 	public static void assertEvoHome_0x2349_Message(EvoHome_0x18_0x2349_0x07_ZONE_SETPOINT_PERMANENT_Message evoHomeMessage, int deviceId1,
-			int deviceId2, float temperature, int unknown) {
-		assertNotNull(evoHomeMessage);
-		assertEquals(deviceId1, evoHomeMessage.deviceId1, "deviceId1");
-		assertEquals(deviceId2, evoHomeMessage.deviceId2, "deviceId2");
+			int deviceId2, ZoneTemperature temperature, int unknown) {
+		assertEvoHomeDeviceMessage(evoHomeMessage, deviceId1, deviceId2);
 		assertEquals(temperature, evoHomeMessage.temperature, "temperature");
 		assertEquals(unknown, evoHomeMessage.unknown, "unknown");
 	}
 
 	public static void assertEvoHome_0x30C9_Message(EvoHome_0x18_0x30C9_0x03_ROOM_MEASURED_TEMP_Message evoHomeMessage, int deviceId1,
-			int deviceId2, byte zone, float temperature) {
-		assertNotNull(evoHomeMessage);
-		assertEquals(deviceId1, evoHomeMessage.deviceId1, "deviceId1");
-		assertEquals(deviceId2, evoHomeMessage.deviceId2, "deviceId2");
-		assertEquals(zone, evoHomeMessage.zone, "zone");
+			int deviceId2, ZoneTemperature temperature) {
+		assertEvoHomeDeviceMessage(evoHomeMessage, deviceId1, deviceId2);
 		assertEquals(temperature, evoHomeMessage.temperature, "temperature");
 	}
 
 	public static void assertEvoHome_0x3150_Message(EvoHome_0x18_0x3150_0x02_HEAT_DEMAND_Message evoHomeMessage, int deviceId1,
 			int deviceId2, byte zone, short heatDemand) {
-		assertNotNull(evoHomeMessage);
-		assertEquals(deviceId1, evoHomeMessage.deviceId1, "deviceId1");
-		assertEquals(deviceId2, evoHomeMessage.deviceId2, "deviceId2");
+		assertEvoHomeDeviceMessage(evoHomeMessage, deviceId1, deviceId2);
 		assertEquals(zone, evoHomeMessage.zone, "zone");
 		assertEquals(heatDemand, evoHomeMessage.heatDemand, "heatDemand");
 	}
 
 	public static void assertEvoHome_0x313F_Message(EvoHome_0x0C_0x313F_0x01_REQUEST_0C_313F_Message evoHomeMessage, int deviceId1,
 			int deviceId2, byte value) {
-		assertNotNull(evoHomeMessage);
-		assertEquals(deviceId1, evoHomeMessage.deviceId1, "deviceId1");
-		assertEquals(deviceId2, evoHomeMessage.deviceId2, "deviceId2");
+		assertEvoHomeDeviceMessage(evoHomeMessage, deviceId1, deviceId2);
 		assertEquals(value, evoHomeMessage.value, "value");
 	}
 
 	public static void assertEvoHome_0x313F_Message(EvoHome_0x3C_0x313F_0x09_RESPONSE_3C_313F_Message evoHomeMessage, int deviceId1,
 			int deviceId2, byte[] value) {
-		assertNotNull(evoHomeMessage);
-		assertEquals(deviceId1, evoHomeMessage.deviceId1, "deviceId1");
-		assertEquals(deviceId2, evoHomeMessage.deviceId2, "deviceId2");
+		assertEvoHomeDeviceMessage(evoHomeMessage, deviceId1, deviceId2);
 		assertArrayEquals(value, evoHomeMessage.value, "value");
 	}
 
 	public static void assertEvoHome_0x1FC9_Message(EvoHome_0x1C_0x1FC9_0x06_Message evoHomeMessage, int deviceId1,
 			int deviceId2, int unknown, int deviceId) {
-		assertNotNull(evoHomeMessage);
-		assertEquals(deviceId1, evoHomeMessage.deviceId1, "deviceId1");
-		assertEquals(deviceId2, evoHomeMessage.deviceId2, "deviceId2");
+		assertEvoHomeDeviceMessage(evoHomeMessage, deviceId1, deviceId2);
 		assertEquals(unknown, evoHomeMessage.unknown, "unknown");
 		assertEquals(deviceId, evoHomeMessage.deviceId, "deviceId");
 	}
 
 	public static void assertEvoHome_0x1FC9_Message(EvoHome_0x2C_0x1FC9_0x06_Message evoHomeMessage, int deviceId1,
 			int deviceId2, int unknown, int deviceId) {
-		assertNotNull(evoHomeMessage);
-		assertEquals(deviceId1, evoHomeMessage.deviceId1, "deviceId1");
-		assertEquals(deviceId2, evoHomeMessage.deviceId2, "deviceId2");
+		assertEvoHomeDeviceMessage(evoHomeMessage, deviceId1, deviceId2);
 		assertEquals(unknown, evoHomeMessage.unknown, "unknown");
 		assertEquals(deviceId, evoHomeMessage.deviceId, "deviceId");
 	}
 
 	public static void assertEvoHome_0x1FC9_Message(EvoHome_0x18_0x1FC9_0x12_Message evoHomeMessage, int deviceId1,
 			int deviceId2, int unknownFlags1, int unknownDeviceId1, int unknownFlags2, int unknownDeviceId2, int unknownFlags3, int unknownDeviceId3) {
-		assertNotNull(evoHomeMessage);
-		assertEquals(deviceId1, evoHomeMessage.deviceId1, "deviceId1");
-		assertEquals(deviceId2, evoHomeMessage.deviceId2, "deviceId2");
+		assertEvoHomeDeviceMessage(evoHomeMessage, deviceId1, deviceId2);
 		assertEquals(unknownFlags1, evoHomeMessage.unknownFlags1, "unknownFlags1");
 		assertEquals(unknownDeviceId1, evoHomeMessage.unknownDeviceId1, "unknownDeviceId1");
 		assertEquals(unknownFlags2, evoHomeMessage.unknownFlags2, "unknownFlags2");
@@ -400,17 +343,13 @@ public class EvoHomeMessageTest implements ParserListener<EvoHomeMessage> {
 
 	public static void assertEvoHome_0x3B00_Message(EvoHome_0x18_0x3B00_0x02_Message evoHomeMessage, int deviceId1,
 			int deviceId2, int value) {
-		assertNotNull(evoHomeMessage);
-		assertEquals(deviceId1, evoHomeMessage.deviceId1, "deviceId1");
-		assertEquals(deviceId2, evoHomeMessage.deviceId2, "deviceId2");
+		assertEvoHomeDeviceMessage(evoHomeMessage, deviceId1, deviceId2);
 		assertEquals(value, evoHomeMessage.value, "value");
 	}
 
 	public static void assertEvoHome_0x000E_Message(EvoHome_0x18_0x000E_0x03_Message evoHomeMessage, int deviceId1,
 			int deviceId2, int value) {
-		assertNotNull(evoHomeMessage);
-		assertEquals(deviceId1, evoHomeMessage.deviceId1, "deviceId1");
-		assertEquals(deviceId2, evoHomeMessage.deviceId2, "deviceId2");
+		assertEvoHomeDeviceMessage(evoHomeMessage, deviceId1, deviceId2);
 		assertEquals(value, evoHomeMessage.value, "value");
 	}
 
@@ -448,15 +387,24 @@ public class EvoHomeMessageTest implements ParserListener<EvoHomeMessage> {
 	@Test
 	public void decode_EvoHome_0x18_0x2309() {
 		decode("18 067AEC 067AEC 2309 03 00 0708");
-		assertEvoHome_0x2309_Message((EvoHome_0x18_0x2309_0x03_ROOM_DESIRED_TEMP_Message) evoHomeMessage, 0x067AEC, 0x067AEC, (byte)0x00, 18.0f);
+		assertEvoHome_0x2309_Message((EvoHome_0x18_0x2309_0xXX_ROOM_DESIRED_TEMP_Message) evoHomeMessage, 0x067AEC, 0x067AEC, new ZoneTemperature((byte)0x00, 18.0f));
 		decode("18 067AEC 067AEC 2309 03 01 0708");
-		assertEvoHome_0x2309_Message((EvoHome_0x18_0x2309_0x03_ROOM_DESIRED_TEMP_Message) evoHomeMessage, 0x067AEC, 0x067AEC, (byte)0x01, 18.0f);
+		assertEvoHome_0x2309_Message((EvoHome_0x18_0x2309_0xXX_ROOM_DESIRED_TEMP_Message) evoHomeMessage, 0x067AEC, 0x067AEC, new ZoneTemperature((byte)0x01, 18.0f));
+		
+		decode("18 067AEC 067AEC 2309 06 00 02EE 01 0640");
+		assertEvoHome_0x2309_Message((EvoHome_0x18_0x2309_0xXX_ROOM_DESIRED_TEMP_Message) evoHomeMessage, 0x067AEC, 0x067AEC, new ZoneTemperature((byte)0x00, 7.5f), new ZoneTemperature((byte)0x01, 16.0f));
+		decode("18 114977 067AEC 2309 03 00 02EE");
+		assertEvoHome_0x2309_Message((EvoHome_0x18_0x2309_0xXX_ROOM_DESIRED_TEMP_Message) evoHomeMessage, 0x114977, 0x067AEC, new ZoneTemperature((byte)0x00, 7.5f));
+
+		
+		
+
 	}
 
 	@Test
 	public void decode_EvoHome_0x18_0x30C9() {
 		decode("18 067AEC 067AEC 30C9 03 0009FA");
-		assertEvoHome_0x30C9_Message((EvoHome_0x18_0x30C9_0x03_ROOM_MEASURED_TEMP_Message) evoHomeMessage, 0x067AEC, 0x067AEC, (byte)0x00, 25.54f);
+		assertEvoHome_0x30C9_Message((EvoHome_0x18_0x30C9_0x03_ROOM_MEASURED_TEMP_Message) evoHomeMessage, 0x067AEC, 0x067AEC, new ZoneTemperature((byte)0x00, 25.539999f));
 	}
 
 	@Test
@@ -565,30 +513,30 @@ public class EvoHomeMessageTest implements ParserListener<EvoHomeMessage> {
 	@Test
 	public void decode_EvoHome_0x18_0x2349() {
 		
-		decode("18 067AEC 067AEC 2349 0D 0009C4 04FFFFFF 00 06 12 07 07E3");
+		decode("18 067AEC 067AEC 2349 0D 00 09C4 04FFFFFF 00 06 12 07 07E3");
 		assertEvoHome_0x2349_Message((EvoHome_0x18_0x2349_0x0D_ZONE_SETPOINT_UNTIL_Message) evoHomeMessage, 0x067AEC, 0x067AEC,
-				25.0f, 0x04FFFFFF, LocalDateTime.of(2019, 07, 18, 06, 00));
+				new ZoneTemperature((byte)0x00, 25.0f), 0x04FFFFFF, LocalDateTime.of(2019, 07, 18, 06, 00));
 		
-		decode("18 067AEC 067AEC 2349 0D 0009C4 04FFFFFF 0A 05 12 07 07E3");
+		decode("18 067AEC 067AEC 2349 0D 00 09C4 04FFFFFF 0A 05 12 07 07E3");
 				assertEvoHome_0x2349_Message((EvoHome_0x18_0x2349_0x0D_ZONE_SETPOINT_UNTIL_Message) evoHomeMessage, 0x067AEC, 0x067AEC,
-						25.0f, 0x04FFFFFF, LocalDateTime.of(2019, 07, 18, 5, 10));
-		decode("18 067AEC 067AEC 2349 0D 0009C4 04FFFFFF 14 13 11 07 07E3");
+						new ZoneTemperature((byte)0x00, 25.0f), 0x04FFFFFF, LocalDateTime.of(2019, 07, 18, 5, 10));
+		decode("18 067AEC 067AEC 2349 0D 00 09C4 04FFFFFF 14 13 11 07 07E3");
 				assertEvoHome_0x2349_Message((EvoHome_0x18_0x2349_0x0D_ZONE_SETPOINT_UNTIL_Message) evoHomeMessage, 0x067AEC, 0x067AEC,
-						25.0f, 0x04FFFFFF, LocalDateTime.of(2019, 07, 17, 19, 20));
+						new ZoneTemperature((byte)0x00, 25.0f), 0x04FFFFFF, LocalDateTime.of(2019, 07, 17, 19, 20));
 
-		decode("18 067AEC 067AEC 2349 0D 0009C4 04FFFFFF 0A 0F 11 07 07E3");
+		decode("18 067AEC 067AEC 2349 0D 00 09C4 04FFFFFF 0A 0F 11 07 07E3");
 				assertEvoHome_0x2349_Message((EvoHome_0x18_0x2349_0x0D_ZONE_SETPOINT_UNTIL_Message) evoHomeMessage, 0x067AEC, 0x067AEC,
-						25.0f, 0x04FFFFFF, LocalDateTime.of(2019, 07, 17, 15, 10));
+						new ZoneTemperature((byte)0x00, 25.0f), 0x04FFFFFF, LocalDateTime.of(2019, 07, 17, 15, 10));
 
-		decode("18 067AEC 067AEC 2349 0D 000352 04FFFFFF 00 0C 10 07 07E3");
+		decode("18 067AEC 067AEC 2349 0D 00 0352 04FFFFFF 00 0C 10 07 07E3");
 		assertEvoHome_0x2349_Message((EvoHome_0x18_0x2349_0x0D_ZONE_SETPOINT_UNTIL_Message) evoHomeMessage, 0x067AEC, 0x067AEC,
-				8.5f, 0x04FFFFFF, LocalDateTime.of(2019, 07, 16, 12, 00));
+				new ZoneTemperature((byte)0x00, 8.5f), 0x04FFFFFF, LocalDateTime.of(2019, 07, 16, 12, 00));
 		
 		
 		
-		decode("18 067AEC 067AEC 2349 07 0008FC 00FFFFFF");
+		decode("18 067AEC 067AEC 2349 07 00 08FC 00FFFFFF");
 		assertEvoHome_0x2349_Message((EvoHome_0x18_0x2349_0x07_ZONE_SETPOINT_PERMANENT_Message) evoHomeMessage, 0x067AEC, 0x067AEC,
-				23.0f, 0x00FFFFFF);
+				new ZoneTemperature((byte)0x00, 23.0f), 0x00FFFFFF);
 	}
 	
 	
@@ -689,6 +637,22 @@ public class EvoHomeMessageTest implements ParserListener<EvoHomeMessage> {
 		assertEvoHome_0x2309_Message((EvoHome_0x0C_0x2309_0x01_Message) evoHomeMessage, 0x895E5D, 0x067AEC, (byte)0x01);
 	}
 	
+	
+	/*
+	0C 131589 067AEC 0004 02 01 00
+	3C 067AEC 131589 0004 16 01 00 5361616C00000000000000000000000000000000 //"Saal" von Zentrale an Ventil
+	3C 067AEC 131589 0004 16 01 00 5361616C00000000000000000000000000000000
+	18 067AEC 067AEC 0004 16 01 00 5858587878780000000000000000000000000000 //Name zone 0x01: XXXxxx //Broadcast ??
+	0C 131589 067AEC 0004 02 01 00
+	3C 067AEC 131589 0004 16 01 00 5858587878780000000000000000000000000000
+	0C 131589 067AEC 0004 02 01 00
+	3C 067AEC 131589 0004 16 01 00 5858587878780000000000000000000000000000
+	
+	// TODO PARSE_ROOM_DESIRED_TEMP_ELEMENTS
+	
+	18 067AEC 067AEC 2309 06 00 02EE 01 0708
+	18 067AEC 067AEC 30C9 06 00 0A25 01 0926
+	
 	//TODO Thermostat
 	/*
 	
@@ -696,11 +660,11 @@ public class EvoHomeMessageTest implements ParserListener<EvoHomeMessage> {
 	
 	18 895E5D 895E5D 3120 07 0070B0000000FF
 	
-	18 895E5D 895E5D 1FC9 18 002309 895E5D 0030C9 895E5D 000008 895E5D 00 1FC9 895E5D
+	18 895E5D 895E5D 1FC9 18 00 2309 895E5D 0030C9 895E5D 000008 895E5D 00 1FC9 895E5D
 	
 	18 895E5D 895E5D 1FC9 12 000008 895E5D 003150 895E5D 00 1FC9 895E5D
 	
-	18 895E5D 895E5D 1FC9 0C 002309 895E5D 00 30C9 895E5D
+	18 895E5D 895E5D 1FC9 0C 00 2309 895E5D 00 30C9 895E5D
 	
 	18 895E5D 895E5D 0005 0C 000A0000000F000000100000
 	

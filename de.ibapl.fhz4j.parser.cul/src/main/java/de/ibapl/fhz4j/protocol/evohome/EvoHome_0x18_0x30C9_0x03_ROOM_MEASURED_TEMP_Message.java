@@ -27,17 +27,15 @@ package de.ibapl.fhz4j.protocol.evohome;
  */
 public class EvoHome_0x18_0x30C9_0x03_ROOM_MEASURED_TEMP_Message extends EvoHomeDeviceMessage {
 	
-	public byte zone;
-	public float temperature;
-
+	public ZoneTemperature temperature;
+	
 	public EvoHome_0x18_0x30C9_0x03_ROOM_MEASURED_TEMP_Message() {
-		super(EvoHomeProperty.ROOM_MEASURED_TEMP);
+		super(EvoHomeProperty._18_30C9_ROOM_MEASURED_TEMP);
 	}
 	
 	@Override
 	protected void addToString(StringBuilder sb) {
 		super.addToString(sb);
-		sb.append(String.format(", zone: 0x%02x", zone));
-		sb.append(", temperature:").append(temperature);
+		sb.append(", temperature").append(temperature);
 	}
 }

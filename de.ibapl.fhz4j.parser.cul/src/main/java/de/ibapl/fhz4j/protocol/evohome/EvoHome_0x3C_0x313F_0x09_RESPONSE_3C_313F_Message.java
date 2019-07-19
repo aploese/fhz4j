@@ -30,7 +30,7 @@ public class EvoHome_0x3C_0x313F_0x09_RESPONSE_3C_313F_Message extends EvoHomeDe
 	public final byte[] value = new byte[0x09];
 
 	public EvoHome_0x3C_0x313F_0x09_RESPONSE_3C_313F_Message() {
-		super(EvoHomeProperty.RESPONSE_3C_313F);
+		super(EvoHomeProperty._3C_313F_RESPONSE_TO_0C_313F);
 	}
 	
 	@Override

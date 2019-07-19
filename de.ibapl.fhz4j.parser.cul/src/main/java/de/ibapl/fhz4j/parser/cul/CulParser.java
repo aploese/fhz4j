@@ -29,6 +29,7 @@ import de.ibapl.fhz4j.api.FhzDataListener;
 import de.ibapl.fhz4j.api.FhzMessage;
 import de.ibapl.fhz4j.parser.api.Parser;
 import de.ibapl.fhz4j.parser.api.ParserListener;
+import de.ibapl.fhz4j.parser.cul.evohome.EvoHomeParser;
 import de.ibapl.fhz4j.protocol.em.EmMessage;
 import de.ibapl.fhz4j.protocol.evohome.EvoHomeMessage;
 import de.ibapl.fhz4j.protocol.fht.FhtMessage;

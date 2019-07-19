@@ -22,11 +22,20 @@
 package de.ibapl.fhz4j.protocol.evohome;
 
 public enum EvoHomeHeaderByte {
+	/**
+	 * Broadcast von Zentrale an Zentrale?
+	 */
 	_18,
+	/**
+	 * Von Ventil an Zentrale? 
+	 */
 	_0C,
 	_1C,
 	_2C,
 	_28,
+	/**
+	 * Von Zentrale an Ventil?
+	 */
 	_3C;
 	
 }

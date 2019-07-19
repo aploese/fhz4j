@@ -30,7 +30,7 @@ public class EvoHome_0x3C_0x1F09_0x03_RESPONSE_3C_1F09_Message extends EvoHomeDe
 	public int value;
 
 	public EvoHome_0x3C_0x1F09_0x03_RESPONSE_3C_1F09_Message() {
-		super(EvoHomeProperty.RESPONSE_3C_1F09);
+		super(EvoHomeProperty._3C_1F09_RESPONSE_TO_0C_1F09);
 	}
 
 	

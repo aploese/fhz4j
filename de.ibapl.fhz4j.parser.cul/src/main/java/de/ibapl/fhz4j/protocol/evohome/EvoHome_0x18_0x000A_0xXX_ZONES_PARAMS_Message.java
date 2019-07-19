@@ -39,7 +39,7 @@ public class EvoHome_0x18_0x000A_0xXX_ZONES_PARAMS_Message extends EvoHomeDevice
 	public List<ZoneParams> zones;
  
 	public EvoHome_0x18_0x000A_0xXX_ZONES_PARAMS_Message() {
-		super(EvoHomeProperty.ZONES_PARAMS);
+		super(EvoHomeProperty._18_000A_ZONES_PARAMS);
 	}
 	
 	@Override
