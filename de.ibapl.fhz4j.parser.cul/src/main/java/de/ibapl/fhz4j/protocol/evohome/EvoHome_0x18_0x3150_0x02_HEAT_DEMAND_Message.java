@@ -63,7 +63,7 @@ public class EvoHome_0x18_0x3150_0x02_HEAT_DEMAND_Message extends EvoHomeDeviceM
 			return 0.0f;
 		} else if (heatDemand < 140) {
 			return 30.0f * (heatDemand - 60) / 80.0f;
-		} else if (heatDemand < 200) {
+		} else if (heatDemand <= 200) {
 			return 30.0f + 70.0f * (heatDemand - 140) / 60.0f;
 		} else {
 			//TODO error
