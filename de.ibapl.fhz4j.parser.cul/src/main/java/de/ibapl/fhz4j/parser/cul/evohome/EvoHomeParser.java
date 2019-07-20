@@ -55,6 +55,8 @@ import de.ibapl.fhz4j.protocol.evohome.EvoHome_0x18_0x1FC9_0x12_Message;
 import de.ibapl.fhz4j.protocol.evohome.EvoHome_0x18_0x2309_0xXX_ROOM_DESIRED_TEMP_Message;
 import de.ibapl.fhz4j.protocol.evohome.EvoHome_0x18_0x2349_0x07_ZONE_SETPOINT_PERMANENT_Message;
 import de.ibapl.fhz4j.protocol.evohome.EvoHome_0x18_0x2349_0x0D_ZONE_SETPOINT_UNTIL_Message;
+import de.ibapl.fhz4j.protocol.evohome.EvoHome_0x18_0x2E04_0x08_OPERATING_MODE_Message;
+import de.ibapl.fhz4j.protocol.evohome.EvoHome_0x18_0x2E04_0x08_OPERATING_MODE_Message.Mode;
 import de.ibapl.fhz4j.protocol.evohome.EvoHome_0x18_0x30C9_0xXX_ROOM_MEASURED_TEMP_Message;
 import de.ibapl.fhz4j.protocol.evohome.EvoHome_0x18_0x3120_0x07_Message;
 import de.ibapl.fhz4j.protocol.evohome.EvoHome_0x18_0x3150_0x02_HEAT_DEMAND_Message;
@@ -116,6 +118,10 @@ public class EvoHomeParser extends Parser {
 		 * 
 		 */
 		PARSE_ZONE_TEMPERATURE_ELEMENTS,
+		/**
+		 * 
+		 */
+		COLLECT_18_2E04_OPERATING_MODE,
 		/**
 		 * 
 		 */
@@ -283,6 +289,36 @@ public class EvoHomeParser extends Parser {
 				push(digit2Int(c));
 				if (getStackpos() == 0) {
 					setByteArrayValue();
+				}
+				break;
+			case COLLECT_18_2E04_OPERATING_MODE:
+				push(digit2Int(c));
+				if (getStackpos() == 0) {
+					final EvoHome_0x18_0x2E04_0x08_OPERATING_MODE_Message msg = ((EvoHome_0x18_0x2E04_0x08_OPERATING_MODE_Message) evoHomeMessage);
+					switch (getByteValue()) {
+					case 0x00:
+						msg.mode = Mode.NORMAL;
+					break;
+					case 0x01:
+						msg.mode = Mode.HEATING_OFF;
+					break;
+					case 0x02:
+						msg.mode = Mode.ECONOMY;
+					break;
+					case 0x03:
+						msg.mode = Mode.AWAY;
+					break;
+					case 0x04:
+						msg.mode = Mode.EXCEPTION_DAY;
+					break;
+					case 0x07:
+						msg.mode = Mode.SPECIAL_PROGRAMME;
+					break;
+					default:
+						throw new RuntimeException("Unknown Mode: " + getByteValue());
+					}
+					setStackSize(2);
+					state = State.COLLECT_DATA_BYTES;
 				}
 				break;
 			case PARSE_ZONE_TEMPERATURE_ELEMENTS:
@@ -513,6 +549,14 @@ public class EvoHomeParser extends Parser {
 				state = State.PARSE_SUCCESS;
 			}
 			break;
+		case _18_2E04_OPERATING_MODE:
+			((EvoHome_0x18_0x2E04_0x08_OPERATING_MODE_Message) evoHomeMessage).value[copyDataIndex++] = getByteValue();
+			setStackSize(2);
+			if (((EvoHome_0x18_0x2E04_0x08_OPERATING_MODE_Message) evoHomeMessage).value.length == copyDataIndex) {
+				parserListener.success(evoHomeMessage);
+				state = State.PARSE_SUCCESS;
+			}
+			break;
 		case _18_3120:
 			((EvoHome_0x18_0x3120_0x07_Message) evoHomeMessage).value[copyDataIndex++] = getByteValue();
 			setStackSize(2);
@@ -616,6 +660,9 @@ public class EvoHomeParser extends Parser {
 			break;
 		case 0x2349:
 			evoHomeCommand = EvoHomeCommand._2349;
+			break;
+		case 0x2e04:
+			evoHomeCommand = EvoHomeCommand._2E04;
 			break;
 		case 0x30c9:
 			evoHomeCommand = EvoHomeCommand._30C9;
@@ -799,6 +846,12 @@ public class EvoHomeParser extends Parser {
 				} else {
 					throw new RuntimeException("Unknown length for 0x18_0x2349: " + length);
 				}
+				break;
+			case _2E04:
+				checkLength(0x08, length, "EvoHome_0x18_0x2E04_0x08_OPERATING_MODE_Message");
+				evoHomeMessage = new EvoHome_0x18_0x2E04_0x08_OPERATING_MODE_Message();
+				setStackSize(2);
+				state = State.COLLECT_18_2E04_OPERATING_MODE;
 				break;
 			case _30C9:
 				//TODO ??? multiple of 3 ??? checkLength(0x03, length, "EvoHome_0x18_0x2309_0x02_Message");

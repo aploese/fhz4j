@@ -36,12 +36,12 @@ public abstract class EvoHomeDeviceMessage extends EvoHomeMessage {
 
 	@Override
 	protected void addToString(StringBuilder sb) {
-		sb.append(String.format(", deviceId1: 0x%04x", deviceId1));
-		sb.append(String.format(", deviceId2: 0x%04x", deviceId2));
+		sb.append(String.format(", deviceId1 : 0x%04x", deviceId1));
+		sb.append(String.format(", deviceId2 : 0x%04x", deviceId2));
 	}
 	
 	protected void appendByteArray(StringBuilder sb, String name, byte[] value) {
-		sb.append(", ").append(name).append(":[0x");
+		sb.append(", ").append(name).append(" : [0x");
 		for (byte b: value) {
 			sb.append(String.format("%02x", b));
 		}

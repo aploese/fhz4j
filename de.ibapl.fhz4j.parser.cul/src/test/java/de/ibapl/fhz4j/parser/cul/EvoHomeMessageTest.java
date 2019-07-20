@@ -60,6 +60,7 @@ import de.ibapl.fhz4j.protocol.evohome.EvoHome_0x18_0x1FC9_0x12_Message;
 import de.ibapl.fhz4j.protocol.evohome.EvoHome_0x18_0x2309_0xXX_ROOM_DESIRED_TEMP_Message;
 import de.ibapl.fhz4j.protocol.evohome.EvoHome_0x18_0x2349_0x07_ZONE_SETPOINT_PERMANENT_Message;
 import de.ibapl.fhz4j.protocol.evohome.EvoHome_0x18_0x2349_0x0D_ZONE_SETPOINT_UNTIL_Message;
+import de.ibapl.fhz4j.protocol.evohome.EvoHome_0x18_0x2E04_0x08_OPERATING_MODE_Message;
 import de.ibapl.fhz4j.protocol.evohome.EvoHome_0x18_0x30C9_0xXX_ROOM_MEASURED_TEMP_Message;
 import de.ibapl.fhz4j.protocol.evohome.EvoHome_0x18_0x3120_0x07_Message;
 import de.ibapl.fhz4j.protocol.evohome.EvoHome_0x18_0x3150_0x02_HEAT_DEMAND_Message;
@@ -175,6 +176,13 @@ public class EvoHomeMessageTest implements ParserListener<EvoHomeMessage> {
 	public static void assertEvoHome_0x000C_Message(EvoHome_0x18_0x000C_0x12_Message evoHomeMessage, int deviceId1,
 			int deviceId2, byte[] value) {
 		assertEvoHomeDeviceMessage(evoHomeMessage, deviceId1, deviceId2);
+		assertArrayEquals(value, evoHomeMessage.value, "value");
+	}
+
+	public static void assertEvoHome_0x2E04_Message(EvoHome_0x18_0x2E04_0x08_OPERATING_MODE_Message evoHomeMessage, int deviceId1,
+			int deviceId2, EvoHome_0x18_0x2E04_0x08_OPERATING_MODE_Message.Mode mode, byte[] value) {
+		assertEvoHomeDeviceMessage(evoHomeMessage, deviceId1, deviceId2);
+		assertEquals(mode,  evoHomeMessage.mode, "mode");
 		assertArrayEquals(value, evoHomeMessage.value, "value");
 	}
 
@@ -691,6 +699,9 @@ public class EvoHomeMessageTest implements ParserListener<EvoHomeMessage> {
 	public void decode_EvoHome_0x28_0x1F09_0x03() {
 		decode("28 067AEC 067AEC 1F09 03 F80429");
 		assertEvoHome_0x1F09_Message((EvoHome_0x28_0x1F09_0x03_Message) evoHomeMessage, 0x067AEC, 0x067AEC, 0xF80429);
+
+		decode("28 067AEC 067AEC 1F09 03 FF057D");
+		assertEvoHome_0x1F09_Message((EvoHome_0x28_0x1F09_0x03_Message) evoHomeMessage, 0x067AEC, 0x067AEC, 0xFF057D);
 	}
 
 	@Test
@@ -736,17 +747,37 @@ public class EvoHomeMessageTest implements ParserListener<EvoHomeMessage> {
 				new byte[]{0x00, 0x0A, 0x7F, (byte)0xFF, (byte)0xFF, (byte)0xFF, 0x00, 0x0F, 0x7F, (byte)0xFF, (byte)0xFF, (byte)0xFF, 0x00, 0x10, 0x7F, (byte)0xFF, (byte)0xFF, (byte)0xFF});
 	}
 	
+	@Test
+	public void decode_EvoHome_0x18_0x2E04_0x08() {
+		decode("18 067AEC 067AEC 2E04 08 00 FFFFFFFFFFFF00");
+		assertEvoHome_0x2E04_Message((EvoHome_0x18_0x2E04_0x08_OPERATING_MODE_Message) evoHomeMessage, 0x067AEC, 0x067AEC, 
+				EvoHome_0x18_0x2E04_0x08_OPERATING_MODE_Message.Mode.NORMAL, new byte[]{(byte)0xFF, (byte)0xFF, (byte)0xFF, (byte)0xFF, (byte)0xFF, (byte)0xFF, 0x00});
+		
+		decode("18 067AEC 067AEC 2E04 08 02 FFFFFFFFFFFF00");
+		assertEvoHome_0x2E04_Message((EvoHome_0x18_0x2E04_0x08_OPERATING_MODE_Message) evoHomeMessage, 0x067AEC, 0x067AEC, 
+				EvoHome_0x18_0x2E04_0x08_OPERATING_MODE_Message.Mode.ECONOMY, new byte[]{(byte)0xFF, (byte)0xFF, (byte)0xFF, (byte)0xFF, (byte)0xFF, (byte)0xFF, 0x00});
+
+		decode("18 067AEC 067AEC 2E04 08 07 FFFFFFFFFFFF00");
+		assertEvoHome_0x2E04_Message((EvoHome_0x18_0x2E04_0x08_OPERATING_MODE_Message) evoHomeMessage, 0x067AEC, 0x067AEC, 
+				EvoHome_0x18_0x2E04_0x08_OPERATING_MODE_Message.Mode.SPECIAL_PROGRAMME, new byte[]{(byte)0xFF, (byte)0xFF, (byte)0xFF, (byte)0xFF, (byte)0xFF, (byte)0xFF, 0x00});
+
+		decode("18 067AEC 067AEC 2E04 08 01 FFFFFFFFFFFF00");
+		assertEvoHome_0x2E04_Message((EvoHome_0x18_0x2E04_0x08_OPERATING_MODE_Message) evoHomeMessage, 0x067AEC, 0x067AEC, 
+				EvoHome_0x18_0x2E04_0x08_OPERATING_MODE_Message.Mode.HEATING_OFF, new byte[]{(byte)0xFF, (byte)0xFF, (byte)0xFF, (byte)0xFF, (byte)0xFF, (byte)0xFF, 0x00});
+
+		decode("18 067AEC 067AEC 2E04 08 03 FFFFFFFFFFFF00");
+		assertEvoHome_0x2E04_Message((EvoHome_0x18_0x2E04_0x08_OPERATING_MODE_Message) evoHomeMessage, 0x067AEC, 0x067AEC, 
+				EvoHome_0x18_0x2E04_0x08_OPERATING_MODE_Message.Mode.AWAY, new byte[]{(byte)0xFF, (byte)0xFF, (byte)0xFF, (byte)0xFF, (byte)0xFF, (byte)0xFF, 0x00});
+
+		decode("18 067AEC 067AEC 2E04 08 04 FFFFFFFFFFFF00");
+		assertEvoHome_0x2E04_Message((EvoHome_0x18_0x2E04_0x08_OPERATING_MODE_Message) evoHomeMessage, 0x067AEC, 0x067AEC, 
+				EvoHome_0x18_0x2E04_0x08_OPERATING_MODE_Message.Mode.EXCEPTION_DAY, new byte[]{(byte)0xFF, (byte)0xFF, (byte)0xFF, (byte)0xFF, (byte)0xFF, (byte)0xFF, 0x00});
+	}
+	
 	/*
-	
-	//TODO Thermostat
-	/*
-	
-	
-	
-	
-	
-	
-	
-	*/
+	 
+	  
+	  
+	 */
 	
 }

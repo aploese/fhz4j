@@ -21,7 +21,31 @@
  */
 package de.ibapl.fhz4j.protocol.evohome;
 
-public enum EvoHomeCommand {
-	_0001, _0004, _0005, _0008, _0009, _000A, _000C, _000E, _0016, _0100, _042F, _1060, _10E0, _1100, _12B0, _1F09, _1FC9, _2309, _2349, _2E04, _30C9, _3120, _313F, _3150, _3B00;
+/**
+ *
+ * @author Arne Plöse
+ */
+public class EvoHome_0x18_0x2E04_0x08_OPERATING_MODE_Message extends EvoHomeDeviceMessage {
+	
+	public static enum Mode {
+		NORMAL,
+		HEATING_OFF,
+		ECONOMY,
+		AWAY,
+		EXCEPTION_DAY,
+		SPECIAL_PROGRAMME;
+	}
+	
+	public Mode mode;
+	public final byte[] value = new byte[0x08 - 1];
 
+	public EvoHome_0x18_0x2E04_0x08_OPERATING_MODE_Message() {
+		super(EvoHomeProperty._18_2E04_OPERATING_MODE);
+	}
+
+	@Override
+	protected void addToString(StringBuilder sb) {
+		super.addToString(sb);
+		appendByteArray(sb, "value", value);
+	}
 }

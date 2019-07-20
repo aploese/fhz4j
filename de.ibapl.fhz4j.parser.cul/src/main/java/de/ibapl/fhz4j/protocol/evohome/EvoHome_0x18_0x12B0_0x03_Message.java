@@ -36,6 +36,6 @@ public class EvoHome_0x18_0x12B0_0x03_Message extends EvoHomeDeviceMessage {
 	@Override
 	protected void addToString(StringBuilder sb) {
 		super.addToString(sb);
-		sb.append(String.format("value:0x%06x", value));
+		sb.append(String.format(", value : 0x%06x", value));
 	}
 }
