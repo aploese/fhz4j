@@ -25,6 +25,8 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.EnumSet;
@@ -251,21 +253,22 @@ public class Main {
         	protocols.add(Protocol.EVO_HOME);
         }
         
+    	final File logFile= File.createTempFile("cul_", ".txt", Paths.get(".").toFile());
+
         if (cmd.hasOption("ser2net")) {
-            new Main().runSer2Net(cmd.getOptionValue("ser2net"), protocols);
+            new Main().runSer2Net(cmd.getOptionValue("ser2net"), protocols, logFile);
         }
 
         if (cmd.hasOption("port")) {
-            new Main().runLocalPort(cmd.getOptionValue("port"), protocols);
+            new Main().runLocalPort(cmd.getOptionValue("port"), protocols, logFile);
         }
         
     }
 
     private final Set<Short> DEVICES_HOME_CODE = new HashSet<>();
 
-    public void runSer2Net(String ser2net, Set<Protocol> protocols) {
+    public void runSer2Net(String ser2net, Set<Protocol> protocols, File logFile) {
         try {
-            File logFile = File.createTempFile("cul_", ".txt");
             LOG.info("LOG File: " + logFile.getAbsolutePath());
             String[] split = ser2net.split(":"); 
             SerialPortSocket serialPort = LoggingSerialPortSocket.wrapWithAsciiOutputStream(new Ser2NetProvider(split[0], Integer.valueOf(split[1])), new FileOutputStream(logFile), false, TimeStampLogging.NONE);
@@ -275,7 +278,7 @@ public class Main {
         }
     }
 
-    public void runLocalPort(String port, Set<Protocol> protocols) {
+    public void runLocalPort(String port, Set<Protocol> protocols, File logFile) {
         try {
             ServiceLoader<SerialPortSocketFactory> sl = ServiceLoader.load(SerialPortSocketFactory.class);
             Iterator<SerialPortSocketFactory> i = sl.iterator();
@@ -284,7 +287,6 @@ public class Main {
             }
             final SerialPortSocketFactory serialPortSocketFactory = i.next();
 
-            File logFile = File.createTempFile("cul_", ".txt");
             LOG.info("LOG File: " + logFile.getAbsolutePath());
             SerialPortSocket serialPort = LoggingSerialPortSocket.wrapWithAsciiOutputStream(serialPortSocketFactory.createSerialPortSocket(port), new FileOutputStream(logFile), false, TimeStampLogging.UTC);
             run(serialPort, protocols);
