@@ -21,6 +21,7 @@
  */
 package de.ibapl.fhz4j.parser.cul.evohome;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.logging.Logger;
@@ -66,12 +67,13 @@ import de.ibapl.fhz4j.protocol.evohome.EvoHome_0x1C_0x1FC9_0xXX_Message;
 import de.ibapl.fhz4j.protocol.evohome.EvoHome_0x1C_0x2309_0xXX_ROOM_DESIRED_TEMP_Message;
 import de.ibapl.fhz4j.protocol.evohome.EvoHomeCommand;
 import de.ibapl.fhz4j.protocol.evohome.EvoHomeDeviceMessage;
-import de.ibapl.fhz4j.protocol.evohome.EvoHome_0x28_0x0001_0x05_Message;
+import de.ibapl.fhz4j.protocol.evohome.EvoHome_0x28_0x0001_0x05__RADIO_TEST_REQUEST_FROM_MASTER_Message;
 import de.ibapl.fhz4j.protocol.evohome.EvoHome_0x28_0x1F09_0x03_Message;
 import de.ibapl.fhz4j.protocol.evohome.EvoHome_0x2C_0x1FC9_0xXX_Message;
 import de.ibapl.fhz4j.protocol.evohome.EvoHome_0x2C_0x2309_0xXX_ROOM_DESIRED_TEMP_Message;
 import de.ibapl.fhz4j.protocol.evohome.EvoHome_0x3C_0x0004_0x16_Message;
 import de.ibapl.fhz4j.protocol.evohome.EvoHome_0x3C_0x000A_0xXX_ZONES_PARAMS_Message;
+import de.ibapl.fhz4j.protocol.evohome.EvoHome_0x3C_0x0016_0x02_Message;
 import de.ibapl.fhz4j.protocol.evohome.EvoHome_0x3C_0x0100_0x05_Message;
 import de.ibapl.fhz4j.protocol.evohome.EvoHome_0x3C_0x1F09_0x03_RESPONSE_3C_1F09_Message;
 import de.ibapl.fhz4j.protocol.evohome.EvoHome_0x3C_0x2309_0xXX_ROOM_DESIRED_TEMP_Message;
@@ -204,7 +206,8 @@ public class EvoHomeParser extends Parser {
 		PARSE_ERROR;
 
 	}
-
+	//Just cache this ...
+	private final static BigDecimal ONE_HUNDRED = new BigDecimal(100.0);
 	private static final Logger LOG = Logger.getLogger(LogUtils.FHZ_PARSER_CUL);
 	private final ParserListener<EvoHomeMessage> parserListener;
 	private State state;
@@ -391,7 +394,7 @@ public class EvoHomeParser extends Parser {
 			case COLLECT_ZONE_SETPOINT_PERMANENT_TEMPERATURE:
 				push(digit2Int(c));
 				if (getStackpos() == 0) {
-					((EvoHome_0x18_0x2349_0x07_ZONE_SETPOINT_PERMANENT_Message) evoHomeMessage).temperature.temperature = 0.01f * getIntValue();
+					((EvoHome_0x18_0x2349_0x07_ZONE_SETPOINT_PERMANENT_Message) evoHomeMessage).temperature.temperature = new BigDecimal(getShortValue()).divide(ONE_HUNDRED);
 					setStackSize(8);
 					state = State.COLLECT_ZONE_SETPOINT_PERMANENT_UNKNOWN;
 				}
@@ -416,7 +419,7 @@ public class EvoHomeParser extends Parser {
 			case COLLECT_ZONE_SETPOINT_UNTIL_TEMPERATURE:
 				push(digit2Int(c));
 				if (getStackpos() == 0) {
-					((EvoHome_0x18_0x2349_0x0D_ZONE_SETPOINT_UNTIL_Message) evoHomeMessage).temperature.temperature = 0.01f * getShortValue();
+					((EvoHome_0x18_0x2349_0x0D_ZONE_SETPOINT_UNTIL_Message) evoHomeMessage).temperature.temperature = new BigDecimal(getShortValue()).divide(ONE_HUNDRED);
 					setStackSize(8);
 					state = State.COLLECT_ZONE_SETPOINT_UNTIL_UNKNOWN;
 				}
@@ -573,10 +576,10 @@ public class EvoHomeParser extends Parser {
 				state = State.PARSE_SUCCESS;
 			}
 			break;
-		case _28_0001:
-			((EvoHome_0x28_0x0001_0x05_Message) evoHomeMessage).value[copyDataIndex++] = getByteValue();
+		case _28_0001_RADIO_TEST_REQUEST_FROM_MASTER:
+			((EvoHome_0x28_0x0001_0x05__RADIO_TEST_REQUEST_FROM_MASTER_Message) evoHomeMessage).value[copyDataIndex++] = getByteValue();
 			setStackSize(2);
-			if (((EvoHome_0x28_0x0001_0x05_Message) evoHomeMessage).value.length == copyDataIndex) {
+			if (((EvoHome_0x28_0x0001_0x05__RADIO_TEST_REQUEST_FROM_MASTER_Message) evoHomeMessage).value.length == copyDataIndex) {
 				parserListener.success(evoHomeMessage);
 				state = State.PARSE_SUCCESS;
 			}
@@ -911,7 +914,7 @@ public class EvoHomeParser extends Parser {
 			switch (evoHomeCommand) {
 			case _0001:
 				checkLength(0x05, length, "EvoHome_0x28_0x0001_0x05");
-				evoHomeMessage = new EvoHome_0x28_0x0001_0x05_Message();
+				evoHomeMessage = new EvoHome_0x28_0x0001_0x05__RADIO_TEST_REQUEST_FROM_MASTER_Message();
 				setStackSize(2);
 				state = State.COLLECT_DATA_BYTES;
 				break;
@@ -952,6 +955,12 @@ default:
 				evoHomeMessage = new EvoHome_0x3C_0x0004_0x16_Message();
 				_18_0004_16_Parser.init(getShortValue());
 				state = State.PARSE_XX_0004_16_DATA;
+				break;
+			case _0016:
+				checkLength(0x02, length, "EvoHome_0x3C_0x0016_0x02_Message");
+				evoHomeMessage = new EvoHome_0x3C_0x0016_0x02_Message();
+				setStackSize(4);
+				state = State.COLLECT_SINGLE_VALUE;
 				break;
 			case _000A:
 				//TODO ??? multiple of 6 ??? checkLength(0x06, length, "EvoHome_0x3C_0x000A_0xXX_ZONES_PARAMS_Message");
@@ -1043,14 +1052,14 @@ default:
 
 	private void setSingleValueAndNotify() {
 		switch (evoHomeProperty) {
+		case _0C_0016:
+			((EvoHome_0x0C_0x0016_0x02_Message) evoHomeMessage).value = getIntValue();
+			break;
 		case _0C_000A:
 			((EvoHome_0x0C_0x000A_0x01_Message) evoHomeMessage).value = getByteValue();
 			break;
 		case _0C_2309:
 			((EvoHome_0x0C_0x2309_0x01_Message) evoHomeMessage).value = getByteValue();
-			break;
-		case _0C_0016:
-			((EvoHome_0x0C_0x0016_0x02_Message) evoHomeMessage).value = getIntValue();
 			break;
 		case _0C_1F09_REQUEST_FOR_3C_1F09_:
 			((EvoHome_0x0C_0x1F09_0x01_REQUEST_0C_1F09_Message) evoHomeMessage).value = getByteValue();
@@ -1081,6 +1090,9 @@ default:
 			break;
 		case _28_1F09:
 			((EvoHome_0x28_0x1F09_0x03_Message) evoHomeMessage).unknown  = getIntValue();
+			break;
+		case _3C_0016:
+			((EvoHome_0x3C_0x0016_0x02_Message) evoHomeMessage).value = getIntValue();
 			break;
 		case _3C_1F09_RESPONSE_TO_0C_1F09:
 			((EvoHome_0x3C_0x1F09_0x03_RESPONSE_3C_1F09_Message) evoHomeMessage).value = getIntValue();

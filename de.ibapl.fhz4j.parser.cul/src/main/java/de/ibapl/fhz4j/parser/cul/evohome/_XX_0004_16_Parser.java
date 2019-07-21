@@ -84,7 +84,8 @@ class _XX_0004_16_Parser extends Parser {
 			push(digit2Int(c));
 			if (getStackpos() == 0) {
 				byte b = getByteValue();
-				if (b != 0) {
+				//We do not want 0 or DEL here, so filter it
+				if (b != 0 && b != 0x7F) {
 					zoneNameBuilder.append((char)b);
 				}
 				if (nibblesConsumed == nibblesToConsume) {

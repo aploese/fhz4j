@@ -25,17 +25,19 @@ package de.ibapl.fhz4j.protocol.evohome;
  *
  * @author Arne Plöse
  */
-public class EvoHome_0x28_0x0001_0x05_Message extends EvoHomeDeviceMessage {
+public class EvoHome_0x3C_0x0016_0x02_Message extends EvoHomeDeviceMessage {
 	
-	public final byte[] value = new byte[0x05];
+	public int value;
 
-	public EvoHome_0x28_0x0001_0x05_Message() {
-		super(EvoHomeProperty._28_0001);
+	public EvoHome_0x3C_0x0016_0x02_Message() {
+		super(EvoHomeProperty._3C_0016);
 	}
+
+	
 	
 	@Override
 	protected void addToString(StringBuilder sb) {
 		super.addToString(sb);
-		appendByteArray(sb, "value", value);
+		sb.append(String.format(", value : 0x%04x", value));
 	}
 }

@@ -38,7 +38,7 @@ public class EvoHome_0x18_0x2349_0x07_ZONE_SETPOINT_PERMANENT_Message extends Ev
 	@Override
 	protected void addToString(StringBuilder sb) {
 		super.addToString(sb);
-		sb.append(", temperature: ").append(temperature);
-		sb.append(String.format(", unknown:0x%08x", unknown));
+		sb.append(", temperature : ").append(temperature);
+		sb.append(String.format(", unknown : 0x%08x", unknown));
 	}
 }

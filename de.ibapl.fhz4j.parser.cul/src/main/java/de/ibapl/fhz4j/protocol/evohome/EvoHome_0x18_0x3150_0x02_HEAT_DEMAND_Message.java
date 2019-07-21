@@ -40,13 +40,9 @@ public class EvoHome_0x18_0x3150_0x02_HEAT_DEMAND_Message extends EvoHomeDeviceM
 	@Override
 	protected void addToString(StringBuilder sb) {
 		super.addToString(sb);
-		sb.append(", zone:");
-		sb.append(String.format("0x%02x", zone));
-		sb.append(", heatDemand:");
-		sb.append(heatDemand);
-		sb.append(", valvePosition:");
-		sb.append(calcValvePosition());
-		sb.append("%");
+		sb.append(String.format(", zone : 0x%02x", zone));
+		sb.append(", heatDemand : ").append(heatDemand);
+		sb.append(", valvePosition : ").append(calcValvePosition()).append("%");
 	}
 	
 	/**

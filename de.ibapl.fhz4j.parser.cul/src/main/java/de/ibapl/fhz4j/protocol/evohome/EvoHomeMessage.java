@@ -44,9 +44,9 @@ public abstract class EvoHomeMessage extends FhzMessage {
 	public String toString() {
 		StringBuilder sb = new StringBuilder();
 		sb.append("{");
-		sb.append("fhzProtocol:");
+		sb.append("fhzProtocol : ");
 		sb.append(fhzProtocol);
-		sb.append(", property:");
+		sb.append(", property : ");
 		sb.append(property);
 		addToString(sb);
 		sb.append("}");

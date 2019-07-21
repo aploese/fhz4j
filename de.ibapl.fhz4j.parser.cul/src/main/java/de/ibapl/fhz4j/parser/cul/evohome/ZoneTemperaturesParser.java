@@ -21,6 +21,7 @@
  */
 package de.ibapl.fhz4j.parser.cul.evohome;
 
+import java.math.BigDecimal;
 import java.util.LinkedList;
 
 import de.ibapl.fhz4j.parser.api.Parser;
@@ -29,6 +30,8 @@ import de.ibapl.fhz4j.protocol.evohome.ZoneTemperature;
 class ZoneTemperaturesParser extends Parser {
 
 	LinkedList<ZoneTemperature> zoneTemperatures;
+	//Just cache this ...
+	private final static BigDecimal ONE_HUNDRED = new BigDecimal(100.0);
 
 	enum State {
 
@@ -67,7 +70,11 @@ class ZoneTemperaturesParser extends Parser {
 		case COLLECT_TEMPERATURE:
 			push(digit2Int(c));
 			if (getStackpos() == 0) {
-				zoneTemperatures.getLast().temperature = 0.01f * getShortValue();
+				if (getShortValue() == 0x7FFF) {
+					zoneTemperatures.getLast().temperature = null;
+				}else {
+					zoneTemperatures.getLast().temperature = new BigDecimal(getShortValue()).divide(ONE_HUNDRED);
+				}
 				if (nibblesConsumed == nibblesToConsume) {
 					state = State.PARSE_SUCCESS;
 				} else {

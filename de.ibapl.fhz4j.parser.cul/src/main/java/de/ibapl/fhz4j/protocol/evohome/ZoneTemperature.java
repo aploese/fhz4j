@@ -21,16 +21,17 @@
  */
 package de.ibapl.fhz4j.protocol.evohome;
 
+import java.math.BigDecimal;
 import java.util.Objects;
 
 public class ZoneTemperature {
 	public byte zone;
-	public float temperature;
+	public BigDecimal temperature;
 	
 	public ZoneTemperature() {
 	}
 
-	public ZoneTemperature(byte zone, float temperature) {
+	public ZoneTemperature(byte zone, BigDecimal temperature) {
 		this.zone = zone;
 		this.temperature = temperature;
 	}
@@ -64,7 +65,8 @@ public class ZoneTemperature {
 		if (getClass() != obj.getClass())
 			return false;
 		ZoneTemperature other = (ZoneTemperature) obj;
-		return Float.floatToIntBits(temperature) == Float.floatToIntBits(other.temperature) && zone == other.zone;
+		return Objects.equals(temperature, other.temperature) && zone == other.zone;
 	}
+
 	
 }

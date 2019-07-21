@@ -21,6 +21,7 @@
  */
 package de.ibapl.fhz4j.parser.cul.evohome;
 
+import java.math.BigDecimal;
 import java.util.LinkedList;
 
 import de.ibapl.fhz4j.parser.api.Parser;
@@ -50,6 +51,8 @@ class ZonesParamParser extends Parser {
 		COLLECT_MAX_TEMP, PARSE_SUCCESS, PARSE_ERROR;
 
 	}
+	//Just cache this ...
+	private final static BigDecimal ONE_HUNDRED = new BigDecimal(100.0);
 
 	State state;
 	private short nibblesToConsume;
@@ -79,7 +82,7 @@ class ZonesParamParser extends Parser {
 		case COLLECT_MIN_TEMP:
 			push(digit2Int(c));
 			if (getStackpos() == 0) {
-				zoneParams.getLast().minTemperature = 0.01f * getShortValue();
+				zoneParams.getLast().minTemperature = new BigDecimal(getShortValue()).divide(ONE_HUNDRED);
 				setStackSize(4);
 				state = State.COLLECT_MAX_TEMP;
 			}
@@ -87,7 +90,7 @@ class ZonesParamParser extends Parser {
 		case COLLECT_MAX_TEMP:
 			push(digit2Int(c));
 			if (getStackpos() == 0) {
-				zoneParams.getLast().maxTemperature = 0.01f * getShortValue();
+				zoneParams.getLast().maxTemperature = new BigDecimal(getShortValue()).divide(ONE_HUNDRED);
 				if (nibblesConsumed == nibblesToConsume) {
 					state = State.PARSE_SUCCESS;
 				} else {
