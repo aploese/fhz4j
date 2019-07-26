@@ -25,6 +25,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import de.ibapl.fhz4j.parser.api.ParserListener;
+import de.ibapl.fhz4j.parser.em.EmParser;
 import de.ibapl.fhz4j.protocol.em.EmDeviceType;
 import de.ibapl.fhz4j.protocol.em.EmMessage;
 import org.junit.jupiter.api.Test;
@@ -37,16 +38,13 @@ public class EmMessageTest implements ParserListener<EmMessage> {
 
 	private EmParser parser = new EmParser(this);
 	private EmMessage emMessage;
-	private Throwable error;
 
 	private void decode(String s) {
 		emMessage = null;
-		error = null;
 		parser.init();
-		for (char c : s.toCharArray()) {
-			parser.parse(c);
-		}
-	}
+		new DataSource(s).iterate(parser);
+	}	
+	
 
 	@Override
 	public void success(EmMessage emMessage) {
@@ -55,7 +53,7 @@ public class EmMessageTest implements ParserListener<EmMessage> {
 
 	@Override
 	public void fail(Throwable t) {
-		error = t;
+		throw new RuntimeException(t);
 	}
 
 	@Override
@@ -103,4 +101,10 @@ public class EmMessageTest implements ParserListener<EmMessage> {
 	 assertEm1000Message(emMessage, EmDeviceType.EM_1000_S, 2, (short) 41, 237, 3, 82);
 	}
 
+	@Test
+	public void decode_EM_5() {
+	decode("010201040004000F0047");
+	 assertEm1000Message(emMessage, EmDeviceType.EM_1000_S, 2, (short) 1, 4, 4, 15);
+	}
+	
 }

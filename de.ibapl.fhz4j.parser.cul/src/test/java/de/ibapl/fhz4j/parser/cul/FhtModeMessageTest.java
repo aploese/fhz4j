@@ -28,6 +28,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import java.time.LocalTime;
 
 import de.ibapl.fhz4j.parser.api.ParserListener;
+import de.ibapl.fhz4j.parser.fht.FhtParser;
 import de.ibapl.fhz4j.protocol.fht.Fht80bMode;
 import de.ibapl.fhz4j.protocol.fht.FhtMessage;
 import de.ibapl.fhz4j.protocol.fht.FhtModeMessage;
@@ -44,17 +45,13 @@ public class FhtModeMessageTest implements ParserListener<FhtMessage> {
 	private FhtMessage partialFhtMessage;
 	private FhtMessage assembledFhtMessage;
 	private FhtMessage fhtMessage;
-	private Throwable error;
 
 	private void decode(String s) {
 		fhtMessage = null;
 		partialFhtMessage = null;
 		assembledFhtMessage = null;
-		error = null;
 		parser.init();
-		for (char c : s.toCharArray()) {
-			parser.parse(c);
-		}
+		new DataSource(s).iterate(parser);
 	}
 
 	@Test
@@ -68,9 +65,9 @@ public class FhtModeMessageTest implements ParserListener<FhtMessage> {
 		decode("0302416922");
 		FhtTempMessageTest.assertTempMessage(fhtMessage, 302, FhtProperty.DESIRED_TEMP, true, true, 17.0f);
 		decode("03023F698D");
-		FhtTempMessageTest.assertRawMessage(partialFhtMessage, 302, FhtProperty.HOLIDAY_1, true, true, 0x8D);
+		FhtTempMessageTest.assertRawMessage(partialFhtMessage, 302, FhtProperty.HOLIDAY_1, true, true, (byte)0x8D);
 		decode("0302406913");
-		FhtTempMessageTest.assertRawMessage(partialFhtMessage, 302, FhtProperty.HOLIDAY_2, true, true, 0x13);
+		FhtTempMessageTest.assertRawMessage(partialFhtMessage, 302, FhtProperty.HOLIDAY_2, true, true, (byte)0x13);
 		decode("03023E6903");
 		FhtTimeMessageTest.assertTimeMessage(assembledFhtMessage, 302, FhtProperty.PARTY_END_TIME, true, true,
 				LocalTime.of(23, 30));
@@ -93,7 +90,7 @@ public class FhtModeMessageTest implements ParserListener<FhtMessage> {
 
 	@Override
 	public void fail(Throwable t) {
-		error = t;
+		throw new RuntimeException(t);
 	}
 
 	public static void assertModeMessage(FhtMessage fhtMessage, int housecode, boolean dataRegister, boolean fromFht_8B,

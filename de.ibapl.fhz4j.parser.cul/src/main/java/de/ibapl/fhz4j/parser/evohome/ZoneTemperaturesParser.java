@@ -19,16 +19,19 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package de.ibapl.fhz4j.parser.cul.evohome;
+package de.ibapl.fhz4j.parser.evohome;
 
+import java.math.BigDecimal;
 import java.util.LinkedList;
 
-import de.ibapl.fhz4j.parser.api.Parser;
-import de.ibapl.fhz4j.protocol.evohome.EvoHome_0xXX_0x1FC9_0xXX_Message.Data;
+import de.ibapl.fhz4j.parser.api.AbstractParser;
+import de.ibapl.fhz4j.protocol.evohome.ZoneTemperature;
 
-class _XX_1FC9_XX_Parser extends Parser {
+class ZoneTemperaturesParser extends AbstractParser {
 
-	LinkedList<Data> elements;
+	LinkedList<ZoneTemperature> zoneTemperatures;
+	//Just cache this ...
+	private final static BigDecimal ONE_HUNDRED = new BigDecimal(100.0);
 
 	enum State {
 
@@ -39,11 +42,7 @@ class _XX_1FC9_XX_Parser extends Parser {
 		/**
 		 * 
 		 */
-		COLLECT_COMMAND,
-		/**
-		 * 
-		 */
-		COLLECT_DEVICEID,
+		COLLECT_TEMPERATURE,
 		/**
 		 * 
 		 */
@@ -52,38 +51,29 @@ class _XX_1FC9_XX_Parser extends Parser {
 	}
 
 	State state;
-	private short nibblesToConsume;
-	private short nibblesConsumed;
+	private short bytesToConsume;
+	private short bytesConsumed;
 
 	@Override
-	public void parse(char c) {
-		nibblesConsumed++;
+	public void parse(byte b) {
+		bytesConsumed++;
 		switch (state) {
 		case COLLECT_ZONEID:
-			push(digit2Int(c));
-			if (getStackpos() == 0) {
-				elements.addLast(new Data());
-				elements.getLast().zoneId = getByteValue();
-				setStackSize(4);
-				state = State.COLLECT_COMMAND;
-			}
+				zoneTemperatures.addLast(new ZoneTemperature());
+				zoneTemperatures.getLast().zone = b;
+				setStackSize(2);
+				state = State.COLLECT_TEMPERATURE;
 			break;
-		case COLLECT_COMMAND:
-			push(digit2Int(c));
-			if (getStackpos() == 0) {
-				elements.getLast().command = getShortValue();
-				setStackSize(6);
-				state = State.COLLECT_DEVICEID;
-			}
-			break;
-		case COLLECT_DEVICEID:
-			push(digit2Int(c));
-			if (getStackpos() == 0) {
-				elements.getLast().deviceId = getIntValue();
-				if (nibblesConsumed == nibblesToConsume) {
+		case COLLECT_TEMPERATURE:
+			if (push(b)) {
+				if (getShortValue() == 0x7FFF) {
+					zoneTemperatures.getLast().temperature = null;
+				}else {
+					zoneTemperatures.getLast().temperature = new BigDecimal(getShortValue()).divide(ONE_HUNDRED);
+				}
+				if (bytesConsumed == bytesToConsume) {
 					state = State.PARSE_SUCCESS;
 				} else {
-					setStackSize(2);
 					state = State.COLLECT_ZONEID;
 				}
 			}
@@ -97,11 +87,10 @@ class _XX_1FC9_XX_Parser extends Parser {
 	}
 
 	public void init(short bytesToConsume) {
-		setStackSize(2);
 		state = State.COLLECT_ZONEID;
-		elements = new LinkedList<>();
-		this.nibblesConsumed = 0;
-		this.nibblesToConsume = (short) (bytesToConsume * 2);
+		zoneTemperatures = new LinkedList<>();
+		this.bytesConsumed = 0;
+		this.bytesToConsume = bytesToConsume;
 	}
 
 	// TODO change signature ???

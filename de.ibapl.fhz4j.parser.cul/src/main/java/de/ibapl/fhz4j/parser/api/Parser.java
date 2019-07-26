@@ -21,86 +21,13 @@
  */
 package de.ibapl.fhz4j.parser.api;
 
-/**
- *
- * @author Arne Plöse
- */
-public abstract class Parser {
-	private int value;
-	private int stackpos;
+@FunctionalInterface
+public interface Parser {
+	
+	public void parse(byte b);
+	
+	default public void init() {};
 
-	protected void setStackSize(int size) {
-		value = 0;
-		stackpos = size;
-	}
-
-	protected int getStackpos() {
-		return stackpos;
-	}
-
-	public static int digit2Int(char c) {
-		switch (c) {
-		case '0':
-			return 0x00;
-		case '1':
-			return 0x01;
-		case '2':
-			return 0x02;
-		case '3':
-			return 0x03;
-		case '4':
-			return 0x04;
-		case '5':
-			return 0x05;
-		case '6':
-			return 0x06;
-		case '7':
-			return 0x07;
-		case '8':
-			return 0x08;
-		case '9':
-			return 0x09;
-		case 'A':
-			return 0x0a;
-		case 'B':
-			return 0x0b;
-		case 'C':
-			return 0x0c;
-		case 'D':
-			return 0x0d;
-		case 'E':
-			return 0x0e;
-		case 'F':
-			return 0x0f;
-		default:
-			throw new RuntimeException("Not a Number: " + c);
-		}
-	}
-
-	protected void push(int b) {
-		value += b << (stackpos-- - 1) * 4;
-	}
-
-	protected void pushBCD(int b) {
-		value *= 10;
-		value += b;
-		stackpos--;
-	}
-
-	protected short getShortValue() {
-		return (short) (value & 0x0000FFFF);
-	}
-
-	protected byte getByteValue() {
-		return (byte) (value & 0x000000FF);
-	}
-
-	protected int getIntValue() {
-		return value;
-	}
-
-	public abstract void parse(char c);
-
-	public abstract void init();
-
+	default public void init(int expectedLength) {};
+	
 }

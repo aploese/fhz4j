@@ -25,6 +25,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import de.ibapl.fhz4j.parser.api.ParserListener;
+import de.ibapl.fhz4j.parser.fs20.FS20Parser;
 import de.ibapl.fhz4j.protocol.fs20.FS20CommandValue;
 import de.ibapl.fhz4j.protocol.fs20.FS20Message;
 import org.junit.jupiter.api.Test;
@@ -37,15 +38,11 @@ public class FS20MessageTest implements ParserListener<FS20Message> {
 
 	private FS20Parser parser = new FS20Parser(this);
 	private FS20Message fS20Message;
-	private Throwable error;
 
 	private void decode(String s) {
 		fS20Message = null;
-		error = null;
 		parser.init();
-		for (char c : s.toCharArray()) {
-			parser.parse(c);
-		}
+		new DataSource(s).iterate(parser);
 	}
 
 	@Override
@@ -55,7 +52,7 @@ public class FS20MessageTest implements ParserListener<FS20Message> {
 
 	@Override
 	public void fail(Throwable t) {
-		error = t;
+		throw new RuntimeException(t);
 	}
 
 	@Override

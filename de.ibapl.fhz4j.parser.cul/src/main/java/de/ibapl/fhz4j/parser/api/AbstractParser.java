@@ -19,26 +19,53 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package de.ibapl.fhz4j.protocol.fht;
-
-import java.time.LocalTime;
+package de.ibapl.fhz4j.parser.api;
 
 /**
  *
  * @author Arne Plöse
  */
-public class FhtTimeMessage extends Fht8bMessage {
+public abstract class AbstractParser implements Parser {
+	private int value;
+	private int stackpos;
 
-	public LocalTime time;
-
-	public FhtTimeMessage(short housecode, FhtProperty command, boolean fromFht_8B, boolean dataRegister, byte hour,
-			byte minute) {
-		super(housecode, command, fromFht_8B, dataRegister);
-		if (hour == 24 && minute == 0) {
-			time = null;
-		} else {
-			time = LocalTime.of(hour, minute);
-		}
+	protected void setStackSize(int size) {
+		value = 0;
+		stackpos = size;
 	}
+
+	protected int getStackpos() {
+		return stackpos;
+	}
+
+
+	/**
+	 * pushes the byte onto the stack.
+	 * 
+	 * @param b the byte to push onto the stack.
+	 * @return true if the stack is ready for read.
+	 */
+	protected boolean push(byte b) {
+		assert stackpos > 0;
+		value += (b & 0xff) << (stackpos-- - 1) * 8;
+		return stackpos == 0;
+	}
+
+	protected short getShortValue() {
+		return (short) (value & 0x0000FFFF);
+	}
+
+	protected byte getByteValue() {
+		return (byte) (value & 0x000000FF);
+	}
+
+	protected int getIntValue() {
+		return value;
+	}
+
+	protected static short get3DigitBCD(short bcd) {
+		return (short) ((((bcd >> 8) & 0x0f) * 100) + (((bcd >> 4) & 0x0f) * 10) + (bcd & 0x0f));
+	}
+
 
 }

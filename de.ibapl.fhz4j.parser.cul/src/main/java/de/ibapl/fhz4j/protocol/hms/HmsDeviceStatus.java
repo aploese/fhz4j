@@ -21,21 +21,16 @@
  */
 package de.ibapl.fhz4j.protocol.hms;
 
-import java.util.EnumSet;
-import java.util.Set;
-
 /**
  *
  * @author Arne Plöse
  */
 public enum HmsDeviceStatus {
-	BATT_LOW(0x02, "Batt low");
+	BATT_LOW("Batt low");
 
-	private final byte value;
 	private final String label;
 
-	private HmsDeviceStatus(int value, String label) {
-		this.value = (byte) value;
+	private HmsDeviceStatus(String label) {
 		this.label = label;
 	}
 
@@ -45,29 +40,6 @@ public enum HmsDeviceStatus {
 
 	public String getName() {
 		return name();
-	}
-
-	public byte getValue() {
-		return value;
-	}
-
-	public static Set<HmsDeviceStatus> valueOf(int value) {
-		Set<HmsDeviceStatus> result = EnumSet.noneOf(HmsDeviceStatus.class);
-		for (HmsDeviceStatus prop : values()) {
-			if (prop.value == value) {
-				result.add(prop);
-			}
-		}
-		return result;
-	}
-
-	public static HmsDeviceStatus fromLabel(String label) {
-		for (HmsDeviceStatus prop : values()) {
-			if (prop.getLabel().equals(label)) {
-				return prop;
-			}
-		}
-		return valueOf(label);
 	}
 
 }

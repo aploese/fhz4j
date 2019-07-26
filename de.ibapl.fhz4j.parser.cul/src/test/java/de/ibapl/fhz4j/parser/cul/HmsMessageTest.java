@@ -30,6 +30,7 @@ import java.util.EnumSet;
 import java.util.Set;
 
 import de.ibapl.fhz4j.parser.api.ParserListener;
+import de.ibapl.fhz4j.parser.hms.HmsParser;
 import de.ibapl.fhz4j.protocol.hms.Hms100RmMessage;
 import de.ibapl.fhz4j.protocol.hms.Hms100TfMessage;
 import de.ibapl.fhz4j.protocol.hms.Hms100TfkMessage;
@@ -47,15 +48,11 @@ public class HmsMessageTest implements ParserListener<HmsMessage> {
 
 	private HmsParser parser = new HmsParser(this);
 	private HmsMessage hmsMessage;
-	private Throwable error;
 
 	private void decode(String s) {
 		hmsMessage = null;
-		error = null;
 		parser.init();
-		for (char c : s.toCharArray()) {
-			parser.parse(c);
-		}
+		new DataSource(s).iterate(parser);
 	}
 
 	@Override
@@ -65,7 +62,7 @@ public class HmsMessageTest implements ParserListener<HmsMessage> {
 
 	@Override
 	public void fail(Throwable t) {
-		error = t;
+		throw new RuntimeException(t);
 	}
 
 	@Test
@@ -133,37 +130,38 @@ public class HmsMessageTest implements ParserListener<HmsMessage> {
 	@Test
 	public void decode_HMS_100_TF() {
 
-		decode("775800528272");
-	 assertHmsTfMessage(hmsMessage, 0x7758, EnumSet.noneOf(HmsDeviceStatus.class), 25.2f, 72.8f);
-
-		decode("C25C00098262");
+	decode("C25C 00 098262");
 	 assertHmsTfMessage(hmsMessage, 0xC25C, EnumSet.noneOf(HmsDeviceStatus.class), 20.9f, 62.8f);
 
-		decode("C25C20128260");
+	 decode("7758 00 528272");
+	 assertHmsTfMessage(hmsMessage, 0x7758, EnumSet.noneOf(HmsDeviceStatus.class), 25.2f, 72.8f);
+
+
+		decode("C25C 20 128260");
 	 assertHmsTfMessage(hmsMessage, 0xC25C, EnumSet.of(HmsDeviceStatus.BATT_LOW), 21.2f, 60.8f);
 	}
 
 	@Test
 	public void decode_HMS_100_TFK() {
-		decode("7AEF04000000");
+		decode("7AEF 04 000000");
 	 assertHmsTkfMessage(hmsMessage, 0x7AEF, EnumSet.noneOf(HmsDeviceStatus.class), false);
-		decode("7AEF04010000");
+		decode("7AEF 04 010000");
 	 assertHmsTkfMessage(hmsMessage, 0x7AEF, EnumSet.noneOf(HmsDeviceStatus.class), true);
-		decode("7AEF24000000");
+		decode("7AEF 24 000000");
 	 assertHmsTkfMessage(hmsMessage, 0x7AEF, EnumSet.of(HmsDeviceStatus.BATT_LOW), false);
-		decode("7AEF24010000");
+		decode("7AEF 24 010000");
 	 assertHmsTkfMessage(hmsMessage, 0x7AEF, EnumSet.of(HmsDeviceStatus.BATT_LOW), true);
 	}
 
 	@Test
 	public void decode_HMS_100_WD() {
-		decode("78D10200FA00");
+		decode("78D1 02 00FA00");
 	 assertHmsWdMessage(hmsMessage, 0x78D1, EnumSet.noneOf(HmsDeviceStatus.class), false);
-		decode("78D102010000");
+		decode("78D1 02 010000");
 	 assertHmsWdMessage(hmsMessage, 0x78D1, EnumSet.noneOf(HmsDeviceStatus.class), true);
-		decode("78D122000000");
+		decode("78D1 22 000000");
 	 assertHmsWdMessage(hmsMessage, 0x78D1, EnumSet.of(HmsDeviceStatus.BATT_LOW), false);
-		decode("78D122010000");
+		decode("78D1 22 010000");
 	 assertHmsWdMessage(hmsMessage, 0x78D1, EnumSet.of(HmsDeviceStatus.BATT_LOW), true);
 	}
 

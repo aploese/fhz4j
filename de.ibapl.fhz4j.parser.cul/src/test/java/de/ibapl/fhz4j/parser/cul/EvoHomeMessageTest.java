@@ -34,7 +34,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 import de.ibapl.fhz4j.parser.api.ParserListener;
-import de.ibapl.fhz4j.parser.cul.evohome.EvoHomeParser;
+import de.ibapl.fhz4j.parser.evohome.EvoHomeParser;
 import de.ibapl.fhz4j.protocol.evohome.EvoHomeDeviceMessage;
 import de.ibapl.fhz4j.protocol.evohome.EvoHomeMessage;
 import de.ibapl.fhz4j.protocol.evohome.EvoHome_0x0C_0x0004_0x02_Message;
@@ -357,8 +357,6 @@ public class EvoHomeMessageTest implements ParserListener<EvoHomeMessage> {
 
 	private EvoHomeMessage evoHomeMessage;
 
-	private Throwable error;
-
 	/**
 	 * Decode but skip whitspaces
 	 * 
@@ -366,13 +364,8 @@ public class EvoHomeMessageTest implements ParserListener<EvoHomeMessage> {
 	 */
 	private void decode(String s) {
 		evoHomeMessage = null;
-		error = null;
 		parser.init();
-		for (char c : s.toCharArray()) {
-			if (c != ' ') {
-				parser.parse(c);
-			}
-		}
+		new DataSource(s).iterate(parser);
 	}
 
 	@Test
@@ -820,7 +813,7 @@ public class EvoHomeMessageTest implements ParserListener<EvoHomeMessage> {
 
 	@Override
 	public void fail(Throwable t) {
-		error = t;
+		throw new RuntimeException(t);
 	}
 
 	@Override

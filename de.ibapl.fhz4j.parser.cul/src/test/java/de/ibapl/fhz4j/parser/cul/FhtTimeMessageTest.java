@@ -23,11 +23,12 @@ package de.ibapl.fhz4j.parser.cul;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 import java.time.LocalTime;
 
 import de.ibapl.fhz4j.parser.api.ParserListener;
+import de.ibapl.fhz4j.parser.fht.FhtParser;
 import de.ibapl.fhz4j.protocol.fht.FhtMessage;
 import de.ibapl.fhz4j.protocol.fht.FhtProperty;
 import de.ibapl.fhz4j.protocol.fht.FhtTimeMessage;
@@ -44,17 +45,13 @@ public class FhtTimeMessageTest implements ParserListener<FhtMessage> {
 	private FhtMessage partialFhtMessage;
 	private FhtMessage assembledfhtMessage;
 	private FhtMessage fhtMessage;
-	private Throwable error;
 
 	private void decode(String s) {
 		fhtMessage = null;
 		partialFhtMessage = null;
 		assembledfhtMessage = null;
-		error = null;
 		parser.init();
-		for (char c : s.toCharArray()) {
-			parser.parse(c);
-		}
+		new DataSource(s).iterate(parser);
 	}
 
 	@Test
@@ -88,7 +85,7 @@ public class FhtTimeMessageTest implements ParserListener<FhtMessage> {
 
 	@Override
 	public void fail(Throwable t) {
-		error = t;
+		throw new RuntimeException(t);
 	}
 
 	public static void assertTimeMessage(FhtMessage fhtMessage, int housecode, FhtProperty fhtProperty,

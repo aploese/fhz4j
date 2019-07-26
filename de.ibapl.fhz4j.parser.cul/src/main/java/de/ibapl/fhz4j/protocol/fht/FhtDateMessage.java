@@ -30,11 +30,11 @@ import java.time.LocalDate;
  */
 public class FhtDateMessage extends Fht8bMessage {
 
-	public int day;
-	public int month;
+	public byte day;
+	public byte month;
 
-	public FhtDateMessage(short housecode, FhtProperty command, boolean fromFht_8B, boolean dataRegister, int month,
-			int day) {
+	public FhtDateMessage(short housecode, FhtProperty command, boolean fromFht_8B, boolean dataRegister, byte month,
+			byte day) {
 		super(housecode, command, fromFht_8B, dataRegister);
 		this.month = month;
 		this.day = day;

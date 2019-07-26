@@ -24,8 +24,8 @@ package de.ibapl.fhz4j.parser.cul;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
-
 import de.ibapl.fhz4j.parser.api.ParserListener;
+import de.ibapl.fhz4j.parser.lacrosse.tx2l.LaCrosseTx2Parser;
 import de.ibapl.fhz4j.protocol.lacrosse.tx2.LaCrosseTx2Message;
 import de.ibapl.fhz4j.protocol.lacrosse.tx2.LaCrosseTx2Property;
 import org.junit.jupiter.api.Test;
@@ -38,15 +38,11 @@ public class LaCrosseTx2MessageTest implements ParserListener<LaCrosseTx2Message
 
 	private LaCrosseTx2Parser parser = new LaCrosseTx2Parser(this);
 	private LaCrosseTx2Message laCrosseTx2Message;
-	private Throwable error;
 
 	private void decode(String s) {
 		laCrosseTx2Message = null;
-		error = null;
 		parser.init();
-		for (char c : s.toCharArray()) {
-			parser.parse(c);
-		}
+		new DataSource(s).iterate(parser);
 	}
 
 	@Override
@@ -56,7 +52,7 @@ public class LaCrosseTx2MessageTest implements ParserListener<LaCrosseTx2Message
 
 	@Override
 	public void fail(Throwable t) {
-		error = t;
+		throw new RuntimeException(t);
 	}
 
 	@Override
@@ -69,24 +65,28 @@ public class LaCrosseTx2MessageTest implements ParserListener<LaCrosseTx2Message
 		throw new RuntimeException("No partial message expected.");
 	}
 
-	public static void assertLaCrosseTx2Message(LaCrosseTx2Message laCrosseTx2Msg, int address,
+	public static void assertLaCrosseTx2Message(LaCrosseTx2Message laCrosseTx2Msg, byte address,
 			LaCrosseTx2Property laCrosseTx2Property, float value) {
-	 assertNotNull(laCrosseTx2Msg);
-	 assertEquals((short) address, laCrosseTx2Msg.address, "address");
-	 assertEquals(laCrosseTx2Property, laCrosseTx2Msg.laCrosseTx2Property, "laCrosseTx2Property");
-	 assertEquals(value, laCrosseTx2Msg.value, Float.MIN_NORMAL, "laCrosseTx2Property");
+		assertNotNull(laCrosseTx2Msg);
+		assertEquals((short) address, laCrosseTx2Msg.address, "address");
+		assertEquals(laCrosseTx2Property, laCrosseTx2Msg.laCrosseTx2Property, "laCrosseTx2Property");
+		assertEquals(value, laCrosseTx2Msg.value, Float.MIN_NORMAL, "laCrosseTx2Property");
 	}
 
 	@Test
 	public void decode_LA_CROSSE_TX2() {
-		decode("A00E73173D");
-	 assertLaCrosseTx2Message(laCrosseTx2Message, 7, LaCrosseTx2Property.TEMP, 23.1f);
-		decode("AECC60060C");
-	 assertLaCrosseTx2Message(laCrosseTx2Message, 198, LaCrosseTx2Property.HUMIDITY, 60.0f);
-		decode("A00AA002EA");
-	 assertLaCrosseTx2Message(laCrosseTx2Message, 5, LaCrosseTx2Property.TEMP, 50.0f);
-		decode("A00A678E9E");
-	 assertLaCrosseTx2Message(laCrosseTx2Message, 5, LaCrosseTx2Property.TEMP, 17.800001f);
+		
+		decode("A0 0E 731 73 D");
+		assertLaCrosseTx2Message(laCrosseTx2Message, (byte)0x07, LaCrosseTx2Property.TEMP, 23.1f);
+		
+		decode("AE CC 600 60 C");
+		assertLaCrosseTx2Message(laCrosseTx2Message, (byte)0xC6, LaCrosseTx2Property.HUMIDITY, 60.0f);
+		
+		decode("A0 44 723 72 7");
+		assertLaCrosseTx2Message(laCrosseTx2Message, (byte)0x42, LaCrosseTx2Property.TEMP, 22.300001f);
+		
+		decode("AE 0F 520 52 5");
+		assertLaCrosseTx2Message(laCrosseTx2Message, (byte)0x07, LaCrosseTx2Property.HUMIDITY, 52.0f);
 	}
 
 }

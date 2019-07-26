@@ -19,17 +19,17 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package de.ibapl.fhz4j.parser.cul.evohome;
+package de.ibapl.fhz4j.parser.evohome;
 
-import java.math.BigDecimal;
 import java.util.LinkedList;
 
+import de.ibapl.fhz4j.parser.api.AbstractParser;
 import de.ibapl.fhz4j.parser.api.Parser;
-import de.ibapl.fhz4j.protocol.evohome.EvoHome_0xXX_0x000A_0xXX_ZONES_PARAMS_Message.ZoneParams;
+import de.ibapl.fhz4j.protocol.evohome.EvoHome_0xXX_0x1FC9_0xXX_Message.Data;
 
-class ZonesParamParser extends Parser {
+class _XX_1FC9_XX_Parser extends AbstractParser {
 
-	LinkedList<ZoneParams> zoneParams;
+	LinkedList<Data> elements;
 
 	enum State {
 
@@ -40,61 +40,45 @@ class ZonesParamParser extends Parser {
 		/**
 		 * 
 		 */
-		COLLECT_FLAGS,
+		COLLECT_COMMAND,
 		/**
 		 * 
 		 */
-		COLLECT_MIN_TEMP,
+		COLLECT_DEVICEID,
 		/**
 		 * 
 		 */
-		COLLECT_MAX_TEMP, PARSE_SUCCESS, PARSE_ERROR;
+		PARSE_SUCCESS, PARSE_ERROR;
 
 	}
-	//Just cache this ...
-	private final static BigDecimal ONE_HUNDRED = new BigDecimal(100.0);
 
 	State state;
-	private short nibblesToConsume;
-	private short nibblesConsumed;
+	private short bytesToConsume;
+	private short bytesConsumed;
 
 	@Override
-	public void parse(char c) {
-		nibblesConsumed++;
+	public void parse(byte b) {
+		bytesConsumed++;
 		switch (state) {
 		case COLLECT_ZONEID:
-			push(digit2Int(c));
-			if (getStackpos() == 0) {
-				zoneParams.addLast(new ZoneParams());
-				zoneParams.getLast().zoneId = getByteValue();
+				elements.addLast(new Data());
+				elements.getLast().zoneId = b;
 				setStackSize(2);
-				state = State.COLLECT_FLAGS;
+				state = State.COLLECT_COMMAND;
+			break;
+		case COLLECT_COMMAND:
+			if (push(b)) {
+				elements.getLast().command = getShortValue();
+				setStackSize(3);
+				state = State.COLLECT_DEVICEID;
 			}
 			break;
-		case COLLECT_FLAGS:
-			push(digit2Int(c));
-			if (getStackpos() == 0) {
-				zoneParams.getLast().flags = getByteValue();
-				setStackSize(4);
-				state = State.COLLECT_MIN_TEMP;
-			}
-			break;
-		case COLLECT_MIN_TEMP:
-			push(digit2Int(c));
-			if (getStackpos() == 0) {
-				zoneParams.getLast().minTemperature = new BigDecimal(getShortValue()).divide(ONE_HUNDRED);
-				setStackSize(4);
-				state = State.COLLECT_MAX_TEMP;
-			}
-			break;
-		case COLLECT_MAX_TEMP:
-			push(digit2Int(c));
-			if (getStackpos() == 0) {
-				zoneParams.getLast().maxTemperature = new BigDecimal(getShortValue()).divide(ONE_HUNDRED);
-				if (nibblesConsumed == nibblesToConsume) {
+		case COLLECT_DEVICEID:
+			if (push(b)) {
+				elements.getLast().deviceId = getIntValue();
+				if (bytesConsumed == bytesToConsume) {
 					state = State.PARSE_SUCCESS;
 				} else {
-					setStackSize(2);
 					state = State.COLLECT_ZONEID;
 				}
 			}
@@ -108,11 +92,10 @@ class ZonesParamParser extends Parser {
 	}
 
 	public void init(short bytesToConsume) {
-		setStackSize(2);
 		state = State.COLLECT_ZONEID;
-		zoneParams = new LinkedList<>();
-		this.nibblesConsumed = 0;
-		this.nibblesToConsume = (short) (bytesToConsume * 2);
+		elements = new LinkedList<>();
+		this.bytesConsumed = 0;
+		this.bytesToConsume = bytesToConsume;
 	}
 
 	// TODO change signature ???

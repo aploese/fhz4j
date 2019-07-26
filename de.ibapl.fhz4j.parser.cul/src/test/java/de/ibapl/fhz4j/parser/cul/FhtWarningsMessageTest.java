@@ -29,6 +29,7 @@ import java.util.EnumSet;
 import java.util.Set;
 
 import de.ibapl.fhz4j.parser.api.ParserListener;
+import de.ibapl.fhz4j.parser.fht.FhtParser;
 import de.ibapl.fhz4j.protocol.fht.Fht80bWarning;
 import de.ibapl.fhz4j.protocol.fht.FhtMessage;
 import de.ibapl.fhz4j.protocol.fht.FhtProperty;
@@ -44,16 +45,12 @@ public class FhtWarningsMessageTest implements ParserListener<FhtMessage> {
 	private FhtParser parser = new FhtParser(this);
 	private FhtMessage partialFhtMessage;
 	private FhtMessage fhtMessage;
-	private Throwable error;
 
 	private void decode(String s) {
 		fhtMessage = null;
 		partialFhtMessage = null;
-		error = null;
 		parser.init();
-		for (char c : s.toCharArray()) {
-			parser.parse(c);
-		}
+		new DataSource(s).iterate(parser);
 	}
 
 	@Test
@@ -74,7 +71,7 @@ public class FhtWarningsMessageTest implements ParserListener<FhtMessage> {
 
 	@Override
 	public void fail(Throwable t) {
-		error = t;
+		throw new RuntimeException(t);
 	}
 
 	public static void assertWarningsMessage(FhtMessage fhtMessage, int housecode, boolean dataRegister,

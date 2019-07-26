@@ -19,11 +19,12 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package de.ibapl.fhz4j.parser.cul;
+package de.ibapl.fhz4j.parser.em;
 
 import java.util.logging.Logger;
 
 import de.ibapl.fhz4j.LogUtils;
+import de.ibapl.fhz4j.parser.api.AbstractParser;
 import de.ibapl.fhz4j.parser.api.Parser;
 import de.ibapl.fhz4j.parser.api.ParserListener;
 import de.ibapl.fhz4j.protocol.em.EmDeviceType;
@@ -33,7 +34,7 @@ import de.ibapl.fhz4j.protocol.em.EmMessage;
  *
  * @author Arne Plöse
  */
-public class EmParser extends Parser {
+public class EmParser extends AbstractParser {
 
 	/*
 	 * For EM: Ettaacc111122223333
@@ -46,7 +47,6 @@ public class EmParser extends Parser {
 	 */
 	@Override
 	public void init() {
-		setStackSize(2);
 		state = State.COLLECT_TYPE;
 		emMessage = null;
 	}
@@ -73,13 +73,11 @@ public class EmParser extends Parser {
 	private EmMessage emMessage;
 
 	@Override
-	public void parse(char c) {
+	public void parse(byte b) {
 		try {
 			switch (state) {
 			case COLLECT_TYPE:
-				push(digit2Int(c));
-				if (getStackpos() == 0) {
-					switch (getShortValue()) {
+					switch (b) {
 					case 1:
 						emMessage = new EmMessage(EmDeviceType.EM_1000_S);
 						break;
@@ -92,54 +90,41 @@ public class EmParser extends Parser {
 					default:
 						throw new RuntimeException("Wrong Type");
 					}
-					setStackSize(2);
 					state = State.COLLECT_ADDRESS;
-				}
 				break;
 			case COLLECT_ADDRESS:
-				push(digit2Int(c));
-				if (getStackpos() == 0) {
-					emMessage.address = getShortValue();
-					setStackSize(2);
+					emMessage.address = (short)(b & 0xff);
 					state = State.COLLECT_COUNTER;
-				}
 				break;
 			case COLLECT_COUNTER:
-				push(digit2Int(c));
-				if (getStackpos() == 0) {
-					emMessage.counter = getShortValue();
-					setStackSize(4);
+					emMessage.counter = (short)(b & 0xff);
+					setStackSize(2);
 					state = State.COLLECT_CUMULATED_VALUE;
-				}
 				break;
 			case COLLECT_CUMULATED_VALUE:
-				push(digit2Int(c));
-				if (getStackpos() == 0) {
+				if (push(b)) {
 					emMessage.valueCummulated = reorderBytes(getIntValue());
-					setStackSize(4);
+					setStackSize(2);
 					state = State.COLLECT_5MIN_VALUE;
 				}
 				break;
 			case COLLECT_5MIN_VALUE:
-				push(digit2Int(c));
-				if (getStackpos() == 0) {
+				if (push(b)) {
 					emMessage.value5Min = reorderBytes(getIntValue());
-					setStackSize(4);
+					setStackSize(2);
 					state = State.COLLECT_5MIN_PEAK_VALUE;
 				}
 				break;
 			case COLLECT_5MIN_PEAK_VALUE:
-				push(digit2Int(c));
-				if (getStackpos() == 0) {
+				if (push(b)) {
 					emMessage.value5MinPeak = reorderBytes(getIntValue());
-					setStackSize(2);
 					state = State.PARSE_SUCCESS;
 					parserListener.success(emMessage);
 				}
 				break;
 			}
 		} catch (Throwable t) {
-			parserListener.fail(new RuntimeException(String.format("State: %s last char %s", state, c), t));
+			parserListener.fail(new RuntimeException(String.format("State: %s last byte 0x%02x", state, b), t));
 			state = State.PARSE_ERROR;
 		}
 

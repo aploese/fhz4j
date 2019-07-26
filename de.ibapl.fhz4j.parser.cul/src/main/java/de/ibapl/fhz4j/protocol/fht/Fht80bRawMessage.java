@@ -27,11 +27,20 @@ package de.ibapl.fhz4j.protocol.fht;
  */
 public class Fht80bRawMessage extends Fht8bMessage {
 
-	public int data;
+	private final byte value;
 
-	public Fht80bRawMessage(short housecode, FhtProperty command, boolean fromFht_8B, boolean dataRegister, int data) {
+	public Fht80bRawMessage(short housecode, FhtProperty command, boolean fromFht_8B, boolean dataRegister, byte value) {
 		super(housecode, command, fromFht_8B, dataRegister);
-		this.data = data;
+		this.value = value;
 	}
+	
+	public byte getSignedValue() {
+		return value;
+	}
+	
+	public short getUnsignedValue() {
+		return (short)(value & 0xff);
+	}
+	
 
 }

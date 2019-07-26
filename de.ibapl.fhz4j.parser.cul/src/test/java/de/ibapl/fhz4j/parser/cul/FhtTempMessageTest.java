@@ -26,6 +26,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 
 import de.ibapl.fhz4j.parser.api.ParserListener;
+import de.ibapl.fhz4j.parser.fht.FhtParser;
 import de.ibapl.fhz4j.protocol.fht.Fht80bRawMessage;
 import de.ibapl.fhz4j.protocol.fht.FhtMessage;
 import de.ibapl.fhz4j.protocol.fht.FhtProperty;
@@ -41,16 +42,12 @@ public class FhtTempMessageTest implements ParserListener<FhtMessage> {
 	private FhtParser parser = new FhtParser(this);
 	private FhtMessage partialFhtMessage;
 	private FhtMessage fhtMessage;
-	private Throwable error;
 
 	private void decode(String s) {
 		fhtMessage = null;
 		partialFhtMessage = null;
-		error = null;
 		parser.init();
-		for (char c : s.toCharArray()) {
-			parser.parse(c);
-		}
+		new DataSource(s).iterate(parser);
 	}
 
 	@Test
@@ -62,16 +59,16 @@ public class FhtTempMessageTest implements ParserListener<FhtMessage> {
 	@Test
 	public void testTemp() {
 		decode("0302426901");
-	 assertRawMessage(partialFhtMessage, (short) 302, FhtProperty.MEASURED_LOW, true, true, 1);
+	 assertRawMessage(partialFhtMessage, (short) 302, FhtProperty.MEASURED_LOW, true, true, (byte)1);
 		decode("0302436901");
-	 assertRawMessage(partialFhtMessage, (short) 302, FhtProperty.MEASURED_HIGH, true, true, 1);
+	 assertRawMessage(partialFhtMessage, (short) 302, FhtProperty.MEASURED_HIGH, true, true, (byte)1);
 	 assertTempMessage(fhtMessage, (short) 302, FhtProperty.MEASURED_TEMP, true, true, 25.7f);
 	}
 
 	@Test
 	public void decode_FHT_25_1_Degree_Centigrade() {
 		decode("61344269FB");
-	 assertRawMessage(partialFhtMessage, 9752, FhtProperty.MEASURED_LOW, true, true, 251);
+	 assertRawMessage(partialFhtMessage, 9752, FhtProperty.MEASURED_LOW, true, true, (byte)251);
 	}
 
 	@Override
@@ -86,7 +83,7 @@ public class FhtTempMessageTest implements ParserListener<FhtMessage> {
 
 	@Override
 	public void fail(Throwable t) {
-		error = t;
+		throw new RuntimeException(t);
 	}
 
 	public static void assertTempMessage(FhtMessage fhtMessage, int housecode, FhtProperty fhtProperty,
@@ -101,14 +98,14 @@ public class FhtTempMessageTest implements ParserListener<FhtMessage> {
 	}
 
 	public static void assertRawMessage(FhtMessage fhtMessage, int housecode, FhtProperty fhtProperty,
-			boolean dataRegister, boolean fromFht_8B, int data) {
+			boolean dataRegister, boolean fromFht_8B, byte value) {
 	 assertNotNull(fhtMessage);
 		final Fht80bRawMessage msg = (Fht80bRawMessage) fhtMessage;
 	 assertEquals((short) housecode, msg.housecode, "housecode");
 	 assertEquals(fhtProperty, msg.command, "command");
 	 assertEquals(fromFht_8B, msg.fromFht_8B, "fromFht_8B");
 	 assertEquals(dataRegister, msg.dataRegister, "dataRegister");
-	 assertEquals(data, msg.data, "data");
+	 assertEquals(value, msg.getSignedValue(), "value");
 	}
 
 	@Override

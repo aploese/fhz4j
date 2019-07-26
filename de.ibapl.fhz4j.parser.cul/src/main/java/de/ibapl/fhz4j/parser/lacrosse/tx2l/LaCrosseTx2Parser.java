@@ -19,11 +19,12 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package de.ibapl.fhz4j.parser.cul;
+package de.ibapl.fhz4j.parser.lacrosse.tx2l;
 
 import java.util.logging.Logger;
 
 import de.ibapl.fhz4j.LogUtils;
+import de.ibapl.fhz4j.parser.api.AbstractParser;
 import de.ibapl.fhz4j.parser.api.Parser;
 import de.ibapl.fhz4j.parser.api.ParserListener;
 import de.ibapl.fhz4j.protocol.lacrosse.tx2.LaCrosseTx2Message;
@@ -33,15 +34,16 @@ import de.ibapl.fhz4j.protocol.lacrosse.tx2.LaCrosseTx2Property;
  *
  * @author Arne Plöse
  */
-class LaCrosseTx2Parser extends Parser {
+public class LaCrosseTx2Parser extends AbstractParser {
 
 	private enum State {
 
-		START_SEQUENCE_A, SENSOR_TYTE, COLLECT_SENSOR_ADDRESS_HIGH, COLLECT_SENSOR_ADDRESS_LOW, COLLECT_DATA_1_3, COLLECT_DATA_4, COLLECT_DATA_5, CHECKSUM, PARSE_SUCCESS, PARSE_ERROR;
+		START_SEQUENCE_A_AND_SENSOR_TYTE, COLLECT_SENSOR_ADDRESS, COLLECT_DATA,
+		PARSE_SUCCESS, PARSE_ERROR;
 
 	}
 
-	LaCrosseTx2Parser(ParserListener<LaCrosseTx2Message> parserListener) {
+	public LaCrosseTx2Parser(ParserListener<LaCrosseTx2Message> parserListener) {
 		this.parserListener = parserListener;
 	}
 
@@ -52,88 +54,68 @@ class LaCrosseTx2Parser extends Parser {
 	private int cs;
 
 	@Override
-	public void parse(char c) {
+	public void parse(byte b) {
 		try {
-			cs += digit2Int(c);
+			cs += (b & 0x0F) + ((b >> 4) & 0x0F);
 			switch (state) {
-			case START_SEQUENCE_A:
-				if (c == 'A') {
-					state = State.SENSOR_TYTE;
-				} else {
-					throw new RuntimeException("Wrong start sequence");
-				}
-				break;
-			case SENSOR_TYTE:
-				switch (c) {
-				case '0':
+			case START_SEQUENCE_A_AND_SENSOR_TYTE:
+				switch (b) {
+				case (byte) 0xA0:
 					laCrosseTx2Message = new LaCrosseTx2Message(LaCrosseTx2Property.TEMP);
 					break;
-				case 'E':
+				case (byte) 0xAE:
 					laCrosseTx2Message = new LaCrosseTx2Message(LaCrosseTx2Property.HUMIDITY);
 					break;
 				default:
 					throw new RuntimeException("Can't figure out the sensortype");
 				}
-				setStackSize(2);
-				state = State.COLLECT_SENSOR_ADDRESS_HIGH;
+				state = State.COLLECT_SENSOR_ADDRESS;
 				break;
-			case COLLECT_SENSOR_ADDRESS_HIGH:
-				push(digit2Int(c));
-				state = State.COLLECT_SENSOR_ADDRESS_LOW;
-				break;
-			case COLLECT_SENSOR_ADDRESS_LOW:
-				push(digit2Int(c) >> 1);
-				laCrosseTx2Message.address = (getShortValue());
+			case COLLECT_SENSOR_ADDRESS:
+				// move only the lower nibble one bit to the right
+				laCrosseTx2Message.address = (byte)((b & 0xF0) | (b >> 1) & 0x07);
 				setStackSize(3);
-				state = State.COLLECT_DATA_1_3;
+				state = State.COLLECT_DATA;
 				break;
-			case COLLECT_DATA_1_3:
-				pushBCD(digit2Int(c));
-				if (getStackpos() == 0) {
+			case COLLECT_DATA:
+				if (push(b)) {
 					switch (laCrosseTx2Message.laCrosseTx2Property) {
 					case TEMP:
-						laCrosseTx2Message.value = 0.1f * (getIntValue() - 500);
+						//Here we are only interested in the 3 highest (out of five) nibbles
+						// lowest nibble is cs
+						// 2 nibbles to the left are just the highest two nibbles repeated
+						laCrosseTx2Message.value = 0.1f * (get3DigitBCD((short)(getIntValue() >> 12)) - 500);
 						break;
 					case HUMIDITY:
-						laCrosseTx2Message.value = 0.1f * getIntValue();
+						//Here we are only interested in the 3 highest (out of five) nibbles
+						// lowest nibble is cs
+						// 2 nibbles to the left are just the highest two nibbles repeated
+						laCrosseTx2Message.value = 0.1f * (get3DigitBCD((short)(getIntValue() >> 12)));
 						break;
 					default:
 						throw new RuntimeException("Unknown Property: " + laCrosseTx2Message.laCrosseTx2Property);
 					}
-					state = State.COLLECT_DATA_4;
+					if (((cs - (b & 0x0F)) & 0x0F) == (b & 0x0F)) {
+						state = State.PARSE_SUCCESS;
+						parserListener.success(laCrosseTx2Message);
+					} else {
+						// TODO Checksum ????
+						throw new RuntimeException("Check sum mismatch");
+					}
 				}
-				break;
-			case COLLECT_DATA_4:
-				state = State.COLLECT_DATA_5;
-				// data byte 1 repeated
-				break;
-			case COLLECT_DATA_5:
-				state = State.CHECKSUM;
-				// data byte 2 repeated
-				break;
-			case CHECKSUM:
-				if (((cs - digit2Int(c)) & 0X0F) == digit2Int(c)) {
-					state = State.PARSE_SUCCESS;
-					parserListener.success(laCrosseTx2Message);
-				} else {
-					state = State.PARSE_SUCCESS;
-					parserListener.success(laCrosseTx2Message);
-					// TODO Checksum ????
-					// throw new RuntimeException("Check sum mismatch");
-				}
-
 				break;
 			default:
+				throw new RuntimeException("Cant handle stat: " + state);
 			}
 		} catch (Throwable t) {
-			parserListener.fail(new RuntimeException(String.format("State: %s last char %s", state, c), t));
+			parserListener.fail(new RuntimeException(String.format("State: %s last byte 0x%02x", state, b), t));
 			state = State.PARSE_ERROR;
 		}
 	}
 
 	@Override
 	public void init() {
-		state = State.START_SEQUENCE_A;
+		state = State.START_SEQUENCE_A_AND_SENSOR_TYTE;
 		cs = 0;
 		laCrosseTx2Message = null;
 	}

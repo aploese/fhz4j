@@ -19,11 +19,12 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package de.ibapl.fhz4j.parser.cul;
+package de.ibapl.fhz4j.parser.fs20;
 
 import java.util.logging.Logger;
 
 import de.ibapl.fhz4j.LogUtils;
+import de.ibapl.fhz4j.parser.api.AbstractParser;
 import de.ibapl.fhz4j.parser.api.Parser;
 import de.ibapl.fhz4j.parser.api.ParserListener;
 import de.ibapl.fhz4j.protocol.fs20.FS20CommandValue;
@@ -33,11 +34,11 @@ import de.ibapl.fhz4j.protocol.fs20.FS20Message;
  *
  * @author Arne Plöse
  */
-public class FS20Parser extends Parser {
+public class FS20Parser extends AbstractParser {
 
 	@Override
 	public void init() {
-		setStackSize(4);
+		setStackSize(2);
 		state = State.COLLECT_HOUSECODE;
 		fs20Message = null;
 	}
@@ -131,39 +132,29 @@ public class FS20Parser extends Parser {
 	private byte offset;
 
 	@Override
-	public void parse(char c) {
+	public void parse(byte b) {
 		try {
 			switch (state) {
 			// FHT
 			case COLLECT_HOUSECODE:
-				push(digit2Int(c));
-				if (getStackpos() == 0) {
+				if (push(b)) {
 					housecode = getShortValue();
-					setStackSize(2);
 					state = State.COLLECT_OFFSET;
 				}
 				break;
 			case COLLECT_OFFSET:
-				push(digit2Int(c));
-				if (getStackpos() == 0) {
-					offset = getByteValue();
-					setStackSize(2);
+					offset = b;
 					state = State.COLLECT_COMMAND;
-				}
 				break;
 			case COLLECT_COMMAND:
-				push(digit2Int(c));
-				if (getStackpos() == 0) {
-					fs20Message = new FS20Message(housecode, getFS20CommandValue(getIntValue()), offset);
+					fs20Message = new FS20Message(housecode, getFS20CommandValue(b & 0xff), offset);
 					state = State.PARSE_SUCCESS;
 					parserListener.success(fs20Message);
-					setStackSize(0);
-				}
 				break;
 
 			}
 		} catch (Throwable t) {
-			parserListener.fail(new RuntimeException(String.format("State: %s last char %s", state, c), t));
+			parserListener.fail(new RuntimeException(String.format("State: %s last byte %0x02x", state, b), t));
 			state = State.PARSE_ERROR;
 		}
 	}

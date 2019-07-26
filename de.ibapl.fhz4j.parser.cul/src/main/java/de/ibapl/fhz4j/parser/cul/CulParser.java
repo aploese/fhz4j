@@ -29,7 +29,12 @@ import de.ibapl.fhz4j.api.FhzDataListener;
 import de.ibapl.fhz4j.api.FhzMessage;
 import de.ibapl.fhz4j.parser.api.Parser;
 import de.ibapl.fhz4j.parser.api.ParserListener;
-import de.ibapl.fhz4j.parser.cul.evohome.EvoHomeParser;
+import de.ibapl.fhz4j.parser.em.EmParser;
+import de.ibapl.fhz4j.parser.evohome.EvoHomeParser;
+import de.ibapl.fhz4j.parser.fht.FhtParser;
+import de.ibapl.fhz4j.parser.fs20.FS20Parser;
+import de.ibapl.fhz4j.parser.hms.HmsParser;
+import de.ibapl.fhz4j.parser.lacrosse.tx2l.LaCrosseTx2Parser;
 import de.ibapl.fhz4j.protocol.em.EmMessage;
 import de.ibapl.fhz4j.protocol.evohome.EvoHomeMessage;
 import de.ibapl.fhz4j.protocol.fht.FhtMessage;
@@ -44,7 +49,7 @@ import de.ibapl.fhz4j.protocol.lacrosse.tx2.LaCrosseTx2Message;
  *
  * @author Arne Plöse
  */
-public class CulParser<T extends FhzMessage> extends Parser implements ParserListener<T> {
+public class CulParser<T extends FhzMessage> implements ParserListener<T> {
 
 	private T partialFhzMessage;
 
@@ -62,7 +67,6 @@ public class CulParser<T extends FhzMessage> extends Parser implements ParserLis
 		return dataListener;
 	}
 
-	@Override
 	public void init() {
 		partialFhzMessage = null;
 		fhzMessage = null;
@@ -71,7 +75,6 @@ public class CulParser<T extends FhzMessage> extends Parser implements ParserLis
 	@Override
 	public void success(T fhzMessage) {
 		this.fhzMessage = fhzMessage;
-		setStackSize(2);
 		state = State.SINGNAL_STRENGTH;
 	}
 
@@ -84,23 +87,23 @@ public class CulParser<T extends FhzMessage> extends Parser implements ParserLis
 	@Override
 	public void successPartial(T fhzMessage) {
 		this.partialFhzMessage = fhzMessage;
-		setStackSize(2);
 		state = State.SINGNAL_STRENGTH;
 	}
 
 	@Override
 	public void successPartialAssembled(T fhzMessage) {
 		this.fhzMessage = fhzMessage;
-		setStackSize(2);
 		state = State.SINGNAL_STRENGTH;
 	}
 
 	private enum State {
-
-		IDLE, EM_PARSING, FS20_PARSING, FHT_PARSING, HMS_PARSING, LA_CROSSE_TX2_PARSING, CUL_L_PARSED, CUL_LO_PARSED, CUL_LOV_PARSED, CUL_E_PARSED, CUL_EO_PARSED, EVO_HOME_START, EVO_HOME_READ_PARSING, EVO_HOME_READ_GARBAGE, SINGNAL_STRENGTH, END_CHAR_0X0D, END_CHAR_0X0A;
+		IDLE, PARSER_PARSING, CUL_L_PARSED, CUL_LO_PARSED, CUL_LOV_PARSED, CUL_E_PARSED, CUL_EO_PARSED, EVO_HOME_START, EVO_HOME_READ_GARBAGE, SINGNAL_STRENGTH, END_CHAR_0X0D, END_CHAR_0X0A;
 	}
 
 	private State state = State.IDLE;
+	private Parser currentParser; 
+	private byte firstNibble;
+	private boolean isFirstNibble;
 	@SuppressWarnings("unchecked")
 	private final EmParser emParser = new EmParser((ParserListener<EmMessage>) this);
 	@SuppressWarnings("unchecked")
@@ -117,7 +120,6 @@ public class CulParser<T extends FhzMessage> extends Parser implements ParserLis
 
 	private FhzMessage fhzMessage;
 
-	@Override
 	public void parse(char c) {
 		switch (state) {
 		case IDLE:
@@ -127,20 +129,20 @@ public class CulParser<T extends FhzMessage> extends Parser implements ParserLis
 				state = State.CUL_E_PARSED;
 				break;
 			case 'F':
-				fs20Parser.init();
-				state = State.FS20_PARSING;
+				initParser(fs20Parser);
+				state = State.PARSER_PARSING;
 				break;
 			case 'T':
-				fhtParser.init();
-				state = State.FHT_PARSING;
+				initParser(fhtParser);
+				state = State.PARSER_PARSING;
 				break;
 			case 'H':
-				hmsParser.init();
-				state = State.HMS_PARSING;
+				initParser(hmsParser);
+				state = State.PARSER_PARSING;
 				break;
 			case 't':
-				laCrosseTx2Parser.init();
-				state = State.LA_CROSSE_TX2_PARSING;
+				initParser(laCrosseTx2Parser);
+				state = State.PARSER_PARSING;
 				break;
 			case 'L':
 				state = State.CUL_L_PARSED;
@@ -149,6 +151,10 @@ public class CulParser<T extends FhzMessage> extends Parser implements ParserLis
 				evoHomeParser.init();
 				state = State.EVO_HOME_START;
 				break;
+			case '\n':
+				break;
+			case '\r':
+				break;
 			default:
 				LOG.fine(String.format("Discarted: 0x%02x %s", (byte) c, c));
 			}
@@ -156,7 +162,8 @@ public class CulParser<T extends FhzMessage> extends Parser implements ParserLis
 		case EVO_HOME_START:
 			switch (c) {
 			case 'r':
-				state = State.EVO_HOME_READ_PARSING;
+				initParser(evoHomeParser);
+				state = State.PARSER_PARSING;
 				break;
 			case 'a':
 				//TODO how to handle this?? we switched to Evo Home in the CUL device ... notify ???
@@ -170,35 +177,27 @@ public class CulParser<T extends FhzMessage> extends Parser implements ParserLis
 			}
 			break;
 		case EVO_HOME_READ_GARBAGE:
-			//Do nothing, just wait for msg end;
+			//Do nothing, just wait for end of message;
 			if (c == '\n' || c == '\r') {
 				state = State.IDLE;
 			}
-		case EVO_HOME_READ_PARSING:
-			evoHomeParser.parse(c);
-			break;
-		case EM_PARSING:
-			emParser.parse(c);
-			break;
-		case FS20_PARSING:
-			fs20Parser.parse(c);
-			break;
-		case FHT_PARSING:
-			fhtParser.parse(c);
-			break;
-		case HMS_PARSING:
-			hmsParser.parse(c);
-			break;
-		case LA_CROSSE_TX2_PARSING:
-			laCrosseTx2Parser.parse(c);
+		case PARSER_PARSING:
+			if (isFirstNibble) {
+				firstNibble = digit2Byte(c);
+				isFirstNibble = false;
+			} else {
+				isFirstNibble = true;
+				currentParser.parse((byte)((firstNibble << 4) | digit2Byte(c)));
+			}
 			break;
 		case CUL_E_PARSED:
 			if (c == 'O') {
 				state = State.CUL_EO_PARSED;
 			} else {
-				emParser.init();
-				state = State.EM_PARSING;
-				emParser.parse(c);
+				initParser(emParser);
+				state = State.PARSER_PARSING;
+				firstNibble = digit2Byte(c);
+				isFirstNibble = false;
 			}
 			break;
 		case CUL_EO_PARSED:
@@ -237,27 +236,24 @@ public class CulParser<T extends FhzMessage> extends Parser implements ParserLis
 			break;
 		case SINGNAL_STRENGTH:
 			if (c == '\r') {
-				setStackSize(0);
 				state = State.END_CHAR_0X0A;
 				break;
-			}
-			try {
-				push(digit2Int(c));
-			} catch (RuntimeException ex) {
-				LOG.severe(String.format("Signal strenght - Wrong char: 0x%02x %s", (byte) c, c));
-				state = State.IDLE;
-				parse(c); // try to recover
-			}
-			if (getStackpos() == 0) {
-				if (partialFhzMessage != null) {
-					partialFhzMessage.signalStrength = (float) ((getByteValue()) / 2.0 - 74);
-				} else if (fhzMessage != null) {
-					fhzMessage.signalStrength = (float) ((getByteValue()) / 2.0 - 74);
+			} else {
+				if (isFirstNibble) {
+					firstNibble = digit2Byte(c);
+					isFirstNibble = false;
 				} else {
-					throw new RuntimeException("Should never happen");
+					isFirstNibble = true;
+					final byte value = (byte)((firstNibble << 4) | digit2Byte(c));
+					if (partialFhzMessage != null) {
+						partialFhzMessage.signalStrength = (float) (value / 2.0 - 74);
+					} else if (fhzMessage != null) {
+						fhzMessage.signalStrength = (float) (value / 2.0 - 74);
+					} else {
+						throw new RuntimeException("Should never happen");
+					}
+					state = State.END_CHAR_0X0D;
 				}
-				setStackSize(0);
-				state = State.END_CHAR_0X0D;
 			}
 			break;
 
@@ -323,5 +319,52 @@ public class CulParser<T extends FhzMessage> extends Parser implements ParserLis
 		default:
 		}
 	}
+
+	private void initParser(Parser parser) {
+		currentParser = parser;
+		currentParser.init();
+		isFirstNibble = true;
+		firstNibble = 0;
+	}
+	
+	private byte digit2Byte(char c) {
+		switch (c) {
+		case '0':
+			return 0x00;
+		case '1':
+			return 0x01;
+		case '2':
+			return 0x02;
+		case '3':
+			return 0x03;
+		case '4':
+			return 0x04;
+		case '5':
+			return 0x05;
+		case '6':
+			return 0x06;
+		case '7':
+			return 0x07;
+		case '8':
+			return 0x08;
+		case '9':
+			return 0x09;
+		case 'A':
+			return 0x0a;
+		case 'B':
+			return 0x0b;
+		case 'C':
+			return 0x0c;
+		case 'D':
+			return 0x0d;
+		case 'E':
+			return 0x0e;
+		case 'F':
+			return 0x0f;
+		default:
+			throw new RuntimeException("Not a Number: " + c);
+		}
+	}
+
 
 }

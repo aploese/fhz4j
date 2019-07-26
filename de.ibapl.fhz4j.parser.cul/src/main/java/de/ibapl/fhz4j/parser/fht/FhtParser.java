@@ -19,7 +19,7 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package de.ibapl.fhz4j.parser.cul;
+package de.ibapl.fhz4j.parser.fht;
 
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -54,11 +54,10 @@ import de.ibapl.fhz4j.protocol.fht.FhtWarningMessage;
  *
  * @author Arne Plöse
  */
-public class FhtParser extends Parser {
+public class FhtParser implements Parser {
 
 	@Override
 	public void init() {
-		setStackSize(2);
 		state = State.COLLECT_HOUSECODE_HIGH;
 		housecode = 0;
 		command = null;
@@ -238,14 +237,13 @@ public class FhtParser extends Parser {
 		}
 		parserListener.successPartialAssembled(new FhtDateTimeMessage(housecode, FhtProperty.CURRENT_DATE_AND_TIME,
 				isFromFht_8B(), isDataRegister(),
-				LocalDateTime.of(messages.get(FhtProperty.YEAR).data + 2000,
-						Month.of(messages.get(FhtProperty.MONTH).data), messages.get(FhtProperty.DAY_OF_MONTH).data,
-						messages.get(FhtProperty.HOUR).data, messages.get(FhtProperty.MINUTE).data)));
+				LocalDateTime.of((messages.get(FhtProperty.YEAR).getUnsignedValue()) + 2000,
+						Month.of(messages.get(FhtProperty.MONTH).getUnsignedValue()), messages.get(FhtProperty.DAY_OF_MONTH).getUnsignedValue(),
+						messages.get(FhtProperty.HOUR).getUnsignedValue(), messages.get(FhtProperty.MINUTE).getUnsignedValue())));
 	}
 
-	private void buildAndNotifyPartial() {
-		final Fht80bRawMessage msg = new Fht80bRawMessage(housecode, command, isFromFht_8B(), isDataRegister(),
-				getIntValue());
+	private void buildAndNotifyPartial(byte b) {
+		final Fht80bRawMessage msg = new Fht80bRawMessage(housecode, command, isFromFht_8B(), isDataRegister(), b);
 		partialMessages.add(msg);
 		parserListener.successPartial(msg);
 	}
@@ -256,15 +254,15 @@ public class FhtParser extends Parser {
 			return;
 		}
 		parserListener.successPartialAssembled(new FhtTimesMessage(housecode, fhtProperty, isFromFht_8B(),
-				isDataRegister(), toLocalTime(messages.get(fhtProperty.parts[0]).data),
-				toLocalTime(messages.get(fhtProperty.parts[1]).data),
-				toLocalTime(messages.get(fhtProperty.parts[2]).data),
-				toLocalTime(messages.get(fhtProperty.parts[3]).data)));
+				isDataRegister(), toLocalTime(messages.get(fhtProperty.parts[0]).getUnsignedValue()),
+				toLocalTime(messages.get(fhtProperty.parts[1]).getUnsignedValue()),
+				toLocalTime(messages.get(fhtProperty.parts[2]).getUnsignedValue()),
+				toLocalTime(messages.get(fhtProperty.parts[3]).getUnsignedValue())));
 	}
 
-	private LocalTime toLocalTime(int data) {
-		final int hour = data / 6;
-		final int minute = (data % 6) * 10;
+	private LocalTime toLocalTime(short value) {
+		final int hour = value / 6;
+		final int minute = (value % 6) * 10;
 
 		if (hour == 24 && minute == 0) {
 			return null;
@@ -293,61 +291,42 @@ public class FhtParser extends Parser {
 	private final LinkedList<Fht80bRawMessage> partialMessages = new LinkedList<>();
 
 	@Override
-	public void parse(char c) {
+	public void parse(byte b) {
 		try {
 			switch (state) {
 			// FHT
 			case COLLECT_HOUSECODE_HIGH:
-				push(digit2Int(c));
-				if (getStackpos() == 0) {
-					housecode = (short) (getShortValue() * 100);
-					setStackSize(2);
+					housecode = (short) (b * 100);
 					state = State.COLLECT_HOUSECODE_LOW;
-				}
 				break;
 			case COLLECT_HOUSECODE_LOW:
-				push(digit2Int(c));
-				if (getStackpos() == 0) {
-					housecode += getShortValue();
-					setStackSize(2);
+					housecode += b;
 					state = State.COLLECT_COMMAND;
-				}
 				break;
 			case COLLECT_COMMAND:
-				push(digit2Int(c));
-				if (getStackpos() == 0) {
-					command = getCommand(getIntValue());
-					setStackSize(2);
+					command = getCommand(b);
 					state = State.COLLECT_ORIGIN;
-				}
 				break;
 			case COLLECT_ORIGIN:
-				push(digit2Int(c));
-				if (getStackpos() == 0) {
-					description = getByteValue();
-					setStackSize(2);
+					description = b;
 					state = State.COLLECT_VALUE;
-				}
 				break;
 			case COLLECT_VALUE:
-				push(digit2Int(c));
-				if (getStackpos() == 0) {
-					buildAndNotify();
+					buildAndNotify(b);
 					state = State.PARSE_SUCCESS;
-				}
 				break;
 
 			}
 		} catch (Throwable t) {
-			parserListener.fail(new RuntimeException(String.format("State: %s last char %s", state, c), t));
+			parserListener.fail(new RuntimeException(String.format("State: %s last byte 0x%02x", state, b), t));
 			state = State.PARSE_ERROR;
 		}
 	}
 
-	private void buildAndNotify() {
+	private void buildAndNotify(byte b) {
 		switch (command) {
 		case VALVE:
-			buildValveMessage();
+			buildValveMessage(b);
 			break;
 		case OFFSET_VALVE_1:
 		case OFFSET_VALVE_2:
@@ -357,7 +336,7 @@ public class FhtParser extends Parser {
 		case OFFSET_VALVE_6:
 		case OFFSET_VALVE_7:
 		case OFFSET_VALVE_8:
-			buildValveOffsetMessage();
+			buildValveOffsetMessage(b);
 			break;
 		case NIGHT_TEMP:
 		case DAY_TEMP:
@@ -365,150 +344,150 @@ public class FhtParser extends Parser {
 		case WINDOW_OPEN_TEMP:
 		case LOW_TEMP_OFFSET:
 			parserListener.success(
-					new FhtTempMessage(housecode, command, isFromFht_8B(), isDataRegister(), 0.5f * getIntValue()));
+					new FhtTempMessage(housecode, command, isFromFht_8B(), isDataRegister(), 0.5f * b));
 			break;
 		case MEASURED_LOW:
 			removePartialMsg(housecode, FhtProperty.MEASURED_TEMP.parts);
-			buildAndNotifyPartial();
+			buildAndNotifyPartial(b);
 			break;
 		case MEASURED_HIGH:
-			buildAndNotifyPartial();
+			buildAndNotifyPartial(b);
 			buildAndNotifyMeasuredTempMessage();
 			break;
 		case WARNINGS:
-			buildWarningsMessage();
+			buildWarningsMessage(b);
 			break;
 		case MON_FROM_1:
 			removePartialMsg(housecode, FhtProperty.MONDAY_TIMES.parts);
-			buildAndNotifyPartial();
+			buildAndNotifyPartial(b);
 			break;
 		case MON_TO_1:
-			buildAndNotifyPartial();
+			buildAndNotifyPartial(b);
 			break;
 		case MON_FROM_2:
-			buildAndNotifyPartial();
+			buildAndNotifyPartial(b);
 			break;
 		case MON_TO_2:
-			buildAndNotifyPartial();
+			buildAndNotifyPartial(b);
 			buildMessage(FhtProperty.MONDAY_TIMES);
 			break;
 		case TUE_FROM_1:
 			removePartialMsg(housecode, FhtProperty.TUESDAY_TIMES.parts);
-			buildAndNotifyPartial();
+			buildAndNotifyPartial(b);
 			break;
 		case TUE_TO_1:
-			buildAndNotifyPartial();
+			buildAndNotifyPartial(b);
 			break;
 		case TUE_FROM_2:
-			buildAndNotifyPartial();
+			buildAndNotifyPartial(b);
 			break;
 		case TUE_TO_2:
-			buildAndNotifyPartial();
+			buildAndNotifyPartial(b);
 			buildMessage(FhtProperty.TUESDAY_TIMES);
 			break;
 		case WED_FROM_1:
 			removePartialMsg(housecode, FhtProperty.WEDNESDAY_TIMES.parts);
-			buildAndNotifyPartial();
+			buildAndNotifyPartial(b);
 			break;
 		case WED_TO_1:
-			buildAndNotifyPartial();
+			buildAndNotifyPartial(b);
 			break;
 		case WED_FROM_2:
-			buildAndNotifyPartial();
+			buildAndNotifyPartial(b);
 			break;
 		case WED_TO_2:
-			buildAndNotifyPartial();
+			buildAndNotifyPartial(b);
 			buildMessage(FhtProperty.WEDNESDAY_TIMES);
 			break;
 		case THU_FROM_1:
 			removePartialMsg(housecode, FhtProperty.THURSDAY_TIMES.parts);
-			buildAndNotifyPartial();
+			buildAndNotifyPartial(b);
 			break;
 		case THU_TO_1:
-			buildAndNotifyPartial();
+			buildAndNotifyPartial(b);
 			break;
 		case THU_FROM_2:
-			buildAndNotifyPartial();
+			buildAndNotifyPartial(b);
 			break;
 		case THU_TO_2:
-			buildAndNotifyPartial();
+			buildAndNotifyPartial(b);
 			buildMessage(FhtProperty.THURSDAY_TIMES);
 			break;
 		case FRI_FROM_1:
 			removePartialMsg(housecode, FhtProperty.FRIDAY_TIMES.parts);
-			buildAndNotifyPartial();
+			buildAndNotifyPartial(b);
 			break;
 		case FRI_TO_1:
-			buildAndNotifyPartial();
+			buildAndNotifyPartial(b);
 			break;
 		case FRI_FROM_2:
-			buildAndNotifyPartial();
+			buildAndNotifyPartial(b);
 			break;
 		case FRI_TO_2:
-			buildAndNotifyPartial();
+			buildAndNotifyPartial(b);
 			buildMessage(FhtProperty.FRIDAY_TIMES);
 			break;
 		case SAT_FROM_1:
 			removePartialMsg(housecode, FhtProperty.SATURDAYDAY_TIMES.parts);
-			buildAndNotifyPartial();
+			buildAndNotifyPartial(b);
 			break;
 		case SAT_TO_1:
-			buildAndNotifyPartial();
+			buildAndNotifyPartial(b);
 			break;
 		case SAT_FROM_2:
-			buildAndNotifyPartial();
+			buildAndNotifyPartial(b);
 			break;
 		case SAT_TO_2:
-			buildAndNotifyPartial();
+			buildAndNotifyPartial(b);
 			buildMessage(FhtProperty.SATURDAYDAY_TIMES);
 			break;
 		case SUN_FROM_1:
 			removePartialMsg(housecode, FhtProperty.SUNDAYDAY_TIMES.parts);
-			buildAndNotifyPartial();
+			buildAndNotifyPartial(b);
 			break;
 		case SUN_TO_1:
-			buildAndNotifyPartial();
+			buildAndNotifyPartial(b);
 			break;
 		case SUN_FROM_2:
-			buildAndNotifyPartial();
+			buildAndNotifyPartial(b);
 			break;
 		case SUN_TO_2:
-			buildAndNotifyPartial();
+			buildAndNotifyPartial(b);
 			buildMessage(FhtProperty.SUNDAYDAY_TIMES);
 			break;
 		case MINUTE:
-			buildAndNotifyPartial();
+			buildAndNotifyPartial(b);
 			buildTimeAndDateMessage();
 			break;
 		case HOUR:
-			buildAndNotifyPartial();
+			buildAndNotifyPartial(b);
 			break;
 		case MONTH:
-			buildAndNotifyPartial();
+			buildAndNotifyPartial(b);
 			break;
 		case DAY_OF_MONTH:
-			buildAndNotifyPartial();
+			buildAndNotifyPartial(b);
 			break;
 		case YEAR:
 			removePartialMsg(housecode, FhtProperty.CURRENT_DATE_AND_TIME.parts);
-			buildAndNotifyPartial();
+			buildAndNotifyPartial(b);
 			break;
 		// collect FhtDateTime
 		case MODE:
-			buildAndNotifyModeMessage();
+			buildAndNotifyModeMessage(b);
 			break;
 		case REPORT_1:
 		case REPORT_2:
 			final Fht80bRawMessage msg = new Fht80bRawMessage(housecode, command, isFromFht_8B(), isDataRegister(),
-					getIntValue());
+					b);
 			parserListener.success(msg);
 			break;
 		case HOLIDAY_1:
 			removePartialMsg(housecode, FhtProperty.HOLIDAY_END_DATE.parts);
-			buildAndNotifyPartial();
+			buildAndNotifyPartial(b);
 			break;
 		case HOLIDAY_2:
-			buildAndNotifyPartial();
+			buildAndNotifyPartial(b);
 			// message will be build when mode message arrives.
 			break;
 		default:
@@ -517,9 +496,9 @@ public class FhtParser extends Parser {
 
 	}
 
-	private void buildAndNotifyModeMessage() {
+	private void buildAndNotifyModeMessage(byte b) {
 		Fht80bMode fhtMode;
-		switch (getIntValue()) {
+		switch (b) {
 		case 0x00:
 			fhtMode = Fht80bMode.AUTO;
 			break;
@@ -551,7 +530,7 @@ public class FhtParser extends Parser {
 			}
 			parserListener.successPartialAssembled(
 					new FhtDateMessage(housecode, FhtProperty.HOLIDAY_END_DATE, isFromFht_8B(), isDataRegister(),
-							messages.get(FhtProperty.HOLIDAY_2).data, messages.get(FhtProperty.HOLIDAY_1).data));
+							messages.get(FhtProperty.HOLIDAY_2).getSignedValue(), messages.get(FhtProperty.HOLIDAY_1).getSignedValue()));
 		}
 			break;
 		case PARTY: {
@@ -559,9 +538,9 @@ public class FhtParser extends Parser {
 			if (messages.isEmpty()) {
 				return;
 			}
-			final int rawTime = messages.get(FhtProperty.HOLIDAY_1).data;
+			final short rawTime = messages.get(FhtProperty.HOLIDAY_1).getUnsignedValue();
 			parserListener.successPartialAssembled(new FhtTimeMessage(housecode, FhtProperty.PARTY_END_TIME,
-					isFromFht_8B(), isDataRegister(), rawTime / 6, (rawTime % 6) * 10));
+					isFromFht_8B(), isDataRegister(), (byte)(rawTime / 6), (byte)((rawTime % 6) * 10)));
 		}
 			break;
 		default:
@@ -569,9 +548,9 @@ public class FhtParser extends Parser {
 		}
 	}
 
-	private void buildWarningsMessage() {
+	private void buildWarningsMessage(byte b) {
 		EnumSet<Fht80bWarning> warnings = EnumSet.noneOf(Fht80bWarning.class);
-		if ((getIntValue() & 0x01) == 0x01) {
+		if ((b & 0x01) == 0x01) {
 			warnings.add(Fht80bWarning.BATT_LOW);
 		}
 
@@ -584,17 +563,17 @@ public class FhtParser extends Parser {
 			return;
 		}
 		parserListener.successPartialAssembled(new FhtTempMessage(housecode, FhtProperty.MEASURED_TEMP, isFromFht_8B(),
-				isDataRegister(), 0.1f * (messages.get(FhtProperty.MEASURED_LOW).data
-						| messages.get(FhtProperty.MEASURED_HIGH).data << 8)));
+				isDataRegister(), 0.1f * (messages.get(FhtProperty.MEASURED_LOW).getUnsignedValue()
+						| (messages.get(FhtProperty.MEASURED_HIGH).getUnsignedValue()) << 8)));
 	}
 
-	private void buildValveOffsetMessage() throws RuntimeException {
+	private void buildValveOffsetMessage(byte b) throws RuntimeException {
 		final boolean allowLowBatteryBeep = (description & 0x10) == 0x10;
 		int offset;
-		if ((getIntValue() & 0x80) == 0x80) {
-			offset = -(getIntValue() & 0x7F);
+		if ((b & 0x80) == 0x80) {
+			offset = -(b & 0x7F);
 		} else {
-			offset = getIntValue() & 0x7F;
+			offset = b & 0x7F;
 		}
 		switch (description & 0x6F) {
 		case 0x28:
@@ -610,13 +589,13 @@ public class FhtParser extends Parser {
 		}
 	}
 
-	private void buildValveMessage() throws RuntimeException {
+	private void buildValveMessage(byte b) throws RuntimeException {
 		final boolean repeated = (description & 0x80) == 0x80;
 		final boolean allowLowBatteryBeep = (description & 0x10) == 0x10;
 		switch (description & 0x0F) {
 		case 0x00:
 			parserListener.success(new FhtValvePosMessage(housecode, command, repeated,
-					FhtValveMode.END_OF_SYNC_SEQUENCE, 0.5f * getIntValue(), allowLowBatteryBeep));
+					FhtValveMode.END_OF_SYNC_SEQUENCE, 0.5f * b, allowLowBatteryBeep));
 			return;
 		case 0x01:
 			parserListener.success(
@@ -629,7 +608,7 @@ public class FhtParser extends Parser {
 		case 0x06:
 			// 100.0 / 255.0 = 0,392156863;
 			parserListener.success(new FhtValvePosMessage(housecode, command, repeated, FhtValveMode.POSITION,
-					0.392156863f * getIntValue(), allowLowBatteryBeep));
+					0.392156863f * b, allowLowBatteryBeep));
 			return;
 		case 0x08:
 			parserListener.success(new FhtValvePosMessage(housecode, command, repeated, FhtValveMode.OFFSET_ADJUST,
@@ -637,15 +616,15 @@ public class FhtParser extends Parser {
 			return;
 		case 0x0a:
 			parserListener.success(new FhtValvePosMessage(housecode, command, repeated, FhtValveMode.LIME_CYCLE,
-					0.5f * getIntValue(), allowLowBatteryBeep));
+					0.5f * b, allowLowBatteryBeep));
 			return;
 		case 0x0c:
 			parserListener
-					.success(new FhtValveSyncMessage(housecode, command, 0.5f * getIntValue(), allowLowBatteryBeep));
+					.success(new FhtValveSyncMessage(housecode, command, 0.5f * (b & 0xff), allowLowBatteryBeep));
 			return;
 		case 0x0e:
 			parserListener.success(new FhtValvePosMessage(housecode, command, repeated, FhtValveMode.BEEP,
-					0.5f * getIntValue(), allowLowBatteryBeep));
+					0.5f * b, allowLowBatteryBeep));
 			return;
 		default:
 			throw new RuntimeException(

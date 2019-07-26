@@ -31,7 +31,7 @@ import de.ibapl.fhz4j.api.FhzProtocol;
 public class LaCrosseTx2Message extends FhzMessage {
 
 	public LaCrosseTx2Property laCrosseTx2Property;
-	public short address;
+	public byte address;
 	public float value;
 
 	public LaCrosseTx2Message(LaCrosseTx2Property laCrosseTx2Property) {
