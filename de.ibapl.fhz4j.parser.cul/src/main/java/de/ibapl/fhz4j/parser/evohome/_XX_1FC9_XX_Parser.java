@@ -24,7 +24,6 @@ package de.ibapl.fhz4j.parser.evohome;
 import java.util.LinkedList;
 
 import de.ibapl.fhz4j.parser.api.AbstractParser;
-import de.ibapl.fhz4j.parser.api.Parser;
 import de.ibapl.fhz4j.protocol.evohome.EvoHome_0xXX_0x1FC9_0xXX_Message.Data;
 
 class _XX_1FC9_XX_Parser extends AbstractParser {

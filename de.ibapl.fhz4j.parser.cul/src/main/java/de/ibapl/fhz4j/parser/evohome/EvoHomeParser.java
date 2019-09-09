@@ -325,7 +325,7 @@ public class EvoHomeParser extends AbstractParser {
 				break;
 			case PARSE_XX_0004_16_DATA:
 				_18_0004_16_Parser.parse(b);
-				if (_18_0004_16_Parser.state == _18_0004_16_Parser.state.PARSE_SUCCESS) {
+				if (_18_0004_16_Parser.state == _XX_0004_16_Parser.State.PARSE_SUCCESS) {
 					((EvoHome_0xXX_0x0004_0x16_Message) evoHomeMessage).zoneId = _18_0004_16_Parser.zoneId;
 					((EvoHome_0xXX_0x0004_0x16_Message) evoHomeMessage).unknown = _18_0004_16_Parser.unknown;
 					((EvoHome_0xXX_0x0004_0x16_Message) evoHomeMessage).zoneName = _18_0004_16_Parser.zoneNameBuilder.toString();

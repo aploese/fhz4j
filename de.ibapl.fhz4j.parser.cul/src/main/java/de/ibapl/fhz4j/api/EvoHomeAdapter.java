@@ -23,7 +23,7 @@ package de.ibapl.fhz4j.api;
 
 import java.io.IOException;
 
-public interface EvoHomeAdapter {
+public interface EvoHomeAdapter extends Adapter {
 
 	void initEvoHome() throws IOException;
 

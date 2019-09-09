@@ -32,9 +32,9 @@ import de.ibapl.fhz4j.cul.CulAdapter;
 import de.ibapl.fhz4j.protocol.fht.FhtProperty;
 import de.ibapl.spsw.api.SerialPortSocket;
 
-public interface FhzAdapter {
+public interface FhzAdapter extends Adapter {
 
-	static public CulAdapter open(SerialPortSocket serialPortSocket, FhzDataListener fhzDataListener)
+	static public Adapter open(SerialPortSocket serialPortSocket, FhzDataListener fhzDataListener)
 			throws IOException {
 		CulAdapter result = new CulAdapter(serialPortSocket, fhzDataListener);
 		result.open();

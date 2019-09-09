@@ -27,6 +27,4 @@ package de.ibapl.fhz4j;
  */
 public class LogUtils {
 	public final static String FHZ_PARSER_CUL = "fhz-parser-cul";
-	public final static String FHZ_CONSOLE = "fhz-console";
-
 }

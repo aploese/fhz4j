@@ -47,7 +47,7 @@ import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 import org.apache.commons.cli.DefaultParser;
 
-import de.ibapl.fhz4j.LogUtils;
+import de.ibapl.fhz4j.api.Adapter;
 import de.ibapl.fhz4j.api.FhzAdapter;
 import de.ibapl.fhz4j.api.FhzDataListener;
 import de.ibapl.fhz4j.api.Protocol;
@@ -71,8 +71,9 @@ import de.ibapl.spsw.ser2net.Ser2NetProvider;
  * @author Arne Plöse
  */
 public class Main {
+	public final static String FHZ_CONSOLE = "fhz-console";
 
-    private static final Logger LOG = Logger.getLogger(LogUtils.FHZ_CONSOLE);
+    private static final Logger LOG = Logger.getLogger(FHZ_CONSOLE);
 
     private class FhzListener implements FhzDataListener {
         
@@ -297,7 +298,7 @@ public class Main {
     
     public void run(SerialPortSocket serialPortSocket, Set<Protocol> protocols) throws Exception {
         final FhzListener listener = new FhzListener();
-        try (CulAdapter culAddapter = FhzAdapter.open(serialPortSocket, listener)) {
+        try (CulAdapter culAddapter = (CulAdapter)FhzAdapter.open(serialPortSocket, listener)) {
             listener.fhzAdapter = culAddapter;
         try {
             try {
@@ -307,16 +308,16 @@ public class Main {
             }
             if (protocols.contains(Protocol.FHZ)) {
             	culAddapter.initFhz((short) 0001);
-            }
-            if (protocols.contains(Protocol.EVO_HOME)) {
-            	culAddapter.initEvoHome();
-            }
             culAddapter.initFhtReporting((short)302);
 //            fhzAddapter.writeFhtTimeAndDate((short) 302, LocalDateTime.now());
 //            fhzAddapter.writeFhtCycle((short) 302, DayOfWeek.MONDAY, LocalTime.of(5, 0), LocalTime.of(8, 30), null, null);
 //            fhzAddapter.writeFht((short)302, FhtProperty.DESIRED_TEMP, 24.0f);
 //            fhzAddapter.writeFhtModeManu((short)302);
 //            fhzAddapter.writeFhtModeHoliday((short) 302, 16.0f, LocalDate.now().plusMonths(2).plusDays(4));
+            }
+            if (protocols.contains(Protocol.EVO_HOME)) {
+            	culAddapter.initEvoHome();
+            }
 
         } catch (IOException ex) {
             LOG.log(Level.SEVERE, ex.getMessage(), ex);
