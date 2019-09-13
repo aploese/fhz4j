@@ -19,23 +19,14 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package de.ibapl.fhz4j.protocol.evohome;
+package de.ibapl.fhz4j.protocol.em;
 
 /**
  *
- * @author Arne Plöse
+ * @author aploese
  */
-public class EvoHome_0x3C_0x0100_0x05_Message extends EvoHomeDeviceMessage {
-	
-	public final byte[] value = new byte[0x05];
+public interface EmMessageListener {
 
-	public EvoHome_0x3C_0x0100_0x05_Message() {
-		super(EvoHomeProperty._3C_0100);
-	}
-	
-	@Override
-	protected void addToJsonString(StringBuilder sb) {
-		super.addToJsonString(sb);
-		appendByteArray(sb, "value", value);
-	}
+    void emDataParsed(EmMessage emMsg);
+    
 }

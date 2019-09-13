@@ -32,9 +32,6 @@ import java.util.logging.Logger;
 
 import de.ibapl.fhz4j.LogUtils;
 import de.ibapl.fhz4j.api.Adapter;
-import de.ibapl.fhz4j.api.EvoHomeAdapter;
-import de.ibapl.fhz4j.api.FhzAdapter;
-import de.ibapl.fhz4j.api.FhzDataListener;
 import de.ibapl.fhz4j.parser.cul.CulParser;
 import de.ibapl.fhz4j.writer.cul.CulWriter;
 import de.ibapl.fhz4j.protocol.fht.FhtProperty;
@@ -46,8 +43,10 @@ import de.ibapl.spsw.api.Speed;
 import de.ibapl.spsw.api.StopBits;
 import java.nio.ByteBuffer;
 import java.nio.channels.AsynchronousCloseException;
+import de.ibapl.fhz4j.api.FhzHandler;
+import de.ibapl.fhz4j.api.EvoHomeHandler;
 
-public class CulAdapter implements Adapter, FhzAdapter, EvoHomeAdapter {
+public class CulAdapter implements Adapter, FhzHandler, EvoHomeHandler {
 
     private class StreamListener implements Runnable {
 
@@ -59,11 +58,11 @@ public class CulAdapter implements Adapter, FhzAdapter, EvoHomeAdapter {
                     serialPortSocket.read(inBuffer);
                     inBuffer.flip();
                     while (inBuffer.hasRemaining()) {
-                    	try {
-                    		culParser.parse((char) inBuffer.get());
-                    	} catch (Exception e) {
+                        try {
+                            culParser.parse((char) inBuffer.get());
+                        } catch (Exception e) {
                             LOG.log(Level.SEVERE, "caught unexcpected exception during waiting for packages", e);
-						}
+                        }
                     }
                     inBuffer.clear();
                 } catch (AsynchronousCloseException ace) {
@@ -81,25 +80,27 @@ public class CulAdapter implements Adapter, FhzAdapter, EvoHomeAdapter {
 
     private CulParser<?> culParser;
     private CulWriter culWriter;
-    private final FhzDataListener fhzDataListener;
+    private final CulMessageListener fhzDataListener;
     private final ByteBuffer inBuffer = ByteBuffer.allocateDirect(64);
     private boolean open;
     private Thread parserThread;
     private final SerialPortSocket serialPortSocket;
     private final StreamListener streamListener = new StreamListener();
 
-    public CulAdapter(SerialPortSocket serialPortSocket, FhzDataListener fhzDataListener) {
+    public CulAdapter(SerialPortSocket serialPortSocket, CulMessageListener fhzDataListener) {
         this.serialPortSocket = serialPortSocket;
         this.fhzDataListener = fhzDataListener;
     }
 
     @Override
     public void close() throws Exception {
-        open = false;
-        try {
-            culWriter.close();
-        } finally {
-            serialPortSocket.close();
+        if (open) {
+            open = false;
+            try {
+                culWriter.close();
+            } finally {
+                serialPortSocket.close();
+            }
         }
     }
 
@@ -165,10 +166,10 @@ public class CulAdapter implements Adapter, FhzAdapter, EvoHomeAdapter {
         culWriter.writeFhtTimeAndDate(housecode, ts);
     }
 
-	@Override
-	public void initEvoHome() throws IOException {
+    @Override
+    public void initEvoHome() throws IOException {
         culWriter.initEvoHome();
         //TODO wait for "va" for success or handle error
-	}
+    }
 
 }

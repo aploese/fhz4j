@@ -24,24 +24,31 @@ package de.ibapl.fhz4j.protocol.hms;
 import java.util.EnumSet;
 import java.util.Set;
 
-import de.ibapl.fhz4j.api.FhzMessage;
-import de.ibapl.fhz4j.api.FhzProtocol;
+import de.ibapl.fhz4j.api.Message;
+import de.ibapl.fhz4j.api.Protocol;
 
 /**
  *
  * @author Arne Plöse
  */
-public abstract class HmsMessage extends FhzMessage {
+public abstract class HmsMessage extends Message {
 
-	public short housecode;
-	public Set<HmsDeviceStatus> deviceStatus = EnumSet.noneOf(HmsDeviceStatus.class);
-	public HmsDeviceType hmsDeviceType;
+    public short housecode;
+    public Set<HmsDeviceStatus> deviceStatus = EnumSet.noneOf(HmsDeviceStatus.class);
+    public HmsDeviceType hmsDeviceType;
 
-	protected HmsMessage(short housecode, HmsDeviceType hmsDeviceType, Set<HmsDeviceStatus> deviceStatus) {
-		super(FhzProtocol.HMS);
-		this.housecode = housecode;
-		this.hmsDeviceType = hmsDeviceType;
-		this.deviceStatus = deviceStatus;
-	}
+    protected HmsMessage(short housecode, HmsDeviceType hmsDeviceType, Set<HmsDeviceStatus> deviceStatus) {
+        super(Protocol.HMS);
+        this.housecode = housecode;
+        this.hmsDeviceType = hmsDeviceType;
+        this.deviceStatus = deviceStatus;
+    }
 
+    @Override
+    protected void addToJsonString(StringBuilder sb) {
+        super.addToJsonString(sb);
+        sb.append(", housecode : ").append(housecode);
+        sb.append(", deviceStatus : ").append(deviceStatus).append("");
+        sb.append(", hmsDeviceType : ").append(hmsDeviceType);
+    }
 }

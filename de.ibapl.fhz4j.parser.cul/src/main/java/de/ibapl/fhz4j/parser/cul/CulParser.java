@@ -21,12 +21,12 @@
  */
 package de.ibapl.fhz4j.parser.cul;
 
+import de.ibapl.fhz4j.cul.CulMessage;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import de.ibapl.fhz4j.LogUtils;
-import de.ibapl.fhz4j.api.FhzDataListener;
-import de.ibapl.fhz4j.api.FhzMessage;
+import de.ibapl.fhz4j.api.Message;
 import de.ibapl.fhz4j.parser.api.Parser;
 import de.ibapl.fhz4j.parser.api.ParserListener;
 import de.ibapl.fhz4j.parser.em.EmParser;
@@ -41,6 +41,7 @@ import de.ibapl.fhz4j.protocol.fht.FhtMessage;
 import de.ibapl.fhz4j.protocol.fs20.FS20Message;
 import de.ibapl.fhz4j.protocol.hms.HmsMessage;
 import de.ibapl.fhz4j.protocol.lacrosse.tx2.LaCrosseTx2Message;
+import de.ibapl.fhz4j.cul.CulMessageListener;
 
 /**
  * Parses CUL from www.busware.de Commands see http://culfw.de/commandref.html
@@ -49,58 +50,16 @@ import de.ibapl.fhz4j.protocol.lacrosse.tx2.LaCrosseTx2Message;
  *
  * @author Arne Plöse
  */
-public class CulParser<T extends FhzMessage> implements ParserListener<T> {
-
-	private T partialFhzMessage;
-
-	public CulParser(FhzDataListener dataListener) {
-		this.dataListener = dataListener;
-	}
-
-	private static final Logger LOG = Logger.getLogger(LogUtils.FHZ_PARSER_CUL);
-	private final FhzDataListener dataListener;
-
-	/**
-	 * @return the dataListener
-	 */
-	public FhzDataListener getDataListener() {
-		return dataListener;
-	}
-
-	public void init() {
-		partialFhzMessage = null;
-		fhzMessage = null;
-	}
-
-	@Override
-	public void success(T fhzMessage) {
-		this.fhzMessage = fhzMessage;
-		state = State.SINGNAL_STRENGTH;
-	}
-
-	@Override
-	public void fail(Throwable t) {
-		state = State.IDLE;
-		dataListener.failed(t);
-	}
-
-	@Override
-	public void successPartial(T fhzMessage) {
-		this.partialFhzMessage = fhzMessage;
-		state = State.SINGNAL_STRENGTH;
-	}
-
-	@Override
-	public void successPartialAssembled(T fhzMessage) {
-		this.fhzMessage = fhzMessage;
-		state = State.SINGNAL_STRENGTH;
-	}
+public class CulParser<T extends Message> implements ParserListener<T> {
 
 	private enum State {
 		IDLE, PARSER_PARSING, CUL_L_PARSED, CUL_LO_PARSED, CUL_LOV_PARSED, CUL_E_PARSED, CUL_EO_PARSED, EVO_HOME_START, EVO_HOME_READ_GARBAGE, SINGNAL_STRENGTH, END_CHAR_0X0D, END_CHAR_0X0A;
 	}
 
-	private State state = State.IDLE;
+	private static final Logger LOG = Logger.getLogger(LogUtils.FHZ_PARSER_CUL);
+
+        private final CulMessageListener culMessageListener;
+        private State state = State.IDLE;
 	private Parser currentParser; 
 	private byte firstNibble;
 	private boolean isFirstNibble;
@@ -118,7 +77,49 @@ public class CulParser<T extends FhzMessage> implements ParserListener<T> {
 	@SuppressWarnings("unchecked")
 	private final EvoHomeParser evoHomeParser = new EvoHomeParser((ParserListener<EvoHomeMessage>) this);
 
-	private FhzMessage fhzMessage;
+	private Message fhzMessage;
+
+	private T partialFhzMessage;
+    
+	public CulParser(CulMessageListener dataListener) {
+		this.culMessageListener = dataListener;
+	}
+
+	/**
+	 * @return the dataListener
+	 */
+	public CulMessageListener getCulMessageListener() {
+		return culMessageListener;
+	}
+
+	public void init() {
+		partialFhzMessage = null;
+		fhzMessage = null;
+	}
+
+	@Override
+	public void success(T fhzMessage) {
+		this.fhzMessage = fhzMessage;
+		state = State.SINGNAL_STRENGTH;
+	}
+
+	@Override
+	public void fail(Throwable t) {
+		state = State.IDLE;
+		culMessageListener.failed(t);
+	}
+
+	@Override
+	public void successPartial(T fhzMessage) {
+		this.partialFhzMessage = fhzMessage;
+		state = State.SINGNAL_STRENGTH;
+	}
+
+	@Override
+	public void successPartialAssembled(T fhzMessage) {
+		this.fhzMessage = fhzMessage;
+		state = State.SINGNAL_STRENGTH;
+	}
 
 	public void parse(char c) {
 		switch (state) {
@@ -245,13 +246,7 @@ public class CulParser<T extends FhzMessage> implements ParserListener<T> {
 				} else {
 					isFirstNibble = true;
 					final byte value = (byte)((firstNibble << 4) | digit2Byte(c));
-					if (partialFhzMessage != null) {
-						partialFhzMessage.signalStrength = (float) (value / 2.0 - 74);
-					} else if (fhzMessage != null) {
-						fhzMessage.signalStrength = (float) (value / 2.0 - 74);
-					} else {
-						throw new RuntimeException("Should never happen");
-					}
+					culMessageListener.signalStrength((float) (value / 2.0 - 74));
 					state = State.END_CHAR_0X0D;
 				}
 			}
@@ -277,34 +272,34 @@ public class CulParser<T extends FhzMessage> implements ParserListener<T> {
 					}
 				}
 
-				if (dataListener != null) {
+				if (culMessageListener != null) {
 
 					if (partialFhzMessage instanceof FhtMessage) {
-						dataListener.fhtPartialDataParsed((FhtMessage) partialFhzMessage);
+						culMessageListener.fhtPartialDataParsed((FhtMessage) partialFhzMessage);
 					} 
 
 					if (fhzMessage != null) {
-					switch (fhzMessage.fhzProtocol) {
+					switch (fhzMessage.protocol) {
 					case FHT:
-						dataListener.fhtDataParsed((FhtMessage) fhzMessage);
+						culMessageListener.fhtDataParsed((FhtMessage) fhzMessage);
 						break;
 					case HMS: 
-						dataListener.hmsDataParsed((HmsMessage) fhzMessage);
+						culMessageListener.hmsDataParsed((HmsMessage) fhzMessage);
 						break;
 					case EM:
-						dataListener.emDataParsed((EmMessage) fhzMessage);
+						culMessageListener.emDataParsed((EmMessage) fhzMessage);
 						break;
 					case FS20:
-						dataListener.fs20DataParsed((FS20Message) fhzMessage);
+						culMessageListener.fs20DataParsed((FS20Message) fhzMessage);
 						break;
 					case LA_CROSSE_TX2:
-						dataListener.laCrosseTxParsed((LaCrosseTx2Message) fhzMessage);
+						culMessageListener.laCrosseTxParsed((LaCrosseTx2Message) fhzMessage);
 						break;
 					case CUL:
-						dataListener.culMessageParsed((CulMessage) fhzMessage);
+						culMessageListener.culMessageParsed((CulMessage) fhzMessage);
 						break;
 					case EVO_HOME:
-						dataListener.evoHomeParsed((EvoHomeMessage) fhzMessage);
+						culMessageListener.evoHomeParsed((EvoHomeMessage) fhzMessage);
 						break;
 						default:
 							throw new RuntimeException();

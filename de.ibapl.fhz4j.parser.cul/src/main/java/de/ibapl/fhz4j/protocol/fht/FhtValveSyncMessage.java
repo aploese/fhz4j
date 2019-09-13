@@ -27,13 +27,19 @@ package de.ibapl.fhz4j.protocol.fht;
  */
 public class FhtValveSyncMessage extends FhtMessage {
 
-	public float timeLeft;
-	public boolean bit5;
+    public float timeLeft;
+    public boolean bit5;
 
-	public FhtValveSyncMessage(short housecode, FhtProperty command, float timeLeft, boolean bit5) {
-		super(housecode, command);
-		this.timeLeft = timeLeft;
-		this.bit5 = bit5;
-	}
+    public FhtValveSyncMessage(short housecode, FhtProperty command, float timeLeft, boolean bit5) {
+        super(housecode, command);
+        this.timeLeft = timeLeft;
+        this.bit5 = bit5;
+    }
 
+    @Override
+    protected void addToJsonString(StringBuilder sb) {
+        super.addToJsonString(sb);
+        sb.append(", timeLeft : ").append(timeLeft);
+        sb.append(", bit5 : ").append(bit5);
+    }
 }

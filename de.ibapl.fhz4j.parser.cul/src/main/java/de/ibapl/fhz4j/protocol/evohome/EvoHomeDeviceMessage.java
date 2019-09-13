@@ -26,27 +26,28 @@ package de.ibapl.fhz4j.protocol.evohome;
  * @author Arne Plöse
  */
 public abstract class EvoHomeDeviceMessage extends EvoHomeMessage {
-	
-	public int deviceId1;
-	public int deviceId2;
-
-	public EvoHomeDeviceMessage(EvoHomeProperty property) {
-		super(property);
-	}
-
-	@Override
-	protected void addToString(StringBuilder sb) {
-		sb.append(String.format(", deviceId1 : 0x%04x", deviceId1));
-		sb.append(String.format(", deviceId2 : 0x%04x", deviceId2));
-	}
-	
-	protected void appendByteArray(StringBuilder sb, String name, byte[] value) {
-		sb.append(", ").append(name).append(" : [0x");
-		for (byte b: value) {
-			sb.append(String.format("%02x", b));
-		}
-		sb.append("]");
-		
-	}
-
+    
+    public DeviceId deviceId1;
+    public DeviceId deviceId2;
+    
+    public EvoHomeDeviceMessage(EvoHomeProperty property) {
+        super(property);
+    }
+    
+    @Override
+    protected void addToJsonString(StringBuilder sb) {
+        super.addToJsonString(sb);
+        sb.append(", deviceId1 : ").append(deviceId1);
+        sb.append(", deviceId2 : ").append( deviceId2);
+    }
+    
+    protected void appendByteArray(StringBuilder sb, String name, byte[] value) {
+        sb.append(", ").append(name).append(" : [0x");
+        for (byte b : value) {
+            sb.append(String.format("%02x", b));
+        }
+        sb.append("]");
+        
+    }
+    
 }

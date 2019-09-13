@@ -21,37 +21,26 @@
  */
 package de.ibapl.fhz4j.protocol.evohome;
 
-import de.ibapl.fhz4j.api.FhzMessage;
-import de.ibapl.fhz4j.api.FhzProtocol;
+import de.ibapl.fhz4j.api.Message;
+import de.ibapl.fhz4j.api.Protocol;
 
 /**
  *
  * @author Arne Plöse
  */
-public abstract class EvoHomeMessage extends FhzMessage {
+public abstract class EvoHomeMessage extends Message {
 
-	public EvoHomeProperty property;
+    public EvoHomeProperty property;
 
-	protected EvoHomeMessage(EvoHomeProperty property) {
-		super(FhzProtocol.EVO_HOME);
-		this.property = property;
-	}
-	
-	protected abstract void addToString(StringBuilder sb);
+    protected EvoHomeMessage(EvoHomeProperty property) {
+        super(Protocol.EVO_HOME);
+        this.property = property;
+    }
 
-	//TODO move up to replace DTO.toString 
-	@Override
-	public String toString() {
-		StringBuilder sb = new StringBuilder();
-		sb.append("{");
-		sb.append("fhzProtocol : ");
-		sb.append(fhzProtocol);
-		sb.append(", property : ");
-		sb.append(property);
-		addToString(sb);
-		sb.append("}");
-		return sb.toString();
-	}
-	
-
+    @Override
+    protected void addToJsonString(StringBuilder sb) {
+        super.addToJsonString(sb);
+        sb.append(", property : ");
+        sb.append(property);
+    }
 }

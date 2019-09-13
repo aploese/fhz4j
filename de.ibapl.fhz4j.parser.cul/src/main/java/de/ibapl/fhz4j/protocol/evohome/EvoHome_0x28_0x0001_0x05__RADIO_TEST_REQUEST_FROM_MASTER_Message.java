@@ -34,8 +34,8 @@ public class EvoHome_0x28_0x0001_0x05__RADIO_TEST_REQUEST_FROM_MASTER_Message ex
 	}
 	
 	@Override
-	protected void addToString(StringBuilder sb) {
-		super.addToString(sb);
+	protected void addToJsonString(StringBuilder sb) {
+		super.addToJsonString(sb);
 		appendByteArray(sb, "value", value);
 	}
 }

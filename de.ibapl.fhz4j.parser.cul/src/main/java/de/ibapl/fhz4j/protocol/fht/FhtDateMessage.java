@@ -21,9 +21,6 @@
  */
 package de.ibapl.fhz4j.protocol.fht;
 
-/*-
-import java.time.LocalDate;
-
 /**
  *
  * @author Arne Plöse
@@ -39,5 +36,12 @@ public class FhtDateMessage extends Fht8bMessage {
 		this.month = month;
 		this.day = day;
 	}
+        
+        @Override
+        protected void addToJsonString(StringBuilder sb) {
+            super.addToJsonString(sb);
+            sb.append(", day : ").append(day);
+            sb.append(", month : ").append(month);
+        }
 
 }

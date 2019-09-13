@@ -28,6 +28,7 @@ import java.util.logging.Logger;
 import de.ibapl.fhz4j.LogUtils;
 import de.ibapl.fhz4j.parser.api.AbstractParser;
 import de.ibapl.fhz4j.parser.api.ParserListener;
+import de.ibapl.fhz4j.protocol.evohome.DeviceId;
 import de.ibapl.fhz4j.protocol.evohome.EvoHomeHeaderByte;
 import de.ibapl.fhz4j.protocol.evohome.EvoHomeMessage;
 import de.ibapl.fhz4j.protocol.evohome.EvoHomeProperty;
@@ -210,10 +211,10 @@ public class EvoHomeParser extends AbstractParser {
 	private static final Logger LOG = Logger.getLogger(LogUtils.FHZ_PARSER_CUL);
 	private final ParserListener<EvoHomeMessage> parserListener;
 	private State state;
-	private ZonesParamParser zonesParamParser = new ZonesParamParser();
-	private ZoneTemperaturesParser zoneTemperatureParser = new ZoneTemperaturesParser();
-	private _XX_0004_16_Parser _18_0004_16_Parser = new _XX_0004_16_Parser();
-	private _XX_1FC9_XX_Parser _XX_1FC9_XX_Parser = new _XX_1FC9_XX_Parser();
+	private final ZonesParamParser zonesParamParser = new ZonesParamParser();
+	private final ZoneTemperaturesParser zoneTemperatureParser = new ZoneTemperaturesParser();
+	private final _XX_0004_16_Parser _18_0004_16_Parser = new _XX_0004_16_Parser();
+	private final _XX_1FC9_XX_Parser _XX_1FC9_XX_Parser = new _XX_1FC9_XX_Parser();
 	private EvoHomeMessage evoHomeMessage;
 	private EvoHomeHeaderByte evoHomeHeaderByte;
 	private EvoHomeCommand evoHomeCommand;
@@ -874,8 +875,8 @@ default:
 		case _2C: 
 		case _3C: 
 			final EvoHomeDeviceMessage msg = (EvoHomeDeviceMessage) evoHomeMessage;
-			msg.deviceId1 = deviceId1;
-			msg.deviceId2 = deviceId2;
+			msg.deviceId1 = new DeviceId(deviceId1);
+			msg.deviceId2 = new DeviceId(deviceId2);
 			break;
 		default:
 			throw new RuntimeException("Unexpected Header byte " + evoHomeHeaderByte);

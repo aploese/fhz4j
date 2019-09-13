@@ -44,8 +44,8 @@ public class EvoHome_0xXX_0x000A_0xXX_ZONES_PARAMS_Message extends EvoHomeDevice
 	}
 	
 	@Override
-	protected void addToString(StringBuilder sb) {
-		super.addToString(sb);
+	protected void addToJsonString(StringBuilder sb) {
+		super.addToJsonString(sb);
 		sb.append(", zones:[");
 		boolean first = true;
 		for (ZoneParams zp: zones) {

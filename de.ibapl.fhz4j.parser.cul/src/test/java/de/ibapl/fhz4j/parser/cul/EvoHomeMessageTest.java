@@ -349,8 +349,8 @@ public class EvoHomeMessageTest implements ParserListener<EvoHomeMessage> {
 
 	public static void assertEvoHomeDeviceMessage(EvoHomeDeviceMessage evoHomeMessage, int deviceId1, int deviceId2) {
 		assertNotNull(evoHomeMessage);
-		assertEquals(deviceId1, evoHomeMessage.deviceId1, "deviceId1");
-		assertEquals(deviceId2, evoHomeMessage.deviceId2, "deviceId2");
+		assertEquals(deviceId1, evoHomeMessage.deviceId1.id, "deviceId1");
+		assertEquals(deviceId2, evoHomeMessage.deviceId2.id, "deviceId2");
 	}
 
 	private EvoHomeParser parser = new EvoHomeParser(this);

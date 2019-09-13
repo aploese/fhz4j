@@ -24,7 +24,6 @@ package de.ibapl.fhz4j.parser.cul;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
-
 import de.ibapl.fhz4j.parser.api.ParserListener;
 import de.ibapl.fhz4j.parser.fht.FhtParser;
 import de.ibapl.fhz4j.protocol.fht.FhtDateMessage;
@@ -38,55 +37,56 @@ import org.junit.jupiter.api.Test;
  */
 public class FhtDateMessageTest implements ParserListener<FhtMessage> {
 
-	private FhtParser parser = new FhtParser(this);
-	private FhtMessage partialFhtMessage;
-	private FhtMessage fhtMessage;
+    private FhtParser parser = new FhtParser(this);
+    private FhtMessage partialFhtMessage;
+    private FhtMessage fhtMessage;
 
-	private void decode(String s) {
-		fhtMessage = null;
-		partialFhtMessage = null;
-		parser.init();
-		new DataSource(s).iterate(parser);
-	}
+    private void decode(String s) {
+        fhtMessage = null;
+        partialFhtMessage = null;
+        parser.init();
+        new DataSource(s).iterate(parser);
+    }
 
-	@Test
-	public void testHolidayEnd() {
-		decode("03023F690D");
-		decode("0302406907");
-		decode("03023E6902");
-	 assertDateMessage(fhtMessage, (short) 302, FhtProperty.HOLIDAY_END_DATE, true, true, 7, 13);
-	}
+    @Test
+    public void testHolidayEnd() {
+        decode("03023F690D");
+        decode("0302406907");
+        decode("03023E6902");
+        assertDateMessage(fhtMessage, (short) 302, FhtProperty.HOLIDAY_END_DATE, true, true, 7, 13);
+        assertEquals("{protocol : FHT, housecode : 302, command : HOLIDAY_END_DATE, fromFht_8b : true, dataRegister : true, day : 13, month : 7}", fhtMessage.toString());
+    }
 
-	@Override
-	public void success(FhtMessage fhzMessage) {
-		this.fhtMessage = fhzMessage;
-	}
+    @Override
+    public void success(FhtMessage fhzMessage) {
+        this.fhtMessage = fhzMessage;
+    }
 
-	@Override
-	public void successPartial(FhtMessage fhzMessage) {
-		this.partialFhtMessage = fhzMessage;
-	}
+    @Override
+    public void successPartial(FhtMessage fhzMessage) {
+        this.partialFhtMessage = fhzMessage;
+    }
 
-	@Override
-	public void fail(Throwable t) {
-		throw new RuntimeException(t);
-	}
+    @Override
+    public void fail(Throwable t) {
+        throw new RuntimeException(t);
+    }
 
-	public static void assertDateMessage(FhtMessage fhtMessage, int housecode, FhtProperty fhtProperty,
-			boolean dataRegister, boolean fromFht_8B, int month, int day) {
-	 assertNotNull(fhtMessage);
-		final FhtDateMessage msg = (FhtDateMessage) fhtMessage;
-	 assertEquals((short) housecode, msg.housecode, "housecode");
-	 assertEquals(fhtProperty, msg.command, "command");
-	 assertEquals(fromFht_8B, msg.fromFht_8B, "fromFht_8B");
-	 assertEquals(dataRegister, msg.dataRegister, "dataRegister");
-	 assertEquals(month, msg.month, "month");
-	 assertEquals(day, msg.day, "day");
-	}
+    public static void assertDateMessage(FhtMessage fhtMessage, int housecode, FhtProperty fhtProperty,
+            boolean dataRegister, boolean fromFht_8B, int month, int day) {
+        assertNotNull(fhtMessage);
+        final FhtDateMessage msg = (FhtDateMessage) fhtMessage;
+        assertEquals((short) housecode, msg.housecode, "housecode");
+        assertEquals(fhtProperty, msg.command, "command");
+        assertEquals(fromFht_8B, msg.fromFht_8B, "fromFht_8B");
+        assertEquals(dataRegister, msg.dataRegister, "dataRegister");
+        assertEquals(month, msg.month, "month");
+        assertEquals(day, msg.day, "day");
+    }
 
-	@Override
-	public void successPartialAssembled(FhtMessage fhzMessage) {
-		this.fhtMessage = fhzMessage;
-	}
+    @Override
+    public void successPartialAssembled(FhtMessage fhzMessage) {
+        this.fhtMessage = fhzMessage;
+    }
 
 }

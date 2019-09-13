@@ -29,18 +29,26 @@ import java.time.LocalTime;
  */
 public class FhtTimesMessage extends Fht8bMessage {
 
-	public LocalTime timeFrom1;
-	public LocalTime timeTo1;
-	public LocalTime timeFrom2;
-	public LocalTime timeTo2;
+    public LocalTime timeFrom1;
+    public LocalTime timeTo1;
+    public LocalTime timeFrom2;
+    public LocalTime timeTo2;
 
-	public FhtTimesMessage(short housecode, FhtProperty command, boolean fromFht_8B, boolean dataRegister,
-			LocalTime timeFrom1, LocalTime timeTo1, LocalTime timeFrom2, LocalTime timeTo2) {
-		super(housecode, command, fromFht_8B, dataRegister);
-		this.timeFrom1 = timeFrom1;
-		this.timeTo1 = timeTo1;
-		this.timeFrom2 = timeFrom2;
-		this.timeTo2 = timeTo2;
-	}
+    public FhtTimesMessage(short housecode, FhtProperty command, boolean fromFht_8B, boolean dataRegister,
+            LocalTime timeFrom1, LocalTime timeTo1, LocalTime timeFrom2, LocalTime timeTo2) {
+        super(housecode, command, fromFht_8B, dataRegister);
+        this.timeFrom1 = timeFrom1;
+        this.timeTo1 = timeTo1;
+        this.timeFrom2 = timeFrom2;
+        this.timeTo2 = timeTo2;
+    }
 
+    @Override
+    protected void addToJsonString(StringBuilder sb) {
+        super.addToJsonString(sb);
+        sb.append(", timeFrom1 : ").append(timeFrom1);
+        sb.append(", timeTo1 : ").append(timeTo1);
+        sb.append(", timeFrom2 : ").append(timeFrom2);
+        sb.append(", timeTo2 : ").append(timeTo2);
+    }
 }

@@ -21,27 +21,33 @@
  */
 package de.ibapl.fhz4j.protocol.fht;
 
-import de.ibapl.fhz4j.api.FhzMessage;
-import de.ibapl.fhz4j.api.FhzProtocol;
+import de.ibapl.fhz4j.api.Message;
+import de.ibapl.fhz4j.api.Protocol;
 
 /**
  *
  * @author Arne Plöse
  */
-public abstract class FhtMessage extends FhzMessage {
+public abstract class FhtMessage extends Message {
 
 	public short housecode;
 	public FhtProperty command;
 
 	protected FhtMessage(short housecode, FhtProperty command) {
-		super(FhzProtocol.FHT);
+		super(Protocol.FHT);
 		this.housecode = housecode;
 		this.command = command;
 	}
 
 	protected FhtMessage(FhtProperty command) {
-		super(FhzProtocol.FHT);
+		super(Protocol.FHT);
 		this.command = command;
 	}
 
+        @Override
+        protected void addToJsonString(StringBuilder sb) {
+            super.addToJsonString(sb);
+            sb.append(", housecode : ").append(housecode);
+            sb.append(", command : ").append(command);
+        }
 }

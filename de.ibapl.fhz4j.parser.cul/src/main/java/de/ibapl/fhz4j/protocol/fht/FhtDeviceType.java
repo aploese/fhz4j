@@ -21,11 +21,11 @@
  */
 package de.ibapl.fhz4j.protocol.fht;
 
-import static de.ibapl.fhz4j.api.FhzProtocol.FHT;
+import static de.ibapl.fhz4j.api.Protocol.FHT;
 
 import java.io.Serializable;
 
-import de.ibapl.fhz4j.api.FhzProtocol;
+import de.ibapl.fhz4j.api.Protocol;
 
 /**
  *
@@ -33,7 +33,7 @@ import de.ibapl.fhz4j.api.FhzProtocol;
  */
 public enum FhtDeviceType implements Serializable {
 
-	FHT_8V("FHT V", FHT), FHT_80B("FHT 80B", FHT), UNKNOWN("Unknown", FhzProtocol.UNKNOWN);
+	FHT_8V("FHT V", FHT), FHT_80B("FHT 80B", FHT), UNKNOWN("Unknown", Protocol.UNKNOWN);
 
 	public static FhtDeviceType fromLabel(String label) {
 		for (FhtDeviceType deviceType : values()) {
@@ -45,9 +45,9 @@ public enum FhtDeviceType implements Serializable {
 	}
 
 	private final String label;
-	private final FhzProtocol protocol;
+	private final Protocol protocol;
 
-	private FhtDeviceType(String label, FhzProtocol protocol) {
+	private FhtDeviceType(String label, Protocol protocol) {
 		this.label = label;
 		this.protocol = protocol;
 	}
@@ -56,7 +56,7 @@ public enum FhtDeviceType implements Serializable {
 		return label;
 	}
 
-	public FhzProtocol getProtocol() {
+	public Protocol getProtocol() {
 		return protocol;
 	}
 

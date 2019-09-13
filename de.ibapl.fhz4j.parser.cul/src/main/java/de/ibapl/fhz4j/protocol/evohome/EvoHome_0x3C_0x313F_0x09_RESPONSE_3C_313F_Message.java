@@ -34,8 +34,8 @@ public class EvoHome_0x3C_0x313F_0x09_RESPONSE_3C_313F_Message extends EvoHomeDe
 	}
 	
 	@Override
-	protected void addToString(StringBuilder sb) {
-		super.addToString(sb);
+	protected void addToJsonString(StringBuilder sb) {
+		super.addToJsonString(sb);
 		appendByteArray(sb, "value", value);
 	}
 }

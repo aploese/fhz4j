@@ -34,4 +34,9 @@ public class FhtModeMessage extends Fht8bMessage {
 		this.mode = fhtMode;
 	}
 
+       @Override
+        protected void addToJsonString(StringBuilder sb) {
+             super.addToJsonString(sb);
+             sb.append(", value : ").append(mode);
+        }
 }

@@ -30,11 +30,16 @@ import java.util.Set;
  */
 public class FhtWarningMessage extends Fht8bMessage {
 
-	public Set<Fht80bWarning> warnings;
+    public Set<Fht80bWarning> warnings;
 
-	public FhtWarningMessage(short housecode, boolean fromFht_8B, boolean dataRegister, Set<Fht80bWarning> warnings) {
-		super(housecode, FhtProperty.WARNINGS, fromFht_8B, dataRegister);
-		this.warnings = EnumSet.copyOf(warnings);
-	}
+    public FhtWarningMessage(short housecode, boolean fromFht_8B, boolean dataRegister, Set<Fht80bWarning> warnings) {
+        super(housecode, FhtProperty.WARNINGS, fromFht_8B, dataRegister);
+        this.warnings = EnumSet.copyOf(warnings);
+    }
 
+    @Override
+    protected void addToJsonString(StringBuilder sb) {
+        super.addToJsonString(sb);
+        sb.append(", warnings : ").append(warnings);
+    }
 }

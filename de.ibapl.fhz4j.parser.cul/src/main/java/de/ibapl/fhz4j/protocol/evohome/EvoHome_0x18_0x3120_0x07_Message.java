@@ -34,8 +34,8 @@ public class EvoHome_0x18_0x3120_0x07_Message extends EvoHomeDeviceMessage {
 	}
 
 	@Override
-	protected void addToString(StringBuilder sb) {
-		super.addToString(sb);
+	protected void addToJsonString(StringBuilder sb) {
+		super.addToJsonString(sb);
 		appendByteArray(sb, "value", value);
 	}
 }

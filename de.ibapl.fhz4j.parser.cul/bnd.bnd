@@ -1,9 +1,9 @@
 Export-Package: \
  de.ibapl.fhz4j.api,\
+ de.ibapl.fhz4j.cul,\
  de.ibapl.fhz4j.parser.api,\
- de.ibapl.fhz4j.parser.cul,\
- de.ibapl.fhz4j.writer.cul,\
  de.ibapl.fhz4j.protocol.em,\
+ de.ibapl.fhz4j.protocol.evohome,\
  de.ibapl.fhz4j.protocol.fht,\
  de.ibapl.fhz4j.protocol.fs20,\
  de.ibapl.fhz4j.protocol.hms,\

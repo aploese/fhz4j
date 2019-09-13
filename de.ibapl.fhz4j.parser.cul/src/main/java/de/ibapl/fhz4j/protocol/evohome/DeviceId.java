@@ -23,19 +23,33 @@ package de.ibapl.fhz4j.protocol.evohome;
 
 /**
  *
- * @author Arne Plöse
+ * @author aploese
  */
-public class EvoHome_0x3C_0x0100_0x05_Message extends EvoHomeDeviceMessage {
-	
-	public final byte[] value = new byte[0x05];
+public class DeviceId {
 
-	public EvoHome_0x3C_0x0100_0x05_Message() {
-		super(EvoHomeProperty._3C_0100);
-	}
-	
-	@Override
-	protected void addToJsonString(StringBuilder sb) {
-		super.addToJsonString(sb);
-		appendByteArray(sb, "value", value);
-	}
+    public final int id;
+    public final DeviceType type;
+
+    public DeviceId(int deviceId) {
+        this.id = deviceId;
+        switch (deviceId & 0xFF0000) {
+            case 0x110000:
+            case 0x130000:
+                type = DeviceType.RADIATOR_CONTROLLER;
+                break;
+            case 0x890000:
+                type = DeviceType.SINGLE_ZONE_THERMOSTAT;
+                break;
+            case 0x060000:
+                type = DeviceType.MULTI_ZONE_CONTROLLER;
+                break;
+            default:
+                type = DeviceType.UNKNOWN;
+        }
+    }
+    
+    @Override
+    public String toString() {
+        return String.format("{id : 0x%06x, type : \"%s\"}", id, type);
+    }
 }

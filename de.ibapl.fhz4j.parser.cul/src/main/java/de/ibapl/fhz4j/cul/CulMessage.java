@@ -19,43 +19,23 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package de.ibapl.fhz4j.api;
+package de.ibapl.fhz4j.cul;
 
-import de.ibapl.fhz4j.parser.cul.CulMessage;
-import de.ibapl.fhz4j.protocol.em.EmMessage;
-import de.ibapl.fhz4j.protocol.evohome.EvoHomeMessage;
-import de.ibapl.fhz4j.protocol.fht.FhtMessage;
-import de.ibapl.fhz4j.protocol.fs20.FS20Message;
-import de.ibapl.fhz4j.protocol.hms.HmsMessage;
-import de.ibapl.fhz4j.protocol.lacrosse.tx2.LaCrosseTx2Message;
+import de.ibapl.fhz4j.api.Message;
+import de.ibapl.fhz4j.api.Protocol;
 
 /**
  *
  * @author Arne Plöse
  */
-public interface FhzDataListener {
+public class CulMessage extends Message {
+	public final static CulMessage LOVF = new CulMessage("Limit Overflow");
+	public final static CulMessage EOB = new CulMessage("End Of Buffer");
 
-	void emDataParsed(EmMessage emMsg);
+	public String message;
 
-	void fs20DataParsed(FS20Message fs20Msg);
-
-	/**
-	 * some stuff is send in parts i.E. the measures temerature (low and high)
-	 * 
-	 * @param fhtMessage
-	 */
-	void fhtPartialDataParsed(FhtMessage fhtMessage);
-
-	void fhtDataParsed(FhtMessage fhtMessage);
-
-	void hmsDataParsed(HmsMessage hmsMsg);
-
-	void laCrosseTxParsed(LaCrosseTx2Message laCrosseTx2Msg);
-
-	void evoHomeParsed(EvoHomeMessage evoHomeMsg);
-
-	void culMessageParsed(CulMessage culMessage);
-
-	void failed(Throwable t);
-
+	private CulMessage(String message) {
+		super(Protocol.CUL);
+		this.message = message;
+	}
 }

@@ -29,11 +29,17 @@ import java.util.Set;
  */
 public class Hms100TfMessage extends HmsMessage {
 
-	public float temp;
-	public float humidy;
+    public float temp;
+    public float humidy;
 
-	public Hms100TfMessage(short housecode, Set<HmsDeviceStatus> deviceStatus) {
-		super(housecode, HmsDeviceType.HMS_100_TF, deviceStatus);
-	}
+    public Hms100TfMessage(short housecode, Set<HmsDeviceStatus> deviceStatus) {
+        super(housecode, HmsDeviceType.HMS_100_TF, deviceStatus);
+    }
 
+    @Override
+    protected void addToJsonString(StringBuilder sb) {
+        super.addToJsonString(sb);
+        sb.append(", temp : ").append(temp);
+        sb.append(", humidy : ").append(humidy);
+    }
 }

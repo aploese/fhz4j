@@ -29,10 +29,16 @@ import java.util.Set;
  */
 public class Hms100WdMessage extends HmsMessage {
 
-	public Hms100WdMessage(short housecode, Set<HmsDeviceStatus> deviceStatus) {
-		super(housecode, HmsDeviceType.HMS_100_WD, deviceStatus);
-	}
+    public Hms100WdMessage(short housecode, Set<HmsDeviceStatus> deviceStatus) {
+        super(housecode, HmsDeviceType.HMS_100_WD, deviceStatus);
+    }
 
-	public boolean water;
+    public boolean water;
 
+    @Override
+    protected void addToJsonString(StringBuilder sb) {
+        super.addToJsonString(sb);
+        sb.append(", water : ").append(water);
+
+    }
 }

@@ -19,23 +19,4 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package de.ibapl.fhz4j.parser.cul;
 
-import de.ibapl.fhz4j.api.FhzMessage;
-import de.ibapl.fhz4j.api.FhzProtocol;
-
-/**
- *
- * @author Arne Plöse
- */
-public class CulMessage extends FhzMessage {
-	public final static CulMessage LOVF = new CulMessage("Limit Overflow");
-	public final static CulMessage EOB = new CulMessage("End Of Buffer");
-
-	public String message;
-
-	private CulMessage(String message) {
-		super(FhzProtocol.CUL);
-		this.message = message;
-	}
-}

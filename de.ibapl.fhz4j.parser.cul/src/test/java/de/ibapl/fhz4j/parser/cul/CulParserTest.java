@@ -21,10 +21,10 @@
  */
 package de.ibapl.fhz4j.parser.cul;
 
+import de.ibapl.fhz4j.cul.CulMessage;
 import java.time.LocalTime;
 
-import de.ibapl.fhz4j.api.FhzDataListener;
-import de.ibapl.fhz4j.api.FhzMessage;
+import de.ibapl.fhz4j.api.Message;
 import de.ibapl.fhz4j.protocol.em.EmMessage;
 import de.ibapl.fhz4j.protocol.evohome.EvoHomeMessage;
 import de.ibapl.fhz4j.protocol.fht.FhtMessage;
@@ -40,15 +40,16 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import org.junit.jupiter.api.Disabled;
+import de.ibapl.fhz4j.cul.CulMessageListener;
 
 
 /**
  *
  * @author Arne Plöse
  */
-public class CulParserTest implements FhzDataListener {
+public class CulParserTest implements CulMessageListener {
 
-	private CulParser<FhzMessage> parser;
+	private CulParser<Message> parser;
 	private FhtMessage fhtMessage;
 	private HmsMessage hmsMsg;
 	private EmMessage emMsg;
@@ -57,6 +58,7 @@ public class CulParserTest implements FhzDataListener {
 	private FhtMessage fhtPartialMessage;
 	private CulMessage culMessage;
 	private EvoHomeMessage evoHomeMsg;
+        private float signalStrength;
 
 	public CulParserTest() {
 	}
@@ -243,4 +245,8 @@ public class CulParserTest implements FhzDataListener {
 		this.evoHomeMsg = evoHomeMsg;
 	}
 
+	@Override
+	public void signalStrength(float signalStrength) {
+		this.signalStrength = this.signalStrength;
+	}
 }

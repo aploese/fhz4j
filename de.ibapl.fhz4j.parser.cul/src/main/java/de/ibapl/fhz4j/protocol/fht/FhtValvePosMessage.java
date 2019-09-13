@@ -27,18 +27,27 @@ package de.ibapl.fhz4j.protocol.fht;
  */
 public class FhtValvePosMessage extends FhtMessage {
 
-	public FhtValveMode mode;
-	public boolean repeated;
-	public float position;
-	public boolean allowLowBatteryBeep;
+    public FhtValveMode mode;
+    public boolean repeated;
+    public float position;
+    public boolean allowLowBatteryBeep;
 
-	public FhtValvePosMessage(short housecode, FhtProperty command, boolean repeated, FhtValveMode mode, float position,
-			boolean allowLowBatteryBeep) {
-		super(housecode, command);
-		this.repeated = repeated;
-		this.mode = mode;
-		this.position = position;
-		this.allowLowBatteryBeep = allowLowBatteryBeep;
-	}
+    public FhtValvePosMessage(short housecode, FhtProperty command, boolean repeated, FhtValveMode mode, float position,
+            boolean allowLowBatteryBeep) {
+        super(housecode, command);
+        this.repeated = repeated;
+        this.mode = mode;
+        this.position = position;
+        this.allowLowBatteryBeep = allowLowBatteryBeep;
+    }
 
+    @Override
+    protected void addToJsonString(StringBuilder sb) {
+        super.addToJsonString(sb);
+        sb.append(", mode : ").append(mode);
+        sb.append(", repeated : ").append(repeated);
+        sb.append(", position : ").append(position);
+        sb.append(", allowLowBatteryBeep : ").append(allowLowBatteryBeep);
+
+    }
 }

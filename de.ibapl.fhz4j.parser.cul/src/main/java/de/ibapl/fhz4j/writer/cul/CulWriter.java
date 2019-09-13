@@ -64,6 +64,7 @@ public class CulWriter implements AutoCloseable {
 		open = true;
 	}
 
+        //TODO No RSSI ???
 	public void initFhz(short fhzHousecode) throws IOException {
 		try {
 			initFhz(fhzHousecode, EnumSet.of(InitFlag.PACKAGE_OK, InitFlag.WITH_RSSI));

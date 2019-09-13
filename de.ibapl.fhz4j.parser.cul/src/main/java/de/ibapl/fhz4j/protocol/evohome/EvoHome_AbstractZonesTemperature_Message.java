@@ -37,8 +37,8 @@ public class EvoHome_AbstractZonesTemperature_Message extends EvoHomeDeviceMessa
 	}
 
 	@Override
-	protected void addToString(StringBuilder sb) {
-		super.addToString(sb);
+	protected void addToJsonString(StringBuilder sb) {
+		super.addToJsonString(sb);
 		sb.append(", zoneTemperatures : [");
 		boolean first = true;
 		for (ZoneTemperature zt : zoneTemperatures) {

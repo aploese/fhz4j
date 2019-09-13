@@ -29,10 +29,15 @@ import java.util.Set;
  */
 public class Hms100RmMessage extends HmsMessage {
 
-	public Hms100RmMessage(short housecode, Set<HmsDeviceStatus> deviceStatus) {
-		super(housecode, HmsDeviceType.HMS_100_RM, deviceStatus);
-	}
+    public Hms100RmMessage(short housecode, Set<HmsDeviceStatus> deviceStatus) {
+        super(housecode, HmsDeviceType.HMS_100_RM, deviceStatus);
+    }
 
-	public boolean smoke;
+    public boolean smoke;
 
+    @Override
+    protected void addToJsonString(StringBuilder sb) {
+        super.addToJsonString(sb);
+        sb.append(", smoke : ").append(smoke);
+    }
 }

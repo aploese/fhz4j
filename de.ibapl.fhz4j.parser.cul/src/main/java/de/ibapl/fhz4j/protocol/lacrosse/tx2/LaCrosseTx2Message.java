@@ -21,22 +21,29 @@
  */
 package de.ibapl.fhz4j.protocol.lacrosse.tx2;
 
-import de.ibapl.fhz4j.api.FhzMessage;
-import de.ibapl.fhz4j.api.FhzProtocol;
+import de.ibapl.fhz4j.api.Message;
+import de.ibapl.fhz4j.api.Protocol;
 
 /**
  *
  * @author Arne Plöse
  */
-public class LaCrosseTx2Message extends FhzMessage {
+public class LaCrosseTx2Message extends Message {
 
-	public LaCrosseTx2Property laCrosseTx2Property;
-	public byte address;
-	public float value;
+    public LaCrosseTx2Property laCrosseTx2Property;
+    public byte address;
+    public float value;
 
-	public LaCrosseTx2Message(LaCrosseTx2Property laCrosseTx2Property) {
-		super(FhzProtocol.LA_CROSSE_TX2);
-		this.laCrosseTx2Property = laCrosseTx2Property;
-	}
+    public LaCrosseTx2Message(LaCrosseTx2Property laCrosseTx2Property) {
+        super(Protocol.LA_CROSSE_TX2);
+        this.laCrosseTx2Property = laCrosseTx2Property;
+    }
 
+    @Override
+    protected void addToJsonString(StringBuilder sb) {
+        super.addToJsonString(sb);
+        sb.append(", laCrosseTx2Property : ").append(laCrosseTx2Property);
+        sb.append(", address : ").append(address);
+        sb.append(", value : ").append(value);
+    }
 }

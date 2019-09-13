@@ -36,4 +36,10 @@ public class Fht8bMessage extends FhtMessage {
 		this.dataRegister = dataRegister;
 	}
 
+        @Override
+        protected void addToJsonString(StringBuilder sb) {
+            super.addToJsonString(sb);
+            sb.append(", fromFht_8b : ").append(fromFht_8B);
+            sb.append(", dataRegister : ").append(dataRegister);
+        }
 }

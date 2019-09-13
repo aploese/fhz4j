@@ -25,7 +25,6 @@ import java.util.logging.Logger;
 
 import de.ibapl.fhz4j.LogUtils;
 import de.ibapl.fhz4j.parser.api.AbstractParser;
-import de.ibapl.fhz4j.parser.api.Parser;
 import de.ibapl.fhz4j.parser.api.ParserListener;
 import de.ibapl.fhz4j.protocol.fs20.FS20CommandValue;
 import de.ibapl.fhz4j.protocol.fs20.FS20Message;
@@ -154,7 +153,7 @@ public class FS20Parser extends AbstractParser {
 
 			}
 		} catch (Throwable t) {
-			parserListener.fail(new RuntimeException(String.format("State: %s last byte %0x02x", state, b), t));
+			parserListener.fail(new RuntimeException(String.format("State: %s last byte 0x%02x", state, b), t));
 			state = State.PARSE_ERROR;
 		}
 	}

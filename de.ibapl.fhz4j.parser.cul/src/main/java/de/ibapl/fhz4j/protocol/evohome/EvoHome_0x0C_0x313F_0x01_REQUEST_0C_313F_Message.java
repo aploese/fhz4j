@@ -36,8 +36,8 @@ public class EvoHome_0x0C_0x313F_0x01_REQUEST_0C_313F_Message extends EvoHomeDev
 	
 	
 	@Override
-	protected void addToString(StringBuilder sb) {
-		super.addToString(sb);
+	protected void addToJsonString(StringBuilder sb) {
+		super.addToJsonString(sb);
 		sb.append(String.format(", value : 0x%02x", value));
 	}
 }

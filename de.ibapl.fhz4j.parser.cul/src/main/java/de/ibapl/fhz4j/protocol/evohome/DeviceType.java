@@ -19,12 +19,24 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package de.ibapl.fhz4j.api;
+package de.ibapl.fhz4j.protocol.evohome;
 
-import java.io.IOException;
-
-public interface EvoHomeAdapter extends Adapter {
-
-	void initEvoHome() throws IOException;
-
+/**
+ *
+ * @author aploese
+ */
+public enum DeviceType {
+    /**
+     * device HR92 
+     */
+    RADIATOR_CONTROLLER,
+    /**
+     * device T87/Y87
+     */
+    SINGLE_ZONE_THERMOSTAT,
+    /**
+     * device ATC928
+     */
+    MULTI_ZONE_CONTROLLER,
+    UNKNOWN;
 }

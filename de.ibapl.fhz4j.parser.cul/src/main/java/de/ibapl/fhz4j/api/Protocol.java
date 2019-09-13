@@ -22,7 +22,19 @@
 package de.ibapl.fhz4j.api;
 
 public enum Protocol {
-	EVO_HOME,
-	FHZ;
+	FHT("FHT"), FS20("FS 20"), EM("EM"), HMS("HMS"), LA_CROSSE_TX2("LaCrosse Tx2"), CUL("CUL"), EVO_HOME("Evo Home"), UNKNOWN("Unknown");
+
+	private final String label;
+
+	private Protocol(String label) {
+		this.label = label;
+	}
+
+	/**
+	 * @return the label
+	 */
+	public String getLabel() {
+		return label;
+	}
 
 }

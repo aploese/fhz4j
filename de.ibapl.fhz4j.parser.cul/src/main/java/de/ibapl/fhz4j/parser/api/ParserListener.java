@@ -21,13 +21,13 @@
  */
 package de.ibapl.fhz4j.parser.api;
 
-import de.ibapl.fhz4j.api.FhzMessage;
+import de.ibapl.fhz4j.api.Message;
 
 /**
  *
  * @author Arne Plöse
  */
-public interface ParserListener<T extends FhzMessage> {
+public interface ParserListener<T extends Message> {
 
 	void success(T fhzMessage);
 

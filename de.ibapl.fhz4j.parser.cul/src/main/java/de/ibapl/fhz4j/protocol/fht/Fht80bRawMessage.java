@@ -43,4 +43,9 @@ public class Fht80bRawMessage extends Fht8bMessage {
 	}
 	
 
-}
+       @Override
+        protected void addToJsonString(StringBuilder sb) {
+            super.addToJsonString(sb);
+            sb.append(String.format(", value: 0x%0sx", value));
+        }
+ }

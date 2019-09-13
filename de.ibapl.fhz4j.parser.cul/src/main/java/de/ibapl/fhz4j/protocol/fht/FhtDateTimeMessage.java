@@ -37,4 +37,9 @@ public class FhtDateTimeMessage extends Fht8bMessage {
 		this.ts = ts;
 	}
 
+       @Override
+        protected void addToJsonString(StringBuilder sb) {
+             super.addToJsonString(sb);
+             sb.append(", ts : ").append(ts);
+        }
 }

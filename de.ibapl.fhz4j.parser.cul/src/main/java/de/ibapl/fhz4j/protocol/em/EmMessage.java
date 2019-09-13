@@ -47,40 +47,48 @@ package de.ibapl.fhz4j.protocol.em;
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  * #L%
  */
-import de.ibapl.fhz4j.api.FhzMessage;
-import de.ibapl.fhz4j.api.FhzProtocol;
+import de.ibapl.fhz4j.api.Message;
+import de.ibapl.fhz4j.api.Protocol;
 
 /**
  *
  * @author Arne Plöse
  */
-public class EmMessage extends FhzMessage {
+public class EmMessage extends Message {
 
-	public final static double EM_1000_S_CORR_1 = 12.0 / 150.0;
-	public final static double EM_1000_S_CORR_2 = 12.0 / 1800.0;
+    public final static double EM_1000_S_CORR_1 = 12.0 / 150.0;
+    public final static double EM_1000_S_CORR_2 = 12.0 / 1800.0;
 
-	public final static double EM_1000_EM_POWER = 0.01;
-	public final static double EM_1000_EM_ENERY = 0.001;
+    public final static double EM_1000_EM_POWER = 0.01;
+    public final static double EM_1000_EM_ENERY = 0.001;
 
-	public short address;
-	public short counter;
-	public EmDeviceType emDeviceType;
-	/**
-	 * EM 1000-EM Energy cumulated valueCummulated * EM_1000_EM_ENERY
-	 */
-	public int valueCummulated;
-	/**
-	 * EM 1000-EM Power average value5Min * EM_1000_EM_POWER
-	 */
-	public int value5Min;
-	/**
-	 * EM 1000-EM Power 5min max value5MinPeak * EM_1000_EM_POWER
-	 */
-	public int value5MinPeak;
+    public short address;
+    public short counter;
+    public EmDeviceType emDeviceType;
+    /**
+     * EM 1000-EM Energy cumulated valueCummulated * EM_1000_EM_ENERY
+     */
+    public int valueCummulated;
+    /**
+     * EM 1000-EM Power average value5Min * EM_1000_EM_POWER
+     */
+    public int value5Min;
+    /**
+     * EM 1000-EM Power 5min max value5MinPeak * EM_1000_EM_POWER
+     */
+    public int value5MinPeak;
 
-	public EmMessage(EmDeviceType emDeviceType) {
-		super(FhzProtocol.EM);
-		this.emDeviceType = emDeviceType;
-	}
+    public EmMessage(EmDeviceType emDeviceType) {
+        super(Protocol.EM);
+        this.emDeviceType = emDeviceType;
+    }
+
+    @Override
+    protected void addToJsonString(StringBuilder sb) {
+        super.addToJsonString(sb);
+        sb.append(", address : ").append(address);
+        sb.append(", counter : ").append(counter);
+        sb.append(", emDeviceType : ").append(emDeviceType);
+    }
 
 }

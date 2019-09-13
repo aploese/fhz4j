@@ -22,7 +22,6 @@
 module de.ibapl.fhz4j.parser.cul {
 	requires java.logging;
 	requires transitive de.ibapl.spsw.api;
-	requires org.osgi.dto;
 	requires osgi.annotation;
 	
 	exports de.ibapl.fhz4j.api;

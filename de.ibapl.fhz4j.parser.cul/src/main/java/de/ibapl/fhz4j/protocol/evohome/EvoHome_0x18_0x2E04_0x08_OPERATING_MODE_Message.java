@@ -44,8 +44,8 @@ public class EvoHome_0x18_0x2E04_0x08_OPERATING_MODE_Message extends EvoHomeDevi
 	}
 
 	@Override
-	protected void addToString(StringBuilder sb) {
-		super.addToString(sb);
+	protected void addToJsonString(StringBuilder sb) {
+		super.addToJsonString(sb);
 		sb.append(", mode : ").append(mode);
 		appendByteArray(sb, "value", value);
 	}

@@ -29,10 +29,16 @@ import java.util.Set;
  */
 public class Hms100TfkMessage extends HmsMessage {
 
-	public Hms100TfkMessage(short housecode, Set<HmsDeviceStatus> deviceStatus) {
-		super(housecode, HmsDeviceType.HMS_100_TFK, deviceStatus);
-	}
+    public Hms100TfkMessage(short housecode, Set<HmsDeviceStatus> deviceStatus) {
+        super(housecode, HmsDeviceType.HMS_100_TFK, deviceStatus);
+    }
 
-	public boolean open;
+    public boolean open;
 
+    @Override
+    protected void addToJsonString(StringBuilder sb) {
+        super.addToJsonString(sb);
+        sb.append(", open : ").append(open);
+
+    }
 }

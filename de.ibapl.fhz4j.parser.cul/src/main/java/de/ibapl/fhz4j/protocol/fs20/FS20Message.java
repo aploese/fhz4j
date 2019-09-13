@@ -21,24 +21,31 @@
  */
 package de.ibapl.fhz4j.protocol.fs20;
 
-import de.ibapl.fhz4j.api.FhzMessage;
-import de.ibapl.fhz4j.api.FhzProtocol;
+import de.ibapl.fhz4j.api.Message;
+import de.ibapl.fhz4j.api.Protocol;
 
 /**
  *
  * @author Arne Plöse
  */
-public class FS20Message extends FhzMessage {
+public class FS20Message extends Message {
 
-	public short housecode;
-	public byte offset;
-	public FS20CommandValue command;
+    public short housecode;
+    public byte offset;
+    public FS20CommandValue command;
 
-	public FS20Message(short housecode, FS20CommandValue fS20CommandValues, byte offset) {
-		super(FhzProtocol.FS20);
-		this.housecode = housecode;
-		this.command = fS20CommandValues;
-		this.offset = offset;
-	}
+    public FS20Message(short housecode, FS20CommandValue fS20CommandValues, byte offset) {
+        super(Protocol.FS20);
+        this.housecode = housecode;
+        this.command = fS20CommandValues;
+        this.offset = offset;
+    }
 
+    @Override
+    protected void addToJsonString(StringBuilder sb) {
+        super.addToJsonString(sb);
+        sb.append(", housecode : ").append(housecode);
+        sb.append(", offset : ").append(offset);
+        sb.append(", command : ").append(command);
+    }
 }

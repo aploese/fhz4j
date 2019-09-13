@@ -36,8 +36,8 @@ public class EvoHome_0x3C_0x1F09_0x03_RESPONSE_3C_1F09_Message extends EvoHomeDe
 	
 	
 	@Override
-	protected void addToString(StringBuilder sb) {
-		super.addToString(sb);
+	protected void addToJsonString(StringBuilder sb) {
+		super.addToJsonString(sb);
 		sb.append(String.format(", value : 0x%06x", value));
 	}
 }

@@ -27,15 +27,21 @@ package de.ibapl.fhz4j.protocol.fht;
  */
 public class FhtTempMessage extends Fht8bMessage {
 
-	public float temp;
+    public float temp;
 
-	public FhtTempMessage(int housecode, FhtProperty command, float temp) {
-		super((short) housecode, command, false, true);
-		this.temp = temp;
-	}
+    public FhtTempMessage(int housecode, FhtProperty command, float temp) {
+        super((short) housecode, command, false, true);
+        this.temp = temp;
+    }
 
-	public FhtTempMessage(short housecode, FhtProperty command, boolean fromFht_8B, boolean dataRegister, float temp) {
-		super(housecode, command, fromFht_8B, dataRegister);
-		this.temp = temp;
-	}
+    public FhtTempMessage(short housecode, FhtProperty command, boolean fromFht_8B, boolean dataRegister, float temp) {
+        super(housecode, command, fromFht_8B, dataRegister);
+        this.temp = temp;
+    }
+
+    @Override
+    protected void addToJsonString(StringBuilder sb) {
+        super.addToJsonString(sb);
+        sb.append(", temp : ").append(temp);
+    }
 }

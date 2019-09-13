@@ -19,26 +19,24 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package de.ibapl.fhz4j.api;
+package de.ibapl.fhz4j.protocol.fht;
 
 /**
  *
- * @author Arne Plöse
+ * @author aploese
  */
-public enum FhzProtocol {
-	FHT("FHT"), FS20("FS 20"), EM("EM"), HMS("HMS"), LA_CROSSE_TX2("LaCrosse Tx2"), CUL("CUL"), EVO_HOME("Evo Home"), UNKNOWN("Unknown");
+public interface FhtMessageListener {
 
-	private final String label;
+    /**
+     * some stuff is send in parts i.E. the measures temerature (low and high).
+     * Its usually only needed for debugging.
+     *
+     * @param fhtMessage
+     */
+    default void fhtPartialDataParsed(FhtMessage fhtMessage) {
+        //no-op
+    }
 
-	private FhzProtocol(String label) {
-		this.label = label;
-	}
-
-	/**
-	 * @return the label
-	 */
-	public String getLabel() {
-		return label;
-	}
+    void fhtDataParsed(FhtMessage fhtMessage);
 
 }

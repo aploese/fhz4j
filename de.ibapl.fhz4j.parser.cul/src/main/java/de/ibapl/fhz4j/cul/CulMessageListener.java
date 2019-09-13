@@ -19,5 +19,25 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-@org.osgi.annotation.versioning.Version("1.0.0")
-package de.ibapl.fhz4j.parser.cul;
+package de.ibapl.fhz4j.cul;
+
+import de.ibapl.fhz4j.protocol.em.EmMessageListener;
+import de.ibapl.fhz4j.protocol.evohome.EvoHomeMessageListener;
+import de.ibapl.fhz4j.protocol.fht.FhtMessageListener;
+import de.ibapl.fhz4j.protocol.fs20.FS20MessageListener;
+import de.ibapl.fhz4j.protocol.hms.HmsMessageListener;
+import de.ibapl.fhz4j.protocol.lacrosse.tx2.LaCrosseTx2MessageListener;
+
+/**
+ *
+ * @author Arne Plöse
+ */
+public interface CulMessageListener extends EmMessageListener, EvoHomeMessageListener, FhtMessageListener, FS20MessageListener, HmsMessageListener, LaCrosseTx2MessageListener {
+
+    void culMessageParsed(CulMessage culMessage);
+
+    void signalStrength(float signalStrength);
+
+    void failed(Throwable t);
+
+}

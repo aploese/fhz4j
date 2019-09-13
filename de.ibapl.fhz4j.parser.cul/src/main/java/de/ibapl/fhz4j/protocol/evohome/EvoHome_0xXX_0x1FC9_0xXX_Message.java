@@ -78,8 +78,8 @@ public class EvoHome_0xXX_0x1FC9_0xXX_Message extends EvoHomeDeviceMessage {
 	}
 
 	@Override
-	protected void addToString(StringBuilder sb) {
-		super.addToString(sb);
+	protected void addToJsonString(StringBuilder sb) {
+		super.addToJsonString(sb);
 		sb.append(", elements : [");
 		boolean firstRun = true;
 		for (Data d : elements) {

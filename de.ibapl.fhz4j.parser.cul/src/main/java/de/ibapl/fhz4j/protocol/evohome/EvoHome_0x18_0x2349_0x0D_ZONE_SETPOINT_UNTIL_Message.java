@@ -39,8 +39,8 @@ public class EvoHome_0x18_0x2349_0x0D_ZONE_SETPOINT_UNTIL_Message extends EvoHom
 	}
 	
 	@Override
-	protected void addToString(StringBuilder sb) {
-		super.addToString(sb);
+	protected void addToJsonString(StringBuilder sb) {
+		super.addToJsonString(sb);
 		sb.append(", temperature : ").append(temperature);
 		sb.append(String.format(", unknown : 0x%08x", unknown));
 		sb.append(", until : ").append(until);
