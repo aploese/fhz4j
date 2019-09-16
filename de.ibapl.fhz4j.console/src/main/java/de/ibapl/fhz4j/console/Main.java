@@ -167,6 +167,18 @@ public class Main {
             System.out.append("Signal strength: ").println(signalStrength);
         }
 
+        @Override
+        public void receiveEnabled(Protocol protocol) {
+            printTimeStamp();
+            System.out.append("enabled receivement of RF-protocol: ").println(protocol);
+        }
+
+        @Override
+        public void helpParsed(String helpMessages) {
+            printTimeStamp();
+            System.out.append("CUL Help: \"").append(helpMessages).println("\"");
+        }
+
     }
 
     /**

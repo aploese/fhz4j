@@ -21,6 +21,7 @@
  */
 package de.ibapl.fhz4j.cul;
 
+import de.ibapl.fhz4j.api.Protocol;
 import de.ibapl.fhz4j.protocol.em.EmMessageListener;
 import de.ibapl.fhz4j.protocol.evohome.EvoHomeMessageListener;
 import de.ibapl.fhz4j.protocol.fht.FhtMessageListener;
@@ -39,5 +40,18 @@ public interface CulMessageListener extends EmMessageListener, EvoHomeMessageLis
     void signalStrength(float signalStrength);
 
     void failed(Throwable t);
+
+    /**
+     * The receiment of a special RF protocol was enabled
+     * 
+     * @param protocol 
+     */
+    void receiveEnabled(Protocol protocol);
+
+    /**
+     * the string of help chars as they arrive
+     * @param helpMessages the help message from the CUL command line.
+     */
+    void helpParsed(String helpMessages);
 
 }
