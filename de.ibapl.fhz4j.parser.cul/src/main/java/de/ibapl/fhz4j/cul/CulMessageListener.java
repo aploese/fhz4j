@@ -28,6 +28,7 @@ import de.ibapl.fhz4j.protocol.fht.FhtMessageListener;
 import de.ibapl.fhz4j.protocol.fs20.FS20MessageListener;
 import de.ibapl.fhz4j.protocol.hms.HmsMessageListener;
 import de.ibapl.fhz4j.protocol.lacrosse.tx2.LaCrosseTx2MessageListener;
+import java.io.IOException;
 
 /**
  *
@@ -53,5 +54,7 @@ public interface CulMessageListener extends EmMessageListener, EvoHomeMessageLis
      * @param helpMessages the help message from the CUL command line.
      */
     void helpParsed(String helpMessages);
+
+    void onIOException(IOException ioe);
 
 }

@@ -45,6 +45,7 @@ import java.nio.ByteBuffer;
 import java.nio.channels.AsynchronousCloseException;
 import de.ibapl.fhz4j.api.FhzHandler;
 import de.ibapl.fhz4j.api.EvoHomeHandler;
+import java.io.InterruptedIOException;
 
 public class CulAdapter implements Adapter, FhzHandler, EvoHomeHandler {
 
@@ -65,8 +66,10 @@ public class CulAdapter implements Adapter, FhzHandler, EvoHomeHandler {
                         }
                     }
                     inBuffer.clear();
-                } catch (AsynchronousCloseException ace) {
-                    LOG.log(Level.FINE, "caught AsynchronousCloseException during waiting for packages", ace);
+                } catch (InterruptedIOException iioe) {
+                    if (CulAdapter.this.open) {
+                        CulAdapter.this.fhzDataListener.onIOException(iioe);
+                    }
                 } catch (Throwable t) {
                     LOG.log(Level.SEVERE, "caught unexcpected exception during waiting for packages", t);
                 }

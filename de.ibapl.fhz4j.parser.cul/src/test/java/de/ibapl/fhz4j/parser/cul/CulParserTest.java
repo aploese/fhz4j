@@ -26,6 +26,7 @@ import java.time.LocalTime;
 
 import de.ibapl.fhz4j.api.Message;
 import de.ibapl.fhz4j.api.Protocol;
+import de.ibapl.fhz4j.cul.CulAdapter;
 import de.ibapl.fhz4j.protocol.em.EmMessage;
 import de.ibapl.fhz4j.protocol.evohome.EvoHomeMessage;
 import de.ibapl.fhz4j.protocol.fht.FhtMessage;
@@ -42,6 +43,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import org.junit.jupiter.api.Disabled;
 import de.ibapl.fhz4j.cul.CulMessageListener;
+import java.io.IOException;
 
 /**
  *
@@ -282,5 +284,10 @@ public class CulParserTest implements CulMessageListener {
     @Override
     public void helpParsed(String helpMessages) {
         this.helpMessage = helpMessages;
+    }
+
+    @Override
+    public void onIOException(IOException ioe) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 }

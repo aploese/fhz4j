@@ -25,7 +25,6 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -47,7 +46,6 @@ import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 import org.apache.commons.cli.DefaultParser;
 
-import de.ibapl.fhz4j.api.Adapter;
 import de.ibapl.fhz4j.api.Protocol;
 import de.ibapl.fhz4j.cul.CulAdapter;
 import de.ibapl.fhz4j.cul.CulMessage;
@@ -179,6 +177,25 @@ public class Main {
             System.out.append("CUL Help: \"").append(helpMessages).println("\"");
         }
 
+        @Override
+        public void onIOException(IOException ioe) {
+            printTimeStamp();
+            System.err.println("Serial port error - try to recover");
+            try {
+                fhzAdapter.close();
+                // Linux 1 min to recover ???
+                Thread.sleep(600000);
+            } catch (Exception e) {
+                System.err.println(e);
+            }
+            try {
+                fhzAdapter.open();
+            } catch (Exception e) {
+            System.err.println("Serial port error - closing down");
+                System.err.println(e);
+                System.exit(1);
+            }
+        }
     }
 
     /**
@@ -190,6 +207,7 @@ public class Main {
      * @throws IOException DOCUMENT ME!
      */
     public static void main(String[] args) throws FileNotFoundException, IOException {
+        
         Options options = new Options();
         Option opt;
         OptionGroup optg;
