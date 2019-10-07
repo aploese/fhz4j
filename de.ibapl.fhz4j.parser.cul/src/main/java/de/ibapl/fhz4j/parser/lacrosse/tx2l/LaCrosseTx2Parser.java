@@ -25,7 +25,6 @@ import java.util.logging.Logger;
 
 import de.ibapl.fhz4j.LogUtils;
 import de.ibapl.fhz4j.parser.api.AbstractParser;
-import de.ibapl.fhz4j.parser.api.Parser;
 import de.ibapl.fhz4j.parser.api.ParserListener;
 import de.ibapl.fhz4j.protocol.lacrosse.tx2.LaCrosseTx2Message;
 import de.ibapl.fhz4j.protocol.lacrosse.tx2.LaCrosseTx2Property;

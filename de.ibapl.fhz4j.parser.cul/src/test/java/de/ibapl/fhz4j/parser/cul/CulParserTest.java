@@ -40,10 +40,16 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import org.junit.jupiter.api.Disabled;
 import de.ibapl.fhz4j.cul.CulMessageListener;
+import java.io.File;
 import java.io.IOException;
+import java.nio.ByteBuffer;
+import java.nio.channels.FileChannel;
+import java.nio.file.Path;
+import org.junit.jupiter.api.Assertions;
 
 /**
  *
@@ -51,6 +57,7 @@ import java.io.IOException;
  */
 public class CulParserTest implements CulMessageListener {
 
+    private Throwable throwable;
     private CulParser<Message> parser;
     private FhtMessage fhtMessage;
     private HmsMessage hmsMsg;
@@ -86,6 +93,7 @@ public class CulParserTest implements CulMessageListener {
         culMessage = null;
         receiveEnabled = null;
         helpMessage = null;
+        throwable = null;
         for (char c : s.toCharArray()) {
             parser.parse(c);
         }
@@ -111,14 +119,19 @@ public class CulParserTest implements CulMessageListener {
     @Test
     public void decodeDateAndTime() {
         decode("T0401606912EF\r\n");
+        assertNull(throwable);
         assertNotNull(fhtPartialMessage);
         decode("T0401616901EF\r\n");
+        assertNull(throwable);
         assertNotNull(fhtPartialMessage);
         decode("T0401626911EF\r\n");
+        assertNull(throwable);
         assertNotNull(fhtPartialMessage);
         decode("T040163690BEE\r\n");
+        assertNull(throwable);
         assertNotNull(fhtPartialMessage);
         decode("T0401646930EF\r\n");
+        assertNull(throwable);
         assertNotNull(fhtPartialMessage);
         assertNotNull(fhtMessage);
     }
@@ -126,8 +139,10 @@ public class CulParserTest implements CulMessageListener {
     @Test
     public void decode_FHT_26_0_Degree_Centigrade() {
         decode("T370A42690406\r\n");
+        assertNull(throwable);
         assertNotNull(fhtPartialMessage);
         decode("T370A43690106\r\n");
+        assertNull(throwable);
         assertNotNull(fhtPartialMessage);
         assertNotNull(fhtMessage);
     }
@@ -135,10 +150,13 @@ public class CulParserTest implements CulMessageListener {
     @Test
     public void decode_FHT_Holiday_End() {
         decode("T370A3F010106\r\n");
+        assertNull(throwable);
         assertNotNull(fhtPartialMessage);
         decode("T370A40010106\r\n");
+        assertNull(throwable);
         assertNotNull(fhtPartialMessage);
         decode("T370A3E690206\r\n");
+        assertNull(throwable);
         assertNotNull(fhtMessage);
         FhtDateMessageTest.assertDateMessage(fhtMessage, 5510, FhtProperty.HOLIDAY_END_DATE, true, true, 1, 1);
     }
@@ -146,10 +164,14 @@ public class CulParserTest implements CulMessageListener {
     @Test
     public void decode_FHT_Party_End() {
         decode("T370A3F010106\r\n");
+        assertNull(throwable);
         assertNotNull(fhtPartialMessage);
         decode("T370A40010106\r\n");
+        assertNull(throwable);
         assertNotNull(fhtPartialMessage);
         decode("T370A3E690306\r\n");
+        assertNull(throwable);
+        assertNotNull(fhtMessage);
         FhtTimeMessageTest.assertTimeMessage(fhtMessage, 5510, FhtProperty.PARTY_END_TIME, true, true,
                 LocalTime.of(0, 10));
     }
@@ -157,6 +179,7 @@ public class CulParserTest implements CulMessageListener {
     @Test
     public void testFHT_HC9876() {
         decode("T624C012F003D\r\n");
+        assertNull(throwable);
         assertNotNull(fhtMessage);
         assertEquals(9876, fhtMessage.housecode);
     }
@@ -167,6 +190,7 @@ public class CulParserTest implements CulMessageListener {
     @Test
     public void decode_HMS_100_TF() {
         decode("H7758005282720F\r\n");
+        assertNull(throwable);
         assertNotNull(hmsMsg);
         assertTrue(hmsMsg instanceof HmsMessage);
     }
@@ -174,6 +198,7 @@ public class CulParserTest implements CulMessageListener {
     @Test
     public void decode_FS20_1() {
         decode("FC04B01002B\r\n");
+        assertNull(throwable);
         assertNotNull(fs20Msg);
         assertTrue(fs20Msg instanceof FS20Message);
     }
@@ -181,6 +206,7 @@ public class CulParserTest implements CulMessageListener {
     @Test
     public void decode_LA_CROSSE_TX2() {
         decode("tA00E73173D\r\n");
+        assertNull(throwable);
         assertNotNull(laCrosseTx2Message);
 
 //TODO ???		decode("tA00AA002EAE5\r\n");
@@ -188,8 +214,17 @@ public class CulParserTest implements CulMessageListener {
     }
 
     @Test
+    public void decode_LA_CROSSE_TX2_FHT() {
+        decode("tA003280104FE\r\nT0102003200FE\r\n");
+        assertNull(laCrosseTx2Message);
+        assertNotNull(throwable);
+        assertNotNull(fhtMessage);
+    }
+
+    @Test
     public void decode_EM() {
         decode("E010201040004000F0047\r\n");
+        assertNull(throwable);
         assertNotNull(emMsg);
     }
 
@@ -197,35 +232,58 @@ public class CulParserTest implements CulMessageListener {
     @Disabled
     public void decode_FHT() {
         decode("T01010069B6F8\n");
+        assertNull(throwable);
         assertNotNull(fhtMessage);
     }
 
     @Test
     public void decode_EvoHome() {
         decode("vr18067AEC067AEC1F0903FF057D\r\n");
+        assertNull(throwable);
         assertNotNull(evoHomeMsg);
     }
 
     @Test
     public void decodeEvoHomeInit() {
         decode("vr18067AEC067AEC1F0903FF057D\r\n");
+        assertNull(throwable);
         assertNotNull(evoHomeMsg);
         //Answer va is a CUL State ... Message
         decode("vr18067Ava\r\n");
+        assertNull(throwable);
         assertEquals(Protocol.EVO_HOME, receiveEnabled);
-        
+
         decode("vr18895E5D895E5D30C903000927\r\n");
+        assertNull(throwable);
         assertNotNull(evoHomeMsg);
     }
 
-    
     @Test
     public void decodeHelpMessage() {
         decode("? (~ is unknown) Use one of A B C e F G h i K L l M m R T t U u V v W X x Y Z z\r\n");
+        assertNull(throwable);
         assertEquals("? (~ is unknown) Use one of A B C e F G h i K L l M m R T t U u V v W X x Y Z z", helpMessage);
         assertTrue(parser.isIdle());
     }
-    
+
+    @Test
+    public void decodeFhtMessage_5() throws Exception {
+        ByteBuffer b = ByteBuffer.allocateDirect(1024);
+        FileChannel fc = FileChannel.open(Path.of("/home/aploese/eno1.txt"));
+        fc.read(b);
+        
+        decode("T0101436900F9\r\nT0101446901F9\r\nT0101856904F9\r\n");
+        assertNull(throwable);
+        assertNotNull(fhtMessage);
+    }
+
+    @Test
+    public void decodeEMMessage_5() throws Throwable {
+        decode("T02002E6990EF\r\nT02002F6990EE\r\nT0200826924EF\r\n");
+        assertNull(throwable);
+        assertNotNull(fhtMessage);
+    }
+
     @Override
     public void emDataParsed(EmMessage emMsg) {
         this.emMsg = emMsg;
@@ -258,7 +316,7 @@ public class CulParserTest implements CulMessageListener {
 
     @Override
     public void failed(Throwable t) {
-        throw new RuntimeException(t);
+        throwable = t;
     }
 
     @Override

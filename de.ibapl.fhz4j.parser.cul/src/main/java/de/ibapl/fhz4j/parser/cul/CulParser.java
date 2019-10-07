@@ -71,6 +71,7 @@ public class CulParser<T extends Message> {
         CUL_E_PARSED,
         CUL_EO_PARSED,
         EVO_HOME_START,
+        EVO_HOME_READ_ERROR_CHAR,
         EVO_HOME_READ_GARBAGE,
         SINGNAL_STRENGTH,
         CUL_HELP_MESSAGE,
@@ -103,6 +104,8 @@ public class CulParser<T extends Message> {
     private Message fhzMessage;
 
     private T partialFhzMessage;
+    
+    private final StringBuilder errorGarbageCollector = new StringBuilder();
 
     public CulParser(CulMessageListener dataListener) {
         this.culMessageListener = dataListener;
@@ -202,17 +205,54 @@ public class CulParser<T extends Message> {
                         state = State.IDLE;
                         break;
                     case '!':
-                        state = State.EVO_HOME_READ_GARBAGE;
+                        state = State.EVO_HOME_READ_ERROR_CHAR;
                         break;
                     default:
                         throw new IllegalArgumentException(String.format("unexpected char EVO_HOME_START: 0x%02x %s", (byte) c, c));
                 }
                 break;
-            case EVO_HOME_READ_GARBAGE:
-                //Do nothing, just wait for end of message;
-                if (c == '\n' || c == '\r') {
-                    state = State.IDLE;
+            case EVO_HOME_READ_ERROR_CHAR:
+                switch (c) {
+                    case 'M':
+                        //Manchester coding error in received data
+                        errorGarbageCollector.append("EvoHome Manchester coding error:");
+                        state = State.EVO_HOME_READ_GARBAGE;
+                        break;
+                    case 'F':
+                        //Framing error, where received data doesn't decode to 1start-8data-1stop at 38,400bps
+                        errorGarbageCollector.append("EvoHome Framing error:");
+                        state = State.EVO_HOME_READ_GARBAGE;
+                        break;
+                    case 'C':
+                        //Checksum error over completed message
+                        errorGarbageCollector.append("EvoHome Checksum error:");
+                        state = State.EVO_HOME_READ_GARBAGE;
+                        break;
+                    case 'L':
+                        //Message exceed expected maximum length
+                        errorGarbageCollector.append("EvoHome Msg too long:");
+                        state = State.EVO_HOME_READ_GARBAGE;
+                        break;
+                    case 'O':
+                        //verrun, where a second data byte arrived before the ISR processing the first was able to complete 
+                        errorGarbageCollector.append("EvoHome  overrun:");
+                        state = State.EVO_HOME_READ_GARBAGE;
+                        break;
+                    default:
+                        errorGarbageCollector.append("EvoHome  unknown :" + c);
+                        state = State.EVO_HOME_READ_GARBAGE;
                 }
+                break;
+            case EVO_HOME_READ_GARBAGE:
+                if (c == '\n' || c == '\r') {
+                    //TODO pass to culListener???
+                    LOG.warning(errorGarbageCollector.toString());
+                    errorGarbageCollector.setLength(0);
+                    state = State.IDLE;
+                } else {
+                    errorGarbageCollector.append(c);
+                }
+                break;
             case PARSER_PARSING:
                 switch (c) {
                     case 'v':
@@ -222,6 +262,11 @@ public class CulParser<T extends Message> {
                         state = State.CUL_HELP_MESSAGE;
                         helpStringBuilder = new StringBuilder();
                         helpStringBuilder.append(c);
+                        break;
+                    case '\n':
+                    case '\r':
+                        LOG.log(Level.SEVERE, "In state {0} for protocol {1} unexpected end of message received", new Object[]{state, currentParser.getClass().getName()});
+                        state = State.IDLE;
                         break;
                     default:
                         if (isFirstNibble) {
@@ -407,7 +452,7 @@ public class CulParser<T extends Message> {
             case 'F':
                 return 0x0f;
             default:
-                throw new RuntimeException("Not a Number: " + c);
+                throw new RuntimeException(String.format("Not a Number: \"%c\" 0x%02x", c, (byte)c));
         }
     }
 

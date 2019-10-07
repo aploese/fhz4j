@@ -404,7 +404,7 @@ public class EvoHomeParser extends AbstractParser {
 				break;
 			case COLLECT_ZONE_SETPOINT_UNTIL_YEAR:
 				if (push(b)) {
-					((EvoHome_0x18_0x2349_0x0D_ZONE_SETPOINT_UNTIL_Message) evoHomeMessage).until = ((EvoHome_0x18_0x2349_0x0D_ZONE_SETPOINT_UNTIL_Message) evoHomeMessage).until.withYear(getIntValue());
+					((EvoHome_0x18_0x2349_0x0D_ZONE_SETPOINT_UNTIL_Message) evoHomeMessage).until = ((EvoHome_0x18_0x2349_0x0D_ZONE_SETPOINT_UNTIL_Message) evoHomeMessage).until.withYear(getShortValue());
 					parserListener.success(evoHomeMessage);
 					state = State.PARSE_SUCCESS;
 				}

@@ -14,7 +14,7 @@
 
     <artifactId>fhz4j-console</artifactId>
     <packaging>jar</packaging>
-    <name>FHZ4J Console</name>
+    <name>FHZ4J :: Console</name>
 
     <dependencies>
         <dependency>

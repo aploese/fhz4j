@@ -35,16 +35,14 @@ import de.ibapl.fhz4j.api.Adapter;
 import de.ibapl.fhz4j.parser.cul.CulParser;
 import de.ibapl.fhz4j.writer.cul.CulWriter;
 import de.ibapl.fhz4j.protocol.fht.FhtProperty;
-import de.ibapl.spsw.api.DataBits;
-import de.ibapl.spsw.api.FlowControl;
-import de.ibapl.spsw.api.Parity;
 import de.ibapl.spsw.api.SerialPortSocket;
-import de.ibapl.spsw.api.Speed;
-import de.ibapl.spsw.api.StopBits;
 import java.nio.ByteBuffer;
-import java.nio.channels.AsynchronousCloseException;
 import de.ibapl.fhz4j.api.FhzHandler;
 import de.ibapl.fhz4j.api.EvoHomeHandler;
+import de.ibapl.fhz4j.protocol.evohome.DeviceId;
+import de.ibapl.fhz4j.protocol.evohome.ZoneTemperature;
+import de.ibapl.fhz4j.writer.cul.EvoHomeEncoder;
+import de.ibapl.fhz4j.writer.cul.FhtEncoder;
 import java.io.InterruptedIOException;
 
 public class CulAdapter implements Adapter, FhzHandler, EvoHomeHandler {
@@ -83,16 +81,30 @@ public class CulAdapter implements Adapter, FhzHandler, EvoHomeHandler {
 
     private CulParser<?> culParser;
     private CulWriter culWriter;
+    private FhtEncoder fhtEncoder;
+    private EvoHomeEncoder evoHomeEncoder;
     private final CulMessageListener fhzDataListener;
     private final ByteBuffer inBuffer = ByteBuffer.allocateDirect(64);
     private boolean open;
     private Thread parserThread;
-    private final SerialPortSocket serialPortSocket;
+    private SerialPortSocket serialPortSocket;
     private final StreamListener streamListener = new StreamListener();
 
     public CulAdapter(SerialPortSocket serialPortSocket, CulMessageListener fhzDataListener) {
+        if (!serialPortSocket.isOpen()) {
+            throw new IllegalStateException("serial port " + serialPortSocket.getPortName() + " is not open");
+        }
         this.serialPortSocket = serialPortSocket;
         this.fhzDataListener = fhzDataListener;
+        culParser = new CulParser<>(fhzDataListener);
+        culWriter = new CulWriter(serialPortSocket, CulWriter.DEFAULT_BUFFER_SIZE);
+        fhtEncoder  = new FhtEncoder(culWriter);
+        evoHomeEncoder = new EvoHomeEncoder(culWriter);
+        parserThread = new Thread(streamListener);
+        parserThread.setDaemon(true);
+        //mark this as open, so the streamListener will not falsely close down imediately
+        open = true;
+        parserThread.start();
     }
 
     @Override
@@ -100,21 +112,28 @@ public class CulAdapter implements Adapter, FhzHandler, EvoHomeHandler {
         if (open) {
             open = false;
             try {
+                parserThread.interrupt();
                 culWriter.close();
+                evoHomeEncoder = null;
+                fhtEncoder = null;
+                parserThread = null;
+                culWriter = null;
+                culParser = null;
             } finally {
                 serialPortSocket.close();
+                serialPortSocket = null;
             }
         }
     }
 
     @Override
     public void initFhtReporting(Set<Short> housecode) throws IOException {
-        culWriter.initFhtReporting(housecode);
+        fhtEncoder.initFhtReporting(housecode);
     }
 
     @Override
     public void initFhtReporting(short housecode) throws IOException {
-        culWriter.initFhtReporting(housecode);
+        fhtEncoder.initFhtReporting(housecode);
     }
 
     @Override
@@ -123,55 +142,54 @@ public class CulAdapter implements Adapter, FhzHandler, EvoHomeHandler {
     }
 
     @Override
-    public void open() throws IOException {
-        serialPortSocket.open(Speed._9600_BPS, DataBits.DB_8, StopBits.SB_1, Parity.NONE, FlowControl.getFC_NONE());
-        open = true;
-        culParser = new CulParser<>(fhzDataListener);
-        culWriter = new CulWriter(serialPortSocket, 64);
-        parserThread = new Thread(streamListener);
-        parserThread.setDaemon(true);
-        parserThread.start();
-    }
-
-    @Override
     public void writeFht(short housecode, FhtProperty fhtProperty, float value) throws IOException {
-        culWriter.writeFht(housecode, fhtProperty, value);
+        fhtEncoder.writeFht(housecode, fhtProperty, value);
     }
 
     @Override
     public void writeFhtCycle(short housecode, DayOfWeek dayOfWeek, LocalTime from1, LocalTime to1, LocalTime from2,
             LocalTime to2) throws IOException {
-        culWriter.writeFhtCycle(housecode, dayOfWeek, from1, to1, from2, to2);
+        fhtEncoder.writeFhtCycle(housecode, dayOfWeek, from1, to1, from2, to2);
     }
 
     @Override
     public void writeFhtModeHoliday(short housecode, float temp, LocalDate date) throws IOException {
-        culWriter.writeFhtModeHoliday(housecode, temp, date);
+        fhtEncoder.writeFhtModeHoliday(housecode, temp, date);
     }
 
     @Override
     public void writeFhtModeParty(short housecode, float temp, LocalDateTime to) throws IOException {
-        culWriter.writeFhtModeParty(housecode, temp, to);
+        fhtEncoder.writeFhtModeParty(housecode, temp, to);
     }
 
     @Override
     public void writeFhtModeAuto(short housecode) throws IOException {
-        culWriter.writeFhtModeAuto(housecode);
+        fhtEncoder.writeFhtModeAuto(housecode);
     }
 
     @Override
     public void writeFhtModeManu(short housecode) throws IOException {
-        culWriter.writeFhtModeManu(housecode);
+        fhtEncoder.writeFhtModeManu(housecode);
     }
 
     @Override
     public void writeFhtTimeAndDate(short housecode, LocalDateTime ts) throws IOException {
-        culWriter.writeFhtTimeAndDate(housecode, ts);
+        fhtEncoder.writeFhtTimeAndDate(housecode, ts);
     }
 
     @Override
     public void initEvoHome() throws IOException {
         culWriter.initEvoHome();
+        //TODO wait for "va" for success or handle error
+    }
+
+    public void writeEvoHomeZoneSetpointPermanent(DeviceId deviceId, ZoneTemperature temperature) throws IOException {
+        evoHomeEncoder.writeEvoHomeZoneSetpointPermanent(deviceId, temperature);
+        //TODO wait for "va" for success or handle error
+    }
+
+    public void writeEvoHomeZoneSetpointUntil(DeviceId deviceId, ZoneTemperature temperature, LocalDateTime localDateTime) throws IOException {
+        evoHomeEncoder.writeEvoHomeZoneSetpointUntil(deviceId, temperature, localDateTime);
         //TODO wait for "va" for success or handle error
     }
 

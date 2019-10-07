@@ -49,9 +49,12 @@ public class EvoHome_0x18_0x3150_0x02_HEAT_DEMAND_Message extends EvoHomeDeviceM
 	 * from 0  to 60 => 0%
 	 * from 60 to 140 => 0% to 30%
 	 * from 140 to 200 => 30% to 100%
+         * TODO is this right ?? or simply halv ???
 	 * @return
 	 */
 	public float calcValvePosition() {
+            return (float)heatDemand / 2.0f;
+            /*
 		if (heatDemand < 0) {
 			//TODO Error
 			throw new RuntimeException("heatDemand must not be negative");
@@ -65,5 +68,6 @@ public class EvoHome_0x18_0x3150_0x02_HEAT_DEMAND_Message extends EvoHomeDeviceM
 			//TODO error
 			throw new RuntimeException("heatDemand must not be greater 200");
 		}
+*/
 	}
 }

@@ -21,10 +21,6 @@
  */
 package de.ibapl.fhz4j.api;
 
-import java.io.IOException;
-
 public interface Adapter extends AutoCloseable {
-
-	void open() throws IOException;
 
 }

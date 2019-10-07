@@ -62,6 +62,10 @@ import de.ibapl.spsw.logging.TimeStampLogging;
 import de.ibapl.spsw.ser2net.Ser2NetProvider;
 import de.ibapl.fhz4j.api.FhzHandler;
 import de.ibapl.fhz4j.cul.CulMessageListener;
+import de.ibapl.fhz4j.protocol.evohome.DeviceId;
+import de.ibapl.fhz4j.protocol.evohome.ZoneTemperature;
+import java.math.BigDecimal;
+import java.math.BigInteger;
 
 /**
  * DOCUMENT ME!
@@ -188,13 +192,8 @@ public class Main {
             } catch (Exception e) {
                 System.err.println(e);
             }
-            try {
-                fhzAdapter.open();
-            } catch (Exception e) {
             System.err.println("Serial port error - closing down");
-                System.err.println(e);
                 System.exit(1);
-            }
         }
     }
 
@@ -325,7 +324,7 @@ public class Main {
             final SerialPortSocketFactory serialPortSocketFactory = i.next();
 
             LOG.info("LOG File: " + logFile.getAbsolutePath());
-            SerialPortSocket serialPort = LoggingSerialPortSocket.wrapWithAsciiOutputStream(serialPortSocketFactory.createSerialPortSocket(port), new FileOutputStream(logFile), false, TimeStampLogging.UTC);
+            SerialPortSocket serialPort = LoggingSerialPortSocket.wrapWithAsciiOutputStream(serialPortSocketFactory.open(port), new FileOutputStream(logFile), false, TimeStampLogging.UTC);
             run(serialPort, protocols);
         } catch (Exception ex) {
             throw new RuntimeException(ex);
@@ -335,7 +334,6 @@ public class Main {
     public void run(SerialPortSocket serialPortSocket, Set<Protocol> protocols) throws Exception {
         final FhzListener listener = new FhzListener();
         try ( CulAdapter culAddapter = new CulAdapter(serialPortSocket, listener)) {
-            culAddapter.open();
             listener.fhzAdapter = culAddapter;
             try {
                 try {
@@ -354,6 +352,7 @@ public class Main {
                 }
                 if (protocols.contains(Protocol.EVO_HOME)) {
                     culAddapter.initEvoHome();
+                    culAddapter.writeEvoHomeZoneSetpointPermanent(new DeviceId( 0x067aec), new ZoneTemperature((byte)1, new BigDecimal(25)));
                 }
 
             } catch (IOException ex) {

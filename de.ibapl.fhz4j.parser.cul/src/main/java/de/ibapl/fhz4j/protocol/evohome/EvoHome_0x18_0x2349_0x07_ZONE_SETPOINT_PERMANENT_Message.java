@@ -34,6 +34,14 @@ public class EvoHome_0x18_0x2349_0x07_ZONE_SETPOINT_PERMANENT_Message extends Ev
 	public EvoHome_0x18_0x2349_0x07_ZONE_SETPOINT_PERMANENT_Message() {
 		super(EvoHomeProperty._18_2349_ZONE_SETPOINT_PERMANENT);
 	}
+
+    public EvoHome_0x18_0x2349_0x07_ZONE_SETPOINT_PERMANENT_Message(int deviceId, ZoneTemperature temperature) {
+        this();
+        deviceId1 = new DeviceId(deviceId);
+        deviceId2 = deviceId1;
+        this.temperature = temperature;
+        unknown = 0x00ffffff;
+    }
 	
 	@Override
 	protected void addToJsonString(StringBuilder sb) {

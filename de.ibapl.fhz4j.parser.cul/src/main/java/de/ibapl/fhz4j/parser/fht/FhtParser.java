@@ -77,8 +77,8 @@ public class FhtParser implements Parser {
 		}
 	}
 
-	private FhtProperty getCommand(int command) {
-		switch (command) {
+	private FhtProperty getCommand(byte command) {
+		switch (command & 0xFF) {
 		case 0x00:
 			return FhtProperty.VALVE;
 		case 0x01:
@@ -204,7 +204,7 @@ public class FhtParser implements Parser {
 		case 0x8a:
 			return FhtProperty.WINDOW_OPEN_TEMP;
 		default:
-			throw new UnsupportedOperationException("Not supported yet.");
+			throw new UnsupportedOperationException(String.format("Unknown command: 0x%02x", command & 0xFF));
 		}
 	}
 
@@ -608,7 +608,7 @@ public class FhtParser implements Parser {
 		case 0x06:
 			// 100.0 / 255.0 = 0,392156863;
 			parserListener.success(new FhtValvePosMessage(housecode, command, repeated, FhtValveMode.POSITION,
-					0.392156863f * b, allowLowBatteryBeep));
+					0.392156863f * (b & 0xFF), allowLowBatteryBeep));
 			return;
 		case 0x08:
 			parserListener.success(new FhtValvePosMessage(housecode, command, repeated, FhtValveMode.OFFSET_ADJUST,
@@ -616,15 +616,14 @@ public class FhtParser implements Parser {
 			return;
 		case 0x0a:
 			parserListener.success(new FhtValvePosMessage(housecode, command, repeated, FhtValveMode.LIME_CYCLE,
-					0.5f * b, allowLowBatteryBeep));
+					0.5f * (b & 0xFF), allowLowBatteryBeep));
 			return;
 		case 0x0c:
-			parserListener
-					.success(new FhtValveSyncMessage(housecode, command, 0.5f * (b & 0xff), allowLowBatteryBeep));
+			parserListener.success(new FhtValveSyncMessage(housecode, command, 0.5f * (b & 0xff), allowLowBatteryBeep));
 			return;
 		case 0x0e:
 			parserListener.success(new FhtValvePosMessage(housecode, command, repeated, FhtValveMode.BEEP,
-					0.5f * b, allowLowBatteryBeep));
+					0.5f * (b & 0xFF), allowLowBatteryBeep));
 			return;
 		default:
 			throw new RuntimeException(

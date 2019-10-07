@@ -27,6 +27,31 @@ package de.ibapl.fhz4j.protocol.evohome;
  */
 public class DeviceId {
 
+    @Override
+    public int hashCode() {
+        int hash = 7;
+        hash = 83 * hash + this.id;
+        return hash;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final DeviceId other = (DeviceId) obj;
+        if (this.id != other.id) {
+            return false;
+        }
+        return true;
+    }
+
     public final int id;
     public final DeviceType type;
 
@@ -47,6 +72,8 @@ public class DeviceId {
                 type = DeviceType.UNKNOWN;
         }
     }
+    
+    
     
     @Override
     public String toString() {

@@ -35,6 +35,7 @@ import java.util.List;
 
 import de.ibapl.fhz4j.parser.api.ParserListener;
 import de.ibapl.fhz4j.parser.evohome.EvoHomeParser;
+import de.ibapl.fhz4j.protocol.evohome.DeviceId;
 import de.ibapl.fhz4j.protocol.evohome.EvoHomeDeviceMessage;
 import de.ibapl.fhz4j.protocol.evohome.EvoHomeMessage;
 import de.ibapl.fhz4j.protocol.evohome.EvoHome_0x0C_0x0004_0x02_Message;
@@ -87,6 +88,13 @@ import de.ibapl.fhz4j.protocol.evohome.EvoHome_0xXX_0x10E0_0x26_Message;
 import de.ibapl.fhz4j.protocol.evohome.EvoHome_0xXX_0x1FC9_0xXX_Message;
 import de.ibapl.fhz4j.protocol.evohome.EvoHome_0xXX_0x1FC9_0xXX_Message.Data;
 import de.ibapl.fhz4j.protocol.evohome.ZoneTemperature;
+import de.ibapl.fhz4j.writer.cul.CulWriter;
+import de.ibapl.fhz4j.writer.cul.EvoHomeEncoder;
+import de.ibapl.fhz4j.writer.cul.EvoHomeWriter;
+import java.io.IOException;
+import java.nio.ByteBuffer;
+import java.nio.channels.WritableByteChannel;
+import java.time.ZonedDateTime;
 
 import org.junit.jupiter.api.Test;
 
@@ -95,6 +103,49 @@ import org.junit.jupiter.api.Test;
  * @author Arne Plöse
  */
 public class EvoHomeMessageTest implements ParserListener<EvoHomeMessage> {
+    
+    class  EvoHomeTestWriter implements EvoHomeWriter {
+
+        String written = "";
+        
+        StringBuilder sb = new StringBuilder();
+        
+        @Override
+        public void startEvoHomeMessage() {
+            //no-op
+        }
+
+        @Override
+        public void finishEvoHomeMessage() {
+            //no-op
+        }
+
+        @Override
+        public void doWrite() throws IOException {
+            written += sb.toString();
+        }
+
+        @Override
+        public void putByte(byte value) throws IOException {
+            sb.append(String.format("%02X", value));
+        }
+
+        @Override
+        public void putShort(short value) throws IOException {
+            sb.append(String.format("%04X", value));
+        }
+
+        @Override
+        public void putInt(int value) throws IOException {
+            sb.append(String.format("%08X", value));
+        }
+
+        @Override
+        public void close() throws Exception {
+            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        }
+        
+    }
 
 	public static void assertEvoHome_0x0001_Message(EvoHome_0x28_0x0001_0x05__RADIO_TEST_REQUEST_FROM_MASTER_Message evoHomeMessage, int deviceId1,
 			int deviceId2, byte[] value) {
@@ -287,11 +338,11 @@ public class EvoHomeMessageTest implements ParserListener<EvoHomeMessage> {
 	}
 
 	public static void assertEvoHome_0x2349_Message(
-			EvoHome_0x18_0x2349_0x07_ZONE_SETPOINT_PERMANENT_Message evoHomeMessage, int deviceId1, int deviceId2,
-			ZoneTemperature temperature, int unknown) {
-		assertEvoHomeDeviceMessage(evoHomeMessage, deviceId1, deviceId2);
-		assertEquals(temperature, evoHomeMessage.temperature, "temperature");
-		assertEquals(unknown, evoHomeMessage.unknown, "unknown");
+			EvoHome_0x18_0x2349_0x07_ZONE_SETPOINT_PERMANENT_Message expected, EvoHome_0x18_0x2349_0x07_ZONE_SETPOINT_PERMANENT_Message actual ) {
+		assertEquals(expected.deviceId1, actual.deviceId1, "deviceId1");
+                assertEquals(expected.deviceId2, actual.deviceId2, "deviceId2");
+		assertEquals(expected.temperature, actual.temperature, "temperature");
+		assertEquals(expected.unknown, actual.unknown, "unknown");
 	}
 
 	public static void assertEvoHome_0x2349_Message(EvoHome_0x18_0x2349_0x0D_ZONE_SETPOINT_UNTIL_Message evoHomeMessage,
@@ -354,6 +405,8 @@ public class EvoHomeMessageTest implements ParserListener<EvoHomeMessage> {
 	}
 
 	private EvoHomeParser parser = new EvoHomeParser(this);
+        private EvoHomeTestWriter evoHomeWriter = new EvoHomeTestWriter();
+	private EvoHomeEncoder encoder = new EvoHomeEncoder(evoHomeWriter);
 
 	private EvoHomeMessage evoHomeMessage;
 
@@ -591,7 +644,7 @@ public class EvoHomeMessageTest implements ParserListener<EvoHomeMessage> {
 	}
 
 	@Test
-	public void decode_EvoHome_0x18_0x2349() {
+	public void decode_EvoHome_0x18_0x2349_0x0D_ZONE_SETPOINT_UNTIL() throws Exception {
 
 		decode("18 067AEC 067AEC 2349 0D 00 09C4 04FFFFFF 00 06 12 07 07E3");
 		assertEvoHome_0x2349_Message((EvoHome_0x18_0x2349_0x0D_ZONE_SETPOINT_UNTIL_Message) evoHomeMessage, 0x067AEC,
@@ -612,12 +665,25 @@ public class EvoHomeMessageTest implements ParserListener<EvoHomeMessage> {
 		assertEvoHome_0x2349_Message((EvoHome_0x18_0x2349_0x0D_ZONE_SETPOINT_UNTIL_Message) evoHomeMessage, 0x067AEC,
 				0x067AEC, new ZoneTemperature((byte) 0x00, new BigDecimal("8.5")), 0x04FFFFFF, LocalDateTime.of(2019, 07, 16, 12, 00));
 
-		decode("18 067AEC 067AEC 2349 07 00 08FC 00FFFFFF");
-		assertEvoHome_0x2349_Message((EvoHome_0x18_0x2349_0x07_ZONE_SETPOINT_PERMANENT_Message) evoHomeMessage,
-				0x067AEC, 0x067AEC, new ZoneTemperature((byte) 0x00, new BigDecimal("23")), 0x00FFFFFF);
-	}
+                
+                testEncode_EvoHome_0x18_0x2349_0x0D_ZONE_SETPOINT_UNTIL_Message(new DeviceId(0x067AEC), new ZoneTemperature((byte) 0x00, new BigDecimal("25")), LocalDateTime.of(2019, 07, 18, 06, 00), "18067AEC067AEC23490D0009C404FFFFFF0006120707E3");
+                
+   	}
 
 	@Test
+	public void decode_EvoHome_0x18_0x2349_0x0D_ZONE_SETPOINT_PERMANENT() throws Exception {
+
+                EvoHome_0x18_0x2349_0x07_ZONE_SETPOINT_PERMANENT_Message msg = new EvoHome_0x18_0x2349_0x07_ZONE_SETPOINT_PERMANENT_Message(0x067AEC, new ZoneTemperature((byte) 0x00, new BigDecimal("23")));
+
+                decode("18 067AEC 067AEC 2349 07 00 08FC 00FFFFFF");
+		assertEvoHome_0x2349_Message((EvoHome_0x18_0x2349_0x07_ZONE_SETPOINT_PERMANENT_Message) evoHomeMessage, msg);
+                
+                testEncode_EvoHome_0x18_0x2349_0x07_ZONE_SETPOINT_PERMANENT_Message(msg.deviceId1, msg.temperature, "18067AEC067AEC2349070008FC00FFFFFF");
+                
+	}
+
+
+        @Test
 	public void decode_EvoHome_0x18_0x2E04_0x08() {
 		decode("18 067AEC 067AEC 2E04 08 00 FFFFFFFFFFFF00");
 		assertEvoHome_0x2E04_Message((EvoHome_0x18_0x2E04_0x08_OPERATING_MODE_Message) evoHomeMessage, 0x067AEC,
@@ -831,9 +897,15 @@ public class EvoHomeMessageTest implements ParserListener<EvoHomeMessage> {
 		throw new RuntimeException("No partial message expected.");
 	}
 
-	/*
-	 
-	  
-	 */
+    private void testEncode_EvoHome_0x18_0x2349_0x0D_ZONE_SETPOINT_UNTIL_Message(DeviceId deviceId, ZoneTemperature temperature, LocalDateTime localDateTime, String expected) throws  IOException {
+      encoder.writeEvoHomeZoneSetpointUntil(deviceId, temperature, localDateTime);
+      assertEquals(expected, evoHomeWriter.written);
+    }
+
+
+    private void testEncode_EvoHome_0x18_0x2349_0x07_ZONE_SETPOINT_PERMANENT_Message(DeviceId deviceId, ZoneTemperature temperature, String expected) throws  IOException {
+      encoder.writeEvoHomeZoneSetpointPermanent(deviceId, temperature);
+      assertEquals(expected, evoHomeWriter.written);
+    }
 
 }

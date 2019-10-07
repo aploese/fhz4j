@@ -76,17 +76,13 @@ public class DataSource {
 			// skip formating white spaces...
 			while (data.charAt(i) == ' ' && i < data.length()) {
 				i++;
-				System.out.println("skip WS");
 			}
 			if (i < data.length()) {
 				int i1 = i + 1;
 				while (data.charAt(i1) == ' ' && i1 < data.length()) {
 					i1++;
-					System.out.println("skip WS");
 				}
 				final byte b = (byte) ((char2Byte(data.charAt(i)) << 4) | char2Byte(data.charAt(i1))); 
-				System.out.printf("Data: %s%s == 0x%02X (%d)", data.charAt(i), data.charAt(i1), b, b);
-				System.out.println();
 				parser.parse(b);
 				i = i1 + 1;
 			}

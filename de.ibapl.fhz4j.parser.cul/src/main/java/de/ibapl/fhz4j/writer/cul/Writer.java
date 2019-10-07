@@ -19,5 +19,22 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-@org.osgi.annotation.versioning.Version("1.1.0")
-package de.ibapl.fhz4j.protocol.em;
+package de.ibapl.fhz4j.writer.cul;
+
+import java.io.IOException;
+
+/**
+ *
+ * @author aploese
+ */
+public interface Writer extends AutoCloseable {
+
+    void doWrite() throws IOException;
+
+    void putByte(byte value) throws IOException;
+
+    void putShort(short value) throws IOException;
+
+    void putInt(int value) throws IOException;
+
+}

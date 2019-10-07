@@ -13,7 +13,7 @@
 
     <artifactId>de.ibapl.fhz4j.parser.cul</artifactId>
     <packaging>jar</packaging>
-    <name>FHZ4J Adapter CUL</name>
+    <name>FHZ4J :: Adapter CUL</name>
     <description>FHZ4J Bundle for the www.busware.de CUL RF adapter</description>
 
     <dependencies>

@@ -22,6 +22,8 @@
 package de.ibapl.fhz4j.parser.cul;
 
 import de.ibapl.fhz4j.writer.cul.CulWriter;
+import java.io.IOException;
+import java.nio.channels.FileChannel;
 
 import java.time.LocalDateTime;
 import java.time.Month;
@@ -29,6 +31,7 @@ import java.util.EnumSet;
 import java.util.Set;
 
 import java.nio.channels.WritableByteChannel;
+import java.nio.channels.spi.AbstractInterruptibleChannel;
 import static org.junit.jupiter.api.Assertions.fail;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
@@ -78,23 +81,6 @@ public class CulWriterTest {
 	}
 
 	/**
-	 * Test of initFhtReporting method, of class FhzWriter.
-	 */
-	@Test
-	@Disabled
-	public void testInitFhtReporting_Iterable() throws Exception {
-		System.out.println("initFhtReporting");
-		Iterable<Short> fhtDeviceHomeCodes = null;
-		WritableByteChannel wbc = null;
-		CulWriter instance = new CulWriter(wbc, 64);
-
-		instance.initFhtReporting(fhtDeviceHomeCodes);
-		// TODO review the generated test code and remove the default call to fail.
-		fail("The test case is a prototype.");
-		instance.close();
-	}
-
-	/**
 	 * Test of syncFhtClocks method, of class FhzWriter.
 	 */
 	@Test
@@ -115,6 +101,7 @@ public class CulWriterTest {
 	 * Test of initFhtReporting method, of class FhzWriter.
 	 */
 	@Test
+        @Disabled
 	public void testInitFhtReporting_ShortArr() throws Exception {
 		System.out.println("initFhtReporting");
 		WritableByteChannel wbc = null;
@@ -133,7 +120,7 @@ public class CulWriterTest {
 		WritableByteChannel wbc = null;
 		CulWriter instance = new CulWriter(wbc, 64);
 
-		instance.writeFhtTimeAndDate((short) 302, LocalDateTime.of(2017, Month.JULY, 20, 14, 23));
+//TODO		FhtEnhcoder.writeFhtTimeAndDate((short) 302, LocalDateTime.of(2017, Month.JULY, 20, 14, 23));
 //TODO apl	 assertEquals("T0302601161076214630E6417\n", os.toString());
 
 		instance.close();
