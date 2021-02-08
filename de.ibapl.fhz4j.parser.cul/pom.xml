@@ -6,7 +6,7 @@
         <version>2.0.0-SNAPSHOT</version>
         <relativePath>..</relativePath>
     </parent>
-    
+
     <properties>
         <license.licenseResolver>${project.baseUri}/../src/license</license.licenseResolver>
     </properties>
@@ -17,6 +17,10 @@
     <description>FHZ4J Bundle for the www.busware.de CUL RF adapter</description>
 
     <dependencies>
+        <dependency>
+            <groupId>org.osgi</groupId>
+            <artifactId>org.osgi.annotation</artifactId>
+        </dependency>
         <dependency>
             <groupId>de.ibapl.spsw</groupId>
             <artifactId>de.ibapl.spsw.api</artifactId>
@@ -34,7 +38,7 @@
             <artifactId>easymockclassextension</artifactId>
         </dependency>
     </dependencies>
-   
+
 </project>
 
 
