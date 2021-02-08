@@ -27,25 +27,66 @@ package de.ibapl.fhz4j.protocol.fht;
  */
 public class Fht80bRawMessage extends Fht8bMessage {
 
-	private final byte value;
+    private final byte value;
 
-	public Fht80bRawMessage(short housecode, FhtProperty command, boolean fromFht_8B, boolean dataRegister, byte value) {
-		super(housecode, command, fromFht_8B, dataRegister);
-		this.value = value;
-	}
-	
-	public byte getSignedValue() {
-		return value;
-	}
-	
-	public short getUnsignedValue() {
-		return (short)(value & 0xff);
-	}
-	
+    public Fht80bRawMessage(short housecode, FhtProperty command, byte description, boolean fromFht_8B, boolean dataRegister, byte value) {
+        super(housecode, command, description, fromFht_8B, dataRegister);
+        this.value = value;
+    }
 
-       @Override
-        protected void addToJsonString(StringBuilder sb) {
-            super.addToJsonString(sb);
-            sb.append(String.format(", value: 0x%0sx", value));
+    public byte getSignedValue() {
+        return value;
+    }
+
+    public short getUnsignedValue() {
+        return (short) (value & 0xff);
+    }
+
+    @Override
+    protected void addToJsonString(StringBuilder sb) {
+        super.addToJsonString(sb);
+        sb.append(String.format(", value: 0x%02x", value));
+    }
+
+    @Override
+    public int hashCode() {
+        int hash = 3;
+        hash = 97 * hash + this.description;
+        hash = 97 * hash + (this.fromFht_8B ? 1 : 0);
+        hash = 97 * hash + (this.dataRegister ? 1 : 0);
+        hash = 97 * hash + this.command.hashCode();
+        hash = 97 * hash + this.value;
+        return hash;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
         }
- }
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final Fht80bRawMessage other = (Fht80bRawMessage) obj;
+        if (this.description != other.description) {
+            return false;
+        }
+        if (this.fromFht_8B != other.fromFht_8B) {
+            return false;
+        }
+        if (this.dataRegister != other.dataRegister) {
+            return false;
+        }
+        if (this.command != other.command) {
+            return false;
+        }
+        if (this.value != other.value) {
+            return false;
+        }
+        return true;
+    }
+
+}

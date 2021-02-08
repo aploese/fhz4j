@@ -19,33 +19,26 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package de.ibapl.fhz4j.protocol.fht;
-
-import de.ibapl.fhz4j.api.Message;
-import de.ibapl.fhz4j.api.Protocol;
+package de.ibapl.fhz4j.cul;
 
 /**
  *
- * @author Arne Plöse
+ * @author aploese
+ * @param <T>
  */
-public abstract class FhtMessage extends Message {
+public class CulResponse<T extends CulRequest> extends CulMessage {
 
-    public short housecode;
-    public FhtProperty command;
-    public byte description;
+    public final T request;
 
-    protected FhtMessage(short housecode, FhtProperty command, byte description) {
-        super(Protocol.FHT);
-        this.housecode = housecode;
-        this.command = command;
-        this.description = description;
+    public CulResponse(T request) {
+        this.request = request;
     }
 
     @Override
     protected void addToJsonString(StringBuilder sb) {
         super.addToJsonString(sb);
-        sb.append(", housecode : ").append(housecode);
-        sb.append(", command : ").append(command);
-        sb.append(String.format(", description : 0x%02x", description));
+        sb.append(", request : ");
+        sb.append(request);
     }
+
 }

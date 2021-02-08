@@ -29,17 +29,17 @@ import java.time.LocalDateTime;
  */
 public class FhtDateTimeMessage extends Fht8bMessage {
 
-	public LocalDateTime ts;
+    public LocalDateTime ts;
 
-	public FhtDateTimeMessage(short housecode, FhtProperty command, boolean fromFht_8B, boolean dataRegister,
-			LocalDateTime ts) {
-		super(housecode, command, fromFht_8B, dataRegister);
-		this.ts = ts;
-	}
+    public FhtDateTimeMessage(short housecode, FhtProperty command, byte description, boolean fromFht_8B, boolean dataRegister,
+            LocalDateTime ts) {
+        super(housecode, command, description, fromFht_8B, dataRegister);
+        this.ts = ts;
+    }
 
-       @Override
-        protected void addToJsonString(StringBuilder sb) {
-             super.addToJsonString(sb);
-             sb.append(", ts : ").append(ts);
-        }
+    @Override
+    protected void addToJsonString(StringBuilder sb) {
+        super.addToJsonString(sb);
+        sb.append(", ts : ").append(ts);
+    }
 }

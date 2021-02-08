@@ -69,7 +69,11 @@ class ZonesParamParser extends AbstractParser {
 			state = State.COLLECT_FLAGS;
 			break;
 		case COLLECT_FLAGS:
-			zoneParams.getLast().flags = b;
+			zoneParams.getLast().windowFunction = (b & 0x10) == 0x10;
+			zoneParams.getLast().operationLock = (b & 0x01) == 0x01;
+                        if ((b & 0xEE) != 0) {
+                            throw new RuntimeException(String.format("Can't handle ZoneParams flags unexpected value: 0x%02x", b));
+                        }
 			setStackSize(2);
 			state = State.COLLECT_MIN_TEMP;
 			break;

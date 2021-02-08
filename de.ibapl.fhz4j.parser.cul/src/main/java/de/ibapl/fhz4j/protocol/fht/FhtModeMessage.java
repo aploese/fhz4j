@@ -27,16 +27,16 @@ package de.ibapl.fhz4j.protocol.fht;
  */
 public class FhtModeMessage extends Fht8bMessage {
 
-	public Fht80bMode mode;
+    public Fht80bMode mode;
 
-	public FhtModeMessage(short housecode, boolean fromFht_8B, boolean dataRegister, Fht80bMode fhtMode) {
-		super(housecode, FhtProperty.MODE, fromFht_8B, dataRegister);
-		this.mode = fhtMode;
-	}
+    public FhtModeMessage(short housecode, byte description, boolean fromFht_8B, boolean dataRegister, Fht80bMode fhtMode) {
+        super(housecode, FhtProperty.MODE, description, fromFht_8B, dataRegister);
+        this.mode = fhtMode;
+    }
 
-       @Override
-        protected void addToJsonString(StringBuilder sb) {
-             super.addToJsonString(sb);
-             sb.append(", value : ").append(mode);
-        }
+    @Override
+    protected void addToJsonString(StringBuilder sb) {
+        super.addToJsonString(sb);
+        sb.append(", value : ").append(mode);
+    }
 }

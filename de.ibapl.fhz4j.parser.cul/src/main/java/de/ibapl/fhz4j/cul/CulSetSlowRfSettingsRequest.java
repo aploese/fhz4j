@@ -19,33 +19,43 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package de.ibapl.fhz4j.protocol.fht;
+package de.ibapl.fhz4j.cul;
 
-import de.ibapl.fhz4j.api.Message;
-import de.ibapl.fhz4j.api.Protocol;
+import java.util.Iterator;
+import java.util.Set;
 
 /**
  *
- * @author Arne Plöse
+ * @author aploese
  */
-public abstract class FhtMessage extends Message {
+public class CulSetSlowRfSettingsRequest extends CulRequest implements Iterable<SlowRfFlag> {
 
-    public short housecode;
-    public FhtProperty command;
-    public byte description;
+    private final Set<SlowRfFlag> initFlags;
 
-    protected FhtMessage(short housecode, FhtProperty command, byte description) {
-        super(Protocol.FHT);
-        this.housecode = housecode;
-        this.command = command;
-        this.description = description;
+    public CulSetSlowRfSettingsRequest(Set<SlowRfFlag> initFlags) {
+        this.initFlags = initFlags;
     }
 
     @Override
-    protected void addToJsonString(StringBuilder sb) {
-        super.addToJsonString(sb);
-        sb.append(", housecode : ").append(housecode);
-        sb.append(", command : ").append(command);
-        sb.append(String.format(", description : 0x%02x", description));
+    public Iterator<SlowRfFlag> iterator() {
+        return initFlags.iterator();
     }
+	@Override
+	public String toString() {
+		StringBuilder sb = new StringBuilder();
+		sb.append("{culrequest : \"FHT device output buffer content\"");
+		sb.append(", slowRfFlags : ");
+		boolean first = true;
+		for (SlowRfFlag slowRfFlag: initFlags) {
+			if (first) {
+				first = false;
+			} else {
+				sb.append(", ");
+			}
+			sb.append(slowRfFlag);
+		}
+		sb.append("]}");
+		return sb.toString();
+	}
+
 }

@@ -54,6 +54,7 @@ public class EvoHome_0x18_0x3150_0x02_HEAT_DEMAND_Message extends EvoHomeDeviceM
 	 */
 	public float calcValvePosition() {
             return (float)heatDemand / 2.0f;
+            //TODO THis is in the multi zone controller???
             /*
 		if (heatDemand < 0) {
 			//TODO Error

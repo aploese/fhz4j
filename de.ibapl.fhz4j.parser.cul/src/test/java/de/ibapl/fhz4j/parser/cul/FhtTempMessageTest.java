@@ -21,16 +21,15 @@
  */
 package de.ibapl.fhz4j.parser.cul;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-
-
 import de.ibapl.fhz4j.parser.api.ParserListener;
+import de.ibapl.fhz4j.parser.cul.DataSource;
 import de.ibapl.fhz4j.parser.fht.FhtParser;
 import de.ibapl.fhz4j.protocol.fht.Fht80bRawMessage;
 import de.ibapl.fhz4j.protocol.fht.FhtMessage;
 import de.ibapl.fhz4j.protocol.fht.FhtProperty;
 import de.ibapl.fhz4j.protocol.fht.FhtTempMessage;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import org.junit.jupiter.api.Test;
 
 /**
@@ -39,78 +38,78 @@ import org.junit.jupiter.api.Test;
  */
 public class FhtTempMessageTest implements ParserListener<FhtMessage> {
 
-	private FhtParser parser = new FhtParser(this);
-	private FhtMessage partialFhtMessage;
-	private FhtMessage fhtMessage;
+    private FhtParser parser = new FhtParser(this);
+    private FhtMessage partialFhtMessage;
+    private FhtMessage fhtMessage;
 
-	private void decode(String s) {
-		fhtMessage = null;
-		partialFhtMessage = null;
-		parser.init();
-		new DataSource(s).iterate(parser);
-	}
+    private void decode(String s) {
+        fhtMessage = null;
+        partialFhtMessage = null;
+        parser.init();
+        new DataSource(s).iterate(parser);
+    }
 
-	@Test
-	public void testDesiredTemp() {
-		decode("0302416934");
-	 assertTempMessage(fhtMessage, (short) 302, FhtProperty.DESIRED_TEMP, true, true, 26.0f);
-	}
+    @Test
+    public void testDesiredTemp() {
+        decode("0302416934");
+        assertTempMessage(fhtMessage, (short) 302, FhtProperty.DESIRED_TEMP, true, true, 26.0f);
+    }
 
-	@Test
-	public void testTemp() {
-		decode("0302426901");
-	 assertRawMessage(partialFhtMessage, (short) 302, FhtProperty.MEASURED_LOW, true, true, (byte)1);
-		decode("0302436901");
-	 assertRawMessage(partialFhtMessage, (short) 302, FhtProperty.MEASURED_HIGH, true, true, (byte)1);
-	 assertTempMessage(fhtMessage, (short) 302, FhtProperty.MEASURED_TEMP, true, true, 25.7f);
-	}
+    @Test
+    public void testTemp() {
+        decode("0302426901");
+        assertRawMessage(partialFhtMessage, (short) 302, FhtProperty.MEASURED_LOW, true, true, (byte) 1);
+        decode("0302436901");
+        assertRawMessage(partialFhtMessage, (short) 302, FhtProperty.MEASURED_HIGH, true, true, (byte) 1);
+        assertTempMessage(fhtMessage, (short) 302, FhtProperty.MEASURED_TEMP, true, true, 25.7f);
+    }
 
-	@Test
-	public void decode_FHT_25_1_Degree_Centigrade() {
-		decode("61344269FB");
-	 assertRawMessage(partialFhtMessage, 9752, FhtProperty.MEASURED_LOW, true, true, (byte)251);
-	}
+    @Test
+    public void decode_FHT_25_1_Degree_Centigrade() {
+        decode("61344269FB");
+        assertRawMessage(partialFhtMessage, 9752, FhtProperty.MEASURED_LOW, true, true, (byte) 251);
+    }
 
-	@Override
-	public void success(FhtMessage fhzMessage) {
-		this.fhtMessage = fhzMessage;
-	}
+    @Override
+    public void success(FhtMessage fhzMessage) {
+        this.fhtMessage = fhzMessage;
+    }
 
-	@Override
-	public void successPartial(FhtMessage fhzMessage) {
-		this.partialFhtMessage = fhzMessage;
-	}
+    @Override
+    public void successPartial(FhtMessage fhzMessage) {
+        this.partialFhtMessage = fhzMessage;
+    }
 
-	@Override
-	public void fail(Throwable t) {
-		throw new RuntimeException(t);
-	}
+    @Override
+    public void fail(Throwable t) {
+        throw new RuntimeException(t);
+    }
 
-	public static void assertTempMessage(FhtMessage fhtMessage, int housecode, FhtProperty fhtProperty,
-			boolean dataRegister, boolean fromFht_8B, float temp) {
-	 assertNotNull(fhtMessage);
-		final FhtTempMessage msg = (FhtTempMessage) fhtMessage;
-	 assertEquals((short) housecode, msg.housecode, "housecode");
-	 assertEquals(fhtProperty, msg.command, "command");
-	 assertEquals(fromFht_8B, msg.fromFht_8B, "fromFht_8B");
-	 assertEquals(dataRegister, msg.dataRegister, "dataRegister");
-	 assertEquals(temp, msg.temp, Float.MIN_NORMAL, "temp");
-	}
+    public static void assertTempMessage(FhtMessage fhtMessage, int housecode, FhtProperty fhtProperty,
+            boolean dataRegister, boolean fromFht_8B, float temp) {
+        assertNotNull(fhtMessage);
+        final FhtTempMessage msg = (FhtTempMessage) fhtMessage;
+        assertEquals((short) housecode, msg.housecode, "housecode");
+        assertEquals(fhtProperty, msg.command, "command");
+        assertEquals(fromFht_8B, msg.fromFht_8B, "fromFht_8B");
+        assertEquals(dataRegister, msg.dataRegister, "dataRegister");
+        assertEquals(temp, msg.temp, Float.MIN_NORMAL, "temp");
+    }
 
-	public static void assertRawMessage(FhtMessage fhtMessage, int housecode, FhtProperty fhtProperty,
-			boolean dataRegister, boolean fromFht_8B, byte value) {
-	 assertNotNull(fhtMessage);
-		final Fht80bRawMessage msg = (Fht80bRawMessage) fhtMessage;
-	 assertEquals((short) housecode, msg.housecode, "housecode");
-	 assertEquals(fhtProperty, msg.command, "command");
-	 assertEquals(fromFht_8B, msg.fromFht_8B, "fromFht_8B");
-	 assertEquals(dataRegister, msg.dataRegister, "dataRegister");
-	 assertEquals(value, msg.getSignedValue(), "value");
-	}
+    public static void assertRawMessage(FhtMessage fhtMessage, int housecode, FhtProperty fhtProperty,
+            boolean dataRegister, boolean fromFht_8B, byte value) {
+        assertNotNull(fhtMessage);
+        final Fht80bRawMessage msg = (Fht80bRawMessage) fhtMessage;
+        assertEquals((short) housecode, msg.housecode, "housecode");
+        assertEquals(fhtProperty, msg.command, "command");
+        assertEquals(fromFht_8B, msg.fromFht_8B, "fromFht_8B");
+        assertEquals(dataRegister, msg.dataRegister, "dataRegister");
+        assertEquals(value, msg.getSignedValue(), "value");
+    }
 
-	@Override
-	public void successPartialAssembled(FhtMessage fhzMessage) {
-		this.fhtMessage = fhzMessage;
-	}
+    @Override
+    public void successPartialAssembled(FhtMessage fhzMessage) {
+        this.fhtMessage = fhzMessage;
+    }
 
 }

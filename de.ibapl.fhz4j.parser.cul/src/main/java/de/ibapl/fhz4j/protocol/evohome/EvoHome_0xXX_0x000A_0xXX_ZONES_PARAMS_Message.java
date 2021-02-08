@@ -32,7 +32,8 @@ public class EvoHome_0xXX_0x000A_0xXX_ZONES_PARAMS_Message extends EvoHomeDevice
 	
 	public static class ZoneParams {
 		public byte zoneId;
-		public byte flags;
+		public boolean windowFunction;
+                public boolean operationLock;
 		public BigDecimal minTemperature;
 		public BigDecimal maxTemperature;
 	}
@@ -56,7 +57,8 @@ public class EvoHome_0xXX_0x000A_0xXX_ZONES_PARAMS_Message extends EvoHomeDevice
 			}
 			sb.append("{");
 			sb.append(String.format("zoneId : 0x%02x", zp.zoneId));
-			sb.append(String.format(", flags : 0x%02x", zp.flags));
+			sb.append(String.format(", windowFunction : %b", zp.windowFunction));
+			sb.append(String.format(", operationLock : %b", zp.operationLock));
 			sb.append(", minTemperature : ").append(zp.minTemperature);
 			sb.append(", maxTemperature : ").append(zp.maxTemperature);
 			sb.append("}");

@@ -21,14 +21,14 @@
  */
 package de.ibapl.fhz4j.parser.cul;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-
 import de.ibapl.fhz4j.parser.api.ParserListener;
 import de.ibapl.fhz4j.parser.fht.FhtParser;
 import de.ibapl.fhz4j.protocol.fht.FhtDateMessage;
 import de.ibapl.fhz4j.protocol.fht.FhtMessage;
 import de.ibapl.fhz4j.protocol.fht.FhtProperty;
+import de.ibapl.fhz4j.protocol.fht.FhtProtocolMessage;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import org.junit.jupiter.api.Test;
 
 /**
@@ -54,7 +54,7 @@ public class FhtDateMessageTest implements ParserListener<FhtMessage> {
         decode("0302406907");
         decode("03023E6902");
         assertDateMessage(fhtMessage, (short) 302, FhtProperty.HOLIDAY_END_DATE, true, true, 7, 13);
-        assertEquals("{protocol : FHT, housecode : 302, command : HOLIDAY_END_DATE, fromFht_8b : true, dataRegister : true, day : 13, month : 7}", fhtMessage.toString());
+        assertEquals("{protocol : FHT, housecode : 302, command : HOLIDAY_END_DATE, description : 0x69, fromFht_8b : true, dataRegister : true, day : 13, month : 7}", fhtMessage.toString());
     }
 
     @Override
@@ -82,6 +82,17 @@ public class FhtDateMessageTest implements ParserListener<FhtMessage> {
         assertEquals(dataRegister, msg.dataRegister, "dataRegister");
         assertEquals(month, msg.month, "month");
         assertEquals(day, msg.day, "day");
+    }
+
+    static void assertProtocolMessage(FhtMessage fhtMessage, int housecode, FhtProperty fhtProperty, int description, boolean fromFht_8B, boolean dataRegister, int data) {
+        assertNotNull(fhtMessage);
+        final FhtProtocolMessage msg = (FhtProtocolMessage) fhtMessage;
+        assertEquals((short) housecode, msg.housecode, "housecode");
+        assertEquals(fhtProperty, msg.command, "command");
+        assertEquals(fromFht_8B, msg.fromFht_8B, "fromFht_8B");
+        assertEquals(dataRegister, msg.dataRegister, "dataRegister");
+        assertEquals(description, msg.description, "description");
+        assertEquals(data, msg.data, "data");
     }
 
     @Override

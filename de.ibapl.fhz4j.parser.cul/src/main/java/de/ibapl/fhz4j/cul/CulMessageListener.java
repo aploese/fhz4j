@@ -38,13 +38,20 @@ public interface CulMessageListener extends EmMessageListener, EvoHomeMessageLis
 
     void culMessageParsed(CulMessage culMessage);
 
+    /**
+     * The signal strength of the received signal.
+     *
+     * This will always be called before the received message itself.
+     *
+     * @param signalStrength
+     */
     void signalStrength(float signalStrength);
 
     void failed(Throwable t);
 
     /**
-     * The receiment of a special RF protocol was enabled
-     * 
+     * The receivement of a special RF protocol was enabled
+       * 
      * @param protocol 
      */
     void receiveEnabled(Protocol protocol);

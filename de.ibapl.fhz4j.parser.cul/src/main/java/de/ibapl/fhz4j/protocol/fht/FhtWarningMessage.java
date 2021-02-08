@@ -32,8 +32,8 @@ public class FhtWarningMessage extends Fht8bMessage {
 
     public Set<Fht80bWarning> warnings;
 
-    public FhtWarningMessage(short housecode, boolean fromFht_8B, boolean dataRegister, Set<Fht80bWarning> warnings) {
-        super(housecode, FhtProperty.WARNINGS, fromFht_8B, dataRegister);
+    public FhtWarningMessage(short housecode, byte description, boolean fromFht_8B, boolean dataRegister, Set<Fht80bWarning> warnings) {
+        super(housecode, FhtProperty.WARNINGS, description, fromFht_8B, dataRegister);
         this.warnings = EnumSet.copyOf(warnings);
     }
 

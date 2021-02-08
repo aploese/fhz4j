@@ -32,9 +32,9 @@ public class FhtValvePosMessage extends FhtMessage {
     public float position;
     public boolean allowLowBatteryBeep;
 
-    public FhtValvePosMessage(short housecode, FhtProperty command, boolean repeated, FhtValveMode mode, float position,
+    public FhtValvePosMessage(short housecode, FhtProperty command, byte description, boolean repeated, FhtValveMode mode, float position,
             boolean allowLowBatteryBeep) {
-        super(housecode, command);
+        super(housecode, command, description);
         this.repeated = repeated;
         this.mode = mode;
         this.position = position;

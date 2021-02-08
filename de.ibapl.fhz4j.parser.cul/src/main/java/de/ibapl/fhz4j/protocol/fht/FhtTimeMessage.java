@@ -29,21 +29,21 @@ import java.time.LocalTime;
  */
 public class FhtTimeMessage extends Fht8bMessage {
 
-	public LocalTime time;
+    public LocalTime time;
 
-	public FhtTimeMessage(short housecode, FhtProperty command, boolean fromFht_8B, boolean dataRegister, byte hour,
-			byte minute) {
-		super(housecode, command, fromFht_8B, dataRegister);
-		if (hour == 24 && minute == 0) {
-			time = null;
-		} else {
-			time = LocalTime.of(hour, minute);
-		}
-	}
-
-       @Override
-        protected void addToJsonString(StringBuilder sb) {
-                        super.addToJsonString(sb);
-                        sb.append(", time : ").append(time);
+    public FhtTimeMessage(short housecode, FhtProperty command, byte description, boolean fromFht_8B, boolean dataRegister, byte hour,
+            byte minute) {
+        super(housecode, command, description, fromFht_8B, dataRegister);
+        if (hour == 24 && minute == 0) {
+            time = null;
+        } else {
+            time = LocalTime.of(hour, minute);
         }
- }
+    }
+
+    @Override
+    protected void addToJsonString(StringBuilder sb) {
+        super.addToJsonString(sb);
+        sb.append(", time : ").append(time);
+    }
+}

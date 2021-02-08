@@ -21,6 +21,8 @@
  */
 package de.ibapl.fhz4j.api;
 
+import de.ibapl.fhz4j.cul.SlowRfFlag;
+import de.ibapl.fhz4j.protocol.fht.FhtProperty;
 import java.io.IOException;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
@@ -28,30 +30,32 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.Set;
 
-import de.ibapl.fhz4j.cul.CulAdapter;
-import de.ibapl.fhz4j.protocol.fht.FhtProperty;
-import de.ibapl.spsw.api.SerialPortSocket;
-
 public interface FhzHandler extends Adapter {
 
-	void initFhtReporting(Set<Short> housecode) throws IOException;
+    void initFhtReporting(Set<Short> housecode) throws IOException;
 
-	void initFhtReporting(short housecode) throws IOException;
+    void initFhtReporting(short housecode) throws IOException;
 
-	void initFhz(short fhzHousecode) throws IOException;
+    void initFhz(short fhzHousecode) throws IOException;
 
-	void writeFht(short housecode, FhtProperty fhtProperty, float value) throws IOException;
+    void initFhz(short fhzHousecode, Set<SlowRfFlag> slowRfFlags) throws IOException;
 
-	void writeFhtCycle(short housecode, DayOfWeek dayOfWeek, LocalTime from1, LocalTime to1, LocalTime from2,
-			LocalTime to2) throws IOException;
+    void writeFht(short housecode, FhtProperty fhtProperty, float value) throws IOException;
 
-	void writeFhtModeHoliday(short housecode, float temp, LocalDate date) throws IOException;
+    void writeCulTimeSlotRequest() throws IOException;
 
-	void writeFhtModeParty(short housecode, float temp, LocalDateTime to) throws IOException;
+    void gatherCulDebugInfos() throws IOException;
 
-	void writeFhtModeAuto(short housecode) throws IOException;
+    void writeFhtCycle(short housecode, DayOfWeek dayOfWeek, LocalTime from1, LocalTime to1, LocalTime from2,
+            LocalTime to2) throws IOException;
 
-	void writeFhtModeManu(short housecode) throws IOException;
+    void writeFhtModeHoliday(short housecode, float temp, LocalDate date) throws IOException;
 
-	void writeFhtTimeAndDate(short housecode, LocalDateTime ts) throws IOException;
+    void writeFhtModeParty(short housecode, float temp, LocalDateTime to) throws IOException;
+
+    void writeFhtModeAuto(short housecode) throws IOException;
+
+    void writeFhtModeManu(short housecode) throws IOException;
+
+    void writeFhtTimeAndDate(short housecode, LocalDateTime ts) throws IOException;
 }

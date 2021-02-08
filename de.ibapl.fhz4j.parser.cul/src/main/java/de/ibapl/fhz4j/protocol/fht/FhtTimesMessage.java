@@ -34,9 +34,9 @@ public class FhtTimesMessage extends Fht8bMessage {
     public LocalTime timeFrom2;
     public LocalTime timeTo2;
 
-    public FhtTimesMessage(short housecode, FhtProperty command, boolean fromFht_8B, boolean dataRegister,
+    public FhtTimesMessage(short housecode, FhtProperty command, byte description, boolean fromFht_8B, boolean dataRegister,
             LocalTime timeFrom1, LocalTime timeTo1, LocalTime timeFrom2, LocalTime timeTo2) {
-        super(housecode, command, fromFht_8B, dataRegister);
+        super(housecode, command, description, fromFht_8B, dataRegister);
         this.timeFrom1 = timeFrom1;
         this.timeTo1 = timeTo1;
         this.timeFrom2 = timeFrom2;

@@ -21,17 +21,17 @@
  */
 package de.ibapl.fhz4j.parser.cul;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-
-
 import de.ibapl.fhz4j.parser.api.ParserListener;
+import de.ibapl.fhz4j.parser.cul.DataSource;
+import de.ibapl.fhz4j.parser.cul.FhtValveMessageTest;
 import de.ibapl.fhz4j.parser.fht.FhtParser;
 import de.ibapl.fhz4j.protocol.fht.FhtMessage;
 import de.ibapl.fhz4j.protocol.fht.FhtProperty;
 import de.ibapl.fhz4j.protocol.fht.FhtValveMode;
 import de.ibapl.fhz4j.protocol.fht.FhtValvePosMessage;
 import de.ibapl.fhz4j.protocol.fht.FhtValveSyncMessage;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
@@ -53,8 +53,8 @@ public class FhtValveMessageTest implements ParserListener<FhtMessage> {
 	}
 
 	@Test
-	public void testSync() {
-		decode("0302002CE1");
+    public void testSync() {
+        decode("0302002CE1");
 	 assertValveSyncMessage(fhtMessage, 302, 112.5f);
 		decode("0302002C8F");
 	 assertValveSyncMessage(fhtMessage, 302, 71.5f);

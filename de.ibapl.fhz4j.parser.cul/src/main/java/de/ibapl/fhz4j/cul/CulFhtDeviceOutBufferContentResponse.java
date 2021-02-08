@@ -19,33 +19,38 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package de.ibapl.fhz4j.protocol.fht;
+package de.ibapl.fhz4j.cul;
 
-import de.ibapl.fhz4j.api.Message;
-import de.ibapl.fhz4j.api.Protocol;
+import de.ibapl.fhz4j.protocol.fht.FhtMessage;
+import java.util.LinkedList;
+import java.util.List;
 
 /**
  *
- * @author Arne Plöse
+ * @author aploese
  */
-public abstract class FhtMessage extends Message {
+public class CulFhtDeviceOutBufferContentResponse extends CulResponse<CulFhtDeviceOutBufferContentRequest> {
 
-    public short housecode;
-    public FhtProperty command;
-    public byte description;
+    public List<FhtMessage> pendingMessages = new LinkedList();
 
-    protected FhtMessage(short housecode, FhtProperty command, byte description) {
-        super(Protocol.FHT);
-        this.housecode = housecode;
-        this.command = command;
-        this.description = description;
+    public CulFhtDeviceOutBufferContentResponse(CulFhtDeviceOutBufferContentRequest request) {
+        super(request);
     }
 
-    @Override
-    protected void addToJsonString(StringBuilder sb) {
-        super.addToJsonString(sb);
-        sb.append(", housecode : ").append(housecode);
-        sb.append(", command : ").append(command);
-        sb.append(String.format(", description : 0x%02x", description));
+   	protected void addToJsonString(StringBuilder sb) {
+	super.addToJsonString(sb);
+   		sb.append(", pendingMessages : [");
+	boolean first = true;
+	for (FhtMessage msg: pendingMessages) {
+		if (first) {
+			first = false;
+		} else {
+			sb.append(", ");
+		}
+		sb.append(msg);
+	}
+	sb.append(']');
     }
+
+
 }

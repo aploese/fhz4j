@@ -28,14 +28,10 @@ import de.ibapl.fhz4j.api.Protocol;
  *
  * @author Arne Plöse
  */
-public class CulMessage extends Message {
-	public final static CulMessage LOVF = new CulMessage("Limit Overflow");
-	public final static CulMessage EOB = new CulMessage("End Of Buffer");
+public abstract class CulMessage extends Message {
 
-	public String message;
+    protected CulMessage() {
+        super(Protocol.CUL);
+    }
 
-	private CulMessage(String message) {
-		super(Protocol.CUL);
-		this.message = message;
-	}
 }

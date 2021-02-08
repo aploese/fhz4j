@@ -21,10 +21,30 @@
  */
 package de.ibapl.fhz4j.console;
 
+import de.ibapl.fhz4j.api.FhzHandler;
+import de.ibapl.fhz4j.api.Protocol;
+import de.ibapl.fhz4j.cul.CulAdapter;
+import de.ibapl.fhz4j.cul.CulMessage;
+import de.ibapl.fhz4j.cul.CulMessageListener;
+import de.ibapl.fhz4j.cul.SlowRfFlag;
+import de.ibapl.fhz4j.protocol.em.EmMessage;
+import de.ibapl.fhz4j.protocol.evohome.DeviceId;
+import de.ibapl.fhz4j.protocol.evohome.EvoHomeMessage;
+import de.ibapl.fhz4j.protocol.evohome.ZoneTemperature;
+import de.ibapl.fhz4j.protocol.fht.FhtMessage;
+import de.ibapl.fhz4j.protocol.fs20.FS20Message;
+import de.ibapl.fhz4j.protocol.hms.HmsMessage;
+import de.ibapl.fhz4j.protocol.lacrosse.tx2.LaCrosseTx2Message;
+import de.ibapl.spsw.api.SerialPortSocket;
+import de.ibapl.spsw.api.SerialPortSocketFactory;
+import de.ibapl.spsw.logging.LoggingSerialPortSocket;
+import de.ibapl.spsw.logging.TimeStampLogging;
+import de.ibapl.spsw.ser2net.Ser2NetProvider;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -36,36 +56,14 @@ import java.util.ServiceLoader;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
+import org.apache.commons.cli.DefaultParser;
 import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.OptionGroup;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
-import org.apache.commons.cli.DefaultParser;
-
-import de.ibapl.fhz4j.api.Protocol;
-import de.ibapl.fhz4j.cul.CulAdapter;
-import de.ibapl.fhz4j.cul.CulMessage;
-import de.ibapl.fhz4j.protocol.em.EmMessage;
-import de.ibapl.fhz4j.protocol.evohome.EvoHomeMessage;
-import de.ibapl.fhz4j.protocol.fht.FhtMessage;
-import de.ibapl.fhz4j.protocol.fs20.FS20Message;
-import de.ibapl.fhz4j.protocol.hms.HmsMessage;
-import de.ibapl.fhz4j.protocol.lacrosse.tx2.LaCrosseTx2Message;
-import de.ibapl.spsw.api.SerialPortSocket;
-import de.ibapl.spsw.api.SerialPortSocketFactory;
-import de.ibapl.spsw.logging.LoggingSerialPortSocket;
-import de.ibapl.spsw.logging.TimeStampLogging;
-import de.ibapl.spsw.ser2net.Ser2NetProvider;
-import de.ibapl.fhz4j.api.FhzHandler;
-import de.ibapl.fhz4j.cul.CulMessageListener;
-import de.ibapl.fhz4j.protocol.evohome.DeviceId;
-import de.ibapl.fhz4j.protocol.evohome.ZoneTemperature;
-import java.math.BigDecimal;
-import java.math.BigInteger;
 
 /**
  * DOCUMENT ME!
@@ -342,7 +340,9 @@ public class Main {
                     LOG.log(Level.SEVERE, null, ex);
                 }
                 if (protocols.contains(Protocol.FHT)) {
-                    culAddapter.initFhz((short) 0001);
+                    culAddapter.initFhz((short) 0001, EnumSet.of(SlowRfFlag.REPORT_PACKAGE, SlowRfFlag.REPORT_REPEATED_PACKAGES, SlowRfFlag.REPORT_FHT_PROTOCOL_MESSAGES));
+                    culAddapter.writeCulTimeSlotRequest();
+//TODO culAddapter.initFhz((short) 0001);
                     culAddapter.initFhtReporting((short) 302);
 //            fhzAddapter.writeFhtTimeAndDate((short) 302, LocalDateTime.now());
 //            fhzAddapter.writeFhtCycle((short) 302, DayOfWeek.MONDAY, LocalTime.of(5, 0), LocalTime.of(8, 30), null, null);

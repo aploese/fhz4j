@@ -21,29 +21,30 @@
  */
 package de.ibapl.fhz4j.cul;
 
+import de.ibapl.fhz4j.LogUtils;
+import de.ibapl.fhz4j.api.Adapter;
+import de.ibapl.fhz4j.api.EvoHomeHandler;
+import de.ibapl.fhz4j.api.FhzHandler;
+import de.ibapl.fhz4j.parser.cul.CulParser;
+import de.ibapl.fhz4j.protocol.evohome.DeviceId;
+import de.ibapl.fhz4j.protocol.evohome.ZoneTemperature;
+import de.ibapl.fhz4j.protocol.fht.FhtProperty;
+import de.ibapl.fhz4j.writer.cul.CulWriter;
+import de.ibapl.fhz4j.writer.cul.EvoHomeEncoder;
+import de.ibapl.fhz4j.writer.cul.FhtEncoder;
+import de.ibapl.spsw.api.SerialPortSocket;
 import java.io.IOException;
+import java.io.InterruptedIOException;
+import java.nio.ByteBuffer;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.util.LinkedList;
+import java.util.Queue;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
-import de.ibapl.fhz4j.LogUtils;
-import de.ibapl.fhz4j.api.Adapter;
-import de.ibapl.fhz4j.parser.cul.CulParser;
-import de.ibapl.fhz4j.writer.cul.CulWriter;
-import de.ibapl.fhz4j.protocol.fht.FhtProperty;
-import de.ibapl.spsw.api.SerialPortSocket;
-import java.nio.ByteBuffer;
-import de.ibapl.fhz4j.api.FhzHandler;
-import de.ibapl.fhz4j.api.EvoHomeHandler;
-import de.ibapl.fhz4j.protocol.evohome.DeviceId;
-import de.ibapl.fhz4j.protocol.evohome.ZoneTemperature;
-import de.ibapl.fhz4j.writer.cul.EvoHomeEncoder;
-import de.ibapl.fhz4j.writer.cul.FhtEncoder;
-import java.io.InterruptedIOException;
 
 public class CulAdapter implements Adapter, FhzHandler, EvoHomeHandler {
 
@@ -98,7 +99,7 @@ public class CulAdapter implements Adapter, FhzHandler, EvoHomeHandler {
         this.fhzDataListener = fhzDataListener;
         culParser = new CulParser<>(fhzDataListener);
         culWriter = new CulWriter(serialPortSocket, CulWriter.DEFAULT_BUFFER_SIZE);
-        fhtEncoder  = new FhtEncoder(culWriter);
+        fhtEncoder = new FhtEncoder(culWriter);
         evoHomeEncoder = new EvoHomeEncoder(culWriter);
         parserThread = new Thread(streamListener);
         parserThread.setDaemon(true);
@@ -139,6 +140,28 @@ public class CulAdapter implements Adapter, FhzHandler, EvoHomeHandler {
     @Override
     public void initFhz(short fhzHousecode) throws IOException {
         culWriter.initFhz(fhzHousecode);
+    }
+
+    @Override
+    public void initFhz(short fhzHousecode, Set<SlowRfFlag> slowRfFlags) throws IOException {
+        culWriter.initFhz(fhzHousecode, slowRfFlags);
+    }
+
+    @Override
+    public void writeCulTimeSlotRequest() throws IOException {
+        final CulGetSlowRfSettingsRequest request = new CulGetSlowRfSettingsRequest();
+        culParser.addCulRequest(request);
+        culWriter.writeCulRequest(request);
+    }
+
+    @Override
+    public void gatherCulDebugInfos() throws IOException {
+        Queue<CulRequest> requests = new LinkedList<>();
+        requests.add(new CulGetSlowRfSettingsRequest());
+        requests.add(new CulFhtDeviceOutBufferContentRequest());
+        requests.add(new CulRemainingFhtDeviceOutBufferSizeRequest());
+        culParser.addCulRequests(requests);
+        culWriter.writeCulRequests(requests);
     }
 
     @Override

@@ -29,13 +29,8 @@ public class FhtTempMessage extends Fht8bMessage {
 
     public float temp;
 
-    public FhtTempMessage(int housecode, FhtProperty command, float temp) {
-        super((short) housecode, command, false, true);
-        this.temp = temp;
-    }
-
-    public FhtTempMessage(short housecode, FhtProperty command, boolean fromFht_8B, boolean dataRegister, float temp) {
-        super(housecode, command, fromFht_8B, dataRegister);
+    public FhtTempMessage(short housecode, FhtProperty command, byte description, boolean fromFht_8B, boolean dataRegister, float temp) {
+        super(housecode, command, description, fromFht_8B, dataRegister);
         this.temp = temp;
     }
 

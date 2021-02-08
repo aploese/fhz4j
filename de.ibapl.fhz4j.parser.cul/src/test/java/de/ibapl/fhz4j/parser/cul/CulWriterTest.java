@@ -22,16 +22,10 @@
 package de.ibapl.fhz4j.parser.cul;
 
 import de.ibapl.fhz4j.writer.cul.CulWriter;
-import java.io.IOException;
-import java.nio.channels.FileChannel;
-
-import java.time.LocalDateTime;
-import java.time.Month;
+import de.ibapl.fhz4j.cul.SlowRfFlag;
+import java.nio.channels.WritableByteChannel;
 import java.util.EnumSet;
 import java.util.Set;
-
-import java.nio.channels.WritableByteChannel;
-import java.nio.channels.spi.AbstractInterruptibleChannel;
 import static org.junit.jupiter.api.Assertions.fail;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
@@ -70,7 +64,7 @@ public class CulWriterTest {
 	public void testInitFhz_short_byte() throws Exception {
 		System.out.println("initFhz");
 		short fhz100Housecode = 0;
-		Set<CulWriter.InitFlag> initFlags = EnumSet.noneOf(CulWriter.InitFlag.class);
+            Set<SlowRfFlag> initFlags = EnumSet.noneOf(SlowRfFlag.class);
 		WritableByteChannel wbc = null;
 		CulWriter instance = new CulWriter(wbc, 64);
 

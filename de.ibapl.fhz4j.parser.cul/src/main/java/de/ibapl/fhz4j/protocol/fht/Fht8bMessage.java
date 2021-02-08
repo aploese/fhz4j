@@ -27,19 +27,19 @@ package de.ibapl.fhz4j.protocol.fht;
  */
 public class Fht8bMessage extends FhtMessage {
 
-	public boolean fromFht_8B;
-	public boolean dataRegister;
+    public boolean fromFht_8B;
+    public boolean dataRegister;
 
-	public Fht8bMessage(short housecode, FhtProperty command, boolean fromFht_8B, boolean dataRegister) {
-		super(housecode, command);
-		this.fromFht_8B = fromFht_8B;
-		this.dataRegister = dataRegister;
-	}
+    public Fht8bMessage(short housecode, FhtProperty command, byte description, boolean fromFht_8B, boolean dataRegister) {
+        super(housecode, command, description);
+        this.fromFht_8B = fromFht_8B;
+        this.dataRegister = dataRegister;
+    }
 
-        @Override
-        protected void addToJsonString(StringBuilder sb) {
-            super.addToJsonString(sb);
-            sb.append(", fromFht_8b : ").append(fromFht_8B);
-            sb.append(", dataRegister : ").append(dataRegister);
-        }
+    @Override
+    protected void addToJsonString(StringBuilder sb) {
+        super.addToJsonString(sb);
+        sb.append(", fromFht_8b : ").append(fromFht_8B);
+        sb.append(", dataRegister : ").append(dataRegister);
+    }
 }

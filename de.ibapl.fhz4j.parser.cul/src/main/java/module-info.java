@@ -22,11 +22,11 @@
 module de.ibapl.fhz4j.parser.cul {
 	requires java.logging;
 	requires transitive de.ibapl.spsw.api;
-	requires osgi.annotation;
+	//requires osgi.annotation;
 	
 	exports de.ibapl.fhz4j.api;
 	exports de.ibapl.fhz4j.cul;
-	exports de.ibapl.fhz4j.parser.cul;
+//	exports de.ibapl.fhz4j.parser.cul;
 	exports de.ibapl.fhz4j.protocol.em;
 	exports de.ibapl.fhz4j.protocol.evohome;
 	exports de.ibapl.fhz4j.protocol.fht;

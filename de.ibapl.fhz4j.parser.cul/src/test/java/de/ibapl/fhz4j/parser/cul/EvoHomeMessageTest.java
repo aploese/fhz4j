@@ -75,7 +75,7 @@ import de.ibapl.fhz4j.protocol.evohome.EvoHome_0x28_0x1F09_0x03_Message;
 import de.ibapl.fhz4j.protocol.evohome.EvoHome_0x2C_0x1FC9_0xXX_Message;
 import de.ibapl.fhz4j.protocol.evohome.EvoHome_0x2C_0x2309_0xXX_ROOM_DESIRED_TEMP_Message;
 import de.ibapl.fhz4j.protocol.evohome.EvoHome_0x3C_0x0004_0x16_Message;
-import de.ibapl.fhz4j.protocol.evohome.EvoHome_0x3C_0x000A_0xXX_ZONES_PARAMS_Message;
+import de.ibapl.fhz4j.protocol.evohome.EvoHome_0x3C_0x000A_ZONE_PARAMS_Message;
 import de.ibapl.fhz4j.protocol.evohome.EvoHome_0x3C_0x0016_0x02_Message;
 import de.ibapl.fhz4j.protocol.evohome.EvoHome_0x3C_0x0100_0x05_Message;
 import de.ibapl.fhz4j.protocol.evohome.EvoHome_0x3C_0x1F09_0x03_RESPONSE_3C_1F09_Message;
@@ -88,13 +88,9 @@ import de.ibapl.fhz4j.protocol.evohome.EvoHome_0xXX_0x10E0_0x26_Message;
 import de.ibapl.fhz4j.protocol.evohome.EvoHome_0xXX_0x1FC9_0xXX_Message;
 import de.ibapl.fhz4j.protocol.evohome.EvoHome_0xXX_0x1FC9_0xXX_Message.Data;
 import de.ibapl.fhz4j.protocol.evohome.ZoneTemperature;
-import de.ibapl.fhz4j.writer.cul.CulWriter;
 import de.ibapl.fhz4j.writer.cul.EvoHomeEncoder;
 import de.ibapl.fhz4j.writer.cul.EvoHomeWriter;
 import java.io.IOException;
-import java.nio.ByteBuffer;
-import java.nio.channels.WritableByteChannel;
-import java.time.ZonedDateTime;
 
 import org.junit.jupiter.api.Test;
 
@@ -200,7 +196,8 @@ public class EvoHomeMessageTest implements ParserListener<EvoHomeMessage> {
 			assertTrue(actualZoneParams.hasNext());
 			ZoneParams actual = actualZoneParams.next();
 			assertEquals(expected.zoneId, actual.zoneId, "zoneId");
-			assertEquals(expected.flags, actual.flags, "flags");
+			assertEquals(expected.operationLock, actual.operationLock, "operationLock");
+			assertEquals(expected.windowFunction, actual.windowFunction, "windowFunction");
 			assertEquals(expected.minTemperature, actual.minTemperature, "minTemperature");
 			assertEquals(expected.maxTemperature, actual.maxTemperature, "maxTemperature");
 		}
@@ -527,7 +524,8 @@ public class EvoHomeMessageTest implements ParserListener<EvoHomeMessage> {
 		decode("18 067AEC 067AEC 000A 06 00 10 01F4 0DAC");
 		ZoneParams zoneParam = new ZoneParams();
 		zoneParam.zoneId = 0;
-		zoneParam.flags = 0x10;
+		zoneParam.windowFunction = true;
+		zoneParam.operationLock = false;
 		zoneParam.minTemperature = new BigDecimal("5");
 		zoneParam.maxTemperature = new BigDecimal("35");
 		List<ZoneParams> zoneParams = new LinkedList<>();
@@ -836,12 +834,13 @@ public class EvoHomeMessageTest implements ParserListener<EvoHomeMessage> {
 		decode("3C 067AEC 895E5D 000A 06 00 10 01F4 0DAC");
 		ZoneParams zoneParam = new ZoneParams();
 		zoneParam.zoneId = 0;
-		zoneParam.flags = 0x10;
+		zoneParam.windowFunction = true;
+		zoneParam.operationLock = false;
 		zoneParam.minTemperature = new BigDecimal("5");
 		zoneParam.maxTemperature = new BigDecimal("35");
 		List<ZoneParams> zoneParams = new LinkedList<>();
 		zoneParams.add(zoneParam);
-		assertEvoHome_0x000A_Message((EvoHome_0x3C_0x000A_0xXX_ZONES_PARAMS_Message) evoHomeMessage, 0x067AEC, 0x895E5D,
+		assertEvoHome_0x000A_Message((EvoHome_0x3C_0x000A_ZONE_PARAMS_Message) evoHomeMessage, 0x067AEC, 0x895E5D,
 				zoneParams);
 	}
 

@@ -27,21 +27,21 @@ package de.ibapl.fhz4j.protocol.fht;
  */
 public class FhtDateMessage extends Fht8bMessage {
 
-	public byte day;
-	public byte month;
+    public byte day;
+    public byte month;
 
-	public FhtDateMessage(short housecode, FhtProperty command, boolean fromFht_8B, boolean dataRegister, byte month,
-			byte day) {
-		super(housecode, command, fromFht_8B, dataRegister);
-		this.month = month;
-		this.day = day;
-	}
-        
-        @Override
-        protected void addToJsonString(StringBuilder sb) {
-            super.addToJsonString(sb);
-            sb.append(", day : ").append(day);
-            sb.append(", month : ").append(month);
-        }
+    public FhtDateMessage(short housecode, FhtProperty command, byte description, boolean fromFht_8B, boolean dataRegister, byte month,
+            byte day) {
+        super(housecode, command, description, fromFht_8B, dataRegister);
+        this.month = month;
+        this.day = day;
+    }
+
+    @Override
+    protected void addToJsonString(StringBuilder sb) {
+        super.addToJsonString(sb);
+        sb.append(", day : ").append(day);
+        sb.append(", month : ").append(month);
+    }
 
 }

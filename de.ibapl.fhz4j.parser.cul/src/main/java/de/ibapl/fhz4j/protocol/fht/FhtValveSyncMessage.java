@@ -30,8 +30,8 @@ public class FhtValveSyncMessage extends FhtMessage {
     public float timeLeft;
     public boolean bit5;
 
-    public FhtValveSyncMessage(short housecode, FhtProperty command, float timeLeft, boolean bit5) {
-        super(housecode, command);
+    public FhtValveSyncMessage(short housecode, FhtProperty command, byte description, float timeLeft, boolean bit5) {
+        super(housecode, command, description);
         this.timeLeft = timeLeft;
         this.bit5 = bit5;
     }

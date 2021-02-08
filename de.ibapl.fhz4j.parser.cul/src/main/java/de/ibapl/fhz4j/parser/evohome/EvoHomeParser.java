@@ -72,7 +72,7 @@ import de.ibapl.fhz4j.protocol.evohome.EvoHome_0x28_0x1F09_0x03_Message;
 import de.ibapl.fhz4j.protocol.evohome.EvoHome_0x2C_0x1FC9_0xXX_Message;
 import de.ibapl.fhz4j.protocol.evohome.EvoHome_0x2C_0x2309_0xXX_ROOM_DESIRED_TEMP_Message;
 import de.ibapl.fhz4j.protocol.evohome.EvoHome_0x3C_0x0004_0x16_Message;
-import de.ibapl.fhz4j.protocol.evohome.EvoHome_0x3C_0x000A_0xXX_ZONES_PARAMS_Message;
+import de.ibapl.fhz4j.protocol.evohome.EvoHome_0x3C_0x000A_ZONE_PARAMS_Message;
 import de.ibapl.fhz4j.protocol.evohome.EvoHome_0x3C_0x0016_0x02_Message;
 import de.ibapl.fhz4j.protocol.evohome.EvoHome_0x3C_0x0100_0x05_Message;
 import de.ibapl.fhz4j.protocol.evohome.EvoHome_0x3C_0x1F09_0x03_RESPONSE_3C_1F09_Message;
@@ -829,8 +829,9 @@ default:
 				state = State.COLLECT_SINGLE_VALUE;
 				break;
 			case _000A:
-				//TODO ??? multiple of 6 ??? checkLength(0x06, length, "EvoHome_0x3C_0x000A_0xXX_ZONES_PARAMS_Message");
-				evoHomeMessage = new EvoHome_0x3C_0x000A_0xXX_ZONES_PARAMS_Message();
+				//TODO ??? multiple of 6 ??? checkLength(0x06, length, "EvoHome_0x3C_0x000A_ZONE_PARAMS_Message");
+				checkLength(0x06, length, "EvoHome_0x3C_0x000A_0xXX_ZONE_PARAMS_Message");
+				evoHomeMessage = new EvoHome_0x3C_0x000A_ZONE_PARAMS_Message();
 				zonesParamParser.init(length);
 				state = State.PARSE_ZONES_PARAMS_ELEMENTS;
 				break;

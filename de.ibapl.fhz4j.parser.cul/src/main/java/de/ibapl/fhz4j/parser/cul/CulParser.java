@@ -21,13 +21,14 @@
  */
 package de.ibapl.fhz4j.parser.cul;
 
-import de.ibapl.fhz4j.cul.CulMessage;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
 import de.ibapl.fhz4j.LogUtils;
 import de.ibapl.fhz4j.api.Message;
 import de.ibapl.fhz4j.api.Protocol;
+import de.ibapl.fhz4j.cul.CulEobMessage;
+import de.ibapl.fhz4j.cul.CulLovfMessage;
+import de.ibapl.fhz4j.cul.CulMessage;
+import de.ibapl.fhz4j.cul.CulMessageListener;
+import de.ibapl.fhz4j.cul.CulRequest;
 import de.ibapl.fhz4j.parser.api.Parser;
 import de.ibapl.fhz4j.parser.api.ParserListener;
 import de.ibapl.fhz4j.parser.em.EmParser;
@@ -42,7 +43,10 @@ import de.ibapl.fhz4j.protocol.fht.FhtMessage;
 import de.ibapl.fhz4j.protocol.fs20.FS20Message;
 import de.ibapl.fhz4j.protocol.hms.HmsMessage;
 import de.ibapl.fhz4j.protocol.lacrosse.tx2.LaCrosseTx2Message;
-import de.ibapl.fhz4j.cul.CulMessageListener;
+import java.util.LinkedList;
+import java.util.Queue;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Parses CUL from www.busware.de Commands see http://culfw.de/commandref.html
@@ -52,7 +56,9 @@ import de.ibapl.fhz4j.cul.CulMessageListener;
  * @author Arne Plöse
  * @param <T>
  */
-public class CulParser<T extends Message> {
+public class CulParser<T extends Message> extends AbstractCulParser {
+
+    private Queue<CulRequest> pendingRequests = new LinkedList<>();
 
     /**
      * Returns whether or not the parser is idle.
@@ -65,11 +71,12 @@ public class CulParser<T extends Message> {
     private enum State {
         IDLE,
         PARSER_PARSING,
+        CUL_PARSER_PARSING,
         CUL_L_PARSED,
-        CUL_LO_PARSED,
-        CUL_LOV_PARSED,
+        CUL_LO_PARSED,//TODO move to culParser
+        CUL_LOV_PARSED,//TODO move to culParser
         CUL_E_PARSED,
-        CUL_EO_PARSED,
+        CUL_EO_PARSED,//TODO move to culParser
         EVO_HOME_START,
         EVO_HOME_READ_ERROR_CHAR,
         EVO_HOME_READ_GARBAGE,
@@ -86,8 +93,7 @@ public class CulParser<T extends Message> {
     private final CulMessageListener culMessageListener;
     private State state = State.IDLE;
     private Parser currentParser;
-    private byte firstNibble;
-    private boolean isFirstNibble;
+    private CulResponseParser culResponseParser;
     @SuppressWarnings("unchecked")
     private final EmParser emParser = new EmParser((ParserListener<EmMessage>) subParserListener);
     @SuppressWarnings("unchecked")
@@ -150,6 +156,7 @@ public class CulParser<T extends Message> {
         }
     }
 
+    @Override
     public void parse(char c) {
         switch (state) {
             case IDLE:
@@ -191,7 +198,13 @@ public class CulParser<T extends Message> {
                     case '\r':
                         break;
                     default:
-                        LOG.fine(String.format("Discarted: 0x%02x %s", (byte) c, c));
+                        if (!pendingRequests.isEmpty()) {
+                            culResponseParser = CulResponseParser.of(pendingRequests.peek());
+                            state = State.CUL_PARSER_PARSING;
+                            culResponseParser.parse(c);
+                        } else {
+                            LOG.fine(String.format("Discarted: 0x%02x %s", (byte) c, c));
+                        }
                 }
                 break;
             case EVO_HOME_START:
@@ -278,6 +291,34 @@ public class CulParser<T extends Message> {
                         }
                 }
                 break;
+            case CUL_PARSER_PARSING:
+            	try {
+                culResponseParser.parse(c);
+                switch (c) {
+                    case '\n':
+                        state = State.IDLE;
+                        if (culResponseParser.isSuccess()) {
+                            //On success remove pending parser
+                            pendingRequests.remove();
+                            culMessageListener.culMessageParsed(culResponseParser.response);
+                        } else {
+                            LOG.log(Level.SEVERE, "In state {0} for CUL request {1} unexpected end of message received", new Object[]{state, culResponseParser.getClass().getName()});
+                            state = State.IDLE;
+                            break;
+                        }
+                        break;
+                    case '\r':
+                        //no-op
+                        break;
+                    default:
+                    //no-op
+                }
+            	} catch (Exception e) {
+                    LOG.log(Level.SEVERE, "In state {0} for CUL request {1} unexpected parser error", new Object[]{state, culResponseParser.getClass().getName()});
+                    state = State.IDLE;
+                    //TODO notify failure??
+				}
+                break;
             case CUL_E_PARSED:
                 if (c == 'O') {
                     state = State.CUL_EO_PARSED;
@@ -291,7 +332,7 @@ public class CulParser<T extends Message> {
             case CUL_EO_PARSED:
                 if (c == 'B') {
                     state = State.END_CHAR_0X0D;
-                    fhzMessage = CulMessage.EOB;
+                    fhzMessage = CulEobMessage.EOB;
                 } else {
                     // ERROR???
                     state = State.IDLE;
@@ -316,7 +357,7 @@ public class CulParser<T extends Message> {
             case CUL_LOV_PARSED:
                 if (c == 'F') {
                     state = State.END_CHAR_0X0D;
-                    fhzMessage = CulMessage.LOVF;
+                    fhzMessage = CulLovfMessage.LOVF;
                 } else {
                     // ERROR???
                     state = State.IDLE;
@@ -352,61 +393,66 @@ public class CulParser<T extends Message> {
                     state = State.END_CHAR_0X0A;
                     break;
                 } else if (c == '\n') {
-                    // Fall trough
+                    finishParsingAndNotify();
                 } else {
                     // ERRORhandling
                     state = State.IDLE;
                     break;
                 }
+                break;
             case END_CHAR_0X0A:
                 if (c == '\n') {
-                    state = State.IDLE;
-                    if (LOG.isLoggable(Level.FINE)) {
-                        if (fhzMessage != null) {
-                            LOG.fine(fhzMessage.toString());
-                        }
-                    }
-
-                    if (culMessageListener != null) {
-
-                        if (partialFhzMessage instanceof FhtMessage) {
-                            culMessageListener.fhtPartialDataParsed((FhtMessage) partialFhzMessage);
-                        }
-
-                        if (fhzMessage != null) {
-                            switch (fhzMessage.protocol) {
-                                case FHT:
-                                    culMessageListener.fhtDataParsed((FhtMessage) fhzMessage);
-                                    break;
-                                case HMS:
-                                    culMessageListener.hmsDataParsed((HmsMessage) fhzMessage);
-                                    break;
-                                case EM:
-                                    culMessageListener.emDataParsed((EmMessage) fhzMessage);
-                                    break;
-                                case FS20:
-                                    culMessageListener.fs20DataParsed((FS20Message) fhzMessage);
-                                    break;
-                                case LA_CROSSE_TX2:
-                                    culMessageListener.laCrosseTxParsed((LaCrosseTx2Message) fhzMessage);
-                                    break;
-                                case CUL:
-                                    culMessageListener.culMessageParsed((CulMessage) fhzMessage);
-                                    break;
-                                case EVO_HOME:
-                                    culMessageListener.evoHomeParsed((EvoHomeMessage) fhzMessage);
-                                    break;
-                                default:
-                                    throw new RuntimeException();
-                            }
-                        }
-                    }
+                    finishParsingAndNotify();
                 } else {
                     // ERRORhandling ???
                     state = State.IDLE;
                     parse(c); // try to recover
                 }
             default:
+        }
+    }
+
+    private void finishParsingAndNotify() throws RuntimeException {
+        state = State.IDLE;
+        if (LOG.isLoggable(Level.FINE)) {
+            if (fhzMessage != null) {
+                LOG.fine(fhzMessage.toString());
+            }
+        }
+
+        if (culMessageListener != null) {
+
+            if (partialFhzMessage instanceof FhtMessage) {
+                culMessageListener.fhtPartialDataParsed((FhtMessage) partialFhzMessage);
+            }
+
+            if (fhzMessage != null) {
+                switch (fhzMessage.protocol) {
+                    case FHT:
+                        culMessageListener.fhtDataParsed((FhtMessage) fhzMessage);
+                        break;
+                    case HMS:
+                        culMessageListener.hmsDataParsed((HmsMessage) fhzMessage);
+                        break;
+                    case EM:
+                        culMessageListener.emDataParsed((EmMessage) fhzMessage);
+                        break;
+                    case FS20:
+                        culMessageListener.fs20DataParsed((FS20Message) fhzMessage);
+                        break;
+                    case LA_CROSSE_TX2:
+                        culMessageListener.laCrosseTxParsed((LaCrosseTx2Message) fhzMessage);
+                        break;
+                    case CUL:
+                        culMessageListener.culMessageParsed((CulMessage) fhzMessage);
+                        break;
+                    case EVO_HOME:
+                        culMessageListener.evoHomeParsed((EvoHomeMessage) fhzMessage);
+                        break;
+                    default:
+                        throw new RuntimeException();
+                }
+            }
         }
     }
 
@@ -417,43 +463,23 @@ public class CulParser<T extends Message> {
         firstNibble = 0;
     }
 
-    private byte digit2Byte(char c) {
-        switch (c) {
-            case '0':
-                return 0x00;
-            case '1':
-                return 0x01;
-            case '2':
-                return 0x02;
-            case '3':
-                return 0x03;
-            case '4':
-                return 0x04;
-            case '5':
-                return 0x05;
-            case '6':
-                return 0x06;
-            case '7':
-                return 0x07;
-            case '8':
-                return 0x08;
-            case '9':
-                return 0x09;
-            case 'A':
-                return 0x0a;
-            case 'B':
-                return 0x0b;
-            case 'C':
-                return 0x0c;
-            case 'D':
-                return 0x0d;
-            case 'E':
-                return 0x0e;
-            case 'F':
-                return 0x0f;
-            default:
-                throw new RuntimeException(String.format("Not a Number: \"%c\" 0x%02x", c, (byte)c));
-        }
+    /**
+     * Add a request for which we expect a response.
+     *
+     * @param request
+     * @return
+     */
+    public boolean addCulRequest(CulRequest request) {
+        return pendingRequests.add(request);
     }
 
+    /**
+     * Add the ordered request for which we expect a response.
+     *
+     * @param requests
+     * @return
+     */
+    public boolean addCulRequests(Queue<CulRequest> requests) {
+        return pendingRequests.addAll(requests);
+    }
 }

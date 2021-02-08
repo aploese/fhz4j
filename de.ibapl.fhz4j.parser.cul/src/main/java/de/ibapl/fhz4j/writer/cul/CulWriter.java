@@ -21,15 +21,21 @@
  */
 package de.ibapl.fhz4j.writer.cul;
 
+import de.ibapl.fhz4j.LogUtils;
+import de.ibapl.fhz4j.cul.CulFhtDeviceOutBufferContentRequest;
+import de.ibapl.fhz4j.cul.CulGetSlowRfSettingsRequest;
+import de.ibapl.fhz4j.cul.CulRemainingFhtDeviceOutBufferSizeRequest;
+import de.ibapl.fhz4j.cul.CulRequest;
+import de.ibapl.fhz4j.cul.CulSetSlowRfSettingsRequest;
+import de.ibapl.fhz4j.cul.SlowRfFlag;
 import java.io.IOException;
+import java.nio.ByteBuffer;
+import java.nio.channels.WritableByteChannel;
 import java.util.EnumSet;
+import java.util.Queue;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
-import de.ibapl.fhz4j.LogUtils;
-import java.nio.ByteBuffer;
-import java.nio.channels.WritableByteChannel;
 
 /**
  *
@@ -38,16 +44,6 @@ import java.nio.channels.WritableByteChannel;
 public class CulWriter implements FhtWriter, EvoHomeWriter {
 
     public static final int DEFAULT_BUFFER_SIZE = 64;
-
-    public enum InitFlag {
-        PACKAGE_OK(0x01), ALL_REPEATED(0x02), REPORT_ALL(0x04), MONITOR_MODE(0x08), WITH_TIMING(0x10), WITH_RSSI(
-                0x20), REPORT_FHT_ALL_MESSAGES(0x40), REPORT_RAW_RSSI(0x80);
-        final byte value;
-
-        private InitFlag(int value) {
-            this.value = (byte) value;
-        }
-    }
 
     private final static Logger LOG = Logger.getLogger(LogUtils.FHZ_PARSER_CUL);
     private final WritableByteChannel wbc;
@@ -146,13 +142,9 @@ public class CulWriter implements FhtWriter, EvoHomeWriter {
             buffer.clear();
             buffer.put("\r\n".getBytes());
             doWrite();
-            Thread.sleep(1000);
-            byte flags = 0;
-            final String data = String.format("vd\r\n", flags);
-            buffer.put(data.getBytes());
+            buffer.put("vd\r\n".getBytes());
             doWrite();
-            LOG.log(Level.INFO, "Data sent: {0}", new Object[]{data});
-            Thread.sleep(1000);
+            Thread.sleep(100);
             LOG.info("INIT Evo Home End");
         } catch (InterruptedException ex) {
             LOG.log(Level.SEVERE, "EX during Evo Home init", ex);
@@ -187,59 +179,85 @@ public class CulWriter implements FhtWriter, EvoHomeWriter {
         buffer.put((byte) '\n');
     }
 
-        //TODO No RSSI ???
+    //TODO No RSSI ???
     public void initFhz(short fhzOwnHousecode) throws IOException {
-        try {
-            initFhz(fhzOwnHousecode, EnumSet.of(InitFlag.PACKAGE_OK, InitFlag.WITH_RSSI));
-        } catch (InterruptedException ex) {
-            LOG.log(Level.SEVERE, "EX during init", ex);
+        initFhz(fhzOwnHousecode, EnumSet.of(SlowRfFlag.REPORT_PACKAGE, SlowRfFlag.WITH_RSSI));
+    }
+
+    public void writeCulRequests(Queue<CulRequest> requests) throws IOException {
+        for (CulRequest request : requests) {
+            buffer.put(encodeCulRequest(request));
+        }
+        doWrite();
+    }
+
+    public void writeCulRequest(CulRequest request) throws IOException {
+        buffer.put(encodeCulRequest(request));
+        doWrite();
+    }
+
+    private byte[] encodeCulRequest(CulRequest request) {
+        if (request instanceof CulGetSlowRfSettingsRequest) {
+            return "X\r\n".getBytes();
+        } else if (request instanceof CulSetSlowRfSettingsRequest) {
+            final CulSetSlowRfSettingsRequest settingsRequest = (CulSetSlowRfSettingsRequest) request;
+            byte flags = 0;
+            for (SlowRfFlag flag : settingsRequest) {
+                flags |= flag.value;
+            }
+            return String.format("X%02X\r\n", flags).getBytes();
+        } else if (request instanceof CulFhtDeviceOutBufferContentRequest) {
+            return "T02\r\n".getBytes();
+        } else if (request instanceof CulRemainingFhtDeviceOutBufferSizeRequest) {
+            return "T03\r\n".getBytes();
+        } else {
+            throw new IllegalArgumentException("Unknown CulRequest: " + request);
         }
     }
 
-    public void initFhz(short fhzOwnHousecode, Set<InitFlag> initFlags) throws IOException, InterruptedException {
+    public void initFhz(short fhzOwnHousecode, Set<SlowRfFlag> initFlags) throws IOException {
         LOG.info("initFhz");
-        buffer.put("\r\n".getBytes());
-        doWrite();
-        Thread.sleep(1000);
-        LOG.info("INIT 2");
-        byte flags = 0;
-        for (InitFlag flag : initFlags) {
-            flags |= flag.value;
+        try {
+            buffer.put("".getBytes());
+            doWrite();
+            LOG.info("INIT 2");
+            buffer.put(encodeCulRequest(new CulSetSlowRfSettingsRequest(initFlags)));
+            doWrite();
+            Thread.sleep(100);
+            LOG.info("INIT Housecode");
+            setOwnFhzHousecode(fhzOwnHousecode);
+            Thread.sleep(100);
+        } catch (InterruptedException ex) {
+            LOG.log(Level.SEVERE, "EX during init", ex);
+            throw new RuntimeException(ex);
+        } finally {
+            LOG.info("INIT End");
         }
-        final String data = String.format("X%02X\r\n", flags);
-        buffer.put(data.getBytes());
-        doWrite();
-        LOG.log(Level.INFO, "Data sent: {0}", new Object[]{data});
-        Thread.sleep(1000);
-        LOG.info("INIT Housecode");
-        setOwnFhzHousecode(fhzOwnHousecode);
-        Thread.sleep(1000);
-        LOG.info("INIT End");
     }
 
     private void setOwnFhzHousecode(short ownHousecode) throws IOException {
         buffer.put((byte) 'T');
         buffer.put((byte) '0');
         buffer.put((byte) '1');
-        putByte((byte)(ownHousecode / 100));
-        putByte((byte)(ownHousecode % 100));
+        putByte((byte) (ownHousecode / 100));
+        putByte((byte) (ownHousecode % 100));
+        buffer.put((byte) '\r');
         buffer.put((byte) '\n');
         doWrite();
     }
 
     @Override
     public void putShort(short value) throws IOException {
-        putByte((byte)(value >>> 8));
-        putByte((byte)value);
+        putByte((byte) (value >>> 8));
+        putByte((byte) value);
     }
 
     @Override
     public void putInt(int value) throws IOException {
-        putByte((byte)(value >>> 24));
-        putByte((byte)(value >>> 16));
-        putByte((byte)(value >>> 8));
-        putByte((byte)value);
+        putByte((byte) (value >>> 24));
+        putByte((byte) (value >>> 16));
+        putByte((byte) (value >>> 8));
+        putByte((byte) value);
     }
 
-    
 }
