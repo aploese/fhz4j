@@ -3,7 +3,6 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package de.ibapl.fhz4j.m2m2;
 
 import java.io.IOException;
@@ -26,7 +25,7 @@ public class EmPointLocator extends ProtocolLocator<EmProperty> {
     public String defaultName() {
         return getProperty() == null ? "EM unknown" : getProperty().getLabel();
     }
-    
+
     //
     // /
     // / Serialization
@@ -47,12 +46,11 @@ public class EmPointLocator extends ProtocolLocator<EmProperty> {
         switch (ver) {
             case 1:
                 address = in.readShort();
-         break;
+                break;
             default:
                 throw new RuntimeException("Cant handle version");
         }
     }
-
 
     @Override
     public FhzProtocol getFhzProtocol() {

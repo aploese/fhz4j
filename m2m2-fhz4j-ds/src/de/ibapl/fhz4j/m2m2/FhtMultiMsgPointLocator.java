@@ -9,7 +9,6 @@ import net.sf.fhz4j.Fhz1000;
 import net.sf.fhz4j.FhzProtocol;
 import net.sf.fhz4j.fht.FhtMultiMsgProperty;
 
-
 /**
  *
  * @author aploese
@@ -18,7 +17,7 @@ public class FhtMultiMsgPointLocator extends ProtocolLocator<FhtMultiMsgProperty
 
     private final static Logger LOG = Logger.getLogger("DS_FHZ4J");
     private short housecode;
-   
+
     /**
      * @return the housecode
      */
@@ -29,7 +28,7 @@ public class FhtMultiMsgPointLocator extends ProtocolLocator<FhtMultiMsgProperty
     public String defaultName() {
         return getProperty() == null ? "FHT Unknown Multi Message " : getProperty().getLabel();
     }
-    
+
     /**
      * @param housecode the housecode to set
      */
@@ -65,7 +64,7 @@ public class FhtMultiMsgPointLocator extends ProtocolLocator<FhtMultiMsgProperty
         switch (ver) {
             case 1:
                 housecode = in.readShort();
-         break;
+                break;
             default:
                 throw new RuntimeException("Cant handle version");
         }

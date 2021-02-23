@@ -35,7 +35,7 @@ import net.sf.fhz4j.FhzProtocol;
 import net.sf.fhz4j.scada.ScadaProperty;
 
 // Container to move data with json and ajax so ony basic datatypes
-public class Fhz4JPointLocatorVO<T extends ScadaProperty> extends AbstractPointLocatorVO  {
+public class Fhz4JPointLocatorVO<T extends ScadaProperty> extends AbstractPointLocatorVO {
 
     private final static Logger LOG = Logger.getLogger("DS_FHZ4J");
     private ProtocolLocator<T> protocolLocator;
@@ -153,5 +153,5 @@ public class Fhz4JPointLocatorVO<T extends ScadaProperty> extends AbstractPointL
     public PointLocatorModel<?> asModel() {
         return new Fhz4JPointLocatorModel(this);
     }
-    
+
 }

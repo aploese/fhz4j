@@ -23,17 +23,14 @@ public class Fhz4JPointLocatorModel extends PointLocatorModel<Fhz4JPointLocatorV
         return Fhz4JPointLocatorModelDefinition.TYPE_NAME;
     }
 
-/**
-    @JsonGetter("address")
-    @CSVColumnGetter(order = 18, header = "address")
-    public byte getAddress() {
-        return this.data.getAddress();
-    }
-
-    @JsonSetter("address")
-    @CSVColumnSetter(order = 18, header = "address")
-    public void setAddress(byte address) {
-        this.data.setAddress(address);
-    }
-**/
+    /**
+     * @JsonGetter("address")
+     * @CSVColumnGetter(order = 18, header = "address") public byte getAddress()
+     * { return this.data.getAddress(); }
+     *
+     * @JsonSetter("address")
+     * @CSVColumnSetter(order = 18, header = "address") public void
+     * setAddress(byte address) { this.data.setAddress(address); }
+     *
+     */
 }

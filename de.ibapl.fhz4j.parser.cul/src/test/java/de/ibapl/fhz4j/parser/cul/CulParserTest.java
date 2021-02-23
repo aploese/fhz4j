@@ -1,6 +1,6 @@
 /*
  * FHZ4J - Drivers for the Wireless FS20, FHT and HMS protocol https://github.com/aploese/fhz4j/
- * Copyright (C) 2009-2019, Arne Plöse and individual contributors as indicated
+ * Copyright (C) 2009-2021, Arne Plöse and individual contributors as indicated
  * by the @authors tag. See the copyright.txt in the distribution for a
  * full listing of individual contributors.
  *
@@ -112,12 +112,12 @@ public class CulParserTest implements CulMessageListener {
         parser = null;
     }
 
-    private void decode(String s, CulRequest ...requests) {
+    private void decode(String s, CulRequest... requests) {
         for (CulRequest request : requests) {
-        	parser.addCulRequest(request);
+            parser.addCulRequest(request);
         }
 
-    	fhtMessage = null;
+        fhtMessage = null;
         fhtPartialMessage = null;
         hmsMsg = null;
         emMsg = null;
@@ -189,9 +189,6 @@ ation: PT10.087149S
 @2020-03-24T00:05:00.386175Z    CH      call read
 @2020-03-24T00:05:00.486911Z    CH      return read:    "3,6218,6301,6405 0103:65FF,66FF\r\n9A\r\n"     duration: PT0.100736S
      */
-    
-    
-    
     @Test
     public void recoverFromFailure() {
         decode("LOVF\r\n");
@@ -210,7 +207,7 @@ ation: PT10.087149S
         assertEquals(207, fhtMessage.housecode);
         assertEquals(FhtProperty.VALVE, fhtMessage.command);
     }
-    
+
     @Test
     public void decodeModay_Times() {
         // fail();
@@ -371,7 +368,7 @@ ation: PT10.087149S
         ByteBuffer b = ByteBuffer.allocateDirect(1024);
         FileChannel fc = FileChannel.open(Path.of("/home/aploese/eno1.txt"));
         fc.read(b);
-        
+
         decode("T0101436900F9\r\nT0101446901F9\r\nT0101856904F9\r\n");
         assertNull(throwable);
         assertNotNull(fhtMessage);

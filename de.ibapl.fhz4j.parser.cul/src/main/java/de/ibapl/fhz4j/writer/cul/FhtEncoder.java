@@ -1,6 +1,6 @@
 /*
  * FHZ4J - Drivers for the Wireless FS20, FHT and HMS protocol https://github.com/aploese/fhz4j/
- * Copyright (C) 2009-2019, Arne Plöse and individual contributors as indicated
+ * Copyright (C) 2009-2021, Arne Plöse and individual contributors as indicated
  * by the @authors tag. See the copyright.txt in the distribution for a
  * full listing of individual contributors.
  *
@@ -33,7 +33,7 @@ import java.time.LocalTime;
  * @author aploese
  */
 public class FhtEncoder {
-  
+
     final static byte ALL_REPORTS = (byte) 0xFF;
 
     private final FhtWriter writer;
@@ -45,190 +45,190 @@ public class FhtEncoder {
     private void writeFhtProperty(FhtProperty fhtProperty, byte value) throws IOException {
         switch (fhtProperty) {
             case VALVE:
-                writer.putByte((byte)0x00);
+                writer.putByte((byte) 0x00);
                 break;
             case OFFSET_VALVE_1:
-                writer.putByte((byte)0x01);
+                writer.putByte((byte) 0x01);
                 break;
             case OFFSET_VALVE_2:
-                writer.putByte((byte)0x02);
+                writer.putByte((byte) 0x02);
                 break;
             case OFFSET_VALVE_3:
-                writer.putByte((byte)0x03);
+                writer.putByte((byte) 0x03);
                 break;
             case OFFSET_VALVE_4:
-                writer.putByte((byte)0x04);
+                writer.putByte((byte) 0x04);
                 break;
             case OFFSET_VALVE_5:
-                writer.putByte((byte)0x05);
+                writer.putByte((byte) 0x05);
                 break;
             case OFFSET_VALVE_6:
-                writer.putByte((byte)0x06);
+                writer.putByte((byte) 0x06);
                 break;
             case OFFSET_VALVE_7:
-                writer.putByte((byte)0x07);
+                writer.putByte((byte) 0x07);
                 break;
             case OFFSET_VALVE_8:
-                writer.putByte((byte)0x08);
+                writer.putByte((byte) 0x08);
                 break;
             case MON_FROM_1:
-                writer.putByte((byte)0x14);
+                writer.putByte((byte) 0x14);
                 break;
             case MON_TO_1:
-                writer.putByte((byte)0x15);
+                writer.putByte((byte) 0x15);
                 break;
             case MON_FROM_2:
-                writer.putByte((byte)0x16);
+                writer.putByte((byte) 0x16);
                 break;
             case MON_TO_2:
-                writer.putByte((byte)0x17);
+                writer.putByte((byte) 0x17);
                 break;
             case TUE_FROM_1:
-                writer.putByte((byte)0x18);
+                writer.putByte((byte) 0x18);
                 break;
             case TUE_TO_1:
-                writer.putByte((byte)0x19);
+                writer.putByte((byte) 0x19);
                 break;
             case TUE_FROM_2:
-                writer.putByte((byte)0x1a);
+                writer.putByte((byte) 0x1a);
                 break;
             case TUE_TO_2:
-                writer.putByte((byte)0x1b);
+                writer.putByte((byte) 0x1b);
                 break;
             case WED_FROM_1:
-                writer.putByte((byte)0x1c);
+                writer.putByte((byte) 0x1c);
                 break;
             case WED_TO_1:
-                writer.putByte((byte)0x1d);
+                writer.putByte((byte) 0x1d);
                 break;
             case WED_FROM_2:
-                writer.putByte((byte)0x1e);
+                writer.putByte((byte) 0x1e);
                 break;
             case WED_TO_2:
-                writer.putByte((byte)0x1f);
+                writer.putByte((byte) 0x1f);
                 break;
             case THU_FROM_1:
-                writer.putByte((byte)0x20);
+                writer.putByte((byte) 0x20);
                 break;
             case THU_TO_1:
-                writer.putByte((byte)0x21);
+                writer.putByte((byte) 0x21);
                 break;
             case THU_FROM_2:
-                writer.putByte((byte)0x22);
+                writer.putByte((byte) 0x22);
                 break;
             case THU_TO_2:
-                writer.putByte((byte)0x23);
+                writer.putByte((byte) 0x23);
                 break;
             case FRI_FROM_1:
-                writer.putByte((byte)0x24);
+                writer.putByte((byte) 0x24);
                 break;
             case FRI_TO_1:
-                writer.putByte((byte)0x25);
+                writer.putByte((byte) 0x25);
                 break;
             case FRI_FROM_2:
-                writer.putByte((byte)0x26);
+                writer.putByte((byte) 0x26);
                 break;
             case FRI_TO_2:
-                writer.putByte((byte)0x27);
+                writer.putByte((byte) 0x27);
                 break;
             case SAT_FROM_1:
-                writer.putByte((byte)0x28);
+                writer.putByte((byte) 0x28);
                 break;
             case SAT_TO_1:
-                writer.putByte((byte)0x29);
+                writer.putByte((byte) 0x29);
                 break;
             case SAT_FROM_2:
-                writer.putByte((byte)0x2a);
+                writer.putByte((byte) 0x2a);
                 break;
             case SAT_TO_2:
-                writer.putByte((byte)0x2b);
+                writer.putByte((byte) 0x2b);
                 break;
             case SUN_FROM_1:
-                writer.putByte((byte)0x2c);
+                writer.putByte((byte) 0x2c);
                 break;
             case SUN_TO_1:
-                writer.putByte((byte)0x2d);
+                writer.putByte((byte) 0x2d);
                 break;
             case SUN_FROM_2:
-                writer.putByte((byte)0x2e);
+                writer.putByte((byte) 0x2e);
                 break;
             case SUN_TO_2:
-                writer.putByte((byte)0x2f);
+                writer.putByte((byte) 0x2f);
                 break;
             case MODE:
-                writer.putByte((byte)0x3e);
+                writer.putByte((byte) 0x3e);
                 break;
             case HOLIDAY_1:
-                writer.putByte((byte)0x3f);
+                writer.putByte((byte) 0x3f);
                 break;
             case HOLIDAY_2:
-                writer.putByte((byte)0x40);
+                writer.putByte((byte) 0x40);
                 break;
             case DESIRED_TEMP:
-                writer.putByte((byte)0x41);
+                writer.putByte((byte) 0x41);
                 break;
             case MEASURED_LOW:
-                writer.putByte((byte)0x42);
+                writer.putByte((byte) 0x42);
                 break;
             case MEASURED_HIGH:
-                writer.putByte((byte)0x43);
+                writer.putByte((byte) 0x43);
                 break;
             case WARNINGS:
-                writer.putByte((byte)0x44);
+                writer.putByte((byte) 0x44);
                 break;
             case MANU_TEMP:
-                writer.putByte((byte)0x45);
+                writer.putByte((byte) 0x45);
                 break;
             case ACK:
-                writer.putByte((byte)0x4b);
+                writer.putByte((byte) 0x4b);
                 break;
             case CAN_CMIT:
-                writer.putByte((byte)0x53);
+                writer.putByte((byte) 0x53);
                 break;
             case CAN_RCV:
-                writer.putByte((byte)0x54);
+                writer.putByte((byte) 0x54);
                 break;
             case YEAR:
-                writer.putByte((byte)0x60);
+                writer.putByte((byte) 0x60);
                 break;
             case MONTH:
-                writer.putByte((byte)0x61);
+                writer.putByte((byte) 0x61);
                 break;
             case DAY_OF_MONTH:
-                writer.putByte((byte)0x62);
+                writer.putByte((byte) 0x62);
                 break;
             case HOUR:
-                writer.putByte((byte)0x63);
+                writer.putByte((byte) 0x63);
                 break;
             case MINUTE:
-                writer.putByte((byte)0x64);
+                writer.putByte((byte) 0x64);
                 break;
             case REPORT_1:
-                writer.putByte((byte)0x65);
+                writer.putByte((byte) 0x65);
                 break;
             case REPORT_2:
-                writer.putByte((byte)0x66);
+                writer.putByte((byte) 0x66);
                 break;
             case ACK_2:
-                writer.putByte((byte)0x69);
+                writer.putByte((byte) 0x69);
                 break;
             case START_XMIT:
-                writer.putByte((byte)0x7d);
+                writer.putByte((byte) 0x7d);
                 break;
             case END_XMIT:
-                writer.putByte((byte)0x7e);
+                writer.putByte((byte) 0x7e);
                 break;
             case DAY_TEMP:
-                writer.putByte((byte)0x82);
+                writer.putByte((byte) 0x82);
                 break;
             case NIGHT_TEMP:
-                writer.putByte((byte)0x84);
+                writer.putByte((byte) 0x84);
                 break;
             case LOW_TEMP_OFFSET:
-                writer.putByte((byte)0x85);
+                writer.putByte((byte) 0x85);
                 break;
             case WINDOW_OPEN_TEMP:
-                writer.putByte((byte)0x8a);
+                writer.putByte((byte) 0x8a);
                 break;
             default:
                 throw new UnsupportedOperationException("Not supported yet.");
@@ -245,8 +245,8 @@ public class FhtEncoder {
 
     private void startFhtMessage(short housecode) throws IOException {
         writer.startFhtMessage();
-        writer.putByte((byte)(housecode / 100));
-        writer.putByte((byte)(housecode % 100));
+        writer.putByte((byte) (housecode / 100));
+        writer.putByte((byte) (housecode % 100));
     }
 
     private void finishFhtMessage() throws IOException {

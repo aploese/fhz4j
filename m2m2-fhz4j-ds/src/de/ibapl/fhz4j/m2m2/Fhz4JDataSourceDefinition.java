@@ -12,9 +12,9 @@ import com.serotonin.m2m2.web.mvc.rest.v1.model.dataSource.AbstractDataSourceMod
 import de.ibapl.fhz4j.m2m2.dwr.Fhz4JEditDwr;
 
 public class Fhz4JDataSourceDefinition extends DataSourceDefinition {
-	
-	public static final String DATA_SOURCE_TYPE = "FHZ4J";
-	
+
+    public static final String DATA_SOURCE_TYPE = "FHZ4J";
+
     @Override
     public void preInitialize() {
         ModuleRegistry.addLicenseEnforcement(new DataSourceTypePointsLimit(getModule().getName(), DATA_SOURCE_TYPE, 20, null));
@@ -47,7 +47,7 @@ public class Fhz4JDataSourceDefinition extends DataSourceDefinition {
 
     @Override
     public Class<? extends AbstractDataSourceModel<?>> getModelClass() {
-		return Fhz4JDataSourceModel.class;
+        return Fhz4JDataSourceModel.class;
     }
 
 }

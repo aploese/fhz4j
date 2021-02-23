@@ -1,6 +1,6 @@
 /*
  * FHZ4J - Drivers for the Wireless FS20, FHT and HMS protocol https://github.com/aploese/fhz4j/
- * Copyright (C) 2009-2019, Arne Plöse and individual contributors as indicated
+ * Copyright (C) 2009-2021, Arne Plöse and individual contributors as indicated
  * by the @authors tag. See the copyright.txt in the distribution for a
  * full listing of individual contributors.
  *
@@ -30,30 +30,30 @@ import de.ibapl.fhz4j.scada.ScadaProperty;
  */
 public enum LaCrosseTx2Property implements ScadaProperty {
 
-	TEMP, HUMIDITY;
+    TEMP, HUMIDITY;
 
-	@Override
-	public String getUnitOfMeasurement() {
-		throw new UnsupportedOperationException("Not supported yet."); // To change body of generated methods, choose
-																		// Tools | Templates.
-	}
+    @Override
+    public String getUnitOfMeasurement() {
+        throw new UnsupportedOperationException("Not supported yet."); // To change body of generated methods, choose
+        // Tools | Templates.
+    }
 
-	@Override
-	public DataType getDataType() {
-		throw new UnsupportedOperationException("Not supported yet."); // To change body of generated methods, choose
-																		// Tools | Templates.
-	}
+    @Override
+    public DataType getDataType() {
+        throw new UnsupportedOperationException("Not supported yet."); // To change body of generated methods, choose
+        // Tools | Templates.
+    }
 
-	@Override
-	public String getName() {
-		throw new UnsupportedOperationException("Not supported yet."); // To change body of generated methods, choose
-																		// Tools | Templates.
-	}
+    @Override
+    public String getName() {
+        throw new UnsupportedOperationException("Not supported yet."); // To change body of generated methods, choose
+        // Tools | Templates.
+    }
 
-	@Override
-	public String getLabel() {
-		throw new UnsupportedOperationException("Not supported yet."); // To change body of generated methods, choose
-																		// Tools | Templates.
-	}
+    @Override
+    public String getLabel() {
+        throw new UnsupportedOperationException("Not supported yet."); // To change body of generated methods, choose
+        // Tools | Templates.
+    }
 
 }

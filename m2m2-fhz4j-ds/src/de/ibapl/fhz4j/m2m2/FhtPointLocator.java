@@ -257,7 +257,6 @@ public class FhtPointLocator extends ProtocolLocator<FhtProperty> {
             case MEASURED_LOW:
                 return false;
 
-                
             case YEAR:
                 return true;
             case MONTH:

@@ -1,6 +1,6 @@
 /*
  * FHZ4J - Drivers for the Wireless FS20, FHT and HMS protocol https://github.com/aploese/fhz4j/
- * Copyright (C) 2009-2019, Arne Plöse and individual contributors as indicated
+ * Copyright (C) 2009-2021, Arne Plöse and individual contributors as indicated
  * by the @authors tag. See the copyright.txt in the distribution for a
  * full listing of individual contributors.
  *
@@ -22,10 +22,10 @@
 package de.ibapl.fhz4j.scada;
 
 /**
- * 
+ *
  *
  * @author Arne Plöse
  */
 public enum DataType {
-	DOUBLE, FLOAT, LONG, INT, SHORT, BYTE, BOOLEAN, CHAR, STRING, LOCAL_TIME, LOCAL_DATE, LOCAL_DATE_TIME;
+    DOUBLE, FLOAT, LONG, INT, SHORT, BYTE, BOOLEAN, CHAR, STRING, LOCAL_TIME, LOCAL_DATE, LOCAL_DATE_TIME;
 }

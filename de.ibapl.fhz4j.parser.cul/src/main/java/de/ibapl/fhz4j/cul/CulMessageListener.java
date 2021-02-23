@@ -1,6 +1,6 @@
 /*
  * FHZ4J - Drivers for the Wireless FS20, FHT and HMS protocol https://github.com/aploese/fhz4j/
- * Copyright (C) 2009-2019, Arne Plöse and individual contributors as indicated
+ * Copyright (C) 2009-2021, Arne Plöse and individual contributors as indicated
  * by the @authors tag. See the copyright.txt in the distribution for a
  * full listing of individual contributors.
  *
@@ -51,13 +51,14 @@ public interface CulMessageListener extends EmMessageListener, EvoHomeMessageLis
 
     /**
      * The receivement of a special RF protocol was enabled
-       * 
-     * @param protocol 
+     *
+     * @param protocol
      */
     void receiveEnabled(Protocol protocol);
 
     /**
      * the string of help chars as they arrive
+     *
      * @param helpMessages the help message from the CUL command line.
      */
     void helpParsed(String helpMessages);

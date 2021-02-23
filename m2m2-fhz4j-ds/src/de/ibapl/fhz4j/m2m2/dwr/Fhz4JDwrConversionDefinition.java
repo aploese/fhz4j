@@ -17,6 +17,7 @@ import net.sf.fhz4j.fht.FhtProperty;
 import net.sf.fhz4j.scada.DataType;
 
 public class Fhz4JDwrConversionDefinition extends DwrConversionDefinition {
+
     @Override
     public void addConversions() {
         addConversion(FhzProtocol.class, "enum");
@@ -28,7 +29,7 @@ public class Fhz4JDwrConversionDefinition extends DwrConversionDefinition {
         addConversion(FS20PointLocator.class);
         addConversion(EmPointLocator.class);
         addConversion(DataType.class, "enum");
-        
+
     }
 
 }

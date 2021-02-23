@@ -1,6 +1,6 @@
 /*
  * FHZ4J - Drivers for the Wireless FS20, FHT and HMS protocol https://github.com/aploese/fhz4j/
- * Copyright (C) 2009-2019, Arne Plöse and individual contributors as indicated
+ * Copyright (C) 2009-2021, Arne Plöse and individual contributors as indicated
  * by the @authors tag. See the copyright.txt in the distribution for a
  * full listing of individual contributors.
  *
@@ -25,67 +25,67 @@ import de.ibapl.fhz4j.parser.api.Parser;
 
 public class DataSource {
 
-	private final String data;
+    private final String data;
 
-	public DataSource(String data) {
-		this.data = data;
-	}
+    public DataSource(String data) {
+        this.data = data;
+    }
 
-	private byte char2Byte(char c) {
-		switch (c) {
-		case '0':
-			return 0x00;
-		case '1':
-			return 0x01;
-		case '2':
-			return 0x02;
-		case '3':
-			return 0x03;
-		case '4':
-			return 0x04;
-		case '5':
-			return 0x05;
-		case '6':
-			return 0x06;
-		case '7':
-			return 0x07;
-		case '8':
-			return 0x08;
-		case '9':
-			return 0x09;
-		case 'A':
-			return 0x0a;
-		case 'B':
-			return 0x0b;
-		case 'C':
-			return 0x0c;
-		case 'D':
-			return 0x0d;
-		case 'E':
-			return 0x0e;
-		case 'F':
-			return 0x0f;
-		default:
-			throw new RuntimeException("Not a Number: " + c);
-		}
-	}
+    private byte char2Byte(char c) {
+        switch (c) {
+            case '0':
+                return 0x00;
+            case '1':
+                return 0x01;
+            case '2':
+                return 0x02;
+            case '3':
+                return 0x03;
+            case '4':
+                return 0x04;
+            case '5':
+                return 0x05;
+            case '6':
+                return 0x06;
+            case '7':
+                return 0x07;
+            case '8':
+                return 0x08;
+            case '9':
+                return 0x09;
+            case 'A':
+                return 0x0a;
+            case 'B':
+                return 0x0b;
+            case 'C':
+                return 0x0c;
+            case 'D':
+                return 0x0d;
+            case 'E':
+                return 0x0e;
+            case 'F':
+                return 0x0f;
+            default:
+                throw new RuntimeException("Not a Number: " + c);
+        }
+    }
 
-	public void iterate(Parser parser) {
-		int i = 0;
-		while (i < data.length() - 1) {
-			// skip formating white spaces...
-			while (data.charAt(i) == ' ' && i < data.length()) {
-				i++;
-			}
-			if (i < data.length()) {
-				int i1 = i + 1;
-				while (data.charAt(i1) == ' ' && i1 < data.length()) {
-					i1++;
-				}
-				final byte b = (byte) ((char2Byte(data.charAt(i)) << 4) | char2Byte(data.charAt(i1))); 
-				parser.parse(b);
-				i = i1 + 1;
-			}
-		}
-	}
+    public void iterate(Parser parser) {
+        int i = 0;
+        while (i < data.length() - 1) {
+            // skip formating white spaces...
+            while (data.charAt(i) == ' ' && i < data.length()) {
+                i++;
+            }
+            if (i < data.length()) {
+                int i1 = i + 1;
+                while (data.charAt(i1) == ' ' && i1 < data.length()) {
+                    i1++;
+                }
+                final byte b = (byte) ((char2Byte(data.charAt(i)) << 4) | char2Byte(data.charAt(i1)));
+                parser.parse(b);
+                i = i1 + 1;
+            }
+        }
+    }
 }

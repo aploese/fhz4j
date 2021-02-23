@@ -1,6 +1,6 @@
 /*
  * FHZ4J - Drivers for the Wireless FS20, FHT and HMS protocol https://github.com/aploese/fhz4j/
- * Copyright (C) 2009-2019, Arne Plöse and individual contributors as indicated
+ * Copyright (C) 2009-2021, Arne Plöse and individual contributors as indicated
  * by the @authors tag. See the copyright.txt in the distribution for a
  * full listing of individual contributors.
  *
@@ -32,64 +32,67 @@ import java.util.Objects;
  */
 public class EvoHome_0xXX_0x1FC9_0xXX_Message extends EvoHomeDeviceMessage {
 
-	public static class Data {
-		public byte zoneId;
-		public short command;
-		public int deviceId;
+    public static class Data {
 
-		public Data() {
-			
-		}
-		
-		public Data(byte zoneId, short command, int deviceId) {
-			this.zoneId = zoneId;
-			this.command = command;
-			this.deviceId = deviceId;
-		}
+        public byte zoneId;
+        public short command;
+        public int deviceId;
 
-		public String toString() {
-			return String.format("{zoneId : 0x%02x, command : 0x%04x, deviceId : 0x%06x}", zoneId, command, deviceId);
-		}
+        public Data() {
 
-		@Override
-		public int hashCode() {
-			return Objects.hash(command, deviceId, zoneId);
-		}
+        }
 
-		@Override
-		public boolean equals(Object obj) {
-			if (this == obj)
-				return true;
-			if (obj == null)
-				return false;
-			if (getClass() != obj.getClass())
-				return false;
-			Data other = (Data) obj;
-			return command == other.command && deviceId == other.deviceId && zoneId == other.zoneId;
-		}
-		
-		
-	}
+        public Data(byte zoneId, short command, int deviceId) {
+            this.zoneId = zoneId;
+            this.command = command;
+            this.deviceId = deviceId;
+        }
 
-	public List<Data> elements;
+        public String toString() {
+            return String.format("{zoneId : 0x%02x, command : 0x%04x, deviceId : 0x%06x}", zoneId, command, deviceId);
+        }
 
-	public EvoHome_0xXX_0x1FC9_0xXX_Message(EvoHomeProperty evoHomeProperty) {
-		super(evoHomeProperty);
-	}
+        @Override
+        public int hashCode() {
+            return Objects.hash(command, deviceId, zoneId);
+        }
 
-	@Override
-	protected void addToJsonString(StringBuilder sb) {
-		super.addToJsonString(sb);
-		sb.append(", elements : [");
-		boolean firstRun = true;
-		for (Data d : elements) {
-			if (firstRun) {
-				firstRun = false;
-			} else {
-				sb.append(", ");
-			}
-			sb.append(d);
-		}
-		sb.append("]");
-	}
+        @Override
+        public boolean equals(Object obj) {
+            if (this == obj) {
+                return true;
+            }
+            if (obj == null) {
+                return false;
+            }
+            if (getClass() != obj.getClass()) {
+                return false;
+            }
+            Data other = (Data) obj;
+            return command == other.command && deviceId == other.deviceId && zoneId == other.zoneId;
+        }
+
+    }
+
+    public List<Data> elements;
+
+    public EvoHome_0xXX_0x1FC9_0xXX_Message(EvoHomeProperty evoHomeProperty) {
+        super(evoHomeProperty);
+    }
+
+    @Override
+    protected void addToJsonString(StringBuilder sb) {
+        super.addToJsonString(sb);
+        sb.append(", elements : [");
+        boolean firstRun = true;
+        for (Data d : elements) {
+            if (firstRun) {
+                firstRun = false;
+            } else {
+                sb.append(", ");
+            }
+            sb.append(d);
+        }
+        sb.append("]");
+    }
 }

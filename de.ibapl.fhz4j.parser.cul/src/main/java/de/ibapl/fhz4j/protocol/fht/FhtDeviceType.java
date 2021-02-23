@@ -1,6 +1,6 @@
 /*
  * FHZ4J - Drivers for the Wireless FS20, FHT and HMS protocol https://github.com/aploese/fhz4j/
- * Copyright (C) 2009-2019, Arne Plöse and individual contributors as indicated
+ * Copyright (C) 2009-2021, Arne Plöse and individual contributors as indicated
  * by the @authors tag. See the copyright.txt in the distribution for a
  * full listing of individual contributors.
  *
@@ -33,34 +33,34 @@ import de.ibapl.fhz4j.api.Protocol;
  */
 public enum FhtDeviceType implements Serializable {
 
-	FHT_8V("FHT V", FHT), FHT_80B("FHT 80B", FHT), UNKNOWN("Unknown", Protocol.UNKNOWN);
+    FHT_8V("FHT V", FHT), FHT_80B("FHT 80B", FHT), UNKNOWN("Unknown", Protocol.UNKNOWN);
 
-	public static FhtDeviceType fromLabel(String label) {
-		for (FhtDeviceType deviceType : values()) {
-			if (deviceType.getLabel().equals(label)) {
-				return deviceType;
-			}
-		}
-		return valueOf(label);
-	}
+    public static FhtDeviceType fromLabel(String label) {
+        for (FhtDeviceType deviceType : values()) {
+            if (deviceType.getLabel().equals(label)) {
+                return deviceType;
+            }
+        }
+        return valueOf(label);
+    }
 
-	private final String label;
-	private final Protocol protocol;
+    private final String label;
+    private final Protocol protocol;
 
-	private FhtDeviceType(String label, Protocol protocol) {
-		this.label = label;
-		this.protocol = protocol;
-	}
+    private FhtDeviceType(String label, Protocol protocol) {
+        this.label = label;
+        this.protocol = protocol;
+    }
 
-	public String getLabel() {
-		return label;
-	}
+    public String getLabel() {
+        return label;
+    }
 
-	public Protocol getProtocol() {
-		return protocol;
-	}
+    public Protocol getProtocol() {
+        return protocol;
+    }
 
-	public String getName() {
-		return name();
-	}
+    public String getName() {
+        return name();
+    }
 }

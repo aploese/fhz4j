@@ -15,7 +15,6 @@ import net.sf.fhz4j.FhzProtocol;
 import net.sf.fhz4j.hms.HmsDeviceType;
 import net.sf.fhz4j.hms.HmsProperty;
 
-
 /**
  *
  * @author aploese
@@ -24,7 +23,6 @@ public class HmsPointLocator extends ProtocolLocator<HmsProperty> {
 
     private short housecode;
     private HmsDeviceType hmsDeviceType;
-    
 
     /**
      * @return the housecode
@@ -32,7 +30,7 @@ public class HmsPointLocator extends ProtocolLocator<HmsProperty> {
     public short getHousecode() {
         return housecode;
     }
-    
+
     public String defaultName() {
         return getProperty() == null ? "HMS unknown" : getProperty().getLabel();
     }
@@ -45,9 +43,9 @@ public class HmsPointLocator extends ProtocolLocator<HmsProperty> {
     }
 
     public void setHousecodeStr(String housecode) {
-        this.housecode = (short)Integer.parseInt(housecode, 16);
+        this.housecode = (short) Integer.parseInt(housecode, 16);
     }
-    
+
     public String getHousecodeStr() {
         return String.format("%04X", housecode);
     }
@@ -99,7 +97,6 @@ public class HmsPointLocator extends ProtocolLocator<HmsProperty> {
         this.hmsDeviceType = hmsDeviceType;
     }
 
-    
     @Override
     public boolean equals(Object obj) {
         if (obj == null) {
@@ -129,10 +126,10 @@ public class HmsPointLocator extends ProtocolLocator<HmsProperty> {
         hash = 43 * hash + (this.getProperty() != null ? this.getProperty().hashCode() : 0);
         return hash;
     }
-    
+
     @Override
     public String toString() {
         return String.format("%s [housecode: %s, devicetype: property %s]", getClass().getName(), getHousecodeStr(), hmsDeviceType, getProperty());
     }
 
- }
+}

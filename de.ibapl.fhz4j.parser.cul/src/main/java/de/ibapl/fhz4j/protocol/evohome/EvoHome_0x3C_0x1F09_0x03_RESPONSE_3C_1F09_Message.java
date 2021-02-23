@@ -1,6 +1,6 @@
 /*
  * FHZ4J - Drivers for the Wireless FS20, FHT and HMS protocol https://github.com/aploese/fhz4j/
- * Copyright (C) 2009-2019, Arne Plöse and individual contributors as indicated
+ * Copyright (C) 2009-2021, Arne Plöse and individual contributors as indicated
  * by the @authors tag. See the copyright.txt in the distribution for a
  * full listing of individual contributors.
  *
@@ -22,22 +22,21 @@
 package de.ibapl.fhz4j.protocol.evohome;
 
 /**
- * Answer to EvoHome_0x0C_0x1F09_Message Controler => Valve 
+ * Answer to EvoHome_0x0C_0x1F09_Message Controler => Valve
+ *
  * @author Arne Plöse
  */
 public class EvoHome_0x3C_0x1F09_0x03_RESPONSE_3C_1F09_Message extends EvoHomeDeviceMessage {
-	
-	public int value;
 
-	public EvoHome_0x3C_0x1F09_0x03_RESPONSE_3C_1F09_Message() {
-		super(EvoHomeProperty._3C_1F09_RESPONSE_TO_0C_1F09);
-	}
+    public int value;
 
-	
-	
-	@Override
-	protected void addToJsonString(StringBuilder sb) {
-		super.addToJsonString(sb);
-		sb.append(String.format(", value : 0x%06x", value));
-	}
+    public EvoHome_0x3C_0x1F09_0x03_RESPONSE_3C_1F09_Message() {
+        super(EvoHomeProperty._3C_1F09_RESPONSE_TO_0C_1F09);
+    }
+
+    @Override
+    protected void addToJsonString(StringBuilder sb) {
+        super.addToJsonString(sb);
+        sb.append(String.format(", value : 0x%06x", value));
+    }
 }

@@ -4,7 +4,6 @@
  */
 package de.ibapl.fhz4j.m2m2.dwr;
 
-
 import com.serotonin.m2m2.Common;
 import com.serotonin.m2m2.i18n.ProcessResult;
 import com.serotonin.m2m2.vo.DataPointVO;
@@ -21,6 +20,7 @@ import org.apache.commons.logging.LogFactory;
 public class Fhz4JEditDwr extends DataSourceEditDwr {
 
     private final static Log LOG = LogFactory.getLog(DataSourceEditDwr.class);
+
     //
     // /
     // / FHZ 4 J stuff

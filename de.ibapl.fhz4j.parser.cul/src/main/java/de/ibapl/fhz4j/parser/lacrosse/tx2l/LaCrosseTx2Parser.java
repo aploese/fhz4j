@@ -1,6 +1,6 @@
 /*
  * FHZ4J - Drivers for the Wireless FS20, FHT and HMS protocol https://github.com/aploese/fhz4j/
- * Copyright (C) 2009-2019, Arne Plöse and individual contributors as indicated
+ * Copyright (C) 2009-2021, Arne Plöse and individual contributors as indicated
  * by the @authors tag. See the copyright.txt in the distribution for a
  * full listing of individual contributors.
  *
@@ -35,88 +35,88 @@ import de.ibapl.fhz4j.protocol.lacrosse.tx2.LaCrosseTx2Property;
  */
 public class LaCrosseTx2Parser extends AbstractParser {
 
-	private enum State {
+    private enum State {
 
-		START_SEQUENCE_A_AND_SENSOR_TYTE, COLLECT_SENSOR_ADDRESS, COLLECT_DATA,
-		PARSE_SUCCESS, PARSE_ERROR;
+        START_SEQUENCE_A_AND_SENSOR_TYTE, COLLECT_SENSOR_ADDRESS, COLLECT_DATA,
+        PARSE_SUCCESS, PARSE_ERROR;
 
-	}
+    }
 
-	public LaCrosseTx2Parser(ParserListener<LaCrosseTx2Message> parserListener) {
-		this.parserListener = parserListener;
-	}
+    public LaCrosseTx2Parser(ParserListener<LaCrosseTx2Message> parserListener) {
+        this.parserListener = parserListener;
+    }
 
-	private static final Logger LOG = Logger.getLogger(LogUtils.FHZ_PARSER_CUL);
-	private final ParserListener<LaCrosseTx2Message> parserListener;
-	private LaCrosseTx2Message laCrosseTx2Message;
-	private State state;
-	private int cs;
+    private static final Logger LOG = Logger.getLogger(LogUtils.FHZ_PARSER_CUL);
+    private final ParserListener<LaCrosseTx2Message> parserListener;
+    private LaCrosseTx2Message laCrosseTx2Message;
+    private State state;
+    private int cs;
 
-	@Override
-	public void parse(byte b) {
-		try {
-			cs += (b & 0x0F) + ((b >> 4) & 0x0F);
-			switch (state) {
-			case START_SEQUENCE_A_AND_SENSOR_TYTE:
-				switch (b) {
-				case (byte) 0xA0:
-					laCrosseTx2Message = new LaCrosseTx2Message(LaCrosseTx2Property.TEMP);
-					break;
-				case (byte) 0xAE:
-					laCrosseTx2Message = new LaCrosseTx2Message(LaCrosseTx2Property.HUMIDITY);
-					break;
-				default:
-					throw new RuntimeException("Can't figure out the sensortype");
-				}
-				state = State.COLLECT_SENSOR_ADDRESS;
-				break;
-			case COLLECT_SENSOR_ADDRESS:
-				// move only the lower nibble one bit to the right
-				laCrosseTx2Message.address = (byte)((b & 0xF0) | (b >> 1) & 0x07);
-				setStackSize(3);
-				state = State.COLLECT_DATA;
-				break;
-			case COLLECT_DATA:
-				if (push(b)) {
-					switch (laCrosseTx2Message.laCrosseTx2Property) {
-					case TEMP:
-						//Here we are only interested in the 3 highest (out of five) nibbles
-						// lowest nibble is cs
-						// 2 nibbles to the left are just the highest two nibbles repeated
-						laCrosseTx2Message.value = 0.1f * (get3DigitBCD((short)(getIntValue() >> 12)) - 500);
-						break;
-					case HUMIDITY:
-						//Here we are only interested in the 3 highest (out of five) nibbles
-						// lowest nibble is cs
-						// 2 nibbles to the left are just the highest two nibbles repeated
-						laCrosseTx2Message.value = 0.1f * (get3DigitBCD((short)(getIntValue() >> 12)));
-						break;
-					default:
-						throw new RuntimeException("Unknown Property: " + laCrosseTx2Message.laCrosseTx2Property);
-					}
-					if (((cs - (b & 0x0F)) & 0x0F) == (b & 0x0F)) {
-						state = State.PARSE_SUCCESS;
-						parserListener.success(laCrosseTx2Message);
-					} else {
-						// TODO Checksum ????
-						throw new RuntimeException("Check sum mismatch");
-					}
-				}
-				break;
-			default:
-				throw new RuntimeException("Cant handle stat: " + state);
-			}
-		} catch (Throwable t) {
-			parserListener.fail(new RuntimeException(String.format("State: %s last byte 0x%02x", state, b), t));
-			state = State.PARSE_ERROR;
-		}
-	}
+    @Override
+    public void parse(byte b) {
+        try {
+            cs += (b & 0x0F) + ((b >> 4) & 0x0F);
+            switch (state) {
+                case START_SEQUENCE_A_AND_SENSOR_TYTE:
+                    switch (b) {
+                        case (byte) 0xA0:
+                            laCrosseTx2Message = new LaCrosseTx2Message(LaCrosseTx2Property.TEMP);
+                            break;
+                        case (byte) 0xAE:
+                            laCrosseTx2Message = new LaCrosseTx2Message(LaCrosseTx2Property.HUMIDITY);
+                            break;
+                        default:
+                            throw new RuntimeException("Can't figure out the sensortype");
+                    }
+                    state = State.COLLECT_SENSOR_ADDRESS;
+                    break;
+                case COLLECT_SENSOR_ADDRESS:
+                    // move only the lower nibble one bit to the right
+                    laCrosseTx2Message.address = (byte) ((b & 0xF0) | (b >> 1) & 0x07);
+                    setStackSize(3);
+                    state = State.COLLECT_DATA;
+                    break;
+                case COLLECT_DATA:
+                    if (push(b)) {
+                        switch (laCrosseTx2Message.laCrosseTx2Property) {
+                            case TEMP:
+                                //Here we are only interested in the 3 highest (out of five) nibbles
+                                // lowest nibble is cs
+                                // 2 nibbles to the left are just the highest two nibbles repeated
+                                laCrosseTx2Message.value = 0.1f * (get3DigitBCD((short) (getIntValue() >> 12)) - 500);
+                                break;
+                            case HUMIDITY:
+                                //Here we are only interested in the 3 highest (out of five) nibbles
+                                // lowest nibble is cs
+                                // 2 nibbles to the left are just the highest two nibbles repeated
+                                laCrosseTx2Message.value = 0.1f * (get3DigitBCD((short) (getIntValue() >> 12)));
+                                break;
+                            default:
+                                throw new RuntimeException("Unknown Property: " + laCrosseTx2Message.laCrosseTx2Property);
+                        }
+                        if (((cs - (b & 0x0F)) & 0x0F) == (b & 0x0F)) {
+                            state = State.PARSE_SUCCESS;
+                            parserListener.success(laCrosseTx2Message);
+                        } else {
+                            // TODO Checksum ????
+                            throw new RuntimeException("Check sum mismatch");
+                        }
+                    }
+                    break;
+                default:
+                    throw new RuntimeException("Cant handle stat: " + state);
+            }
+        } catch (Throwable t) {
+            parserListener.fail(new RuntimeException(String.format("State: %s last byte 0x%02x", state, b), t));
+            state = State.PARSE_ERROR;
+        }
+    }
 
-	@Override
-	public void init() {
-		state = State.START_SEQUENCE_A_AND_SENSOR_TYTE;
-		cs = 0;
-		laCrosseTx2Message = null;
-	}
+    @Override
+    public void init() {
+        state = State.START_SEQUENCE_A_AND_SENSOR_TYTE;
+        cs = 0;
+        laCrosseTx2Message = null;
+    }
 
 }

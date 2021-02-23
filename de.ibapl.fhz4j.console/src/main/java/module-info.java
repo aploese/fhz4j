@@ -1,6 +1,6 @@
 /*
  * FHZ4J - Drivers for the Wireless FS20, FHT and HMS protocol https://github.com/aploese/fhz4j/
- * Copyright (C) 2009-2019, Arne Plöse and individual contributors as indicated
+ * Copyright (C) 2009-2021, Arne Plöse and individual contributors as indicated
  * by the @authors tag. See the copyright.txt in the distribution for a
  * full listing of individual contributors.
  *
@@ -20,9 +20,9 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 module de.ibapl.fhz4j.console {
-	requires java.logging;
-	requires commons.cli;
-	requires de.ibapl.fhz4j.parser.cul;
-	
-	uses de.ibapl.spsw.api.SerialPortSocketFactory;
+    requires java.logging;
+    requires commons.cli;
+    requires de.ibapl.fhz4j.parser.cul;
+
+    uses de.ibapl.spsw.api.SerialPortSocketFactory;
 }

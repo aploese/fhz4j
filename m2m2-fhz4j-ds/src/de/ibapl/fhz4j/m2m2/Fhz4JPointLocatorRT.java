@@ -18,19 +18,18 @@
  */
 package de.ibapl.fhz4j.m2m2;
 
-
 import com.serotonin.m2m2.rt.dataSource.PointLocatorRT;
 import net.sf.fhz4j.FhzProtocol;
 
 public class Fhz4JPointLocatorRT extends PointLocatorRT {
 
     protected final Fhz4JPointLocatorVO vo;
-    
+
     public Fhz4JPointLocatorRT(Fhz4JPointLocatorVO vo) {
         super();
         this.vo = vo;
     }
-    
+
     public FhzProtocol getFhzProtocol() {
         return vo.getFhzProtocol();
     }
@@ -38,10 +37,10 @@ public class Fhz4JPointLocatorRT extends PointLocatorRT {
     public Fhz4JPointLocatorVO getVo() {
         return vo;
     }
-    
+
     @Override
     public boolean isSettable() {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
-    
+
 }

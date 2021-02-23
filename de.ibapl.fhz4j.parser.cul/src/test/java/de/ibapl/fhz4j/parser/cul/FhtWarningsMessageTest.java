@@ -1,6 +1,6 @@
 /*
  * FHZ4J - Drivers for the Wireless FS20, FHT and HMS protocol https://github.com/aploese/fhz4j/
- * Copyright (C) 2009-2019, Arne Plöse and individual contributors as indicated
+ * Copyright (C) 2009-2021, Arne Plöse and individual contributors as indicated
  * by the @authors tag. See the copyright.txt in the distribution for a
  * full listing of individual contributors.
  *
@@ -24,7 +24,6 @@ package de.ibapl.fhz4j.parser.cul;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
-
 import java.util.EnumSet;
 import java.util.Set;
 
@@ -42,52 +41,52 @@ import org.junit.jupiter.api.Test;
  */
 public class FhtWarningsMessageTest implements ParserListener<FhtMessage> {
 
-	private FhtParser parser = new FhtParser(this);
-	private FhtMessage partialFhtMessage;
-	private FhtMessage fhtMessage;
+    private FhtParser parser = new FhtParser(this);
+    private FhtMessage partialFhtMessage;
+    private FhtMessage fhtMessage;
 
-	private void decode(String s) {
-		fhtMessage = null;
-		partialFhtMessage = null;
-		parser.init();
-		new DataSource(s).iterate(parser);
-	}
+    private void decode(String s) {
+        fhtMessage = null;
+        partialFhtMessage = null;
+        parser.init();
+        new DataSource(s).iterate(parser);
+    }
 
-	@Test
-	public void decode_NoWarnings() {
-		decode("0302446900");
-		FhtWarningsMessageTest.assertWarningsMessage(fhtMessage, 302, true, true, EnumSet.noneOf(Fht80bWarning.class));
-	}
+    @Test
+    public void decode_NoWarnings() {
+        decode("0302446900");
+        FhtWarningsMessageTest.assertWarningsMessage(fhtMessage, 302, true, true, EnumSet.noneOf(Fht80bWarning.class));
+    }
 
-	@Override
-	public void success(FhtMessage fhzMessage) {
-		this.fhtMessage = fhzMessage;
-	}
+    @Override
+    public void success(FhtMessage fhzMessage) {
+        this.fhtMessage = fhzMessage;
+    }
 
-	@Override
-	public void successPartial(FhtMessage fhzMessage) {
-		this.partialFhtMessage = fhzMessage;
-	}
+    @Override
+    public void successPartial(FhtMessage fhzMessage) {
+        this.partialFhtMessage = fhzMessage;
+    }
 
-	@Override
-	public void fail(Throwable t) {
-		throw new RuntimeException(t);
-	}
+    @Override
+    public void fail(Throwable t) {
+        throw new RuntimeException(t);
+    }
 
-	public static void assertWarningsMessage(FhtMessage fhtMessage, int housecode, boolean dataRegister,
-			boolean fromFht_8B, Set<Fht80bWarning> warnings) {
-	 assertNotNull(fhtMessage);
-		final FhtWarningMessage msg = (FhtWarningMessage) fhtMessage;
-	 assertEquals((short) housecode, msg.housecode, "housecode");
-	 assertEquals(FhtProperty.WARNINGS, msg.command, "command");
-	 assertEquals(fromFht_8B, msg.fromFht_8B, "fromFht_8B");
-	 assertEquals(dataRegister, msg.dataRegister, "dataRegister");
-	 assertEquals(warnings, msg.warnings, "warnings");
-	}
+    public static void assertWarningsMessage(FhtMessage fhtMessage, int housecode, boolean dataRegister,
+            boolean fromFht_8B, Set<Fht80bWarning> warnings) {
+        assertNotNull(fhtMessage);
+        final FhtWarningMessage msg = (FhtWarningMessage) fhtMessage;
+        assertEquals((short) housecode, msg.housecode, "housecode");
+        assertEquals(FhtProperty.WARNINGS, msg.command, "command");
+        assertEquals(fromFht_8B, msg.fromFht_8B, "fromFht_8B");
+        assertEquals(dataRegister, msg.dataRegister, "dataRegister");
+        assertEquals(warnings, msg.warnings, "warnings");
+    }
 
-	@Override
-	public void successPartialAssembled(FhtMessage fhzMessage) {
-		this.fhtMessage = fhzMessage;
-	}
+    @Override
+    public void successPartialAssembled(FhtMessage fhzMessage) {
+        this.fhtMessage = fhzMessage;
+    }
 
 }

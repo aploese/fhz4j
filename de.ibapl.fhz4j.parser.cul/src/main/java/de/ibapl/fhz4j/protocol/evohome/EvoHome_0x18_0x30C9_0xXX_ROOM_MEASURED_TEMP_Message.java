@@ -1,6 +1,6 @@
 /*
  * FHZ4J - Drivers for the Wireless FS20, FHT and HMS protocol https://github.com/aploese/fhz4j/
- * Copyright (C) 2009-2019, Arne Plöse and individual contributors as indicated
+ * Copyright (C) 2009-2021, Arne Plöse and individual contributors as indicated
  * by the @authors tag. See the copyright.txt in the distribution for a
  * full listing of individual contributors.
  *
@@ -23,12 +23,13 @@ package de.ibapl.fhz4j.protocol.evohome;
 
 /**
  * Room Measured Temp
+ *
  * @author Arne Plöse
  */
 public class EvoHome_0x18_0x30C9_0xXX_ROOM_MEASURED_TEMP_Message extends EvoHome_AbstractZonesTemperature_Message {
-	
-	public EvoHome_0x18_0x30C9_0xXX_ROOM_MEASURED_TEMP_Message() {
-		super(EvoHomeProperty._18_30C9_ROOM_MEASURED_TEMP);
-	}
-	
+
+    public EvoHome_0x18_0x30C9_0xXX_ROOM_MEASURED_TEMP_Message() {
+        super(EvoHomeProperty._18_30C9_ROOM_MEASURED_TEMP);
+    }
+
 }

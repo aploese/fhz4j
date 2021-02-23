@@ -1,6 +1,6 @@
 /*
  * FHZ4J - Drivers for the Wireless FS20, FHT and HMS protocol https://github.com/aploese/fhz4j/
- * Copyright (C) 2009-2019, Arne Plöse and individual contributors as indicated
+ * Copyright (C) 2009-2021, Arne Plöse and individual contributors as indicated
  * by the @authors tag. See the copyright.txt in the distribution for a
  * full listing of individual contributors.
  *
@@ -29,74 +29,74 @@ import de.ibapl.fhz4j.protocol.evohome.ZoneTemperature;
 
 class ZoneTemperaturesParser extends AbstractParser {
 
-	LinkedList<ZoneTemperature> zoneTemperatures;
-	//Just cache this ...
-	private final static BigDecimal ONE_HUNDRED = new BigDecimal(100.0);
+    LinkedList<ZoneTemperature> zoneTemperatures;
+    //Just cache this ...
+    private final static BigDecimal ONE_HUNDRED = new BigDecimal(100.0);
 
-	enum State {
+    enum State {
 
-		/**
-		 * 
-		 */
-		COLLECT_ZONEID,
-		/**
-		 * 
-		 */
-		COLLECT_TEMPERATURE,
-		/**
-		 * 
-		 */
-		PARSE_SUCCESS, PARSE_ERROR;
+        /**
+         *
+         */
+        COLLECT_ZONEID,
+        /**
+         *
+         */
+        COLLECT_TEMPERATURE,
+        /**
+         *
+         */
+        PARSE_SUCCESS, PARSE_ERROR;
 
-	}
+    }
 
-	State state;
-	private short bytesToConsume;
-	private short bytesConsumed;
+    State state;
+    private short bytesToConsume;
+    private short bytesConsumed;
 
-	@Override
-	public void parse(byte b) {
-		bytesConsumed++;
-		switch (state) {
-		case COLLECT_ZONEID:
-				zoneTemperatures.addLast(new ZoneTemperature());
-				zoneTemperatures.getLast().zone = b;
-				setStackSize(2);
-				state = State.COLLECT_TEMPERATURE;
-			break;
-		case COLLECT_TEMPERATURE:
-			if (push(b)) {
-				if (getShortValue() == 0x7FFF) {
-					zoneTemperatures.getLast().temperature = null;
-				}else {
-					zoneTemperatures.getLast().temperature = new BigDecimal(getShortValue()).divide(ONE_HUNDRED);
-				}
-				if (bytesConsumed == bytesToConsume) {
-					state = State.PARSE_SUCCESS;
-				} else {
-					state = State.COLLECT_ZONEID;
-				}
-			}
-			break;
-		case PARSE_SUCCESS:
-			throw new RuntimeException("PARSE_SUCCESS should not be called");
-		case PARSE_ERROR:
-			throw new RuntimeException("PARSE_ERROR should not be called");
+    @Override
+    public void parse(byte b) {
+        bytesConsumed++;
+        switch (state) {
+            case COLLECT_ZONEID:
+                zoneTemperatures.addLast(new ZoneTemperature());
+                zoneTemperatures.getLast().zone = b;
+                setStackSize(2);
+                state = State.COLLECT_TEMPERATURE;
+                break;
+            case COLLECT_TEMPERATURE:
+                if (push(b)) {
+                    if (getShortValue() == 0x7FFF) {
+                        zoneTemperatures.getLast().temperature = null;
+                    } else {
+                        zoneTemperatures.getLast().temperature = new BigDecimal(getShortValue()).divide(ONE_HUNDRED);
+                    }
+                    if (bytesConsumed == bytesToConsume) {
+                        state = State.PARSE_SUCCESS;
+                    } else {
+                        state = State.COLLECT_ZONEID;
+                    }
+                }
+                break;
+            case PARSE_SUCCESS:
+                throw new RuntimeException("PARSE_SUCCESS should not be called");
+            case PARSE_ERROR:
+                throw new RuntimeException("PARSE_ERROR should not be called");
 
-		}
-	}
+        }
+    }
 
-	public void init(short bytesToConsume) {
-		state = State.COLLECT_ZONEID;
-		zoneTemperatures = new LinkedList<>();
-		this.bytesConsumed = 0;
-		this.bytesToConsume = bytesToConsume;
-	}
+    public void init(short bytesToConsume) {
+        state = State.COLLECT_ZONEID;
+        zoneTemperatures = new LinkedList<>();
+        this.bytesConsumed = 0;
+        this.bytesToConsume = bytesToConsume;
+    }
 
-	// TODO change signature ???
-	@Override
-	public void init() {
-		throw new RuntimeException("should not be called");
-	}
+    // TODO change signature ???
+    @Override
+    public void init() {
+        throw new RuntimeException("should not be called");
+    }
 
 }

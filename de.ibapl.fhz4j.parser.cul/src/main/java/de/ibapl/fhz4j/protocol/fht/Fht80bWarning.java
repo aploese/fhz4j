@@ -1,6 +1,6 @@
 /*
  * FHZ4J - Drivers for the Wireless FS20, FHT and HMS protocol https://github.com/aploese/fhz4j/
- * Copyright (C) 2009-2019, Arne Plöse and individual contributors as indicated
+ * Copyright (C) 2009-2021, Arne Plöse and individual contributors as indicated
  * by the @authors tag. See the copyright.txt in the distribution for a
  * full listing of individual contributors.
  *
@@ -26,23 +26,23 @@ package de.ibapl.fhz4j.protocol.fht;
  * @author Arne Plöse
  */
 public enum Fht80bWarning {
-	BATT_LOW("Batt Low");
+    BATT_LOW("Batt Low");
 
-	final private String label;
+    final private String label;
 
-	private Fht80bWarning(String label) {
-		this.label = label;
-	}
+    private Fht80bWarning(String label) {
+        this.label = label;
+    }
 
-	/**
-	 * @return the label
-	 */
-	public String getLabel() {
-		return label;
-	}
+    /**
+     * @return the label
+     */
+    public String getLabel() {
+        return label;
+    }
 
-	public String getName() {
-		return name();
-	}
+    public String getName() {
+        return name();
+    }
 
 }

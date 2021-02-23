@@ -1,6 +1,6 @@
 /*
  * FHZ4J - Drivers for the Wireless FS20, FHT and HMS protocol https://github.com/aploese/fhz4j/
- * Copyright (C) 2009-2019, Arne Plöse and individual contributors as indicated
+ * Copyright (C) 2009-2021, Arne Plöse and individual contributors as indicated
  * by the @authors tag. See the copyright.txt in the distribution for a
  * full listing of individual contributors.
  *
@@ -191,7 +191,7 @@ public class Main {
                 System.err.println(e);
             }
             System.err.println("Serial port error - closing down");
-                System.exit(1);
+            System.exit(1);
         }
     }
 
@@ -204,7 +204,7 @@ public class Main {
      * @throws IOException DOCUMENT ME!
      */
     public static void main(String[] args) throws FileNotFoundException, IOException {
-        
+
         Options options = new Options();
         Option opt;
         OptionGroup optg;
@@ -331,7 +331,7 @@ public class Main {
 
     public void run(SerialPortSocket serialPortSocket, Set<Protocol> protocols) throws Exception {
         final FhzListener listener = new FhzListener();
-        try ( CulAdapter culAddapter = new CulAdapter(serialPortSocket, listener)) {
+        try (CulAdapter culAddapter = new CulAdapter(serialPortSocket, listener)) {
             listener.fhzAdapter = culAddapter;
             try {
                 try {
@@ -352,7 +352,7 @@ public class Main {
                 }
                 if (protocols.contains(Protocol.EVO_HOME)) {
                     culAddapter.initEvoHome();
-                    culAddapter.writeEvoHomeZoneSetpointPermanent(new DeviceId( 0x067aec), new ZoneTemperature((byte)1, new BigDecimal(25)));
+                    culAddapter.writeEvoHomeZoneSetpointPermanent(new DeviceId(0x067aec), new ZoneTemperature((byte) 1, new BigDecimal(25)));
                 }
 
             } catch (IOException ex) {

@@ -9,7 +9,7 @@
     </parent>
 
     <properties>
-                <license.licenseResolver>${project.baseUri}/../src/license</license.licenseResolver>
+        <license.licenseResolver>${project.baseUri}/../src/license</license.licenseResolver>
     </properties>
 
     <artifactId>fhz4j-console</artifactId>

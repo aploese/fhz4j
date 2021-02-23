@@ -1,6 +1,6 @@
 /*
  * FHZ4J - Drivers for the Wireless FS20, FHT and HMS protocol https://github.com/aploese/fhz4j/
- * Copyright (C) 2009-2019, Arne Plöse and individual contributors as indicated
+ * Copyright (C) 2009-2021, Arne Plöse and individual contributors as indicated
  * by the @authors tag. See the copyright.txt in the distribution for a
  * full listing of individual contributors.
  *
@@ -40,22 +40,23 @@ public class CulSetSlowRfSettingsRequest extends CulRequest implements Iterable<
     public Iterator<SlowRfFlag> iterator() {
         return initFlags.iterator();
     }
-	@Override
-	public String toString() {
-		StringBuilder sb = new StringBuilder();
-		sb.append("{culrequest : \"FHT device output buffer content\"");
-		sb.append(", slowRfFlags : ");
-		boolean first = true;
-		for (SlowRfFlag slowRfFlag: initFlags) {
-			if (first) {
-				first = false;
-			} else {
-				sb.append(", ");
-			}
-			sb.append(slowRfFlag);
-		}
-		sb.append("]}");
-		return sb.toString();
-	}
+
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("{culrequest : \"FHT device output buffer content\"");
+        sb.append(", slowRfFlags : ");
+        boolean first = true;
+        for (SlowRfFlag slowRfFlag : initFlags) {
+            if (first) {
+                first = false;
+            } else {
+                sb.append(", ");
+            }
+            sb.append(slowRfFlag);
+        }
+        sb.append("]}");
+        return sb.toString();
+    }
 
 }

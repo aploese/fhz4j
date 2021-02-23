@@ -1,6 +1,6 @@
 /*
  * FHZ4J - Drivers for the Wireless FS20, FHT and HMS protocol https://github.com/aploese/fhz4j/
- * Copyright (C) 2009-2019, Arne Plöse and individual contributors as indicated
+ * Copyright (C) 2009-2021, Arne Plöse and individual contributors as indicated
  * by the @authors tag. See the copyright.txt in the distribution for a
  * full listing of individual contributors.
  *
@@ -40,20 +40,20 @@ public class CulGetSlowRfSettingsResponse extends CulResponse<CulGetSlowRfSettin
     }
 
     protected void addToJsonString(StringBuilder sb) {
-    	super.addToJsonString(sb);
-	sb.append(", milliTimeToSend : ");
-	sb.append(milliTimeToSend);
-	sb.append(", slowRfFlags : [");
-	boolean first = true;
-	for (SlowRfFlag slowRfFlag: slowRfFlags) {
-		if (first) {
-			first = false;
-		} else {
-			sb.append(", ");
-		}
-		sb.append(slowRfFlag);
-	}
-	sb.append(']');
+        super.addToJsonString(sb);
+        sb.append(", milliTimeToSend : ");
+        sb.append(milliTimeToSend);
+        sb.append(", slowRfFlags : [");
+        boolean first = true;
+        for (SlowRfFlag slowRfFlag : slowRfFlags) {
+            if (first) {
+                first = false;
+            } else {
+                sb.append(", ");
+            }
+            sb.append(slowRfFlag);
+        }
+        sb.append(']');
     }
 
 }

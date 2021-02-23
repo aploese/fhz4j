@@ -1,6 +1,6 @@
 /*
  * FHZ4J - Drivers for the Wireless FS20, FHT and HMS protocol https://github.com/aploese/fhz4j/
- * Copyright (C) 2009-2019, Arne Plöse and individual contributors as indicated
+ * Copyright (C) 2009-2021, Arne Plöse and individual contributors as indicated
  * by the @authors tag. See the copyright.txt in the distribution for a
  * full listing of individual contributors.
  *
@@ -36,98 +36,96 @@ import org.junit.jupiter.api.Test;
  */
 public class CulWriterTest {
 
-	public CulWriterTest() {
-	}
+    public CulWriterTest() {
+    }
 
-	/**
-	 * Test of initFhz method, of class FhzWriter.
-	 */
-	@Test
-	@Disabled
-	public void testInitFhz_short() throws Exception {
-		System.out.println("initFhz");
-		short fhzHousecode = 0;
-		          WritableByteChannel wbc = null;
-		          CulWriter instance = new CulWriter(wbc, 64);
+    /**
+     * Test of initFhz method, of class FhzWriter.
+     */
+    @Test
+    @Disabled
+    public void testInitFhz_short() throws Exception {
+        System.out.println("initFhz");
+        short fhzHousecode = 0;
+        WritableByteChannel wbc = null;
+        CulWriter instance = new CulWriter(wbc, 64);
 
-		instance.initFhz(fhzHousecode);
-		// TODO review the generated test code and remove the default call to fail.
-		fail("The test case is a prototype.");
-		instance.close();
-	}
+        instance.initFhz(fhzHousecode);
+        // TODO review the generated test code and remove the default call to fail.
+        fail("The test case is a prototype.");
+        instance.close();
+    }
 
-	/**
-	 * Test of initFhz method, of class FhzWriter.
-	 */
-	@Test
-	@Disabled
-	public void testInitFhz_short_byte() throws Exception {
-		System.out.println("initFhz");
-		short fhz100Housecode = 0;
-            Set<SlowRfFlag> initFlags = EnumSet.noneOf(SlowRfFlag.class);
-		WritableByteChannel wbc = null;
-		CulWriter instance = new CulWriter(wbc, 64);
+    /**
+     * Test of initFhz method, of class FhzWriter.
+     */
+    @Test
+    @Disabled
+    public void testInitFhz_short_byte() throws Exception {
+        System.out.println("initFhz");
+        short fhz100Housecode = 0;
+        Set<SlowRfFlag> initFlags = EnumSet.noneOf(SlowRfFlag.class);
+        WritableByteChannel wbc = null;
+        CulWriter instance = new CulWriter(wbc, 64);
 
-		instance.initFhz(fhz100Housecode, initFlags);
-		// TODO review the generated test code and remove the default call to fail.
-		fail("The test case is a prototype.");
-		instance.close();
-	}
+        instance.initFhz(fhz100Housecode, initFlags);
+        // TODO review the generated test code and remove the default call to fail.
+        fail("The test case is a prototype.");
+        instance.close();
+    }
 
-	/**
-	 * Test of syncFhtClocks method, of class FhzWriter.
-	 */
-	@Test
-	@Disabled
-	public void testSyncFhtClocks() throws Exception {
-		System.out.println("syncFhtClocks");
-		Iterable<Short> fhtDeviceHomeCodes = null;
+    /**
+     * Test of syncFhtClocks method, of class FhzWriter.
+     */
+    @Test
+    @Disabled
+    public void testSyncFhtClocks() throws Exception {
+        System.out.println("syncFhtClocks");
+        Iterable<Short> fhtDeviceHomeCodes = null;
 
-		WritableByteChannel wbc = null;
-		CulWriter instance = new CulWriter(wbc, 64);
-		// instance.syncFhtClocks(fhtDeviceHomeCodes);
-		// TODO review the generated test code and remove the default call to fail.
-		fail("The test case is a prototype.");
-		instance.close();
-	}
+        WritableByteChannel wbc = null;
+        CulWriter instance = new CulWriter(wbc, 64);
+        // instance.syncFhtClocks(fhtDeviceHomeCodes);
+        // TODO review the generated test code and remove the default call to fail.
+        fail("The test case is a prototype.");
+        instance.close();
+    }
 
-	/**
-	 * Test of initFhtReporting method, of class FhzWriter.
-	 */
-	@Test
-        @Disabled
-	public void testInitFhtReporting_ShortArr() throws Exception {
-		System.out.println("initFhtReporting");
-		WritableByteChannel wbc = null;
-		CulWriter instance = new CulWriter(wbc, 64);
+    /**
+     * Test of initFhtReporting method, of class FhzWriter.
+     */
+    @Test
+    @Disabled
+    public void testInitFhtReporting_ShortArr() throws Exception {
+        System.out.println("initFhtReporting");
+        WritableByteChannel wbc = null;
+        CulWriter instance = new CulWriter(wbc, 64);
 
 //TODO		instance.initFhtReporting((short) 302);
 //TODO apl	 assertEquals("T030265FF66FF\n", os.toString());
-
 //TODO		instance.close();
-	}
+    }
 
-	@Test
-        @Disabled //TODO apl
-	public void testwriteDateAndTime() throws Exception {
-		System.out.println("testwriteDateAndTime");
-		WritableByteChannel wbc = null;
-		CulWriter instance = new CulWriter(wbc, 64);
+    @Test
+    @Disabled //TODO apl
+    public void testwriteDateAndTime() throws Exception {
+        System.out.println("testwriteDateAndTime");
+        WritableByteChannel wbc = null;
+        CulWriter instance = new CulWriter(wbc, 64);
 
 //TODO		FhtEnhcoder.writeFhtTimeAndDate((short) 302, LocalDateTime.of(2017, Month.JULY, 20, 14, 23));
 //TODO apl	 assertEquals("T0302601161076214630E6417\n", os.toString());
+        instance.close();
+    }
 
-		instance.close();
-	}
-
-	/**
-	 * Test of writeFhtMsg method, of class FhzWriter.
-	 */
-	@Test
-        @Disabled //TODO apl
-	public void testWriteMonCycle() throws Exception {
-		System.out.println("testWriteMonCycle");
-/*		WritableByteChannel wbc = null;
+    /**
+     * Test of writeFhtMsg method, of class FhzWriter.
+     */
+    @Test
+    @Disabled //TODO apl
+    public void testWriteMonCycle() throws Exception {
+        System.out.println("testWriteMonCycle");
+        /*		WritableByteChannel wbc = null;
 		CulWriter instance = new CulWriter(wbc, 64);
 
 		instance.writeFhtCycle((short) 302, DayOfWeek.MONDAY, LocalTime.of(5, 0), LocalTime.of(8, 30),
@@ -140,16 +138,16 @@ public class CulWriterTest {
 		os.reset();
 
 		instance.close();
-                */
-	}
+         */
+    }
 
-	@Test
-        @Disabled
-	public void testwriteFhtThursdayTimes() throws Exception {
-		System.out.println("testwriteFhtThursdayTimes");
-		WritableByteChannel wbc = null;
-		CulWriter instance = new CulWriter(wbc, 64);
-/*
+    @Test
+    @Disabled
+    public void testwriteFhtThursdayTimes() throws Exception {
+        System.out.println("testwriteFhtThursdayTimes");
+        WritableByteChannel wbc = null;
+        CulWriter instance = new CulWriter(wbc, 64);
+        /*
 		instance.writeFht((short) 302, FhtProperty.THU_FROM_1, LocalTime.of(7, 0));
 	 assertEquals("T0302202A\n", os.toString());
 		os.reset();
@@ -165,18 +163,18 @@ public class CulWriterTest {
 		instance.writeFht((short) 302, FhtProperty.THU_TO_2, null);
 	 assertEquals("T03022390\n", os.toString());
 
-*/
-		instance.close();
-	}
+         */
+        instance.close();
+    }
 
-	@Test
-        @Disabled //TODO apl
-	public void testwriteFhtModes() throws Exception {
-		System.out.println("testwriteFhtModes");
-		WritableByteChannel wbc = null;
-		CulWriter instance = new CulWriter(wbc, 64);
+    @Test
+    @Disabled //TODO apl
+    public void testwriteFhtModes() throws Exception {
+        System.out.println("testwriteFhtModes");
+        WritableByteChannel wbc = null;
+        CulWriter instance = new CulWriter(wbc, 64);
 
-/*		instance.writeFhtModeAuto((short) 302);
+        /*		instance.writeFhtModeAuto((short) 302);
 	 assertEquals("T03023E00\n", os.toString());
 		os.reset();
 
@@ -191,8 +189,8 @@ public class CulWriterTest {
 		instance.writeFhtModeHoliday((short) 302, 17.0f, LocalDate.of(2017, Month.JULY, 19));
 	 assertEquals("T030241223F1340073E02\n", os.toString());
 
-*/
-		instance.close();
-	}
+         */
+        instance.close();
+    }
 
 }

@@ -1,6 +1,6 @@
 /*
  * FHZ4J - Drivers for the Wireless FS20, FHT and HMS protocol https://github.com/aploese/fhz4j/
- * Copyright (C) 2009-2019, Arne Plöse and individual contributors as indicated
+ * Copyright (C) 2009-2021, Arne Plöse and individual contributors as indicated
  * by the @authors tag. See the copyright.txt in the distribution for a
  * full listing of individual contributors.
  *
@@ -29,90 +29,90 @@ import de.ibapl.fhz4j.protocol.evohome.EvoHome_0xXX_0x000A_0xXX_ZONES_PARAMS_Mes
 
 class ZonesParamParser extends AbstractParser {
 
-	LinkedList<ZoneParams> zoneParams;
+    LinkedList<ZoneParams> zoneParams;
 
-	enum State {
+    enum State {
 
-		/**
-		 * 
-		 */
-		COLLECT_ZONEID,
-		/**
-		 * 
-		 */
-		COLLECT_FLAGS,
-		/**
-		 * 
-		 */
-		COLLECT_MIN_TEMP,
-		/**
-		 * 
-		 */
-		COLLECT_MAX_TEMP, PARSE_SUCCESS, PARSE_ERROR;
+        /**
+         *
+         */
+        COLLECT_ZONEID,
+        /**
+         *
+         */
+        COLLECT_FLAGS,
+        /**
+         *
+         */
+        COLLECT_MIN_TEMP,
+        /**
+         *
+         */
+        COLLECT_MAX_TEMP, PARSE_SUCCESS, PARSE_ERROR;
 
-	}
+    }
 
-	// Just cache this ...
-	private final static BigDecimal ONE_HUNDRED = new BigDecimal(100.0);
+    // Just cache this ...
+    private final static BigDecimal ONE_HUNDRED = new BigDecimal(100.0);
 
-	State state;
-	private short bytesToConsume;
-	private short bytesConsumed;
+    State state;
+    private short bytesToConsume;
+    private short bytesConsumed;
 
-	@Override
-	public void parse(byte b) {
-		bytesConsumed++;
-		switch (state) {
-		case COLLECT_ZONEID:
-			zoneParams.addLast(new ZoneParams());
-			zoneParams.getLast().zoneId = b;
-			state = State.COLLECT_FLAGS;
-			break;
-		case COLLECT_FLAGS:
-			zoneParams.getLast().windowFunction = (b & 0x10) == 0x10;
-			zoneParams.getLast().operationLock = (b & 0x01) == 0x01;
-                        if ((b & 0xEE) != 0) {
-                            throw new RuntimeException(String.format("Can't handle ZoneParams flags unexpected value: 0x%02x", b));
-                        }
-			setStackSize(2);
-			state = State.COLLECT_MIN_TEMP;
-			break;
-		case COLLECT_MIN_TEMP:
-			if (push(b)) {
-				zoneParams.getLast().minTemperature = new BigDecimal(getShortValue()).divide(ONE_HUNDRED);
-				setStackSize(2);
-				state = State.COLLECT_MAX_TEMP;
-			}
-			break;
-		case COLLECT_MAX_TEMP:
-			if (push(b)) {
-				zoneParams.getLast().maxTemperature = new BigDecimal(getShortValue()).divide(ONE_HUNDRED);
-				if (bytesConsumed == bytesToConsume) {
-					state = State.PARSE_SUCCESS;
-				} else {
-					state = State.COLLECT_ZONEID;
-				}
-			}
-			break;
-		case PARSE_SUCCESS:
-			throw new RuntimeException("PARSE_SUCCESS should not be called");
-		case PARSE_ERROR:
-			throw new RuntimeException("PARSE_ERROR should not be called");
+    @Override
+    public void parse(byte b) {
+        bytesConsumed++;
+        switch (state) {
+            case COLLECT_ZONEID:
+                zoneParams.addLast(new ZoneParams());
+                zoneParams.getLast().zoneId = b;
+                state = State.COLLECT_FLAGS;
+                break;
+            case COLLECT_FLAGS:
+                zoneParams.getLast().windowFunction = (b & 0x10) == 0x10;
+                zoneParams.getLast().operationLock = (b & 0x01) == 0x01;
+                if ((b & 0xEE) != 0) {
+                    throw new RuntimeException(String.format("Can't handle ZoneParams flags unexpected value: 0x%02x", b));
+                }
+                setStackSize(2);
+                state = State.COLLECT_MIN_TEMP;
+                break;
+            case COLLECT_MIN_TEMP:
+                if (push(b)) {
+                    zoneParams.getLast().minTemperature = new BigDecimal(getShortValue()).divide(ONE_HUNDRED);
+                    setStackSize(2);
+                    state = State.COLLECT_MAX_TEMP;
+                }
+                break;
+            case COLLECT_MAX_TEMP:
+                if (push(b)) {
+                    zoneParams.getLast().maxTemperature = new BigDecimal(getShortValue()).divide(ONE_HUNDRED);
+                    if (bytesConsumed == bytesToConsume) {
+                        state = State.PARSE_SUCCESS;
+                    } else {
+                        state = State.COLLECT_ZONEID;
+                    }
+                }
+                break;
+            case PARSE_SUCCESS:
+                throw new RuntimeException("PARSE_SUCCESS should not be called");
+            case PARSE_ERROR:
+                throw new RuntimeException("PARSE_ERROR should not be called");
 
-		}
-	}
+        }
+    }
 
-	public void init(short bytesToConsume) {
-		state = State.COLLECT_ZONEID;
-		zoneParams = new LinkedList<>();
-		this.bytesConsumed = 0;
-		this.bytesToConsume = bytesToConsume;
-	}
+    public void init(short bytesToConsume) {
+        state = State.COLLECT_ZONEID;
+        zoneParams = new LinkedList<>();
+        this.bytesConsumed = 0;
+        this.bytesToConsume = bytesToConsume;
+    }
 
-	// TODO change signature ???
-	@Override
-	public void init() {
-		throw new RuntimeException("should not be called");
-	}
+    // TODO change signature ???
+    @Override
+    public void init() {
+        throw new RuntimeException("should not be called");
+    }
 
 }

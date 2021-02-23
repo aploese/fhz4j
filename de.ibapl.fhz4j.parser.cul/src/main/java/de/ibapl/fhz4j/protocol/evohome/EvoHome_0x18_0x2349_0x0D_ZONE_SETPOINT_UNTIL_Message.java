@@ -1,6 +1,6 @@
 /*
  * FHZ4J - Drivers for the Wireless FS20, FHT and HMS protocol https://github.com/aploese/fhz4j/
- * Copyright (C) 2009-2019, Arne Plöse and individual contributors as indicated
+ * Copyright (C) 2009-2021, Arne Plöse and individual contributors as indicated
  * by the @authors tag. See the copyright.txt in the distribution for a
  * full listing of individual contributors.
  *
@@ -29,20 +29,20 @@ import java.time.LocalDateTime;
  * @author Arne Plöse
  */
 public class EvoHome_0x18_0x2349_0x0D_ZONE_SETPOINT_UNTIL_Message extends EvoHomeDeviceMessage {
-	
-	public ZoneTemperature temperature;
-	public int unknown;
-	public LocalDateTime until;
 
-	public EvoHome_0x18_0x2349_0x0D_ZONE_SETPOINT_UNTIL_Message() {
-		super(EvoHomeProperty._18_2349_ZONE_SETPOINT_UNTIL);
-	}
-	
-	@Override
-	protected void addToJsonString(StringBuilder sb) {
-		super.addToJsonString(sb);
-		sb.append(", temperature : ").append(temperature);
-		sb.append(String.format(", unknown : 0x%08x", unknown));
-		sb.append(", until : ").append(until);
-	}
+    public ZoneTemperature temperature;
+    public int unknown;
+    public LocalDateTime until;
+
+    public EvoHome_0x18_0x2349_0x0D_ZONE_SETPOINT_UNTIL_Message() {
+        super(EvoHomeProperty._18_2349_ZONE_SETPOINT_UNTIL);
+    }
+
+    @Override
+    protected void addToJsonString(StringBuilder sb) {
+        super.addToJsonString(sb);
+        sb.append(", temperature : ").append(temperature);
+        sb.append(String.format(", unknown : 0x%08x", unknown));
+        sb.append(", until : ").append(until);
+    }
 }

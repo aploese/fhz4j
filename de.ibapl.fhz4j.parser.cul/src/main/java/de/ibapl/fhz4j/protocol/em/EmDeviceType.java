@@ -1,6 +1,6 @@
 /*
  * FHZ4J - Drivers for the Wireless FS20, FHT and HMS protocol https://github.com/aploese/fhz4j/
- * Copyright (C) 2009-2019, Arne Plöse and individual contributors as indicated
+ * Copyright (C) 2009-2021, Arne Plöse and individual contributors as indicated
  * by the @authors tag. See the copyright.txt in the distribution for a
  * full listing of individual contributors.
  *
@@ -26,16 +26,16 @@ package de.ibapl.fhz4j.protocol.em;
  * @author Arne Plöse
  */
 public enum EmDeviceType {
-	EM_1000_S("EM 1000-S"), EM_1000_EM("EM 1000 EM"), EM_1000_GZ("EM 1000-GZ");
+    EM_1000_S("EM 1000-S"), EM_1000_EM("EM 1000 EM"), EM_1000_GZ("EM 1000-GZ");
 
-	final String label;
+    final String label;
 
-	private EmDeviceType(String label) {
-		this.label = label;
-	}
+    private EmDeviceType(String label) {
+        this.label = label;
+    }
 
-	public String getLabel() {
-		return label;
-	}
+    public String getLabel() {
+        return label;
+    }
 
 }

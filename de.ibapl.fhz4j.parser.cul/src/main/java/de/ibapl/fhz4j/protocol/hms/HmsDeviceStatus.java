@@ -1,6 +1,6 @@
 /*
  * FHZ4J - Drivers for the Wireless FS20, FHT and HMS protocol https://github.com/aploese/fhz4j/
- * Copyright (C) 2009-2019, Arne Plöse and individual contributors as indicated
+ * Copyright (C) 2009-2021, Arne Plöse and individual contributors as indicated
  * by the @authors tag. See the copyright.txt in the distribution for a
  * full listing of individual contributors.
  *
@@ -26,20 +26,20 @@ package de.ibapl.fhz4j.protocol.hms;
  * @author Arne Plöse
  */
 public enum HmsDeviceStatus {
-	BATT_LOW("Batt low");
+    BATT_LOW("Batt low");
 
-	private final String label;
+    private final String label;
 
-	private HmsDeviceStatus(String label) {
-		this.label = label;
-	}
+    private HmsDeviceStatus(String label) {
+        this.label = label;
+    }
 
-	public String getLabel() {
-		return label;
-	}
+    public String getLabel() {
+        return label;
+    }
 
-	public String getName() {
-		return name();
-	}
+    public String getName() {
+        return name();
+    }
 
 }

@@ -1,6 +1,6 @@
 /*
  * FHZ4J - Drivers for the Wireless FS20, FHT and HMS protocol https://github.com/aploese/fhz4j/
- * Copyright (C) 2009-2019, Arne Plöse and individual contributors as indicated
+ * Copyright (C) 2009-2021, Arne Plöse and individual contributors as indicated
  * by the @authors tag. See the copyright.txt in the distribution for a
  * full listing of individual contributors.
  *
@@ -24,7 +24,6 @@ package de.ibapl.fhz4j.parser.cul;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
-
 import java.time.LocalTime;
 
 import de.ibapl.fhz4j.parser.api.ParserListener;
@@ -41,67 +40,67 @@ import org.junit.jupiter.api.Test;
  */
 public class FhtModeMessageTest implements ParserListener<FhtMessage> {
 
-	private FhtParser parser = new FhtParser(this);
-	private FhtMessage partialFhtMessage;
-	private FhtMessage assembledFhtMessage;
-	private FhtMessage fhtMessage;
+    private FhtParser parser = new FhtParser(this);
+    private FhtMessage partialFhtMessage;
+    private FhtMessage assembledFhtMessage;
+    private FhtMessage fhtMessage;
 
-	private void decode(String s) {
-		fhtMessage = null;
-		partialFhtMessage = null;
-		assembledFhtMessage = null;
-		parser.init();
-		new DataSource(s).iterate(parser);
-	}
+    private void decode(String s) {
+        fhtMessage = null;
+        partialFhtMessage = null;
+        assembledFhtMessage = null;
+        parser.init();
+        new DataSource(s).iterate(parser);
+    }
 
-	@Test
-	public void decode_AutoMatik() {
-		decode("03023E6900");
-		FhtModeMessageTest.assertModeMessage(fhtMessage, 302, true, true, Fht80bMode.AUTO);
-	}
+    @Test
+    public void decode_AutoMatik() {
+        decode("03023E6900");
+        FhtModeMessageTest.assertModeMessage(fhtMessage, 302, true, true, Fht80bMode.AUTO);
+    }
 
-	@Test
-	public void decode_Party() {
-		decode("0302416922");
-		FhtTempMessageTest.assertTempMessage(fhtMessage, 302, FhtProperty.DESIRED_TEMP, true, true, 17.0f);
-		decode("03023F698D");
-		FhtTempMessageTest.assertRawMessage(partialFhtMessage, 302, FhtProperty.HOLIDAY_1, true, true, (byte)0x8D);
-		decode("0302406913");
-		FhtTempMessageTest.assertRawMessage(partialFhtMessage, 302, FhtProperty.HOLIDAY_2, true, true, (byte)0x13);
-		decode("03023E6903");
-		FhtTimeMessageTest.assertTimeMessage(assembledFhtMessage, 302, FhtProperty.PARTY_END_TIME, true, true,
-				LocalTime.of(23, 30));
-	}
+    @Test
+    public void decode_Party() {
+        decode("0302416922");
+        FhtTempMessageTest.assertTempMessage(fhtMessage, 302, FhtProperty.DESIRED_TEMP, true, true, 17.0f);
+        decode("03023F698D");
+        FhtTempMessageTest.assertRawMessage(partialFhtMessage, 302, FhtProperty.HOLIDAY_1, true, true, (byte) 0x8D);
+        decode("0302406913");
+        FhtTempMessageTest.assertRawMessage(partialFhtMessage, 302, FhtProperty.HOLIDAY_2, true, true, (byte) 0x13);
+        decode("03023E6903");
+        FhtTimeMessageTest.assertTimeMessage(assembledFhtMessage, 302, FhtProperty.PARTY_END_TIME, true, true,
+                LocalTime.of(23, 30));
+    }
 
-	@Override
-	public void success(FhtMessage fhzMessage) {
-		this.fhtMessage = fhzMessage;
-	}
+    @Override
+    public void success(FhtMessage fhzMessage) {
+        this.fhtMessage = fhzMessage;
+    }
 
-	@Override
-	public void successPartial(FhtMessage fhzMessage) {
-		this.partialFhtMessage = fhzMessage;
-	}
+    @Override
+    public void successPartial(FhtMessage fhzMessage) {
+        this.partialFhtMessage = fhzMessage;
+    }
 
-	@Override
-	public void successPartialAssembled(FhtMessage fhzMessage) {
-		this.assembledFhtMessage = fhzMessage;
-	}
+    @Override
+    public void successPartialAssembled(FhtMessage fhzMessage) {
+        this.assembledFhtMessage = fhzMessage;
+    }
 
-	@Override
-	public void fail(Throwable t) {
-		throw new RuntimeException(t);
-	}
+    @Override
+    public void fail(Throwable t) {
+        throw new RuntimeException(t);
+    }
 
-	public static void assertModeMessage(FhtMessage fhtMessage, int housecode, boolean dataRegister, boolean fromFht_8B,
-			Fht80bMode mode) {
-	 assertNotNull(fhtMessage);
-		final FhtModeMessage msg = (FhtModeMessage) fhtMessage;
-	 assertEquals((short) housecode, msg.housecode, "housecode");
-	 assertEquals(FhtProperty.MODE, msg.command, "command");
-	 assertEquals(fromFht_8B, msg.fromFht_8B, "fromFht_8B");
-	 assertEquals(dataRegister, msg.dataRegister, "dataRegister");
-	 assertEquals(mode, msg.mode, "mode");
-	}
+    public static void assertModeMessage(FhtMessage fhtMessage, int housecode, boolean dataRegister, boolean fromFht_8B,
+            Fht80bMode mode) {
+        assertNotNull(fhtMessage);
+        final FhtModeMessage msg = (FhtModeMessage) fhtMessage;
+        assertEquals((short) housecode, msg.housecode, "housecode");
+        assertEquals(FhtProperty.MODE, msg.command, "command");
+        assertEquals(fromFht_8B, msg.fromFht_8B, "fromFht_8B");
+        assertEquals(dataRegister, msg.dataRegister, "dataRegister");
+        assertEquals(mode, msg.mode, "mode");
+    }
 
 }

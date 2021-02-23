@@ -18,7 +18,6 @@
  */
 package de.ibapl.fhz4j.m2m2;
 
-
 import com.serotonin.ShouldNeverHappenException;
 import com.serotonin.m2m2.Common;
 import com.serotonin.m2m2.DataTypes;
@@ -103,10 +102,10 @@ public class Fhz4JDataSourceRT extends DataSourceRT implements FhzDataListener {
 
     @Override
     public Fhz4JDataSourceVO getVo() {
-        return (Fhz4JDataSourceVO)super.getVo();
+        return (Fhz4JDataSourceVO) super.getVo();
     }
-    
-    private DataPointRT saveDataPoint(DataPointVO dpVo, String ... pathToPoint) {
+
+    private DataPointRT saveDataPoint(DataPointVO dpVo, String... pathToPoint) {
         Common.runtimeManager.saveDataPoint(dpVo);
         final DataPointRT dataPointRT = Common.runtimeManager.getDataPoint(dpVo.getId());
 
@@ -133,13 +132,12 @@ public class Fhz4JDataSourceRT extends DataSourceRT implements FhzDataListener {
         dataPointDao.savePointHierarchy(ph.getRoot());
         return dataPointRT;
     }
-    
-    
+
     @Override
     public void initialize() {
         parser = new FhzParser(this);
         try {
-            
+
             sPort = SerialPortSocketFactoryImpl.singleton().createSerialPortSocket(getVo().getCommPort());
             FhzParser.openPort(sPort);
             parser.setInputStream(sPort.getInputStream());
@@ -149,14 +147,14 @@ public class Fhz4JDataSourceRT extends DataSourceRT implements FhzDataListener {
                 Thread.sleep(100);
             } catch (InterruptedException ex) {
             }
-            
+
             writer.initFhz(getVo().getFhzHousecode());
-          
+
             if (getVo().isFhtMaster()) {
                 writer.initFhtReporting(getFhtDeviceHousecodes());
                 writer.syncFhtClocks(getFhtDeviceHousecodes());
             }
-            
+
             returnToNormal(DATA_SOURCE_EXCEPTION_EVENT, System.currentTimeMillis());
         } catch (IOException ex) {
             raiseEvent(DATA_SOURCE_EXCEPTION_EVENT, System.currentTimeMillis(), true,
@@ -501,7 +499,7 @@ public class Fhz4JDataSourceRT extends DataSourceRT implements FhzDataListener {
         }
 
         DataPointRT dpRT = saveDataPoint(dp, getVo().getName(), "FHT", fhtMessage.getHousecodeStr());
-        
+
         if (dpRT != null) {
             updateValue(dpRT, fhtMessage, fhtMessage.getCommand());
         }
@@ -529,7 +527,7 @@ public class Fhz4JDataSourceRT extends DataSourceRT implements FhzDataListener {
         dp.setLoggingType(DataPointVO.LoggingTypes.ALL);
         dp.setEventDetectors(new ArrayList());
 
-        if (dp.getPointLocator().getDataTypeId()== DataTypes.MULTISTATE) {
+        if (dp.getPointLocator().getDataTypeId() == DataTypes.MULTISTATE) {
             MultistateRenderer mr = new MultistateRenderer();
             mr.addMultistateValue(FS20CommandValues.OFF.getValue(), FS20CommandValues.OFF.getLabel(), "red");
             mr.addMultistateValue(FS20CommandValues.DIM_DOWN.getValue(), FS20CommandValues.DIM_DOWN.getLabel(), "red");
@@ -540,7 +538,7 @@ public class Fhz4JDataSourceRT extends DataSourceRT implements FhzDataListener {
             dp.setChartRenderer(new ImageChartRenderer(Common.TimePeriods.DAYS, 1));
         }
 
-        DataPointRT dataPointRT = saveDataPoint(dp,  getVo().getName(), "FS20", String.format("%04x", fs20Message.getHousecode()));
+        DataPointRT dataPointRT = saveDataPoint(dp, getVo().getName(), "FS20", String.format("%04x", fs20Message.getHousecode()));
 
         if (dataPointRT != null) {
             updateValue(dataPointRT, fs20Message, fs20Message.getDeviceType());
@@ -568,12 +566,12 @@ public class Fhz4JDataSourceRT extends DataSourceRT implements FhzDataListener {
         dp.setEventDetectors(new ArrayList());
 
         dp.setPointLocator(fhzLocator);
-        if (dp.getPointLocator().getDataTypeId()== DataTypes.NUMERIC) {
+        if (dp.getPointLocator().getDataTypeId() == DataTypes.NUMERIC) {
             dp.setTextRenderer(new AnalogRenderer("#,##0.0", prop.getUnitOfMeasurement()));
             dp.setChartRenderer(new ImageChartRenderer(Common.TimePeriods.DAYS, 1));
         }
 
-        DataPointRT dataPointRT = saveDataPoint(dp,  getVo().getName(), "EM", String.format("%04d", emLocator.getAddress()));
+        DataPointRT dataPointRT = saveDataPoint(dp, getVo().getName(), "EM", String.format("%04d", emLocator.getAddress()));
 
         if (dataPointRT != null) {
             updateValue(dataPointRT, emMessage, prop);
@@ -787,7 +785,7 @@ public class Fhz4JDataSourceRT extends DataSourceRT implements FhzDataListener {
             default:;
         }
 
-        DataPointRT dataPointRT = saveDataPoint(dp,  getVo().getName(), "HMS", String.format("%s %s", hmsLocator.getHousecodeStr(), hmsMessage.getDeviceType().getLabel()));
+        DataPointRT dataPointRT = saveDataPoint(dp, getVo().getName(), "HMS", String.format("%s %s", hmsLocator.getHousecodeStr(), hmsMessage.getDeviceType().getLabel()));
 
         if (dataPointRT != null) {
             updateValue(dataPointRT, hmsMessage, prop);
@@ -894,15 +892,15 @@ public class Fhz4JDataSourceRT extends DataSourceRT implements FhzDataListener {
         dp.setEventDetectors(new ArrayList());
 
         dp.setPointLocator(fhzLocator);
-        if (dp.getPointLocator().getDataTypeId()== DataTypes.NUMERIC) {
+        if (dp.getPointLocator().getDataTypeId() == DataTypes.NUMERIC) {
             dp.setTextRenderer(new AnalogRenderer("#,##0.0", fhtMultiMsgMessage.getProperty().getUnitOfMeasurement()));
             dp.setChartRenderer(new ImageChartRenderer(Common.TimePeriods.DAYS, 1));
             if (fhtMultiMsgMessage.getProperty() == FhtMultiMsgProperty.TEMP) {
                 dp.setPlotType(DataPointVO.PlotTypes.SPLINE);
-            } 
+            }
         }
 
-        DataPointRT dataPointRT = saveDataPoint(dp,  getVo().getName(), "FHT", fhtMultiMsgMessage.getHousecodeStr());
+        DataPointRT dataPointRT = saveDataPoint(dp, getVo().getName(), "FHT", fhtMultiMsgMessage.getHousecodeStr());
 
         if (dataPointRT != null) {
             updateValue(dataPointRT, fhtMultiMsgMessage, fhtMultiMsgMessage.getProperty());
@@ -915,7 +913,7 @@ public class Fhz4JDataSourceRT extends DataSourceRT implements FhzDataListener {
         switch (fhtPointLocator.getProperty().getDataType()) {
             case FLOAT:
                 fhtMessage.setHousecode(fhtPointLocator.getHousecode());
-                fhtMessage.setFloat(fhtPointLocator.getProperty(), (float)valueTime.getDoubleValue());
+                fhtMessage.setFloat(fhtPointLocator.getProperty(), (float) valueTime.getDoubleValue());
                 writer.writeFhtMsg(fhtMessage);
                 break;
             default:

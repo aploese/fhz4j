@@ -1,6 +1,6 @@
 /*
  * FHZ4J - Drivers for the Wireless FS20, FHT and HMS protocol https://github.com/aploese/fhz4j/
- * Copyright (C) 2009-2019, Arne Plöse and individual contributors as indicated
+ * Copyright (C) 2009-2021, Arne Plöse and individual contributors as indicated
  * by the @authors tag. See the copyright.txt in the distribution for a
  * full listing of individual contributors.
  *
@@ -62,6 +62,7 @@ public class CulParser<T extends Message> extends AbstractCulParser {
 
     /**
      * Returns whether or not the parser is idle.
+     *
      * @return true if state is idle otherwise false;
      */
     boolean isIdle() {
@@ -110,7 +111,7 @@ public class CulParser<T extends Message> extends AbstractCulParser {
     private Message fhzMessage;
 
     private T partialFhzMessage;
-    
+
     private final StringBuilder errorGarbageCollector = new StringBuilder();
 
     public CulParser(CulMessageListener dataListener) {
@@ -247,7 +248,7 @@ public class CulParser<T extends Message> extends AbstractCulParser {
                         state = State.EVO_HOME_READ_GARBAGE;
                         break;
                     case 'O':
-                        //verrun, where a second data byte arrived before the ISR processing the first was able to complete 
+                        //verrun, where a second data byte arrived before the ISR processing the first was able to complete
                         errorGarbageCollector.append("EvoHome  overrun:");
                         state = State.EVO_HOME_READ_GARBAGE;
                         break;
@@ -313,12 +314,12 @@ public class CulParser<T extends Message> extends AbstractCulParser {
                     default:
                     //no-op
                 }
-            	} catch (Exception e) {
-                    LOG.log(Level.SEVERE, "In state {0} for CUL request {1} unexpected parser error", new Object[]{state, culResponseParser.getClass().getName()});
-                    state = State.IDLE;
-                    //TODO notify failure??
-				}
-                break;
+            } catch (Exception e) {
+                LOG.log(Level.SEVERE, "In state {0} for CUL request {1} unexpected parser error", new Object[]{state, culResponseParser.getClass().getName()});
+                state = State.IDLE;
+                //TODO notify failure??
+            }
+            break;
             case CUL_E_PARSED:
                 if (c == 'O') {
                     state = State.CUL_EO_PARSED;

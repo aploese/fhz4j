@@ -1,6 +1,6 @@
 /*
  * FHZ4J - Drivers for the Wireless FS20, FHT and HMS protocol https://github.com/aploese/fhz4j/
- * Copyright (C) 2009-2019, Arne Plöse and individual contributors as indicated
+ * Copyright (C) 2009-2021, Arne Plöse and individual contributors as indicated
  * by the @authors tag. See the copyright.txt in the distribution for a
  * full listing of individual contributors.
  *
@@ -26,36 +26,35 @@ package de.ibapl.fhz4j.protocol.evohome;
  * @author Arne Plöse
  */
 public class EvoHome_0x18_0x3150_0x02_HEAT_DEMAND_Message extends EvoHomeDeviceMessage {
-	
-	public byte zone;
-	/**
-	 * Heatdemand or position ???
-	 */
-	public short heatDemand;
 
-	public EvoHome_0x18_0x3150_0x02_HEAT_DEMAND_Message() {
-		super(EvoHomeProperty._18_3150_HEAT_DEMAND);
-	}
-	
-	@Override
-	protected void addToJsonString(StringBuilder sb) {
-		super.addToJsonString(sb);
-		sb.append(String.format(", zone : 0x%02x", zone));
-		sb.append(", heatDemand : ").append(heatDemand);
-		sb.append(", valvePosition : ").append(calcValvePosition()).append("%");
-	}
-	
-	/**
-	 * from 0  to 60 => 0%
-	 * from 60 to 140 => 0% to 30%
-	 * from 140 to 200 => 30% to 100%
-         * TODO is this right ?? or simply halv ???
-	 * @return
-	 */
-	public float calcValvePosition() {
-            return (float)heatDemand / 2.0f;
-            //TODO THis is in the multi zone controller???
-            /*
+    public byte zone;
+    /**
+     * Heatdemand or position ???
+     */
+    public short heatDemand;
+
+    public EvoHome_0x18_0x3150_0x02_HEAT_DEMAND_Message() {
+        super(EvoHomeProperty._18_3150_HEAT_DEMAND);
+    }
+
+    @Override
+    protected void addToJsonString(StringBuilder sb) {
+        super.addToJsonString(sb);
+        sb.append(String.format(", zone : 0x%02x", zone));
+        sb.append(", heatDemand : ").append(heatDemand);
+        sb.append(", valvePosition : ").append(calcValvePosition()).append("%");
+    }
+
+    /**
+     * from 0 to 60 => 0% from 60 to 140 => 0% to 30% from 140 to 200 => 30% to
+     * 100% TODO is this right ?? or simply halv ???
+     *
+     * @return
+     */
+    public float calcValvePosition() {
+        return (float) heatDemand / 2.0f;
+        //TODO THis is in the multi zone controller???
+        /*
 		if (heatDemand < 0) {
 			//TODO Error
 			throw new RuntimeException("heatDemand must not be negative");
@@ -69,6 +68,6 @@ public class EvoHome_0x18_0x3150_0x02_HEAT_DEMAND_Message extends EvoHomeDeviceM
 			//TODO error
 			throw new RuntimeException("heatDemand must not be greater 200");
 		}
-*/
-	}
+         */
+    }
 }

@@ -1,6 +1,6 @@
 /*
  * FHZ4J - Drivers for the Wireless FS20, FHT and HMS protocol https://github.com/aploese/fhz4j/
- * Copyright (C) 2009-2019, Arne Plöse and individual contributors as indicated
+ * Copyright (C) 2009-2021, Arne Plöse and individual contributors as indicated
  * by the @authors tag. See the copyright.txt in the distribution for a
  * full listing of individual contributors.
  *
@@ -28,9 +28,9 @@ package de.ibapl.fhz4j.protocol.evohome;
  * @author Arne Plöse
  */
 public class EvoHome_0x1C_0x1FC9_0xXX_Message extends EvoHome_0xXX_0x1FC9_0xXX_Message {
-	
-	public EvoHome_0x1C_0x1FC9_0xXX_Message() {
-		super(EvoHomeProperty._1C_1FC9);
-	}
+
+    public EvoHome_0x1C_0x1FC9_0xXX_Message() {
+        super(EvoHomeProperty._1C_1FC9);
+    }
 
 }

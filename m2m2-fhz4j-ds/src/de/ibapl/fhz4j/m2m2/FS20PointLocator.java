@@ -3,7 +3,6 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package de.ibapl.fhz4j.m2m2;
 
 import java.io.IOException;
@@ -36,7 +35,7 @@ public class FS20PointLocator extends ProtocolLocator<FS20DeviceType> {
     public String defaultName() {
         return getProperty() == null ? "FS20 unknown" : String.format("%d", offset);
     }
-    
+
     /**
      * @param housecode the housecode to set
      */
@@ -83,13 +82,12 @@ public class FS20PointLocator extends ProtocolLocator<FS20DeviceType> {
             case 1:
                 housecode = in.readShort();
                 offset = in.readByte();
-                deviceType = (FS20DeviceType)in.readObject();
-         break;
+                deviceType = (FS20DeviceType) in.readObject();
+                break;
             default:
                 throw new RuntimeException("Cant handle version");
         }
     }
-
 
     @Override
     public FhzProtocol getFhzProtocol() {

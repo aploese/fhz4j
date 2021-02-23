@@ -1,6 +1,6 @@
 /*
  * FHZ4J - Drivers for the Wireless FS20, FHT and HMS protocol https://github.com/aploese/fhz4j/
- * Copyright (C) 2009-2019, Arne Plöse and individual contributors as indicated
+ * Copyright (C) 2009-2021, Arne Plöse and individual contributors as indicated
  * by the @authors tag. See the copyright.txt in the distribution for a
  * full listing of individual contributors.
  *
@@ -29,18 +29,18 @@ import de.ibapl.fhz4j.api.Message;
  */
 public interface ParserListener<T extends Message> {
 
-	void success(T fhzMessage);
+    void success(T fhzMessage);
 
-	/**
-	 * The partial message of multiple partial messages
-	 */
-	void successPartial(T fhzMessage);
+    /**
+     * The partial message of multiple partial messages
+     */
+    void successPartial(T fhzMessage);
 
-	/**
-	 * The resulting message of multiple partial messages
-	 */
-	void successPartialAssembled(T fhzMessage);
+    /**
+     * The resulting message of multiple partial messages
+     */
+    void successPartialAssembled(T fhzMessage);
 
-	void fail(Throwable t);
+    void fail(Throwable t);
 
 }

@@ -1,6 +1,6 @@
 /*
  * FHZ4J - Drivers for the Wireless FS20, FHT and HMS protocol https://github.com/aploese/fhz4j/
- * Copyright (C) 2009-2019, Arne Plöse and individual contributors as indicated
+ * Copyright (C) 2009-2021, Arne Plöse and individual contributors as indicated
  * by the @authors tag. See the copyright.txt in the distribution for a
  * full listing of individual contributors.
  *
@@ -37,36 +37,36 @@ import java.util.Set;
  * @author Arne Plöse
  */
 public enum HmsDeviceType {
-	HMS_100_TF("HMS 100 TF", TEMP, HUMIDY, BATT_STATUS), HMS_100_WD("HMS 100 WD", WATER, BATT_STATUS), HMS_100_RM(
-			"HMS 100 RM", SMOKE_ALERT, BATT_STATUS), HMS_100_TFK("HMS 100 TFK", DOOR_WINDOW_OPEN, BATT_STATUS);
+    HMS_100_TF("HMS 100 TF", TEMP, HUMIDY, BATT_STATUS), HMS_100_WD("HMS 100 WD", WATER, BATT_STATUS), HMS_100_RM(
+            "HMS 100 RM", SMOKE_ALERT, BATT_STATUS), HMS_100_TFK("HMS 100 TFK", DOOR_WINDOW_OPEN, BATT_STATUS);
 
-	private final String label;
-	private final Set<HmsProperty> hmsProperties;
+    private final String label;
+    private final Set<HmsProperty> hmsProperties;
 
-	private HmsDeviceType(String label, HmsProperty... hmsProperties) {
-		this.label = label;
-		this.hmsProperties = EnumSet.copyOf(Arrays.asList(hmsProperties));
-	}
+    private HmsDeviceType(String label, HmsProperty... hmsProperties) {
+        this.label = label;
+        this.hmsProperties = EnumSet.copyOf(Arrays.asList(hmsProperties));
+    }
 
-	public String getLabel() {
-		return label;
-	}
+    public String getLabel() {
+        return label;
+    }
 
-	public String getName() {
-		return name();
-	}
+    public String getName() {
+        return name();
+    }
 
-	public static HmsDeviceType fromLabel(String label) {
-		for (HmsDeviceType prop : values()) {
-			if (prop.getLabel().equals(label)) {
-				return prop;
-			}
-		}
-		return valueOf(label);
-	}
+    public static HmsDeviceType fromLabel(String label) {
+        for (HmsDeviceType prop : values()) {
+            if (prop.getLabel().equals(label)) {
+                return prop;
+            }
+        }
+        return valueOf(label);
+    }
 
-	public Set<HmsProperty> getProperties() {
-		return hmsProperties;
-	}
+    public Set<HmsProperty> getProperties() {
+        return hmsProperties;
+    }
 
 }

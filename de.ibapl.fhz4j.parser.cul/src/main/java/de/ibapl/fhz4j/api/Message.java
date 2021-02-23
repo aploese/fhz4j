@@ -1,6 +1,6 @@
 /*
  * FHZ4J - Drivers for the Wireless FS20, FHT and HMS protocol https://github.com/aploese/fhz4j/
- * Copyright (C) 2009-2019, Arne Plöse and individual contributors as indicated
+ * Copyright (C) 2009-2021, Arne Plöse and individual contributors as indicated
  * by the @authors tag. See the copyright.txt in the distribution for a
  * full listing of individual contributors.
  *
@@ -24,30 +24,28 @@ package de.ibapl.fhz4j.api;
 /**
  *
  * @author Arne Plöse
- * 
+ *
  */
 public abstract class Message {
 
-	public Protocol protocol;
+    public Protocol protocol;
 
-	protected Message(Protocol protocol) {
-		this.protocol = protocol;
-	}
-        
-        
-       	protected void addToJsonString(StringBuilder sb) {
-		sb.append("protocol : ");
-		sb.append(protocol);
-        }
+    protected Message(Protocol protocol) {
+        this.protocol = protocol;
+    }
 
-	@Override
-	public String toString() {
-		StringBuilder sb = new StringBuilder();
-		sb.append("{");
-		addToJsonString(sb);
-		sb.append("}");
-		return sb.toString();
-	}
+    protected void addToJsonString(StringBuilder sb) {
+        sb.append("protocol : ");
+        sb.append(protocol);
+    }
 
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("{");
+        addToJsonString(sb);
+        sb.append("}");
+        return sb.toString();
+    }
 
 }

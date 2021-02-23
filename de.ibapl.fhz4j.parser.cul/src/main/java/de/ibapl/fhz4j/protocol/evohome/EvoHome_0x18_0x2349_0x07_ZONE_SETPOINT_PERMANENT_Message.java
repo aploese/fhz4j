@@ -1,6 +1,6 @@
 /*
  * FHZ4J - Drivers for the Wireless FS20, FHT and HMS protocol https://github.com/aploese/fhz4j/
- * Copyright (C) 2009-2019, Arne Plöse and individual contributors as indicated
+ * Copyright (C) 2009-2021, Arne Plöse and individual contributors as indicated
  * by the @authors tag. See the copyright.txt in the distribution for a
  * full listing of individual contributors.
  *
@@ -27,13 +27,13 @@ package de.ibapl.fhz4j.protocol.evohome;
  * @author Arne Plöse
  */
 public class EvoHome_0x18_0x2349_0x07_ZONE_SETPOINT_PERMANENT_Message extends EvoHomeDeviceMessage {
-	
-	public ZoneTemperature temperature;
-	public int unknown;
 
-	public EvoHome_0x18_0x2349_0x07_ZONE_SETPOINT_PERMANENT_Message() {
-		super(EvoHomeProperty._18_2349_ZONE_SETPOINT_PERMANENT);
-	}
+    public ZoneTemperature temperature;
+    public int unknown;
+
+    public EvoHome_0x18_0x2349_0x07_ZONE_SETPOINT_PERMANENT_Message() {
+        super(EvoHomeProperty._18_2349_ZONE_SETPOINT_PERMANENT);
+    }
 
     public EvoHome_0x18_0x2349_0x07_ZONE_SETPOINT_PERMANENT_Message(int deviceId, ZoneTemperature temperature) {
         this();
@@ -42,11 +42,11 @@ public class EvoHome_0x18_0x2349_0x07_ZONE_SETPOINT_PERMANENT_Message extends Ev
         this.temperature = temperature;
         unknown = 0x00ffffff;
     }
-	
-	@Override
-	protected void addToJsonString(StringBuilder sb) {
-		super.addToJsonString(sb);
-		sb.append(", temperature : ").append(temperature);
-		sb.append(String.format(", unknown : 0x%08x", unknown));
-	}
+
+    @Override
+    protected void addToJsonString(StringBuilder sb) {
+        super.addToJsonString(sb);
+        sb.append(", temperature : ").append(temperature);
+        sb.append(String.format(", unknown : 0x%08x", unknown));
+    }
 }

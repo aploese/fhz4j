@@ -1,6 +1,6 @@
 /*
  * FHZ4J - Drivers for the Wireless FS20, FHT and HMS protocol https://github.com/aploese/fhz4j/
- * Copyright (C) 2009-2019, Arne Plöse and individual contributors as indicated
+ * Copyright (C) 2009-2021, Arne Plöse and individual contributors as indicated
  * by the @authors tag. See the copyright.txt in the distribution for a
  * full listing of individual contributors.
  *
@@ -26,19 +26,19 @@ package de.ibapl.fhz4j.protocol.evohome;
  * @author Arne Plöse
  */
 public class EvoHome_0x0C_0x0004_0x02_Message extends EvoHomeDeviceMessage {
-	
-	public byte zoneId;
-	public byte unknown;
 
-	public EvoHome_0x0C_0x0004_0x02_Message() {
-		super(EvoHomeProperty._0C_0004);
-	}
+    public byte zoneId;
+    public byte unknown;
 
-	@Override
-	protected void addToJsonString(StringBuilder sb) {
-		super.addToJsonString(sb);
-		sb.append(String.format(", zoneId : 0x%02x", zoneId));
-		sb.append(String.format(", unknown : 0x%02x", unknown));
-	}
-	
+    public EvoHome_0x0C_0x0004_0x02_Message() {
+        super(EvoHomeProperty._0C_0004);
+    }
+
+    @Override
+    protected void addToJsonString(StringBuilder sb) {
+        super.addToJsonString(sb);
+        sb.append(String.format(", zoneId : 0x%02x", zoneId));
+        sb.append(String.format(", unknown : 0x%02x", unknown));
+    }
+
 }

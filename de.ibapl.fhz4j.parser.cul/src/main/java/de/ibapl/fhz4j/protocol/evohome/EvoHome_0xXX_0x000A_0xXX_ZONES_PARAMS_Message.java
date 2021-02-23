@@ -1,6 +1,6 @@
 /*
  * FHZ4J - Drivers for the Wireless FS20, FHT and HMS protocol https://github.com/aploese/fhz4j/
- * Copyright (C) 2009-2019, Arne Plöse and individual contributors as indicated
+ * Copyright (C) 2009-2021, Arne Plöse and individual contributors as indicated
  * by the @authors tag. See the copyright.txt in the distribution for a
  * full listing of individual contributors.
  *
@@ -29,40 +29,41 @@ import java.util.List;
  * @author Arne Plöse
  */
 public class EvoHome_0xXX_0x000A_0xXX_ZONES_PARAMS_Message extends EvoHomeDeviceMessage {
-	
-	public static class ZoneParams {
-		public byte zoneId;
-		public boolean windowFunction;
-                public boolean operationLock;
-		public BigDecimal minTemperature;
-		public BigDecimal maxTemperature;
-	}
-	
-	public List<ZoneParams> zones;
- 
-	public EvoHome_0xXX_0x000A_0xXX_ZONES_PARAMS_Message(EvoHomeProperty evoHomeProperty) {
-		super(evoHomeProperty);
-	}
-	
-	@Override
-	protected void addToJsonString(StringBuilder sb) {
-		super.addToJsonString(sb);
-		sb.append(", zones:[");
-		boolean first = true;
-		for (ZoneParams zp: zones) {
-			if (!first) {
-				sb.append(", ");
-			} else {
-				first = false;
-			}
-			sb.append("{");
-			sb.append(String.format("zoneId : 0x%02x", zp.zoneId));
-			sb.append(String.format(", windowFunction : %b", zp.windowFunction));
-			sb.append(String.format(", operationLock : %b", zp.operationLock));
-			sb.append(", minTemperature : ").append(zp.minTemperature);
-			sb.append(", maxTemperature : ").append(zp.maxTemperature);
-			sb.append("}");
-		}
-		sb.append("]");
-	}
+
+    public static class ZoneParams {
+
+        public byte zoneId;
+        public boolean windowFunction;
+        public boolean operationLock;
+        public BigDecimal minTemperature;
+        public BigDecimal maxTemperature;
+    }
+
+    public List<ZoneParams> zones;
+
+    public EvoHome_0xXX_0x000A_0xXX_ZONES_PARAMS_Message(EvoHomeProperty evoHomeProperty) {
+        super(evoHomeProperty);
+    }
+
+    @Override
+    protected void addToJsonString(StringBuilder sb) {
+        super.addToJsonString(sb);
+        sb.append(", zones:[");
+        boolean first = true;
+        for (ZoneParams zp : zones) {
+            if (!first) {
+                sb.append(", ");
+            } else {
+                first = false;
+            }
+            sb.append("{");
+            sb.append(String.format("zoneId : 0x%02x", zp.zoneId));
+            sb.append(String.format(", windowFunction : %b", zp.windowFunction));
+            sb.append(String.format(", operationLock : %b", zp.operationLock));
+            sb.append(", minTemperature : ").append(zp.minTemperature);
+            sb.append(", maxTemperature : ").append(zp.maxTemperature);
+            sb.append("}");
+        }
+        sb.append("]");
+    }
 }

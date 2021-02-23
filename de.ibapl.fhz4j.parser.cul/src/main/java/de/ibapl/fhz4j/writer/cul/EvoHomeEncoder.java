@@ -1,6 +1,6 @@
 /*
  * FHZ4J - Drivers for the Wireless FS20, FHT and HMS protocol https://github.com/aploese/fhz4j/
- * Copyright (C) 2009-2019, Arne Plöse and individual contributors as indicated
+ * Copyright (C) 2009-2021, Arne Plöse and individual contributors as indicated
  * by the @authors tag. See the copyright.txt in the distribution for a
  * full listing of individual contributors.
  *
@@ -34,8 +34,8 @@ import java.time.LocalDateTime;
  */
 public class EvoHomeEncoder {
 
-    	//Just cache this ...
-	private final static BigDecimal ONE_HUNDRED = new BigDecimal(100.0);
+    //Just cache this ...
+    private final static BigDecimal ONE_HUNDRED = new BigDecimal(100.0);
 
     private final EvoHomeWriter writer;
 
@@ -81,12 +81,12 @@ public class EvoHomeEncoder {
     }
 
     private void writeZoneTemperature(ZoneTemperature temperature) throws IOException {
-                writer.putByte(temperature.zone);
-                writer.putShort(temperature.temperature.multiply(ONE_HUNDRED).shortValue());
+        writer.putByte(temperature.zone);
+        writer.putShort(temperature.temperature.multiply(ONE_HUNDRED).shortValue());
     }
 
-    public void writeEvoHomeZoneSetpointUntil(DeviceId deviceId, ZoneTemperature temperature, LocalDateTime localDateTime)  throws IOException {
-        
+    public void writeEvoHomeZoneSetpointUntil(DeviceId deviceId, ZoneTemperature temperature, LocalDateTime localDateTime) throws IOException {
+
         writer.startEvoHomeMessage();
 
         writer.putByte((byte) 0x18);
@@ -96,18 +96,17 @@ public class EvoHomeEncoder {
         writeZoneTemperature(temperature);
         writer.putInt(0x04ffffff);
         writeLocalDateTime(localDateTime);
-        
+
         writer.finishEvoHomeMessage();
         writer.doWrite();
     }
 
     private void writeLocalDateTime(LocalDateTime localDateTime) throws IOException {
-        writer.putByte((byte)localDateTime.getMinute());
-        writer.putByte((byte)localDateTime.getHour());
-        writer.putByte((byte)localDateTime.getDayOfMonth());
-        writer.putByte((byte)localDateTime.getMonthValue());
-        writer.putShort((short)localDateTime.getYear());
+        writer.putByte((byte) localDateTime.getMinute());
+        writer.putByte((byte) localDateTime.getHour());
+        writer.putByte((byte) localDateTime.getDayOfMonth());
+        writer.putByte((byte) localDateTime.getMonthValue());
+        writer.putShort((short) localDateTime.getYear());
     }
-
 
 }

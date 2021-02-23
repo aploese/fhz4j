@@ -1,6 +1,6 @@
 /*
  * FHZ4J - Drivers for the Wireless FS20, FHT and HMS protocol https://github.com/aploese/fhz4j/
- * Copyright (C) 2009-2019, Arne Plöse and individual contributors as indicated
+ * Copyright (C) 2009-2021, Arne Plöse and individual contributors as indicated
  * by the @authors tag. See the copyright.txt in the distribution for a
  * full listing of individual contributors.
  *
@@ -25,30 +25,30 @@ import java.util.List;
 
 /**
  * Room Desired Temp
- * 
+ *
  * @author Arne Plöse
  */
 public class EvoHome_AbstractZonesTemperature_Message extends EvoHomeDeviceMessage {
 
-	public List<ZoneTemperature> zoneTemperatures;
+    public List<ZoneTemperature> zoneTemperatures;
 
-	public EvoHome_AbstractZonesTemperature_Message(EvoHomeProperty evoHomeProperty) {
-		super(evoHomeProperty);
-	}
+    public EvoHome_AbstractZonesTemperature_Message(EvoHomeProperty evoHomeProperty) {
+        super(evoHomeProperty);
+    }
 
-	@Override
-	protected void addToJsonString(StringBuilder sb) {
-		super.addToJsonString(sb);
-		sb.append(", zoneTemperatures : [");
-		boolean first = true;
-		for (ZoneTemperature zt : zoneTemperatures) {
-			if (first) {
-				first = false;
-			} else {
-				sb.append(", ");
-			}
-			sb.append(zt);
-		}
-		sb.append("]");
-	}
+    @Override
+    protected void addToJsonString(StringBuilder sb) {
+        super.addToJsonString(sb);
+        sb.append(", zoneTemperatures : [");
+        boolean first = true;
+        for (ZoneTemperature zt : zoneTemperatures) {
+            if (first) {
+                first = false;
+            } else {
+                sb.append(", ");
+            }
+            sb.append(zt);
+        }
+        sb.append("]");
+    }
 }
