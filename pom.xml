@@ -6,7 +6,7 @@
     <artifactId>fhz4j-project</artifactId>
 
     <packaging>pom</packaging>
-    <version>2.0.0-SNAPSHOT</version>
+    <version>2.0.0</version>
     <name>FHZ4J</name>
     <inceptionYear>2009</inceptionYear>
     <url>https://github.com/aploese/fhz4j</url>
@@ -53,7 +53,7 @@
         <url>http://github.com/aploese/fhz4j</url>
         <connection>scm:git:git://github.com/aploese/fhz4j.git</connection>
         <developerConnection>scm:git:git@github.com:aploese/fhz4j.git</developerConnection>
-        <tag>HEAD</tag>
+        <tag>fhz4j-project-2.0.0</tag>
     </scm>
 
     <modules>
