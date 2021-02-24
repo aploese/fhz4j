@@ -24,19 +24,17 @@ package de.ibapl.fhz4j.cul;
 import java.util.EnumSet;
 import java.util.Set;
 
-import de.ibapl.fhz4j.protocol.fht.FhtMessage;
-
 /**
  *
  * @author aploese
  */
-public class CulGetSlowRfSettingsResponse extends CulResponse<CulGetSlowRfSettingsRequest> {
+public class CulGetSlowRfSettingsResponse extends CulResponse {
 
     public int milliTimeToSend;
     public Set<SlowRfFlag> slowRfFlags = EnumSet.noneOf(SlowRfFlag.class);
 
-    public CulGetSlowRfSettingsResponse(CulGetSlowRfSettingsRequest request) {
-        super(request);
+    public CulGetSlowRfSettingsResponse() {
+        super();
     }
 
     protected void addToJsonString(StringBuilder sb) {

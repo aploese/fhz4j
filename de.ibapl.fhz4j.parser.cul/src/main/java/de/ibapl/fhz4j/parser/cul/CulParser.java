@@ -24,11 +24,13 @@ package de.ibapl.fhz4j.parser.cul;
 import de.ibapl.fhz4j.LogUtils;
 import de.ibapl.fhz4j.api.Message;
 import de.ibapl.fhz4j.api.Protocol;
+import de.ibapl.fhz4j.api.Response;
 import de.ibapl.fhz4j.cul.CulEobMessage;
 import de.ibapl.fhz4j.cul.CulLovfMessage;
 import de.ibapl.fhz4j.cul.CulMessage;
 import de.ibapl.fhz4j.cul.CulMessageListener;
 import de.ibapl.fhz4j.cul.CulRequest;
+import de.ibapl.fhz4j.cul.CulResponse;
 import de.ibapl.fhz4j.parser.api.Parser;
 import de.ibapl.fhz4j.parser.api.ParserListener;
 import de.ibapl.fhz4j.parser.em.EmParser;
@@ -45,6 +47,7 @@ import de.ibapl.fhz4j.protocol.hms.HmsMessage;
 import de.ibapl.fhz4j.protocol.lacrosse.tx2.LaCrosseTx2Message;
 import java.util.LinkedList;
 import java.util.Queue;
+import java.util.function.Consumer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -58,7 +61,18 @@ import java.util.logging.Logger;
  */
 public class CulParser<T extends Message> extends AbstractCulParser {
 
-    private Queue<CulRequest> pendingRequests = new LinkedList<>();
+    class QueueEntry<T extends CulRequest> {
+
+        final CulRequest request;
+        final Consumer<Response> consumer;
+
+        private QueueEntry(CulRequest request, Consumer<Response> consumer) {
+            this.request = request;
+            this.consumer = consumer;
+        }
+    }
+
+    private Queue<QueueEntry> pendingRequests = new LinkedList<>();
 
     /**
      * Returns whether or not the parser is idle.
@@ -200,7 +214,7 @@ public class CulParser<T extends Message> extends AbstractCulParser {
                         break;
                     default:
                         if (!pendingRequests.isEmpty()) {
-                            culResponseParser = CulResponseParser.of(pendingRequests.peek());
+                            culResponseParser = CulResponseParser.of(pendingRequests.peek().request, pendingRequests.peek().consumer);
                             state = State.CUL_PARSER_PARSING;
                             culResponseParser.parse(c);
                         } else {
@@ -301,7 +315,9 @@ public class CulParser<T extends Message> extends AbstractCulParser {
                         if (culResponseParser.isSuccess()) {
                             //On success remove pending parser
                             pendingRequests.remove();
-                            culMessageListener.culMessageParsed(culResponseParser.response);
+                            if (culResponseParser.consumer != null) {
+                                culResponseParser.consumer.accept(culResponseParser.response);
+                            }
                         } else {
                             LOG.log(Level.SEVERE, "In state {0} for CUL request {1} unexpected end of message received", new Object[]{state, culResponseParser.getClass().getName()});
                             state = State.IDLE;
@@ -470,8 +486,8 @@ public class CulParser<T extends Message> extends AbstractCulParser {
      * @param request
      * @return
      */
-    public boolean addCulRequest(CulRequest request) {
-        return pendingRequests.add(request);
+    public boolean addCulRequest(CulRequest request, Consumer<Response> consumer) {
+        return pendingRequests.add(new QueueEntry(request, consumer));
     }
 
     /**
@@ -480,7 +496,9 @@ public class CulParser<T extends Message> extends AbstractCulParser {
      * @param requests
      * @return
      */
-    public boolean addCulRequests(Queue<CulRequest> requests) {
-        return pendingRequests.addAll(requests);
+    public void addCulRequests(Queue<CulRequest> requests, Consumer<CulResponse> consumer) {
+        for (CulRequest request : requests) {
+            pendingRequests.add(new QueueEntry(request, consumer));
+        }
     }
 }

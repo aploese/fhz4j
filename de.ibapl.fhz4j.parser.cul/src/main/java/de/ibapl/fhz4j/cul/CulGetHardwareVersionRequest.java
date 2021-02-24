@@ -21,35 +21,17 @@
  */
 package de.ibapl.fhz4j.cul;
 
-import de.ibapl.fhz4j.protocol.fht.FhtMessage;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.function.Consumer;
 
 /**
  *
  * @author aploese
  */
-public class CulFhtDeviceOutBufferContentResponse extends CulResponse {
+public class CulGetHardwareVersionRequest extends CulRequest {
 
-    public List<FhtMessage> pendingMessages = new LinkedList();
-
-    public CulFhtDeviceOutBufferContentResponse() {
-        super();
-    }
-
-    protected void addToJsonString(StringBuilder sb) {
-        super.addToJsonString(sb);
-        sb.append(", pendingMessages : [");
-        boolean first = true;
-        for (FhtMessage msg : pendingMessages) {
-            if (first) {
-                first = false;
-            } else {
-                sb.append(", ");
-            }
-            sb.append(msg);
-        }
-        sb.append(']');
+    @Override
+    public String toString() {
+        return "{culrequest : \"Get hardware version\"}";
     }
 
 }

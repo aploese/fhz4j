@@ -23,6 +23,8 @@ package de.ibapl.fhz4j.writer.cul;
 
 import de.ibapl.fhz4j.LogUtils;
 import de.ibapl.fhz4j.cul.CulFhtDeviceOutBufferContentRequest;
+import de.ibapl.fhz4j.cul.CulGetFirmwareVersionRequest;
+import de.ibapl.fhz4j.cul.CulGetHardwareVersionRequest;
 import de.ibapl.fhz4j.cul.CulGetSlowRfSettingsRequest;
 import de.ibapl.fhz4j.cul.CulRemainingFhtDeviceOutBufferSizeRequest;
 import de.ibapl.fhz4j.cul.CulRequest;
@@ -210,6 +212,10 @@ public class CulWriter implements FhtWriter, EvoHomeWriter {
             return "T02\r\n".getBytes();
         } else if (request instanceof CulRemainingFhtDeviceOutBufferSizeRequest) {
             return "T03\r\n".getBytes();
+        } else if (request instanceof CulGetFirmwareVersionRequest) {
+            return "V\r\n".getBytes();
+        } else if (request instanceof CulGetHardwareVersionRequest) {
+            return "VH\r\n".getBytes();
         } else {
             throw new IllegalArgumentException("Unknown CulRequest: " + request);
         }

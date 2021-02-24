@@ -21,6 +21,8 @@
  */
 package de.ibapl.fhz4j.cul;
 
+import java.util.function.Consumer;
+
 /**
  *
  * @author aploese

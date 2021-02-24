@@ -21,10 +21,12 @@
  */
 package de.ibapl.fhz4j.cul;
 
+import de.ibapl.fhz4j.api.Request;
+
 /**
  *
  * @author aploese
  */
-public class CulRequest {
+public class CulRequest extends Request {
 
 }

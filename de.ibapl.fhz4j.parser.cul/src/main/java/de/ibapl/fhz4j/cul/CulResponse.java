@@ -21,24 +21,17 @@
  */
 package de.ibapl.fhz4j.cul;
 
+import de.ibapl.fhz4j.api.Protocol;
+import de.ibapl.fhz4j.api.Response;
+
 /**
  *
  * @author aploese
- * @param <T>
  */
-public class CulResponse<T extends CulRequest> extends CulMessage {
+public class CulResponse extends Response {
 
-    public final T request;
-
-    public CulResponse(T request) {
-        this.request = request;
-    }
-
-    @Override
-    protected void addToJsonString(StringBuilder sb) {
-        super.addToJsonString(sb);
-        sb.append(", request : ");
-        sb.append(request);
+    protected CulResponse() {
+        super(Protocol.CUL);
     }
 
 }

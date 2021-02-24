@@ -25,12 +25,12 @@ package de.ibapl.fhz4j.cul;
  *
  * @author aploese
  */
-public class CulRemainingFhtDeviceOutBufferSizeResponse extends CulResponse<CulRemainingFhtDeviceOutBufferSizeRequest> {
+public class CulRemainingFhtDeviceOutBufferSizeResponse extends CulResponse {
 
     public short buffSize;
 
-    public CulRemainingFhtDeviceOutBufferSizeResponse(CulRemainingFhtDeviceOutBufferSizeRequest request) {
-        super(request);
+    public CulRemainingFhtDeviceOutBufferSizeResponse() {
+        super();
     }
 
     protected void addToJsonString(StringBuilder sb) {

@@ -25,6 +25,8 @@ import de.ibapl.fhz4j.LogUtils;
 import de.ibapl.fhz4j.api.Adapter;
 import de.ibapl.fhz4j.api.EvoHomeHandler;
 import de.ibapl.fhz4j.api.FhzHandler;
+import de.ibapl.fhz4j.api.Request;
+import de.ibapl.fhz4j.api.Response;
 import de.ibapl.fhz4j.parser.cul.CulParser;
 import de.ibapl.fhz4j.protocol.evohome.DeviceId;
 import de.ibapl.fhz4j.protocol.evohome.ZoneTemperature;
@@ -43,6 +45,8 @@ import java.time.LocalTime;
 import java.util.LinkedList;
 import java.util.Queue;
 import java.util.Set;
+import java.util.concurrent.Future;
+import java.util.function.Consumer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -150,7 +154,7 @@ public class CulAdapter implements Adapter, FhzHandler, EvoHomeHandler {
     @Override
     public void writeCulTimeSlotRequest() throws IOException {
         final CulGetSlowRfSettingsRequest request = new CulGetSlowRfSettingsRequest();
-        culParser.addCulRequest(request);
+        culParser.addCulRequest(request, null);
         culWriter.writeCulRequest(request);
     }
 
@@ -160,8 +164,34 @@ public class CulAdapter implements Adapter, FhzHandler, EvoHomeHandler {
         requests.add(new CulGetSlowRfSettingsRequest());
         requests.add(new CulFhtDeviceOutBufferContentRequest());
         requests.add(new CulRemainingFhtDeviceOutBufferSizeRequest());
-        culParser.addCulRequests(requests);
+        culParser.addCulRequests(requests, null);
         culWriter.writeCulRequests(requests);
+    }
+
+    @Override
+    public void sendRequest(Request request, Consumer<Response> c) throws IOException {
+        if (request instanceof CulRequest) {
+            culParser.addCulRequest((CulRequest) request, c);
+            culWriter.writeCulRequest((CulRequest) request);
+        } else {
+            throw new IllegalArgumentException("Cant handle request " + request);
+        }
+    }
+
+    @Override
+    public Future<Response> sendRequest(Request request) throws IOException {
+        if (request instanceof CulRequest) {
+
+            ResponseFuture f = new ResponseFuture();
+
+            culParser.addCulRequest((CulRequest) request, f);
+            culWriter.writeCulRequest((CulRequest) request);
+
+            return f;
+        } else {
+            throw new IllegalArgumentException("Cant handle request " + request);
+        }
+
     }
 
     @Override

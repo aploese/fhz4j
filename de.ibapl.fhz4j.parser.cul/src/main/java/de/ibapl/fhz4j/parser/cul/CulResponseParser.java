@@ -23,6 +23,10 @@ package de.ibapl.fhz4j.parser.cul;
 
 import de.ibapl.fhz4j.cul.CulFhtDeviceOutBufferContentRequest;
 import de.ibapl.fhz4j.cul.CulFhtDeviceOutBufferContentResponse;
+import de.ibapl.fhz4j.cul.CulGetFirmwareVersionRequest;
+import de.ibapl.fhz4j.cul.CulGetFirmwareVersionResponse;
+import de.ibapl.fhz4j.cul.CulGetHardwareVersionRequest;
+import de.ibapl.fhz4j.cul.CulGetHardwareVersionResponse;
 import de.ibapl.fhz4j.cul.CulGetSlowRfSettingsRequest;
 import de.ibapl.fhz4j.cul.CulGetSlowRfSettingsResponse;
 import de.ibapl.fhz4j.cul.CulRemainingFhtDeviceOutBufferSizeRequest;
@@ -33,17 +37,18 @@ import de.ibapl.fhz4j.cul.SlowRfFlag;
 import de.ibapl.fhz4j.parser.api.ParserListener;
 import de.ibapl.fhz4j.parser.fht.FhtParser;
 import de.ibapl.fhz4j.protocol.fht.FhtMessage;
+import java.util.function.Consumer;
 
 /**
  *
  * @author aploese
  */
-abstract class CulResponseParser<R extends CulRequest, T extends CulResponse<R>> extends AbstractCulParser {
+abstract class CulResponseParser<R extends CulRequest, T extends CulResponse> extends AbstractCulParser {
 
     private static class CulGetSlowRfSettingsRequestParser extends CulResponseParser<CulGetSlowRfSettingsRequest, CulGetSlowRfSettingsResponse> {
 
-        public CulGetSlowRfSettingsRequestParser(CulGetSlowRfSettingsRequest request) {
-            super(new CulGetSlowRfSettingsResponse(request));
+        public CulGetSlowRfSettingsRequestParser(CulGetSlowRfSettingsRequest request, Consumer<CulResponse> consumer) {
+            super(request, new CulGetSlowRfSettingsResponse(), consumer);
         }
 
         public enum State {
@@ -118,8 +123,8 @@ abstract class CulResponseParser<R extends CulRequest, T extends CulResponse<R>>
 
     private static class CulFhtDeviceOutBufferContentRequestParser extends CulResponseParser<CulFhtDeviceOutBufferContentRequest, CulFhtDeviceOutBufferContentResponse> {
 
-        public CulFhtDeviceOutBufferContentRequestParser(CulFhtDeviceOutBufferContentRequest request) {
-            super(new CulFhtDeviceOutBufferContentResponse(request));
+        public CulFhtDeviceOutBufferContentRequestParser(CulFhtDeviceOutBufferContentRequest request, Consumer<CulResponse> consumer) {
+            super(request, new CulFhtDeviceOutBufferContentResponse(), consumer);
         }
 
         public enum State {
@@ -242,8 +247,8 @@ abstract class CulResponseParser<R extends CulRequest, T extends CulResponse<R>>
 
     private static class CulRemainingFhtDeviceOutBufferSizeRequestParser extends CulResponseParser<CulRemainingFhtDeviceOutBufferSizeRequest, CulRemainingFhtDeviceOutBufferSizeResponse> {
 
-        public CulRemainingFhtDeviceOutBufferSizeRequestParser(CulRemainingFhtDeviceOutBufferSizeRequest request) {
-            super(new CulRemainingFhtDeviceOutBufferSizeResponse(request));
+        public CulRemainingFhtDeviceOutBufferSizeRequestParser(CulRemainingFhtDeviceOutBufferSizeRequest request, Consumer<CulResponse> consumer) {
+            super(request, new CulRemainingFhtDeviceOutBufferSizeResponse(), consumer);
         }
 
         public enum State {
@@ -286,23 +291,121 @@ abstract class CulResponseParser<R extends CulRequest, T extends CulResponse<R>>
 
     }
 
+    private static class CulGetFirmwareVersionRequestParser extends CulResponseParser<CulGetFirmwareVersionRequest, CulGetFirmwareVersionResponse> {
+
+        public CulGetFirmwareVersionRequestParser(CulGetFirmwareVersionRequest request, Consumer<CulResponse> consumer) {
+            super(request, new CulGetFirmwareVersionResponse(), consumer);
+        }
+
+        public enum State {
+            COLLECTING,
+            FAIL,
+            SUCCESS;
+        }
+
+        private State state = State.COLLECTING;
+        private StringBuilder sb = new StringBuilder();
+
+        @Override
+        public boolean isSuccess() {
+            return state == State.SUCCESS;
+        }
+
+        @Override
+        public void parse(char c) {
+            switch (state) {
+                case COLLECTING:
+                    if ((c == '\n') || (c == '\r')) {
+                        state = State.SUCCESS;
+                        response.value = sb.toString();
+                    } else {
+                        sb.append(c);
+                    }
+                    break;
+                case SUCCESS:
+                    if ((c == '\n') || (c == '\r')) {
+                        //no-op
+                    } else {
+                        state = State.FAIL;
+                    }
+                    break;
+                default:
+                    throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+            }
+        }
+
+    }
+
+    private static class CulGetHardwareVersionRequestParser extends CulResponseParser<CulGetHardwareVersionRequest, CulGetHardwareVersionResponse> {
+
+        public CulGetHardwareVersionRequestParser(CulGetHardwareVersionRequest request, Consumer<CulResponse> consumer) {
+            super(request, new CulGetHardwareVersionResponse(), consumer);
+        }
+
+        public enum State {
+            COLLECTING,
+            FAIL,
+            SUCCESS;
+        }
+
+        private State state = State.COLLECTING;
+        private StringBuilder sb = new StringBuilder();
+
+        @Override
+        public boolean isSuccess() {
+            return state == State.SUCCESS;
+        }
+
+        @Override
+        public void parse(char c) {
+            switch (state) {
+                case COLLECTING:
+                    if ((c == '\n') || (c == '\r')) {
+                        state = State.SUCCESS;
+                        response.value = sb.toString();
+                    } else {
+                        sb.append(c);
+                    }
+                    break;
+                case SUCCESS:
+                    if ((c == '\n') || (c == '\r')) {
+                        //no-op
+                    } else {
+                        state = State.FAIL;
+                    }
+                    break;
+                default:
+                    throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+            }
+        }
+
+    }
+
     //TODO QAD fix generics
-    public static <R extends CulRequest, T extends CulResponse<R>> CulResponseParser<R, T> of(R request) {
+    public static <R extends CulRequest, T extends CulResponse> CulResponseParser<R, T> of(R request, Consumer<CulResponse> consumer) {
         if (request instanceof CulGetSlowRfSettingsRequest) {
-            return (CulResponseParser<R, T>) new CulGetSlowRfSettingsRequestParser((CulGetSlowRfSettingsRequest) request);
+            return (CulResponseParser<R, T>) new CulGetSlowRfSettingsRequestParser((CulGetSlowRfSettingsRequest) request, consumer);
         } else if (request instanceof CulFhtDeviceOutBufferContentRequest) {
-            return (CulResponseParser<R, T>) new CulFhtDeviceOutBufferContentRequestParser((CulFhtDeviceOutBufferContentRequest) request);
+            return (CulResponseParser<R, T>) new CulFhtDeviceOutBufferContentRequestParser((CulFhtDeviceOutBufferContentRequest) request, consumer);
         } else if (request instanceof CulRemainingFhtDeviceOutBufferSizeRequest) {
-            return (CulResponseParser<R, T>) new CulRemainingFhtDeviceOutBufferSizeRequestParser((CulRemainingFhtDeviceOutBufferSizeRequest) request);
+            return (CulResponseParser<R, T>) new CulRemainingFhtDeviceOutBufferSizeRequestParser((CulRemainingFhtDeviceOutBufferSizeRequest) request, consumer);
+        } else if (request instanceof CulGetFirmwareVersionRequest) {
+            return (CulResponseParser<R, T>) new CulGetFirmwareVersionRequestParser((CulGetFirmwareVersionRequest) request, consumer);
+        } else if (request instanceof CulGetHardwareVersionRequest) {
+            return (CulResponseParser<R, T>) new CulGetHardwareVersionRequestParser((CulGetHardwareVersionRequest) request, consumer);
         } else {
             throw new UnsupportedOperationException("Cant find parser for request: " + request);
         }
     }
 
     final protected T response;
+    final protected R request;
+    final protected Consumer<CulResponse> consumer;
 
-    protected CulResponseParser(T response) {
+    protected CulResponseParser(R request, T response, Consumer<CulResponse> consumer) {
+        this.request = request;
         this.response = response;
+        this.consumer = consumer;
     }
 
     public abstract boolean isSuccess();

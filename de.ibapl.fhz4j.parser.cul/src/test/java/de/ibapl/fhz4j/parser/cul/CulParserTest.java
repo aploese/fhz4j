@@ -23,6 +23,7 @@ package de.ibapl.fhz4j.parser.cul;
 
 import de.ibapl.fhz4j.api.Message;
 import de.ibapl.fhz4j.api.Protocol;
+import de.ibapl.fhz4j.api.Response;
 import de.ibapl.fhz4j.cul.CulEobMessage;
 import de.ibapl.fhz4j.cul.CulFhtDeviceOutBufferContentRequest;
 import de.ibapl.fhz4j.cul.CulFhtDeviceOutBufferContentResponse;
@@ -34,6 +35,7 @@ import de.ibapl.fhz4j.cul.CulMessageListener;
 import de.ibapl.fhz4j.cul.CulRemainingFhtDeviceOutBufferSizeRequest;
 import de.ibapl.fhz4j.cul.CulRemainingFhtDeviceOutBufferSizeResponse;
 import de.ibapl.fhz4j.cul.CulRequest;
+import de.ibapl.fhz4j.cul.CulResponse;
 import de.ibapl.fhz4j.cul.SlowRfFlag;
 import de.ibapl.fhz4j.protocol.em.EmMessage;
 import de.ibapl.fhz4j.protocol.evohome.EvoHomeMessage;
@@ -48,8 +50,11 @@ import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
 import java.nio.file.Path;
 import java.time.LocalTime;
+import java.util.Arrays;
 import java.util.EnumSet;
+import java.util.Queue;
 import java.util.Set;
+import java.util.function.Consumer;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -83,21 +88,18 @@ public class CulParserTest implements CulMessageListener {
     public CulParserTest() {
     }
 
-    private void assertCulFhtDeviceOutBufferContentResponse(FhtMessage... expectedMessages) {
-        assertNotNull(culMessage);
-        final CulFhtDeviceOutBufferContentResponse response = (CulFhtDeviceOutBufferContentResponse) culMessage;
+    private void assertCulFhtDeviceOutBufferContentResponse(CulFhtDeviceOutBufferContentResponse response, FhtMessage... expectedMessages) {
+        assertNull(culMessage);
         Assertions.assertArrayEquals(expectedMessages, response.pendingMessages.toArray());
     }
 
-    private void assertCulCulRemainingFhtDeviceOutBufferSizeResponse(short expectedSize) {
-        assertNotNull(culMessage);
-        final CulRemainingFhtDeviceOutBufferSizeResponse response = (CulRemainingFhtDeviceOutBufferSizeResponse) culMessage;
+    private void assertCulRemainingFhtDeviceOutBufferSizeResponse(CulRemainingFhtDeviceOutBufferSizeResponse response, short expectedSize) {
+        assertNull(culMessage);
         Assertions.assertEquals(expectedSize, response.buffSize);
     }
 
-    private void assertCulGetSlowRfSettingsResponse(int milliTimeToSend, Set<SlowRfFlag> slowRfFlags) {
-        assertNotNull(culMessage);
-        final CulGetSlowRfSettingsResponse response = (CulGetSlowRfSettingsResponse) culMessage;
+    private void assertCulGetSlowRfSettingsResponse(CulGetSlowRfSettingsResponse response, int milliTimeToSend, Set<SlowRfFlag> slowRfFlags) {
+        assertNull(culMessage);
         assertEquals(milliTimeToSend, response.milliTimeToSend);
         assertEquals(slowRfFlags, response.slowRfFlags);
     }
@@ -113,9 +115,10 @@ public class CulParserTest implements CulMessageListener {
     }
 
     private void decode(String s, CulRequest... requests) {
-        for (CulRequest request : requests) {
-            parser.addCulRequest(request);
-        }
+        decode(s, null, requests);
+    }
+
+    private void decode(String s, Consumer<Response> consumer, CulRequest... requests) {
 
         fhtMessage = null;
         fhtPartialMessage = null;
@@ -126,6 +129,10 @@ public class CulParserTest implements CulMessageListener {
         receiveEnabled = null;
         helpMessage = null;
         throwable = null;
+        for (CulRequest request : requests) {
+            parser.addCulRequest(request, consumer);
+        }
+
         for (char c : s.toCharArray()) {
             parser.parse(c);
         }
@@ -154,19 +161,25 @@ public class CulParserTest implements CulMessageListener {
     @Test
     public void decode_Test_T__AND__X() {
         //SEND "X\r\n" "T02\r\n" "T03\r\n"
-        decode("01  861\r\n", new CulGetSlowRfSettingsRequest());
-        assertCulGetSlowRfSettingsResponse(861, EnumSet.of(SlowRfFlag.REPORT_PACKAGE));
-        decode("N/A\r\n", new CulFhtDeviceOutBufferContentRequest());
-        assertCulFhtDeviceOutBufferContentResponse();
-        decode("AE\r\n", new CulRemainingFhtDeviceOutBufferSizeRequest());
-        assertCulCulRemainingFhtDeviceOutBufferSizeResponse((short) 0xae);
+        decode("01  861\r\n", (r) -> {
+            assertCulGetSlowRfSettingsResponse((CulGetSlowRfSettingsResponse) r, 861, EnumSet.of(SlowRfFlag.REPORT_PACKAGE));
+        }, new CulGetSlowRfSettingsRequest());
+        decode("N/A\r\n", (r) -> {
+            assertCulFhtDeviceOutBufferContentResponse((CulFhtDeviceOutBufferContentResponse) r);
+        }, new CulFhtDeviceOutBufferContentRequest());
+        decode("AE\r\n", (r) -> {
+            assertCulRemainingFhtDeviceOutBufferSizeResponse((CulRemainingFhtDeviceOutBufferSizeResponse) r, (short) 0xae);
+        }, new CulRemainingFhtDeviceOutBufferSizeRequest());
         decode("T0203447901FA\r\n");
-        decode("61  853\r\n", new CulGetSlowRfSettingsRequest());
-        assertCulGetSlowRfSettingsResponse(853, EnumSet.of(SlowRfFlag.REPORT_PACKAGE, SlowRfFlag.WITH_RSSI, SlowRfFlag.REPORT_FHT_PROTOCOL_MESSAGES));
-        decode("N/A\r\n", new CulFhtDeviceOutBufferContentRequest());
-        assertCulFhtDeviceOutBufferContentResponse();
-        decode("0103:6014,6103 0401:6301\r\n", new CulFhtDeviceOutBufferContentRequest());
-        assertCulFhtDeviceOutBufferContentResponse(new Fht80bRawMessage((short) 103, FhtProperty.YEAR, (byte) 0, false, false, (byte) 20), new Fht80bRawMessage((short) 103, FhtProperty.MONTH, (byte) 0, false, false, (byte) 3), new Fht80bRawMessage((short) 401, FhtProperty.HOUR, (byte) 0, false, false, (byte) 1));
+        decode("61  853\r\n", (r) -> {
+            assertCulGetSlowRfSettingsResponse((CulGetSlowRfSettingsResponse) r, 853, EnumSet.of(SlowRfFlag.REPORT_PACKAGE, SlowRfFlag.WITH_RSSI, SlowRfFlag.REPORT_FHT_PROTOCOL_MESSAGES));
+        }, new CulGetSlowRfSettingsRequest());
+        decode("N/A\r\n", (r) -> {
+            assertCulFhtDeviceOutBufferContentResponse((CulFhtDeviceOutBufferContentResponse) r);
+        }, new CulFhtDeviceOutBufferContentRequest());
+        decode("0103:6014,6103 0401:6301\r\n", (r) -> {
+            assertCulFhtDeviceOutBufferContentResponse((CulFhtDeviceOutBufferContentResponse) r, new Fht80bRawMessage((short) 103, FhtProperty.YEAR, (byte) 0, false, false, (byte) 20), new Fht80bRawMessage((short) 103, FhtProperty.MONTH, (byte) 0, false, false, (byte) 3), new Fht80bRawMessage((short) 401, FhtProperty.HOUR, (byte) 0, false, false, (byte) 1));
+        }, new CulFhtDeviceOutBufferContentRequest());
     }
 
     /*
@@ -198,8 +211,9 @@ ation: PT10.087149S
         assertNotNull(fhtMessage);
         decode("tA96678030A29\r\n");
         assertNotNull(throwable);
-        decode("61    3\r\n");
-        assertCulGetSlowRfSettingsResponse(3, EnumSet.of(SlowRfFlag.REPORT_PACKAGE, SlowRfFlag.WITH_RSSI, SlowRfFlag.REPORT_FHT_PROTOCOL_MESSAGES));
+        decode("61    3\r\n", (r) -> {
+            assertCulGetSlowRfSettingsResponse((CulGetSlowRfSettingsResponse) r, 3, EnumSet.of(SlowRfFlag.REPORT_PACKAGE, SlowRfFlag.WITH_RSSI, SlowRfFlag.REPORT_FHT_PROTOCOL_MESSAGES));
+        });
         decode("N/A\r\n");
         decode("AE\r\n");
         decode("T020700A60D11\r\n");

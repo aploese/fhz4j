@@ -29,8 +29,68 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.Set;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
+import java.util.function.Consumer;
 
 public interface FhzHandler extends Adapter {
+
+    class ResponseFuture<T extends Response> implements Future<T>, Consumer<T> {
+
+        private T result;
+
+        @Override
+        public boolean cancel(boolean mayInterruptIfRunning) {
+            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        }
+
+        @Override
+        public boolean isCancelled() {
+            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        }
+
+        @Override
+        public boolean isDone() {
+            return result != null;
+        }
+
+        @Override
+        public synchronized T get() throws InterruptedException, ExecutionException {
+            if (isDone()) {
+                return result;
+            } else {
+                wait();
+                return result;
+            }
+        }
+
+        @Override
+        public synchronized T get(long timeout, TimeUnit unit) throws InterruptedException, ExecutionException, TimeoutException {
+            if (isDone()) {
+                return result;
+            } else {
+                switch (unit) {
+                    case MILLISECONDS:
+                        wait(timeout);
+                        return result;
+                    case SECONDS:
+                        wait(timeout * 1000);
+                        return result;
+                    default:
+                        throw new IllegalArgumentException("Only ms and s are allowed");
+                }
+            }
+        }
+
+        @Override
+        public synchronized void accept(T t) {
+            result = t;
+            notifyAll();
+        }
+
+    }
 
     void initFhtReporting(Set<Short> housecode) throws IOException;
 
@@ -45,6 +105,10 @@ public interface FhzHandler extends Adapter {
     void writeCulTimeSlotRequest() throws IOException;
 
     void gatherCulDebugInfos() throws IOException;
+
+    Future<Response> sendRequest(Request request) throws IOException;
+
+    void sendRequest(Request request, Consumer<Response> c) throws IOException;
 
     void writeFhtCycle(short housecode, DayOfWeek dayOfWeek, LocalTime from1, LocalTime to1, LocalTime from2,
             LocalTime to2) throws IOException;

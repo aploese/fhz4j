@@ -21,35 +21,22 @@
  */
 package de.ibapl.fhz4j.cul;
 
-import de.ibapl.fhz4j.protocol.fht.FhtMessage;
-import java.util.LinkedList;
-import java.util.List;
-
 /**
  *
  * @author aploese
  */
-public class CulFhtDeviceOutBufferContentResponse extends CulResponse {
+public class CulGetFirmwareVersionResponse extends CulResponse {
 
-    public List<FhtMessage> pendingMessages = new LinkedList();
+    public String value;
 
-    public CulFhtDeviceOutBufferContentResponse() {
+    public CulGetFirmwareVersionResponse() {
         super();
     }
 
+    @Override
     protected void addToJsonString(StringBuilder sb) {
         super.addToJsonString(sb);
-        sb.append(", pendingMessages : [");
-        boolean first = true;
-        for (FhtMessage msg : pendingMessages) {
-            if (first) {
-                first = false;
-            } else {
-                sb.append(", ");
-            }
-            sb.append(msg);
-        }
-        sb.append(']');
+        sb.append(", value : \"").append(value).append("\"");
     }
 
 }

@@ -19,37 +19,32 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package de.ibapl.fhz4j.cul;
-
-import de.ibapl.fhz4j.protocol.fht.FhtMessage;
-import java.util.LinkedList;
-import java.util.List;
+package de.ibapl.fhz4j.api;
 
 /**
  *
  * @author aploese
  */
-public class CulFhtDeviceOutBufferContentResponse extends CulResponse {
+public class Response {
 
-    public List<FhtMessage> pendingMessages = new LinkedList();
+    public Protocol protocol;
 
-    public CulFhtDeviceOutBufferContentResponse() {
-        super();
+    protected Response(Protocol protocol) {
+        this.protocol = protocol;
     }
 
     protected void addToJsonString(StringBuilder sb) {
-        super.addToJsonString(sb);
-        sb.append(", pendingMessages : [");
-        boolean first = true;
-        for (FhtMessage msg : pendingMessages) {
-            if (first) {
-                first = false;
-            } else {
-                sb.append(", ");
-            }
-            sb.append(msg);
-        }
-        sb.append(']');
+        sb.append("protocol : ");
+        sb.append(protocol);
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("{");
+        addToJsonString(sb);
+        sb.append("}");
+        return sb.toString();
     }
 
 }

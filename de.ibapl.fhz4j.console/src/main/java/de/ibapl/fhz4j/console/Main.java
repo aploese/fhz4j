@@ -23,9 +23,17 @@ package de.ibapl.fhz4j.console;
 
 import de.ibapl.fhz4j.api.FhzHandler;
 import de.ibapl.fhz4j.api.Protocol;
+import de.ibapl.fhz4j.api.Response;
 import de.ibapl.fhz4j.cul.CulAdapter;
+import de.ibapl.fhz4j.cul.CulFhtDeviceOutBufferContentRequest;
+import de.ibapl.fhz4j.cul.CulGetFirmwareVersionRequest;
+import de.ibapl.fhz4j.cul.CulGetHardwareVersionRequest;
+import de.ibapl.fhz4j.cul.CulGetSlowRfSettingsRequest;
 import de.ibapl.fhz4j.cul.CulMessage;
 import de.ibapl.fhz4j.cul.CulMessageListener;
+import de.ibapl.fhz4j.cul.CulRemainingFhtDeviceOutBufferSizeRequest;
+import de.ibapl.fhz4j.cul.CulRequest;
+import de.ibapl.fhz4j.cul.CulResponse;
 import de.ibapl.fhz4j.cul.SlowRfFlag;
 import de.ibapl.fhz4j.protocol.em.EmMessage;
 import de.ibapl.fhz4j.protocol.evohome.DeviceId;
@@ -54,6 +62,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.ServiceLoader;
 import java.util.Set;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.apache.commons.cli.CommandLine;
@@ -92,8 +102,8 @@ public class Main {
             if (DEVICES_HOME_CODE.add(fhtMessage.housecode)) {
                 try {
                     if (fhzAdapter != null) {
-                        fhzAdapter.writeFhtTimeAndDate(fhtMessage.housecode, LocalDateTime.now());
-                        fhzAdapter.initFhtReporting(fhtMessage.housecode);
+//                        fhzAdapter.writeFhtTimeAndDate(fhtMessage.housecode, LocalDateTime.now());
+//                        fhzAdapter.initFhtReporting(fhtMessage.housecode);
                     }
                 } catch (Throwable t) {
                     //no-op
@@ -152,7 +162,7 @@ public class Main {
         @Override
         public void culMessageParsed(CulMessage culMessage) {
             printTimeStamp();
-            System.err.println(": CUL " + culMessage);
+            System.err.println("CUL MSG: " + culMessage);
         }
 
         @Override
@@ -341,9 +351,34 @@ public class Main {
                 }
                 if (protocols.contains(Protocol.FHT)) {
                     culAddapter.initFhz((short) 0001, EnumSet.of(SlowRfFlag.REPORT_PACKAGE, SlowRfFlag.REPORT_REPEATED_PACKAGES, SlowRfFlag.REPORT_FHT_PROTOCOL_MESSAGES));
-                    culAddapter.writeCulTimeSlotRequest();
+
+                    culAddapter.gatherCulDebugInfos();
+
+                    Future<Response> future;
+                    Response response;
+
+                    future = culAddapter.sendRequest(new CulGetSlowRfSettingsRequest());
+                    response = future.get(1, TimeUnit.SECONDS);
+                    System.err.println("SlowRfSettings: " + response);
+
+                    future = culAddapter.sendRequest(new CulFhtDeviceOutBufferContentRequest());
+                    response = future.get(1, TimeUnit.SECONDS);
+                    System.err.println("FhtDeviceOutBufferContent: " + response);
+
+                    future = culAddapter.sendRequest(new CulRemainingFhtDeviceOutBufferSizeRequest());
+                    response = future.get(1, TimeUnit.SECONDS);
+                    System.err.println("RemainingFhtDeviceOutBufferSize: " + response);
+
+                    future = culAddapter.sendRequest(new CulGetFirmwareVersionRequest());
+                    response = future.get(1, TimeUnit.SECONDS);
+                    System.err.println("RemainingFhtDeviceOutBufferSize: " + response);
+
+                    future = culAddapter.sendRequest(new CulGetHardwareVersionRequest());
+                    response = future.get(1, TimeUnit.SECONDS);
+                    System.err.println("RemainingFhtDeviceOutBufferSize: " + response);
+
 //TODO culAddapter.initFhz((short) 0001);
-                    culAddapter.initFhtReporting((short) 302);
+//                    culAddapter.initFhtReporting((short) 302);
 //            fhzAddapter.writeFhtTimeAndDate((short) 302, LocalDateTime.now());
 //            fhzAddapter.writeFhtCycle((short) 302, DayOfWeek.MONDAY, LocalTime.of(5, 0), LocalTime.of(8, 30), null, null);
 //            fhzAddapter.writeFht((short)302, FhtProperty.DESIRED_TEMP, 24.0f);
