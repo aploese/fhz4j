@@ -30,6 +30,8 @@ import de.ibapl.fhz4j.cul.CulRemainingFhtDeviceOutBufferSizeRequest;
 import de.ibapl.fhz4j.cul.CulRequest;
 import de.ibapl.fhz4j.cul.CulSetSlowRfSettingsRequest;
 import de.ibapl.fhz4j.cul.SlowRfFlag;
+import de.ibapl.fhz4j.writer.evohome.EvoHomeWriter;
+import de.ibapl.fhz4j.writer.fht.FhtWriter;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.channels.WritableByteChannel;

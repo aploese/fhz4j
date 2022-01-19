@@ -19,53 +19,73 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package de.ibapl.fhz4j.parser.cul;
+package de.ibapl.fhz4j.parser.fht;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
-import java.util.EnumSet;
-import java.util.Set;
+import java.time.LocalTime;
 
 import de.ibapl.fhz4j.parser.api.ParserListener;
-import de.ibapl.fhz4j.parser.fht.FhtParser;
-import de.ibapl.fhz4j.protocol.fht.Fht80bWarning;
+import de.ibapl.fhz4j.parser.cul.DataSource;
+import de.ibapl.fhz4j.protocol.fht.AbstractFhtMessage;
+import de.ibapl.fhz4j.protocol.fht.Fht80bMode;
 import de.ibapl.fhz4j.protocol.fht.FhtMessage;
+import de.ibapl.fhz4j.protocol.fht.FhtModeMessage;
 import de.ibapl.fhz4j.protocol.fht.FhtProperty;
-import de.ibapl.fhz4j.protocol.fht.FhtWarningMessage;
 import org.junit.jupiter.api.Test;
 
 /**
  *
  * @author Arne Plöse
  */
-public class FhtWarningsMessageTest implements ParserListener<FhtMessage> {
+public class FhtModeMessageTest implements ParserListener<AbstractFhtMessage> {
 
     private FhtParser parser = new FhtParser(this);
     private FhtMessage partialFhtMessage;
+    private FhtMessage assembledFhtMessage;
     private FhtMessage fhtMessage;
 
     private void decode(String s) {
         fhtMessage = null;
         partialFhtMessage = null;
+        assembledFhtMessage = null;
         parser.init();
         new DataSource(s).iterate(parser);
     }
 
     @Test
-    public void decode_NoWarnings() {
-        decode("0302446900");
-        FhtWarningsMessageTest.assertWarningsMessage(fhtMessage, 302, true, true, EnumSet.noneOf(Fht80bWarning.class));
+    public void decode_AutoMatik() {
+        decode("03023E6900");
+        FhtModeMessageTest.assertModeMessage(fhtMessage, 302, true, true, Fht80bMode.AUTO);
+    }
+
+    @Test
+    public void decode_Party() {
+        decode("0302416922");
+        FhtTempMessageTest.assertTempMessage(fhtMessage, 302, FhtProperty.DESIRED_TEMP, true, true, 17.0f);
+        decode("03023F698D");
+        FhtTempMessageTest.assertRawMessage(partialFhtMessage, 302, FhtProperty.HOLIDAY_1, true, true, (byte) 0x8D);
+        decode("0302406913");
+        FhtTempMessageTest.assertRawMessage(partialFhtMessage, 302, FhtProperty.HOLIDAY_2, true, true, (byte) 0x13);
+        decode("03023E6903");
+        FhtTimeMessageTest.assertTimeMessage(assembledFhtMessage, 302, FhtProperty.PARTY_END_TIME, true, true,
+                LocalTime.of(23, 30));
     }
 
     @Override
-    public void success(FhtMessage fhzMessage) {
-        this.fhtMessage = fhzMessage;
+    public void success(AbstractFhtMessage fhzMessage) {
+        this.fhtMessage = (FhtMessage) fhzMessage;
     }
 
     @Override
-    public void successPartial(FhtMessage fhzMessage) {
-        this.partialFhtMessage = fhzMessage;
+    public void successPartial(AbstractFhtMessage fhzMessage) {
+        this.partialFhtMessage = (FhtMessage) fhzMessage;
+    }
+
+    @Override
+    public void successPartialAssembled(AbstractFhtMessage fhzMessage) {
+        this.assembledFhtMessage = (FhtMessage) fhzMessage;
     }
 
     @Override
@@ -73,20 +93,15 @@ public class FhtWarningsMessageTest implements ParserListener<FhtMessage> {
         throw new RuntimeException(t);
     }
 
-    public static void assertWarningsMessage(FhtMessage fhtMessage, int housecode, boolean dataRegister,
-            boolean fromFht_8B, Set<Fht80bWarning> warnings) {
+    public static void assertModeMessage(FhtMessage fhtMessage, int housecode, boolean dataRegister, boolean fromFht_8B,
+            Fht80bMode mode) {
         assertNotNull(fhtMessage);
-        final FhtWarningMessage msg = (FhtWarningMessage) fhtMessage;
+        final FhtModeMessage msg = (FhtModeMessage) fhtMessage;
         assertEquals((short) housecode, msg.housecode, "housecode");
-        assertEquals(FhtProperty.WARNINGS, msg.command, "command");
+        assertEquals(FhtProperty.MODE, msg.command, "command");
         assertEquals(fromFht_8B, msg.fromFht_8B, "fromFht_8B");
         assertEquals(dataRegister, msg.dataRegister, "dataRegister");
-        assertEquals(warnings, msg.warnings, "warnings");
-    }
-
-    @Override
-    public void successPartialAssembled(FhtMessage fhzMessage) {
-        this.fhtMessage = fhzMessage;
+        assertEquals(mode, msg.mode, "mode");
     }
 
 }

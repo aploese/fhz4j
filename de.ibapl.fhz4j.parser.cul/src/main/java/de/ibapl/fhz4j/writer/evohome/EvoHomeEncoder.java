@@ -19,7 +19,7 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package de.ibapl.fhz4j.writer.cul;
+package de.ibapl.fhz4j.writer.evohome;
 
 import de.ibapl.fhz4j.protocol.evohome.DeviceId;
 import de.ibapl.fhz4j.protocol.evohome.EvoHomeProperty;

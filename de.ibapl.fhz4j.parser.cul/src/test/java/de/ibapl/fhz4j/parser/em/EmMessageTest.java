@@ -19,13 +19,13 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package de.ibapl.fhz4j.parser.cul;
+package de.ibapl.fhz4j.parser.em;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import de.ibapl.fhz4j.parser.api.ParserListener;
-import de.ibapl.fhz4j.parser.em.EmParser;
+import de.ibapl.fhz4j.parser.cul.DataSource;
 import de.ibapl.fhz4j.protocol.em.EmDeviceType;
 import de.ibapl.fhz4j.protocol.em.EmMessage;
 import org.junit.jupiter.api.Test;

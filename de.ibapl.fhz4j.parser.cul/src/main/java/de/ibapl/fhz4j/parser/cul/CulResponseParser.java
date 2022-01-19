@@ -36,6 +36,7 @@ import de.ibapl.fhz4j.cul.CulResponse;
 import de.ibapl.fhz4j.cul.SlowRfFlag;
 import de.ibapl.fhz4j.parser.api.ParserListener;
 import de.ibapl.fhz4j.parser.fht.FhtParser;
+import de.ibapl.fhz4j.protocol.fht.AbstractFhtMessage;
 import de.ibapl.fhz4j.protocol.fht.FhtMessage;
 import java.util.function.Consumer;
 
@@ -139,28 +140,28 @@ abstract class CulResponseParser<R extends CulRequest, T extends CulResponse> ex
 
         private State state = State.IDLE;
         private short currentHousecode;
-        private FhtParser fhtParser = new FhtParser(true, new ParserListener<FhtMessage>() {
+        private FhtParser fhtParser = new FhtParser(true, new ParserListener<AbstractFhtMessage>() {
             @Override
             public void fail(Throwable t) {
                 state = State.FAIL;
             }
 
             @Override
-            public void success(FhtMessage fhzMessage) {
-                currentHousecode = fhzMessage.housecode;
-                response.pendingMessages.add(fhzMessage);
+            public void success(AbstractFhtMessage fhzMessage) {
+                currentHousecode = ((FhtMessage) fhzMessage).housecode;
+                response.pendingMessages.add((FhtMessage) fhzMessage);
             }
 
             @Override
-            public void successPartial(FhtMessage fhzMessage) {
-                currentHousecode = fhzMessage.housecode;
-                response.pendingMessages.add(fhzMessage);
+            public void successPartial(AbstractFhtMessage fhzMessage) {
+                currentHousecode = ((FhtMessage) fhzMessage).housecode;
+                response.pendingMessages.add((FhtMessage) fhzMessage);
             }
 
             @Override
-            public void successPartialAssembled(FhtMessage fhzMessage) {
-                currentHousecode = fhzMessage.housecode;
-                response.pendingMessages.add(fhzMessage);
+            public void successPartialAssembled(AbstractFhtMessage fhzMessage) {
+                currentHousecode = ((FhtMessage) fhzMessage).housecode;
+                response.pendingMessages.add((FhtMessage) fhzMessage);
             }
         });
 

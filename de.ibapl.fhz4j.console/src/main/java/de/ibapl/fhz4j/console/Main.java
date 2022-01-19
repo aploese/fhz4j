@@ -40,6 +40,7 @@ import de.ibapl.fhz4j.protocol.evohome.DeviceId;
 import de.ibapl.fhz4j.protocol.evohome.EvoHomeMessage;
 import de.ibapl.fhz4j.protocol.evohome.ZoneTemperature;
 import de.ibapl.fhz4j.protocol.fht.FhtMessage;
+import de.ibapl.fhz4j.protocol.fht.FhtTfMessage;
 import de.ibapl.fhz4j.protocol.fs20.FS20Message;
 import de.ibapl.fhz4j.protocol.hms.HmsMessage;
 import de.ibapl.fhz4j.protocol.lacrosse.tx2.LaCrosseTx2Message;
@@ -202,6 +203,12 @@ public class Main {
             }
             System.err.println("Serial port error - closing down");
             System.exit(1);
+        }
+
+        @Override
+        public void fhtTfDataParsed(FhtTfMessage fhtTfMessage) {
+            printTimeStamp();
+            System.out.println(fhtTfMessage.toString());
         }
     }
 

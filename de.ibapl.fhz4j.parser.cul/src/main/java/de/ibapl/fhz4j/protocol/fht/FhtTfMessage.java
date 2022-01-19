@@ -19,22 +19,33 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package de.ibapl.fhz4j.writer.cul;
+package de.ibapl.fhz4j.protocol.fht;
 
-import java.io.IOException;
+import de.ibapl.fhz4j.api.Protocol;
 
 /**
  *
- * @author aploese
+ * @author Arne Plöse
  */
-public interface Writer extends AutoCloseable {
+public class FhtTfMessage extends AbstractFhtMessage {
 
-    void doWrite() throws IOException;
+    public FhtTfValue value;
+    public boolean lowBattery;
+    public int address;
 
-    void putByte(byte value) throws IOException;
+    public FhtTfMessage(int address, FhtTfValue value, boolean lowBattery) {
+        super(Protocol.FHT_TF);
+        this.address = address;
+        this.value = value;
+        this.lowBattery = lowBattery;
+    }
 
-    void putShort(short value) throws IOException;
+    @Override
+    protected void addToJsonString(StringBuilder sb) {
+        super.addToJsonString(sb);
+        sb.append(String.format(", address : 0x%06x", address));
+        sb.append(", value : ").append(value);
+        sb.append(", lowBattery : ").append(lowBattery);
 
-    void putInt(int value) throws IOException;
-
+    }
 }

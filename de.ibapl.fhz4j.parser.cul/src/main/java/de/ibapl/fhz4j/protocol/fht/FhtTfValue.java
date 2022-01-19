@@ -19,16 +19,18 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package de.ibapl.fhz4j.writer.cul;
+package de.ibapl.fhz4j.protocol.fht;
 
 /**
  *
- * @author aploese
+ * @author Arne Plöse
  */
-public interface EvoHomeWriter extends Writer {
-
-    void startEvoHomeMessage();
-
-    void finishEvoHomeMessage();
+public enum FhtTfValue {
+    SYNC,
+    FINISH,
+    WINDOW_INTERNAL_OPEN,
+    WINDOW_INTERNAL_CLOSED,
+    WINDOW_EXTERNAL_OPEN,
+    WINDOW_EXTERNAL_CLOSED;
 
 }

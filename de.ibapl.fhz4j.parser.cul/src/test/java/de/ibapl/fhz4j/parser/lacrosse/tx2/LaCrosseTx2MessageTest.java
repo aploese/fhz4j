@@ -19,15 +19,15 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package de.ibapl.fhz4j.parser.cul;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+package de.ibapl.fhz4j.parser.lacrosse.tx2;
 
 import de.ibapl.fhz4j.parser.api.ParserListener;
+import de.ibapl.fhz4j.parser.cul.DataSource;
 import de.ibapl.fhz4j.parser.lacrosse.tx2l.LaCrosseTx2Parser;
 import de.ibapl.fhz4j.protocol.lacrosse.tx2.LaCrosseTx2Message;
 import de.ibapl.fhz4j.protocol.lacrosse.tx2.LaCrosseTx2Property;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import org.junit.jupiter.api.Test;
 
 /**

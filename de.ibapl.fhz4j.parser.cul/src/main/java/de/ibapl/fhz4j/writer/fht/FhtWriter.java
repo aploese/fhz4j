@@ -19,30 +19,19 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package de.ibapl.fhz4j.api;
+package de.ibapl.fhz4j.writer.fht;
 
-public enum Protocol {
-    FHT("FHT"), 
-    FHT_TF("FHT_TF"), 
-    FS20("FS 20"), 
-    EM("EM"), 
-    HMS("HMS"), 
-    LA_CROSSE_TX2("LaCrosse Tx2"), 
-    CUL("CUL"), 
-    EVO_HOME("Evo Home"), 
-    UNKNOWN("Unknown");
+import de.ibapl.fhz4j.writer.api.Writer;
+import java.io.IOException;
 
-    private final String label;
+/**
+ *
+ * @author aploese
+ */
+public interface FhtWriter extends Writer {
 
-    private Protocol(String label) {
-        this.label = label;
-    }
+    void startFhtMessage() throws IOException;
 
-    /**
-     * @return the label
-     */
-    public String getLabel() {
-        return label;
-    }
+    void finishFhtMessage() throws IOException;
 
 }

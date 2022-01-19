@@ -29,10 +29,7 @@ public interface Parser {
     default public void init() {
     }
 
-    ;
-
-	default public void init(int expectedLength) {
+    default public void init(int expectedLength) {
     }
-;
 
 }

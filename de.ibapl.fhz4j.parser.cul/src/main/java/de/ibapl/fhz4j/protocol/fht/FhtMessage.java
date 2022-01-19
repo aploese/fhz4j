@@ -21,14 +21,13 @@
  */
 package de.ibapl.fhz4j.protocol.fht;
 
-import de.ibapl.fhz4j.api.Message;
 import de.ibapl.fhz4j.api.Protocol;
 
 /**
  *
  * @author Arne Plöse
  */
-public abstract class FhtMessage extends Message {
+public abstract class FhtMessage extends AbstractFhtMessage {
 
     public short housecode;
     public FhtProperty command;

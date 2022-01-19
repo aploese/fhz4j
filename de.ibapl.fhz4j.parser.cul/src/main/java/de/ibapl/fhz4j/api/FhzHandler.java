@@ -23,6 +23,7 @@ package de.ibapl.fhz4j.api;
 
 import de.ibapl.fhz4j.cul.SlowRfFlag;
 import de.ibapl.fhz4j.protocol.fht.FhtProperty;
+import de.ibapl.fhz4j.protocol.fht.FhtTfValue;
 import java.io.IOException;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
@@ -101,6 +102,8 @@ public interface FhzHandler extends Adapter {
     void initFhz(short fhzHousecode, Set<SlowRfFlag> slowRfFlags) throws IOException;
 
     void writeFht(short housecode, FhtProperty fhtProperty, float value) throws IOException;
+
+    void writeFhtTf(int address, FhtTfValue fhtTfValue, boolean lowBattery) throws IOException;
 
     void writeCulTimeSlotRequest() throws IOException;
 

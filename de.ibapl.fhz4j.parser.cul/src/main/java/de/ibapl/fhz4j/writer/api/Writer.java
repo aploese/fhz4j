@@ -19,7 +19,7 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package de.ibapl.fhz4j.writer.cul;
+package de.ibapl.fhz4j.writer.api;
 
 import java.io.IOException;
 
@@ -27,10 +27,14 @@ import java.io.IOException;
  *
  * @author aploese
  */
-public interface FhtWriter extends Writer {
+public interface Writer extends AutoCloseable {
 
-    void startFhtMessage() throws IOException;
+    void doWrite() throws IOException;
 
-    void finishFhtMessage() throws IOException;
+    void putByte(byte value) throws IOException;
+
+    void putShort(short value) throws IOException;
+
+    void putInt(int value) throws IOException;
 
 }

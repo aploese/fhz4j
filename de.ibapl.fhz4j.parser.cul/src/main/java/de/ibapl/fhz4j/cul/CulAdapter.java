@@ -31,9 +31,10 @@ import de.ibapl.fhz4j.parser.cul.CulParser;
 import de.ibapl.fhz4j.protocol.evohome.DeviceId;
 import de.ibapl.fhz4j.protocol.evohome.ZoneTemperature;
 import de.ibapl.fhz4j.protocol.fht.FhtProperty;
+import de.ibapl.fhz4j.protocol.fht.FhtTfValue;
 import de.ibapl.fhz4j.writer.cul.CulWriter;
-import de.ibapl.fhz4j.writer.cul.EvoHomeEncoder;
-import de.ibapl.fhz4j.writer.cul.FhtEncoder;
+import de.ibapl.fhz4j.writer.evohome.EvoHomeEncoder;
+import de.ibapl.fhz4j.writer.fht.FhtEncoder;
 import de.ibapl.spsw.api.SerialPortSocket;
 import java.io.IOException;
 import java.io.InterruptedIOException;
@@ -197,6 +198,11 @@ public class CulAdapter implements Adapter, FhzHandler, EvoHomeHandler {
     @Override
     public void writeFht(short housecode, FhtProperty fhtProperty, float value) throws IOException {
         fhtEncoder.writeFht(housecode, fhtProperty, value);
+    }
+
+    @Override
+    public void writeFhtTf(int address, FhtTfValue fhtTfValue, boolean lowBattery) throws IOException {
+        fhtEncoder.writeFhtTf(address, fhtTfValue, lowBattery);
     }
 
     @Override

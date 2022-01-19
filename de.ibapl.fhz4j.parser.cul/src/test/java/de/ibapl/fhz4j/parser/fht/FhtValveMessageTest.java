@@ -19,12 +19,11 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package de.ibapl.fhz4j.parser.cul;
+package de.ibapl.fhz4j.parser.fht;
 
 import de.ibapl.fhz4j.parser.api.ParserListener;
 import de.ibapl.fhz4j.parser.cul.DataSource;
-import de.ibapl.fhz4j.parser.cul.FhtValveMessageTest;
-import de.ibapl.fhz4j.parser.fht.FhtParser;
+import de.ibapl.fhz4j.protocol.fht.AbstractFhtMessage;
 import de.ibapl.fhz4j.protocol.fht.FhtMessage;
 import de.ibapl.fhz4j.protocol.fht.FhtProperty;
 import de.ibapl.fhz4j.protocol.fht.FhtValveMode;
@@ -39,7 +38,7 @@ import org.junit.jupiter.api.Test;
  *
  * @author Arne Plöse
  */
-public class FhtValveMessageTest implements ParserListener<FhtMessage> {
+public class FhtValveMessageTest implements ParserListener<AbstractFhtMessage> {
 
     private FhtParser parser = new FhtParser(this);
     private FhtMessage partialFhtMessage;
@@ -145,13 +144,13 @@ public class FhtValveMessageTest implements ParserListener<FhtMessage> {
     }
 
     @Override
-    public void success(FhtMessage fhzMessage) {
-        this.fhtMessage = fhzMessage;
+    public void success(AbstractFhtMessage fhzMessage) {
+        this.fhtMessage = (FhtMessage) fhzMessage;
     }
 
     @Override
-    public void successPartial(FhtMessage fhzMessage) {
-        this.partialFhtMessage = fhzMessage;
+    public void successPartial(AbstractFhtMessage fhzMessage) {
+        this.partialFhtMessage = (FhtMessage) fhzMessage;
     }
 
     @Override
@@ -192,8 +191,8 @@ public class FhtValveMessageTest implements ParserListener<FhtMessage> {
     }
 
     @Override
-    public void successPartialAssembled(FhtMessage fhzMessage) {
-        this.fhtMessage = fhzMessage;
+    public void successPartialAssembled(AbstractFhtMessage fhzMessage) {
+        this.fhtMessage = (FhtMessage) fhzMessage;
     }
 
 }

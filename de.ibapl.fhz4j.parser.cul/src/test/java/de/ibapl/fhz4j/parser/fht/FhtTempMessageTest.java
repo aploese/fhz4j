@@ -19,68 +19,65 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package de.ibapl.fhz4j.parser.cul;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNull;
-
-import java.time.LocalTime;
+package de.ibapl.fhz4j.parser.fht;
 
 import de.ibapl.fhz4j.parser.api.ParserListener;
-import de.ibapl.fhz4j.parser.fht.FhtParser;
+import de.ibapl.fhz4j.parser.cul.DataSource;
+import de.ibapl.fhz4j.protocol.fht.AbstractFhtMessage;
+import de.ibapl.fhz4j.protocol.fht.Fht80bRawMessage;
 import de.ibapl.fhz4j.protocol.fht.FhtMessage;
 import de.ibapl.fhz4j.protocol.fht.FhtProperty;
-import de.ibapl.fhz4j.protocol.fht.FhtTimeMessage;
-import de.ibapl.fhz4j.protocol.fht.FhtTimesMessage;
+import de.ibapl.fhz4j.protocol.fht.FhtTempMessage;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import org.junit.jupiter.api.Test;
 
 /**
  *
  * @author Arne Plöse
  */
-public class FhtTimeMessageTest implements ParserListener<FhtMessage> {
+public class FhtTempMessageTest implements ParserListener<AbstractFhtMessage> {
 
     private FhtParser parser = new FhtParser(this);
     private FhtMessage partialFhtMessage;
-    private FhtMessage assembledfhtMessage;
     private FhtMessage fhtMessage;
 
     private void decode(String s) {
         fhtMessage = null;
         partialFhtMessage = null;
-        assembledfhtMessage = null;
         parser.init();
         new DataSource(s).iterate(parser);
     }
 
     @Test
-    public void decodeThursdayTimes() {
-        decode("030220692A");
-        decode("030221697E");
-        decode("0302226990");
-        decode("0302236990");
-        FhtTimeMessageTest.assertTimesMessage(assembledfhtMessage, 302, FhtProperty.THURSDAY_TIMES, true, true,
-                LocalTime.of(7, 0), LocalTime.of(21, 0), null, null);
+    public void testDesiredTemp() {
+        decode("0302416934");
+        assertTempMessage(fhtMessage, (short) 302, FhtProperty.DESIRED_TEMP, true, true, 26.0f);
     }
 
     @Test
-    public void decodePartyEnd() {
-        decode("03023F696F");
-        decode("0302406906");
-        decode("03023E6903");
-        FhtTimeMessageTest.assertTimeMessage(assembledfhtMessage, 302, FhtProperty.PARTY_END_TIME, true, true,
-                LocalTime.of(18, 30));
+    public void testTemp() {
+        decode("0302426901");
+        assertRawMessage(partialFhtMessage, (short) 302, FhtProperty.MEASURED_LOW, true, true, (byte) 1);
+        decode("0302436901");
+        assertRawMessage(partialFhtMessage, (short) 302, FhtProperty.MEASURED_HIGH, true, true, (byte) 1);
+        assertTempMessage(fhtMessage, (short) 302, FhtProperty.MEASURED_TEMP, true, true, 25.7f);
+    }
+
+    @Test
+    public void decode_FHT_25_1_Degree_Centigrade() {
+        decode("61344269FB");
+        assertRawMessage(partialFhtMessage, 9752, FhtProperty.MEASURED_LOW, true, true, (byte) 251);
     }
 
     @Override
-    public void success(FhtMessage fhzMessage) {
-        this.fhtMessage = fhzMessage;
+    public void success(AbstractFhtMessage fhzMessage) {
+        this.fhtMessage = (FhtMessage) fhzMessage;
     }
 
     @Override
-    public void successPartial(FhtMessage fhzMessage) {
-        this.partialFhtMessage = fhzMessage;
+    public void successPartial(AbstractFhtMessage fhzMessage) {
+        this.partialFhtMessage = (FhtMessage) fhzMessage;
     }
 
     @Override
@@ -88,35 +85,31 @@ public class FhtTimeMessageTest implements ParserListener<FhtMessage> {
         throw new RuntimeException(t);
     }
 
-    public static void assertTimeMessage(FhtMessage fhtMessage, int housecode, FhtProperty fhtProperty,
-            boolean dataRegister, boolean fromFht_8B, LocalTime time) {
+    public static void assertTempMessage(FhtMessage fhtMessage, int housecode, FhtProperty fhtProperty,
+            boolean dataRegister, boolean fromFht_8B, float temp) {
         assertNotNull(fhtMessage);
-        final FhtTimeMessage msg = (FhtTimeMessage) fhtMessage;
+        final FhtTempMessage msg = (FhtTempMessage) fhtMessage;
         assertEquals((short) housecode, msg.housecode, "housecode");
         assertEquals(fhtProperty, msg.command, "command");
         assertEquals(fromFht_8B, msg.fromFht_8B, "fromFht_8B");
         assertEquals(dataRegister, msg.dataRegister, "dataRegister");
-        assertEquals(time, msg.time, "time");
+        assertEquals(temp, msg.temp, Float.MIN_NORMAL, "temp");
     }
 
-    public static void assertTimesMessage(FhtMessage fhtMessage, int housecode, FhtProperty fhtProperty,
-            boolean dataRegister, boolean fromFht_8B, LocalTime timeFrom1, LocalTime timeTo1, LocalTime timeFrom2,
-            LocalTime timeTo2) {
+    public static void assertRawMessage(FhtMessage fhtMessage, int housecode, FhtProperty fhtProperty,
+            boolean dataRegister, boolean fromFht_8B, byte value) {
         assertNotNull(fhtMessage);
-        final FhtTimesMessage msg = (FhtTimesMessage) fhtMessage;
+        final Fht80bRawMessage msg = (Fht80bRawMessage) fhtMessage;
         assertEquals((short) housecode, msg.housecode, "housecode");
         assertEquals(fhtProperty, msg.command, "command");
         assertEquals(fromFht_8B, msg.fromFht_8B, "fromFht_8B");
         assertEquals(dataRegister, msg.dataRegister, "dataRegister");
-        assertEquals(timeFrom1, msg.timeFrom1, "timeFrom1");
-        assertEquals(timeTo1, msg.timeTo1, "timeTo1");
-        assertEquals(timeFrom2, msg.timeFrom2, "timeFrom2");
-        assertEquals(timeTo2, msg.timeTo2, "timeTo2");
+        assertEquals(value, msg.getSignedValue(), "value");
     }
 
     @Override
-    public void successPartialAssembled(FhtMessage fhzMessage) {
-        this.assembledfhtMessage = fhzMessage;
+    public void successPartialAssembled(AbstractFhtMessage fhzMessage) {
+        this.fhtMessage = (FhtMessage) fhzMessage;
     }
 
 }

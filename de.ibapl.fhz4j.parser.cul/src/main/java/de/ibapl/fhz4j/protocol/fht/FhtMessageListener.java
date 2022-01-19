@@ -39,4 +39,6 @@ public interface FhtMessageListener {
 
     void fhtDataParsed(FhtMessage fhtMessage);
 
+    void fhtTfDataParsed(FhtTfMessage fhtTfMessage);
+
 }

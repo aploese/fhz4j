@@ -41,7 +41,9 @@ import de.ibapl.fhz4j.parser.hms.HmsParser;
 import de.ibapl.fhz4j.parser.lacrosse.tx2l.LaCrosseTx2Parser;
 import de.ibapl.fhz4j.protocol.em.EmMessage;
 import de.ibapl.fhz4j.protocol.evohome.EvoHomeMessage;
+import de.ibapl.fhz4j.protocol.fht.AbstractFhtMessage;
 import de.ibapl.fhz4j.protocol.fht.FhtMessage;
+import de.ibapl.fhz4j.protocol.fht.FhtTfMessage;
 import de.ibapl.fhz4j.protocol.fs20.FS20Message;
 import de.ibapl.fhz4j.protocol.hms.HmsMessage;
 import de.ibapl.fhz4j.protocol.lacrosse.tx2.LaCrosseTx2Message;
@@ -69,6 +71,33 @@ public class CulParser<T extends Message> extends AbstractCulParser {
         private QueueEntry(CulRequest request, Consumer<Response> consumer) {
             this.request = request;
             this.consumer = consumer;
+        }
+    }
+
+    private class SubParserListener implements ParserListener<T> {
+
+        @Override
+        public void success(T fhzMessage) {
+            CulParser.this.fhzMessage = fhzMessage;
+            CulParser.this.state = State.SINGNAL_STRENGTH;
+        }
+
+        @Override
+        public void fail(Throwable t) {
+            CulParser.this.state = State.IDLE;
+            CulParser.this.culMessageListener.failed(t);
+        }
+
+        @Override
+        public void successPartial(T fhzMessage) {
+            CulParser.this.partialFhzMessage = fhzMessage;
+            CulParser.this.state = State.SINGNAL_STRENGTH;
+        }
+
+        @Override
+        public void successPartialAssembled(T fhzMessage) {
+            CulParser.this.fhzMessage = fhzMessage;
+            CulParser.this.state = State.SINGNAL_STRENGTH;
         }
     }
 
@@ -114,7 +143,7 @@ public class CulParser<T extends Message> extends AbstractCulParser {
     @SuppressWarnings("unchecked")
     private final FS20Parser fs20Parser = new FS20Parser((ParserListener<FS20Message>) subParserListener);
     @SuppressWarnings("unchecked")
-    private final FhtParser fhtParser = new FhtParser((ParserListener<FhtMessage>) subParserListener);
+    private final FhtParser fhtParser = new FhtParser((ParserListener<AbstractFhtMessage>) subParserListener);
     @SuppressWarnings("unchecked")
     private final HmsParser hmsParser = new HmsParser((ParserListener<HmsMessage>) subParserListener);
     @SuppressWarnings("unchecked")
@@ -142,33 +171,6 @@ public class CulParser<T extends Message> extends AbstractCulParser {
     public void init() {
         partialFhzMessage = null;
         fhzMessage = null;
-    }
-
-    private class SubParserListener implements ParserListener<T> {
-
-        @Override
-        public void success(T fhzMessage) {
-            CulParser.this.fhzMessage = fhzMessage;
-            CulParser.this.state = State.SINGNAL_STRENGTH;
-        }
-
-        @Override
-        public void fail(Throwable t) {
-            CulParser.this.state = State.IDLE;
-            CulParser.this.culMessageListener.failed(t);
-        }
-
-        @Override
-        public void successPartial(T fhzMessage) {
-            CulParser.this.partialFhzMessage = fhzMessage;
-            CulParser.this.state = State.SINGNAL_STRENGTH;
-        }
-
-        @Override
-        public void successPartialAssembled(T fhzMessage) {
-            CulParser.this.fhzMessage = fhzMessage;
-            CulParser.this.state = State.SINGNAL_STRENGTH;
-        }
     }
 
     @Override
@@ -447,6 +449,9 @@ public class CulParser<T extends Message> extends AbstractCulParser {
                 switch (fhzMessage.protocol) {
                     case FHT:
                         culMessageListener.fhtDataParsed((FhtMessage) fhzMessage);
+                        break;
+                    case FHT_TF:
+                        culMessageListener.fhtTfDataParsed((FhtTfMessage) fhzMessage);
                         break;
                     case HMS:
                         culMessageListener.hmsDataParsed((HmsMessage) fhzMessage);

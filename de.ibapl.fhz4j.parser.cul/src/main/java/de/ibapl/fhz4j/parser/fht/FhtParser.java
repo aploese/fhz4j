@@ -21,19 +21,20 @@
  */
 package de.ibapl.fhz4j.parser.fht;
 
-import de.ibapl.fhz4j.LogUtils;
 import de.ibapl.fhz4j.parser.api.Parser;
 import de.ibapl.fhz4j.parser.api.ParserListener;
+import de.ibapl.fhz4j.protocol.fht.AbstractFhtMessage;
 import de.ibapl.fhz4j.protocol.fht.Fht80bMode;
 import de.ibapl.fhz4j.protocol.fht.Fht80bRawMessage;
 import de.ibapl.fhz4j.protocol.fht.Fht80bWarning;
 import de.ibapl.fhz4j.protocol.fht.FhtDateMessage;
 import de.ibapl.fhz4j.protocol.fht.FhtDateTimeMessage;
-import de.ibapl.fhz4j.protocol.fht.FhtMessage;
 import de.ibapl.fhz4j.protocol.fht.FhtModeMessage;
 import de.ibapl.fhz4j.protocol.fht.FhtProperty;
 import de.ibapl.fhz4j.protocol.fht.FhtProtocolMessage;
 import de.ibapl.fhz4j.protocol.fht.FhtTempMessage;
+import de.ibapl.fhz4j.protocol.fht.FhtTfMessage;
+import de.ibapl.fhz4j.protocol.fht.FhtTfValue;
 import de.ibapl.fhz4j.protocol.fht.FhtTimeMessage;
 import de.ibapl.fhz4j.protocol.fht.FhtTimesMessage;
 import de.ibapl.fhz4j.protocol.fht.FhtValveMode;
@@ -48,7 +49,6 @@ import java.util.EnumSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Map;
-import java.util.logging.Logger;
 
 /**
  *
@@ -59,6 +59,7 @@ public class FhtParser implements Parser {
     @Override
     public void init() {
         state = State.COLLECT_HOUSECODE_HIGH;
+        tfAddress = 0;
         housecode = 0;
         description = 0;
         command = null;
@@ -281,57 +282,109 @@ public class FhtParser implements Parser {
 
     private enum State {
 
-        COLLECT_HOUSECODE_HIGH, COLLECT_HOUSECODE_LOW, COLLECT_COMMAND, COLLECT_ORIGIN, COLLECT_VALUE, PARSE_SUCCESS, PARSE_ERROR;
+        COLLECT_HOUSECODE_HIGH,
+        COLLECT_HOUSECODE_LOW,
+        COLLECT_COMMAND,
+        COLLECT_DESCRIPTION,
+        COLLECT_VALUE,
+        PARSE_SUCCESS,
+        PARSE_ERROR,
+        COLLECT_TF_ADDRESS_2ND,
+        COLLECT_TF_ADDRESS_3RD,
+        COLLECT_TF_VALUE;
 
     }
 
-    public FhtParser(ParserListener<FhtMessage> parserListener) {
+    public FhtParser(ParserListener<AbstractFhtMessage> parserListener) {
         this.parserListener = parserListener;
-        this.skipOrigin = false;
+        this.parseCULOutBuffer = false;
     }
 
-    public FhtParser(boolean skipOrigin, ParserListener<FhtMessage> parserListener) {
+    /**
+     *
+     * @param parseCULOutBuffer Are we parsint the CUL out buffer contents? If
+     * so the description (origin) is not present.
+     * @param parserListener
+     */
+    public FhtParser(boolean parseCULOutBuffer, ParserListener<AbstractFhtMessage> parserListener) {
         this.parserListener = parserListener;
-        this.skipOrigin = skipOrigin;
+        this.parseCULOutBuffer = parseCULOutBuffer;
     }
 
-    private static final Logger LOG = Logger.getLogger(LogUtils.FHZ_PARSER_CUL);
-    private final ParserListener<FhtMessage> parserListener;
+    private final ParserListener<AbstractFhtMessage> parserListener;
     private State state;
     private short housecode;
+    private int tfAddress;
     private FhtProperty command;
     private byte description;
-    private final boolean skipOrigin;
+    /**
+     * If the CUL out buffer is parsed the description (origin) is not present
+     * and will be skipped.
+     */
+    private final boolean parseCULOutBuffer;
 
     private final LinkedList<Fht80bRawMessage> partialMessages = new LinkedList<>();
 
+    /**
+     * parse FHT8b FHT8v and FHT Tf data.
+     *
+     *
+     * Detection of FHT TF: if either of the two housecode bytes id above 99 or
+     * 0x63 it must be an FHT TF otherwiose its a FHT8b or FHT8v.
+     *
+     * @param b
+     */
     @Override
     public void parse(byte b) {
         try {
             switch (state) {
                 // FHT
                 case COLLECT_HOUSECODE_HIGH:
-                    housecode = (short) (b * 100);
-                    state = State.COLLECT_HOUSECODE_LOW;
+                    if ((b & 0xFF) > 99) { // 0x63 in hex
+                        tfAddress = (b & 0xFF) << 16;
+                        state = State.COLLECT_TF_ADDRESS_2ND;
+                    } else {
+                        // 99 is ever smaller than 127 so the sign is always positive
+                        housecode = (short) (b * 100);
+                        state = State.COLLECT_HOUSECODE_LOW;
+                    }
                     break;
                 case COLLECT_HOUSECODE_LOW:
-                    housecode += b;
-                    state = State.COLLECT_COMMAND;
+                    if ((b & 0xFF) > 99) {// 0x63 in hex
+                        tfAddress = ((housecode / 100) << 16) + ((b & 0xFF) << 8);
+                        state = State.COLLECT_TF_ADDRESS_3RD;
+                    } else {
+                        // 99 is ever smaller than 127 so the sign is always positive
+                        housecode += (short) b;
+                        state = State.COLLECT_COMMAND;
+                    }
                     break;
                 case COLLECT_COMMAND:
                     command = getCommand(b);
-                    if (skipOrigin) {
+                    if (parseCULOutBuffer) {
                         state = State.COLLECT_VALUE;
                     } else {
-                        state = State.COLLECT_ORIGIN;
+                        state = State.COLLECT_DESCRIPTION;
                     }
                     break;
-                case COLLECT_ORIGIN:
+                case COLLECT_DESCRIPTION:
                     description = b;
                     state = State.COLLECT_VALUE;
                     break;
                 case COLLECT_VALUE:
                     buildAndNotify(b);
+                    state = State.PARSE_SUCCESS;
+                    break;
+                case COLLECT_TF_ADDRESS_2ND:
+                    tfAddress += (b & 0xFF) << 8;
+                    state = State.COLLECT_TF_ADDRESS_3RD;
+                    break;
+                case COLLECT_TF_ADDRESS_3RD:
+                    tfAddress += (b & 0xFF);
+                    state = State.COLLECT_TF_VALUE;
+                    break;
+                case COLLECT_TF_VALUE:
+                    buildAndNotifyTf(b);
                     state = State.PARSE_SUCCESS;
                     break;
 
@@ -521,6 +574,32 @@ public class FhtParser implements Parser {
                 throw new RuntimeException("Cant handle unknown command: " + command);
         }
 
+    }
+
+    private void buildAndNotifyTf(byte b) {
+        final boolean lowBattery = (b & 0x10) == 0x10;
+        switch (b & 0xEF) {
+            case 0x01:
+                parserListener.success(new FhtTfMessage(tfAddress, FhtTfValue.WINDOW_INTERNAL_OPEN, lowBattery));
+                break;
+            case 0x02:
+                parserListener.success(new FhtTfMessage(tfAddress, FhtTfValue.WINDOW_INTERNAL_CLOSED, lowBattery));
+                break;
+            case 0x81:
+                parserListener.success(new FhtTfMessage(tfAddress, FhtTfValue.WINDOW_EXTERNAL_OPEN, lowBattery));
+                break;
+            case 0x82:
+                parserListener.success(new FhtTfMessage(tfAddress, FhtTfValue.WINDOW_EXTERNAL_CLOSED, lowBattery));
+                break;
+            case 0x0C:
+                parserListener.success(new FhtTfMessage(tfAddress, FhtTfValue.SYNC, lowBattery));
+                break;
+            case 0x0F:
+                parserListener.success(new FhtTfMessage(tfAddress, FhtTfValue.FINISH, lowBattery));
+                break;
+            default:
+                throw new RuntimeException(String.format("Unknown TF value: %02x ", b));
+        }
     }
 
     private void buildAndNotifyModeMessage(byte b) {

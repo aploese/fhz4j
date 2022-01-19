@@ -19,9 +19,10 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package de.ibapl.fhz4j.writer.cul;
+package de.ibapl.fhz4j.writer.fht;
 
 import de.ibapl.fhz4j.protocol.fht.FhtProperty;
+import de.ibapl.fhz4j.protocol.fht.FhtTfValue;
 import java.io.IOException;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
@@ -405,6 +406,37 @@ public class FhtEncoder {
                 break;
             default:
                 throw new IllegalArgumentException("Wrong fht property for temp: " + fhtProperty);
+        }
+        finishFhtMessage();
+    }
+
+    public void writeFhtTf(int address, FhtTfValue fhtTfValue, boolean lowBattery) throws IOException {
+        writer.startFhtMessage();
+        writer.putByte((byte) (address >> 16));
+        writer.putByte((byte) (address >> 8));
+        writer.putByte((byte) address);
+        byte value = lowBattery ? (byte) 0x10 : 0x00;
+        switch (fhtTfValue) {
+            case WINDOW_INTERNAL_OPEN:
+                writer.putByte((byte) (value | 0x01));
+                break;
+            case WINDOW_INTERNAL_CLOSED:
+                writer.putByte((byte) (value | 0x02));
+                break;
+            case WINDOW_EXTERNAL_OPEN:
+                writer.putByte((byte) (value | 0x81));
+                break;
+            case WINDOW_EXTERNAL_CLOSED:
+                writer.putByte((byte) (value | 0x82));
+                break;
+            case SYNC:
+                writer.putByte((byte) (value | 0x0C));
+                break;
+            case FINISH:
+                writer.putByte((byte) (value | 0x0F));
+                break;
+            default:
+                throw new IllegalArgumentException("Wrong fht tf value for temp: " + fhtTfValue);
         }
         finishFhtMessage();
     }
