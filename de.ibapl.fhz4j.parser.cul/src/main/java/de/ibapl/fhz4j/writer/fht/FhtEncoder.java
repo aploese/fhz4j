@@ -22,7 +22,7 @@
 package de.ibapl.fhz4j.writer.fht;
 
 import de.ibapl.fhz4j.protocol.fht.FhtProperty;
-import de.ibapl.fhz4j.protocol.fht.FhtTfValue;
+import de.ibapl.fhz4j.protocol.fht.Fht80TfValue;
 import java.io.IOException;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
@@ -410,13 +410,13 @@ public class FhtEncoder {
         finishFhtMessage();
     }
 
-    public void writeFhtTf(int address, FhtTfValue fhtTfValue, boolean lowBattery) throws IOException {
+    public void writeFht80Tf(int address, Fht80TfValue fht80TfValue, boolean lowBattery) throws IOException {
         writer.startFhtMessage();
         writer.putByte((byte) (address >> 16));
         writer.putByte((byte) (address >> 8));
         writer.putByte((byte) address);
         byte value = lowBattery ? (byte) 0x10 : 0x00;
-        switch (fhtTfValue) {
+        switch (fht80TfValue) {
             case WINDOW_INTERNAL_OPEN:
                 writer.putByte((byte) (value | 0x01));
                 break;
@@ -436,7 +436,7 @@ public class FhtEncoder {
                 writer.putByte((byte) (value | 0x0F));
                 break;
             default:
-                throw new IllegalArgumentException("Wrong fht tf value for temp: " + fhtTfValue);
+                throw new IllegalArgumentException("Wrong fht tf value for temp: " + fht80TfValue);
         }
         finishFhtMessage();
     }

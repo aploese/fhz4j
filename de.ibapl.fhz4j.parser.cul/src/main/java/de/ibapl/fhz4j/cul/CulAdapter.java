@@ -31,7 +31,7 @@ import de.ibapl.fhz4j.parser.cul.CulParser;
 import de.ibapl.fhz4j.protocol.evohome.DeviceId;
 import de.ibapl.fhz4j.protocol.evohome.ZoneTemperature;
 import de.ibapl.fhz4j.protocol.fht.FhtProperty;
-import de.ibapl.fhz4j.protocol.fht.FhtTfValue;
+import de.ibapl.fhz4j.protocol.fht.Fht80TfValue;
 import de.ibapl.fhz4j.writer.cul.CulWriter;
 import de.ibapl.fhz4j.writer.evohome.EvoHomeEncoder;
 import de.ibapl.fhz4j.writer.fht.FhtEncoder;
@@ -201,8 +201,8 @@ public class CulAdapter implements Adapter, FhzHandler, EvoHomeHandler {
     }
 
     @Override
-    public void writeFhtTf(int address, FhtTfValue fhtTfValue, boolean lowBattery) throws IOException {
-        fhtEncoder.writeFhtTf(address, fhtTfValue, lowBattery);
+    public void writeFht80Tf(int address, Fht80TfValue fht80TfValue, boolean lowBattery) throws IOException {
+        fhtEncoder.writeFht80Tf(address, fht80TfValue, lowBattery);
     }
 
     @Override

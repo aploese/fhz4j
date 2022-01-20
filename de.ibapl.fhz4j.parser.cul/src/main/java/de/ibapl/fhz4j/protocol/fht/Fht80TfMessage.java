@@ -27,13 +27,13 @@ import de.ibapl.fhz4j.api.Protocol;
  *
  * @author Arne Plöse
  */
-public class FhtTfMessage extends AbstractFhtMessage {
+public class Fht80TfMessage extends AbstractFhtMessage {
 
-    public FhtTfValue value;
+    public Fht80TfValue value;
     public boolean lowBattery;
     public int address;
 
-    public FhtTfMessage(int address, FhtTfValue value, boolean lowBattery) {
+    public Fht80TfMessage(int address, Fht80TfValue value, boolean lowBattery) {
         super(Protocol.FHT_TF);
         this.address = address;
         this.value = value;

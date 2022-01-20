@@ -25,7 +25,7 @@ package de.ibapl.fhz4j.protocol.fht;
  *
  * @author Arne Plöse
  */
-public enum FhtTfValue {
+public enum Fht80TfValue {
     SYNC,
     FINISH,
     WINDOW_INTERNAL_OPEN,

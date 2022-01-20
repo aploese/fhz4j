@@ -43,7 +43,7 @@ import de.ibapl.fhz4j.protocol.em.EmMessage;
 import de.ibapl.fhz4j.protocol.evohome.EvoHomeMessage;
 import de.ibapl.fhz4j.protocol.fht.AbstractFhtMessage;
 import de.ibapl.fhz4j.protocol.fht.FhtMessage;
-import de.ibapl.fhz4j.protocol.fht.FhtTfMessage;
+import de.ibapl.fhz4j.protocol.fht.Fht80TfMessage;
 import de.ibapl.fhz4j.protocol.fs20.FS20Message;
 import de.ibapl.fhz4j.protocol.hms.HmsMessage;
 import de.ibapl.fhz4j.protocol.lacrosse.tx2.LaCrosseTx2Message;
@@ -451,7 +451,7 @@ public class CulParser<T extends Message> extends AbstractCulParser {
                         culMessageListener.fhtDataParsed((FhtMessage) fhzMessage);
                         break;
                     case FHT_TF:
-                        culMessageListener.fhtTfDataParsed((FhtTfMessage) fhzMessage);
+                        culMessageListener.fht80TfDataParsed((Fht80TfMessage) fhzMessage);
                         break;
                     case HMS:
                         culMessageListener.hmsDataParsed((HmsMessage) fhzMessage);

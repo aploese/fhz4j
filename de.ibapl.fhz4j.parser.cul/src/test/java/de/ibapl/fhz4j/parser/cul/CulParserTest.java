@@ -36,7 +36,7 @@ import de.ibapl.fhz4j.cul.CulRemainingFhtDeviceOutBufferSizeRequest;
 import de.ibapl.fhz4j.cul.CulRemainingFhtDeviceOutBufferSizeResponse;
 import de.ibapl.fhz4j.cul.CulRequest;
 import de.ibapl.fhz4j.cul.SlowRfFlag;
-import de.ibapl.fhz4j.fht.FhtTFMessageTest;
+import de.ibapl.fhz4j.fht.Fht80TfMessageTest;
 import de.ibapl.fhz4j.parser.fht.FhtDateMessageTest;
 import de.ibapl.fhz4j.parser.fht.FhtTimeMessageTest;
 import de.ibapl.fhz4j.protocol.em.EmMessage;
@@ -44,8 +44,8 @@ import de.ibapl.fhz4j.protocol.evohome.EvoHomeMessage;
 import de.ibapl.fhz4j.protocol.fht.Fht80bRawMessage;
 import de.ibapl.fhz4j.protocol.fht.FhtMessage;
 import de.ibapl.fhz4j.protocol.fht.FhtProperty;
-import de.ibapl.fhz4j.protocol.fht.FhtTfMessage;
-import de.ibapl.fhz4j.protocol.fht.FhtTfValue;
+import de.ibapl.fhz4j.protocol.fht.Fht80TfMessage;
+import de.ibapl.fhz4j.protocol.fht.Fht80TfValue;
 import de.ibapl.fhz4j.protocol.fs20.FS20Message;
 import de.ibapl.fhz4j.protocol.hms.HmsMessage;
 import de.ibapl.fhz4j.protocol.lacrosse.tx2.LaCrosseTx2Message;
@@ -76,7 +76,7 @@ public class CulParserTest implements CulMessageListener {
     private Throwable throwable;
     private CulParser<Message> parser;
     private FhtMessage fhtMessage;
-    private FhtTfMessage fhtTfMessage;
+    private Fht80TfMessage fht80TfMessage;
     private HmsMessage hmsMsg;
     private EmMessage emMsg;
     private FS20Message fs20Msg;
@@ -124,7 +124,7 @@ public class CulParserTest implements CulMessageListener {
     private void decode(String s, Consumer<Response> consumer, CulRequest... requests) {
 
         fhtMessage = null;
-        fhtTfMessage = null;
+        fht80TfMessage = null;
         fhtPartialMessage = null;
         hmsMsg = null;
         emMsg = null;
@@ -163,14 +163,14 @@ public class CulParserTest implements CulMessageListener {
     }
 
     @Test
-    public void decode_FhtTfTest() {
+    public void decode_Fht80TfTest() {
         decode("T3B753101\r\n");
-        assertNotNull(fhtTfMessage);
-        FhtTFMessageTest.assertTfMessage(fhtTfMessage, 3896625, false, FhtTfValue.WINDOW_INTERNAL_OPEN);
+        assertNotNull(fht80TfMessage);
+        Fht80TfMessageTest.assertTfMessage(fht80TfMessage, 3896625, false, Fht80TfValue.WINDOW_INTERNAL_OPEN);
         assertEquals(0.0, signalStrength, Double.MIN_NORMAL);
         decode("T3B753101FD\r\n");
-        assertNotNull(fhtTfMessage);
-        FhtTFMessageTest.assertTfMessage(fhtTfMessage, 3896625, false, FhtTfValue.WINDOW_INTERNAL_OPEN);
+        assertNotNull(fht80TfMessage);
+        Fht80TfMessageTest.assertTfMessage(fht80TfMessage, 3896625, false, Fht80TfValue.WINDOW_INTERNAL_OPEN);
         assertEquals(-75.5, signalStrength, Double.MIN_NORMAL);
     }
 
@@ -477,7 +477,7 @@ ation: PT10.087149S
     }
 
     @Override
-    public void fhtTfDataParsed(FhtTfMessage fhtMessage) {
-        this.fhtTfMessage = fhtMessage;
+    public void fht80TfDataParsed(Fht80TfMessage fhtMessage) {
+        this.fht80TfMessage = fhtMessage;
     }
 }

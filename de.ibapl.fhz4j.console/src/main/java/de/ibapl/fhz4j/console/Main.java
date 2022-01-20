@@ -32,15 +32,13 @@ import de.ibapl.fhz4j.cul.CulGetSlowRfSettingsRequest;
 import de.ibapl.fhz4j.cul.CulMessage;
 import de.ibapl.fhz4j.cul.CulMessageListener;
 import de.ibapl.fhz4j.cul.CulRemainingFhtDeviceOutBufferSizeRequest;
-import de.ibapl.fhz4j.cul.CulRequest;
-import de.ibapl.fhz4j.cul.CulResponse;
 import de.ibapl.fhz4j.cul.SlowRfFlag;
 import de.ibapl.fhz4j.protocol.em.EmMessage;
 import de.ibapl.fhz4j.protocol.evohome.DeviceId;
 import de.ibapl.fhz4j.protocol.evohome.EvoHomeMessage;
 import de.ibapl.fhz4j.protocol.evohome.ZoneTemperature;
+import de.ibapl.fhz4j.protocol.fht.Fht80TfMessage;
 import de.ibapl.fhz4j.protocol.fht.FhtMessage;
-import de.ibapl.fhz4j.protocol.fht.FhtTfMessage;
 import de.ibapl.fhz4j.protocol.fs20.FS20Message;
 import de.ibapl.fhz4j.protocol.hms.HmsMessage;
 import de.ibapl.fhz4j.protocol.lacrosse.tx2.LaCrosseTx2Message;
@@ -206,9 +204,9 @@ public class Main {
         }
 
         @Override
-        public void fhtTfDataParsed(FhtTfMessage fhtTfMessage) {
+        public void fht80TfDataParsed(Fht80TfMessage fht80TfMessage) {
             printTimeStamp();
-            System.out.println(fhtTfMessage.toString());
+            System.out.println(fht80TfMessage.toString());
         }
     }
 

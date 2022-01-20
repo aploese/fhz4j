@@ -33,8 +33,8 @@ import de.ibapl.fhz4j.protocol.fht.FhtModeMessage;
 import de.ibapl.fhz4j.protocol.fht.FhtProperty;
 import de.ibapl.fhz4j.protocol.fht.FhtProtocolMessage;
 import de.ibapl.fhz4j.protocol.fht.FhtTempMessage;
-import de.ibapl.fhz4j.protocol.fht.FhtTfMessage;
-import de.ibapl.fhz4j.protocol.fht.FhtTfValue;
+import de.ibapl.fhz4j.protocol.fht.Fht80TfMessage;
+import de.ibapl.fhz4j.protocol.fht.Fht80TfValue;
 import de.ibapl.fhz4j.protocol.fht.FhtTimeMessage;
 import de.ibapl.fhz4j.protocol.fht.FhtTimesMessage;
 import de.ibapl.fhz4j.protocol.fht.FhtValveMode;
@@ -580,22 +580,22 @@ public class FhtParser implements Parser {
         final boolean lowBattery = (b & 0x10) == 0x10;
         switch (b & 0xEF) {
             case 0x01:
-                parserListener.success(new FhtTfMessage(tfAddress, FhtTfValue.WINDOW_INTERNAL_OPEN, lowBattery));
+                parserListener.success(new Fht80TfMessage(tfAddress, Fht80TfValue.WINDOW_INTERNAL_OPEN, lowBattery));
                 break;
             case 0x02:
-                parserListener.success(new FhtTfMessage(tfAddress, FhtTfValue.WINDOW_INTERNAL_CLOSED, lowBattery));
+                parserListener.success(new Fht80TfMessage(tfAddress, Fht80TfValue.WINDOW_INTERNAL_CLOSED, lowBattery));
                 break;
             case 0x81:
-                parserListener.success(new FhtTfMessage(tfAddress, FhtTfValue.WINDOW_EXTERNAL_OPEN, lowBattery));
+                parserListener.success(new Fht80TfMessage(tfAddress, Fht80TfValue.WINDOW_EXTERNAL_OPEN, lowBattery));
                 break;
             case 0x82:
-                parserListener.success(new FhtTfMessage(tfAddress, FhtTfValue.WINDOW_EXTERNAL_CLOSED, lowBattery));
+                parserListener.success(new Fht80TfMessage(tfAddress, Fht80TfValue.WINDOW_EXTERNAL_CLOSED, lowBattery));
                 break;
             case 0x0C:
-                parserListener.success(new FhtTfMessage(tfAddress, FhtTfValue.SYNC, lowBattery));
+                parserListener.success(new Fht80TfMessage(tfAddress, Fht80TfValue.SYNC, lowBattery));
                 break;
             case 0x0F:
-                parserListener.success(new FhtTfMessage(tfAddress, FhtTfValue.FINISH, lowBattery));
+                parserListener.success(new Fht80TfMessage(tfAddress, Fht80TfValue.FINISH, lowBattery));
                 break;
             default:
                 throw new RuntimeException(String.format("Unknown TF value: %02x ", b));
