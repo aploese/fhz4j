@@ -318,9 +318,9 @@ public class Main {
 
     public void runSer2Net(String ser2net, Set<Protocol> protocols, File logFile) {
         try {
-            LOG.info("LOG File: " + logFile.getAbsolutePath());
+            LOG.log(Level.INFO, "LOG File: {0}", logFile.getAbsolutePath());
             String[] split = ser2net.split(":");
-            SerialPortSocket serialPort = LoggingSerialPortSocket.wrapWithAsciiOutputStream(new Ser2NetProvider(split[0], Integer.valueOf(split[1])), new FileOutputStream(logFile), false, TimeStampLogging.NONE);
+            SerialPortSocket serialPort = LoggingSerialPortSocket.wrapWithAsciiOutputStream(new Ser2NetProvider(split[0], Integer.parseInt(split[1])), new FileOutputStream(logFile), false, TimeStampLogging.NONE);
             run(serialPort, protocols);
         } catch (Exception ex) {
             throw new RuntimeException(ex);
@@ -336,7 +336,7 @@ public class Main {
             }
             final SerialPortSocketFactory serialPortSocketFactory = i.next();
 
-            LOG.info("LOG File: " + logFile.getAbsolutePath());
+            LOG.log(Level.INFO, "LOG File: {0}", logFile.getAbsolutePath());
             SerialPortSocket serialPort = LoggingSerialPortSocket.wrapWithAsciiOutputStream(serialPortSocketFactory.open(port), new FileOutputStream(logFile), false, TimeStampLogging.UTC);
             run(serialPort, protocols);
         } catch (Exception ex) {

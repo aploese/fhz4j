@@ -19,19 +19,33 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package de.ibapl.fhz4j.parser.api;
+package de.ibapl.fhz4j.protocol.evohome.messages;
 
-@FunctionalInterface
-public interface Parser {
+import de.ibapl.fhz4j.protocol.evohome.EvoHomeCommand;
+import de.ibapl.fhz4j.protocol.evohome.EvoHomeDeviceMessage;
+import de.ibapl.fhz4j.protocol.evohome.EvoHomeMsgParam0;
+import de.ibapl.fhz4j.protocol.evohome.EvoHomeMsgType;
 
-    public void parse(byte b);
+/**
+ *
+ * @author Arne Plöse
+ * <a href="https://github.com/Evsdd/The-Evohome-Protocol/wiki/0001:-RF-Unknown">0001:
+ * RF Check</a>
+ */
+public class RfCheckWriteMessage extends EvoHomeDeviceMessage {
 
-    default public void init() {
-        throw new RuntimeException("Not implemenmted!");
+    public final byte[] value = new byte[0x05];
+
+    public RfCheckWriteMessage(EvoHomeMsgType msgType, EvoHomeMsgParam0 msgParam0) {
+        super(EvoHomeCommand.RF_CHECK, msgType, msgParam0);
+        if (msgType != EvoHomeMsgType.WRITE) {
+            throw new IllegalArgumentException("Only WRITE is currently supported! :" + msgType);
+        }
     }
 
-    default public void init(int expectedLength) {
-        throw new RuntimeException("Not implemenmted!");
+    @Override
+    protected void addToJsonString(StringBuilder sb) {
+        super.addToJsonString(sb);
+        appendByteArray(sb, "value", value);
     }
-
 }

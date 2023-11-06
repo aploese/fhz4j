@@ -19,33 +19,37 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package de.ibapl.fhz4j.protocol.evohome;
+package de.ibapl.fhz4j.protocol.evohome.messages;
 
-import de.ibapl.fhz4j.api.Message;
-import de.ibapl.fhz4j.api.Protocol;
+import de.ibapl.fhz4j.protocol.evohome.EvoHomeCommand;
+import de.ibapl.fhz4j.protocol.evohome.EvoHomeDeviceMessage;
+import de.ibapl.fhz4j.protocol.evohome.EvoHomeMsgParam0;
+import de.ibapl.fhz4j.protocol.evohome.EvoHomeMsgType;
+import java.time.LocalDate;
 
 /**
  *
  * @author Arne Plöse
+ * <a href="https://github.com/zxdavb/ramses_protocol/wiki/10E0:-Device-Information">https://github.com/zxdavb/ramses_protocol/wiki/10E0:-Device-Information</a>
  */
-public abstract class EvoHomeMessage extends Message {
+public class DeviceInformationInformationMessage extends EvoHomeDeviceMessage {
 
-    public final EvoHomeCommand command;
-    public final EvoHomeMsgType msgType;
-    public final EvoHomeMsgParam0 msgParam0;
+    public byte[] unknown0 = new byte[0];
+    public LocalDate firmware;
+    public LocalDate manufactured;
+    public String description;
 
-    protected EvoHomeMessage(EvoHomeCommand command, EvoHomeMsgType msgType, EvoHomeMsgParam0 msgParam0) {
-        super(Protocol.EVO_HOME);
-        this.command = command;
-        this.msgType = msgType;
-        this.msgParam0 = msgParam0;
+    public DeviceInformationInformationMessage(EvoHomeMsgParam0 msgParam0) {
+        super(EvoHomeCommand.DEVICE_INFORMATION, EvoHomeMsgType.INFORMATION, msgParam0);
     }
 
     @Override
     protected void addToJsonString(StringBuilder sb) {
         super.addToJsonString(sb);
-        sb.append(", msgType : ").append(msgType);
-        sb.append(", command : ").append(command);
-        sb.append(", msgParam0 : ").append(msgParam0);
+        sb.append(", description : ").append(description);
+        sb.append(", manufactured : ").append(manufactured);
+        sb.append(", firmware : ").append(firmware);
+        appendByteArray(sb, ", unknown0", unknown0);
+
     }
 }

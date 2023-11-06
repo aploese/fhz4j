@@ -19,33 +19,40 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package de.ibapl.fhz4j.protocol.evohome;
+package de.ibapl.fhz4j.protocol.evohome.messages;
 
-import de.ibapl.fhz4j.api.Message;
-import de.ibapl.fhz4j.api.Protocol;
+import de.ibapl.fhz4j.protocol.evohome.EvoHomeCommand;
+import de.ibapl.fhz4j.protocol.evohome.EvoHomeDeviceMessage;
+import de.ibapl.fhz4j.protocol.evohome.EvoHomeMsgParam0;
+import de.ibapl.fhz4j.protocol.evohome.EvoHomeMsgType;
 
 /**
  *
  * @author Arne Plöse
+ * <a href="https://github.com/zxdavb/ramses_protocol/wiki/0004:-Zone-Name">0004:
+ * Zone Name</a>
  */
-public abstract class EvoHomeMessage extends Message {
+public class ZoneNamePayloadMessage extends EvoHomeDeviceMessage {
 
-    public final EvoHomeCommand command;
-    public final EvoHomeMsgType msgType;
-    public final EvoHomeMsgParam0 msgParam0;
+    public byte zoneId;
+    public byte unused;
+    public String zoneName;
 
-    protected EvoHomeMessage(EvoHomeCommand command, EvoHomeMsgType msgType, EvoHomeMsgParam0 msgParam0) {
-        super(Protocol.EVO_HOME);
-        this.command = command;
-        this.msgType = msgType;
-        this.msgParam0 = msgParam0;
+    public ZoneNamePayloadMessage(EvoHomeMsgType msgType, EvoHomeMsgParam0 msgParam0) {
+        super(EvoHomeCommand.ZONE_NAME, msgType, msgParam0);
+        if (msgType == EvoHomeMsgType.REQUEST) {
+            throw new IllegalArgumentException();
+        }
     }
 
     @Override
     protected void addToJsonString(StringBuilder sb) {
         super.addToJsonString(sb);
-        sb.append(", msgType : ").append(msgType);
-        sb.append(", command : ").append(command);
-        sb.append(", msgParam0 : ").append(msgParam0);
+        sb.append(String.format(", zoneId : 0x%02x", zoneId));
+        sb.append(String.format(", unused : 0x%02x", unused));
+        if (zoneName != null) {
+            sb.append(", zoneName : \"").append(zoneName).append("\"");
+        }
     }
+
 }

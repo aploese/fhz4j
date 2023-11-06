@@ -19,33 +19,36 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package de.ibapl.fhz4j.protocol.evohome;
+package de.ibapl.fhz4j.protocol.evohome.messages;
 
-import de.ibapl.fhz4j.api.Message;
-import de.ibapl.fhz4j.api.Protocol;
+import de.ibapl.fhz4j.protocol.evohome.EvoHomeCommand;
+import de.ibapl.fhz4j.protocol.evohome.EvoHomeDeviceMessage;
+import de.ibapl.fhz4j.protocol.evohome.EvoHomeMsgParam0;
+import de.ibapl.fhz4j.protocol.evohome.EvoHomeMsgType;
 
 /**
  *
  * @author Arne Plöse
+ * <a href="https://github.com/zxdavb/ramses_protocol/wiki/3120:-Unknown">3120:
+ * Unknown</a>
  */
-public abstract class EvoHomeMessage extends Message {
+public class Unknown_0x3120InformationMessage extends EvoHomeDeviceMessage {
 
-    public final EvoHomeCommand command;
-    public final EvoHomeMsgType msgType;
-    public final EvoHomeMsgParam0 msgParam0;
+    public byte unused0; // 0x00
+    public short fixed1; // 0x70B0
+    public int unused2; // 0x000000
+    public byte fixed3; // 0xff
 
-    protected EvoHomeMessage(EvoHomeCommand command, EvoHomeMsgType msgType, EvoHomeMsgParam0 msgParam0) {
-        super(Protocol.EVO_HOME);
-        this.command = command;
-        this.msgType = msgType;
-        this.msgParam0 = msgParam0;
+    public Unknown_0x3120InformationMessage(EvoHomeMsgParam0 msgParam0) {
+        super(EvoHomeCommand.UNKNOWN_3120, EvoHomeMsgType.INFORMATION, msgParam0);
     }
 
     @Override
     protected void addToJsonString(StringBuilder sb) {
         super.addToJsonString(sb);
-        sb.append(", msgType : ").append(msgType);
-        sb.append(", command : ").append(command);
-        sb.append(", msgParam0 : ").append(msgParam0);
+        sb.append(String.format(", unused0 : 0x%02x", unused0));
+        sb.append(String.format(", fixed1 : 0x%04x", fixed1));
+        sb.append(String.format(", unused2 : 0x%06x", unused2));
+        sb.append(String.format(", fixed3 : 0x%02x", fixed3));
     }
 }

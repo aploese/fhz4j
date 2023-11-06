@@ -21,8 +21,6 @@
  */
 package de.ibapl.fhz4j.protocol.evohome;
 
-import java.util.List;
-
 /**
  * Room Desired Temp
  *
@@ -30,25 +28,8 @@ import java.util.List;
  */
 public class EvoHome_AbstractZonesTemperature_Message extends EvoHomeDeviceMessage {
 
-    public List<ZoneTemperature> zoneTemperatures;
-
-    public EvoHome_AbstractZonesTemperature_Message(EvoHomeProperty evoHomeProperty) {
-        super(evoHomeProperty);
+    public EvoHome_AbstractZonesTemperature_Message(EvoHomeCommand command, EvoHomeMsgType msgType, EvoHomeMsgParam0 msgParam0) {
+        super(command, msgType, msgParam0);
     }
 
-    @Override
-    protected void addToJsonString(StringBuilder sb) {
-        super.addToJsonString(sb);
-        sb.append(", zoneTemperatures : [");
-        boolean first = true;
-        for (ZoneTemperature zt : zoneTemperatures) {
-            if (first) {
-                first = false;
-            } else {
-                sb.append(", ");
-            }
-            sb.append(zt);
-        }
-        sb.append("]");
-    }
 }

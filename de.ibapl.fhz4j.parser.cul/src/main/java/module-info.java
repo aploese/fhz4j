@@ -32,6 +32,7 @@ module de.ibapl.fhz4j.parser.cul {
 //	exports de.ibapl.fhz4j.parser.cul;
     exports de.ibapl.fhz4j.protocol.em;
     exports de.ibapl.fhz4j.protocol.evohome;
+    exports de.ibapl.fhz4j.protocol.evohome.messages;
     exports de.ibapl.fhz4j.protocol.fht;
     exports de.ibapl.fhz4j.protocol.fs20;
     exports de.ibapl.fhz4j.protocol.hms;

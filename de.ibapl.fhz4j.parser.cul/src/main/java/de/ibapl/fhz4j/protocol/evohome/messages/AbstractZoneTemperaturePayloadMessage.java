@@ -19,33 +19,42 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package de.ibapl.fhz4j.protocol.evohome;
+package de.ibapl.fhz4j.protocol.evohome.messages;
 
-import de.ibapl.fhz4j.api.Message;
-import de.ibapl.fhz4j.api.Protocol;
+import de.ibapl.fhz4j.protocol.evohome.EvoHomeMsgParam0;
+import de.ibapl.fhz4j.protocol.evohome.EvoHomeMsgType;
+import de.ibapl.fhz4j.protocol.evohome.ZoneTemperature;
+import java.util.LinkedList;
 
 /**
+ * Room Measured Temp
  *
  * @author Arne Plöse
+ * <a href="https://github.com/zxdavb/ramses_protocol/wiki/30C9:-Zone-Temperature">30C9:
+ * Zone Temperature</a>
  */
-public abstract class EvoHomeMessage extends Message {
+public abstract class AbstractZoneTemperaturePayloadMessage extends AbstractZoneTemperatureMessage {
 
-    public final EvoHomeCommand command;
-    public final EvoHomeMsgType msgType;
-    public final EvoHomeMsgParam0 msgParam0;
+    public LinkedList<ZoneTemperature> zoneTemperatures = new LinkedList<>();
 
-    protected EvoHomeMessage(EvoHomeCommand command, EvoHomeMsgType msgType, EvoHomeMsgParam0 msgParam0) {
-        super(Protocol.EVO_HOME);
-        this.command = command;
-        this.msgType = msgType;
-        this.msgParam0 = msgParam0;
+    protected AbstractZoneTemperaturePayloadMessage(EvoHomeMsgType msgType, EvoHomeMsgParam0 msgParam0) {
+        super(msgType, msgParam0);
     }
 
     @Override
     protected void addToJsonString(StringBuilder sb) {
         super.addToJsonString(sb);
-        sb.append(", msgType : ").append(msgType);
-        sb.append(", command : ").append(command);
-        sb.append(", msgParam0 : ").append(msgParam0);
+        sb.append(", zoneTemperatures : [");
+        boolean first = true;
+        for (ZoneTemperature zt : zoneTemperatures) {
+            if (first) {
+                first = false;
+            } else {
+                sb.append(", ");
+            }
+            sb.append(zt);
+        }
+        sb.append("]");
     }
+
 }

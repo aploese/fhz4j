@@ -19,19 +19,29 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package de.ibapl.fhz4j.parser.api;
+package de.ibapl.fhz4j.protocol.evohome.messages;
 
-@FunctionalInterface
-public interface Parser {
+import de.ibapl.fhz4j.protocol.evohome.EvoHomeCommand;
+import de.ibapl.fhz4j.protocol.evohome.EvoHomeDeviceMessage;
+import de.ibapl.fhz4j.protocol.evohome.EvoHomeMsgParam0;
+import de.ibapl.fhz4j.protocol.evohome.EvoHomeMsgType;
 
-    public void parse(byte b);
+/**
+ * @author Arne Plöse
+ * <a href="https://github.com/zxdavb/ramses_protocol/wiki/1F09:-System-Synchronization">1F09:
+ * System Synchronization</a>
+ */
+public class SystemSynchronizationRequestMessage extends EvoHomeDeviceMessage {
 
-    default public void init() {
-        throw new RuntimeException("Not implemenmted!");
+    public byte domain_id;
+
+    public SystemSynchronizationRequestMessage(EvoHomeMsgParam0 msgParam0) {
+        super(EvoHomeCommand.SYSTEM_SYNCHRONIZATION, EvoHomeMsgType.REQUEST, msgParam0);
     }
 
-    default public void init(int expectedLength) {
-        throw new RuntimeException("Not implemenmted!");
+    @Override
+    protected void addToJsonString(StringBuilder sb) {
+        super.addToJsonString(sb);
+        sb.append(String.format(", domain_id : 0x%02x", domain_id));
     }
-
 }

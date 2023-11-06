@@ -52,14 +52,17 @@ public abstract class AbstractParser implements Parser {
     }
 
     protected short getShortValue() {
+        assert stackpos == 0;
         return (short) (value & 0x0000FFFF);
     }
 
     protected byte getByteValue() {
+        assert stackpos == 0;
         return (byte) (value & 0x000000FF);
     }
 
     protected int getIntValue() {
+        assert stackpos == 0;
         return value;
     }
 

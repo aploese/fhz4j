@@ -22,7 +22,9 @@
 package de.ibapl.fhz4j.writer.evohome;
 
 import de.ibapl.fhz4j.protocol.evohome.DeviceId;
-import de.ibapl.fhz4j.protocol.evohome.EvoHomeProperty;
+import de.ibapl.fhz4j.protocol.evohome.EvoHomeCommand;
+import de.ibapl.fhz4j.protocol.evohome.EvoHomeMsgParam0;
+import de.ibapl.fhz4j.protocol.evohome.EvoHomeMsgType;
 import de.ibapl.fhz4j.protocol.evohome.ZoneTemperature;
 import java.io.IOException;
 import java.math.BigDecimal;
@@ -46,15 +48,48 @@ public class EvoHomeEncoder {
     public void writeEvoHomeZoneSetpointPermanent(DeviceId deviceId, ZoneTemperature temperature) throws IOException {
         writer.startEvoHomeMessage();
 
-        writer.putByte((byte) 0x18);
+        writeHeader(EvoHomeMsgType.I, EvoHomeMsgParam0._8);
         writeDeviceId(deviceId);
         writeDeviceId(deviceId);
-        writeEvoPropertyAndLength(EvoHomeProperty._18_2349_ZONE_SETPOINT_PERMANENT);
+        writeEvoCommand(EvoHomeCommand.ZONE_SETPOINT_OVERRIDE);
+        writeDataLength(0x07);
         writeZoneTemperature(temperature);
+        //TODO use meaningful values
         writer.putInt(0x00ffffff);
 
         writer.finishEvoHomeMessage();
         writer.doWrite();
+    }
+
+    private void writeHeader(EvoHomeMsgType msgType, EvoHomeMsgParam0 msgParam0) throws IOException {
+        byte data;
+        switch (msgType) {
+            case REQUEST:
+                data = 0x00;
+                break;
+            case INFORMATION:
+                data = 0x10;
+                break;
+            case WRITE:
+                data = 0x10;
+                break;
+            case RESPONSE:
+                data = 0x30;
+                break;
+            default:
+                throw new AssertionError();
+        }
+        switch (msgParam0) {
+            case _8:
+                data |= 0x08;
+                break;
+            case _C:
+                data |= 0x0C;
+                break;
+            default:
+                throw new AssertionError();
+        }
+        writer.putByte(data);
     }
 
     private void writeDeviceId(DeviceId deviceId) throws IOException {
@@ -63,20 +98,89 @@ public class EvoHomeEncoder {
         writer.putByte((byte) deviceId.id);
     }
 
-    private void writeEvoPropertyAndLength(EvoHomeProperty evoHomeProperty) throws IOException {
-        switch (evoHomeProperty) {
-            case _18_2349_ZONE_SETPOINT_PERMANENT:
-                writer.putByte((byte) 0x23);
-                writer.putByte((byte) 0x49);
-                writer.putByte((byte) 0x07);
+    private void writeDataLength(int length) throws IOException {
+        if (length < 0 || length > 255) {
+            throw new IllegalArgumentException("length outside 0 ... 255");
+        }
+        writer.putByte((byte) length);
+    }
+
+    private void writeEvoCommand(EvoHomeCommand command) throws IOException {
+        switch (command) {
+            case ZONE_NAME:
+                writer.putShort((short) 0x0004);
                 break;
-            case _18_2349_ZONE_SETPOINT_UNTIL:
-                writer.putByte((byte) 0x23);
-                writer.putByte((byte) 0x49);
-                writer.putByte((byte) 0x0D);
+            case ZONE_MANAGEMENT:
+                writer.putShort((short) 0x0005);
+                break;
+            case RELAY_HEAT_DEMAND:
+                writer.putShort((short) 0x0008);
+                break;
+            case RELAY_FAILSAVE:
+                writer.putShort((short) 0x0009);
+                break;
+            case ZONE_CONFIG:
+                writer.putShort((short) 0x000A);
+                break;
+            case ZONE_ACTUATORS:
+                writer.putShort((short) 0x000C);
+                break;
+            case T87RF_STARTUP_000E:
+                writer.putShort((short) 0x000E);
+                break;
+            case RF_SIGNAL_TEST:
+                writer.putShort((short) 0x0016);
+                break;
+            case LOCALIZATION:
+                writer.putShort((short) 0x0100);
+                break;
+            case T87RF_STARTUP_042F:
+                writer.putShort((short) 0x042F);
+                break;
+            case DEVICE_BATTERY_STATUS:
+                writer.putShort((short) 0x1060);
+                break;
+            case DEVICE_INFORMATION:
+                writer.putShort((short) 0x10E0);
+                break;
+            case BOILER_RELAY_INFORMATION:
+                writer.putShort((short) 0x1100);
+                break;
+            case WINDOW_SENSOR:
+                writer.putShort((short) 0x12B0);
+                break;
+            case SYSTEM_SYNCHRONIZATION:
+                writer.putShort((short) 0x1F09);
+                break;
+            case RF_BIND:
+                writer.putShort((short) 0x1FC9);
+                break;
+            case ZONE_SETPOINT:
+                writer.putShort((short) 0x2309);
+                break;
+            case ZONE_SETPOINT_OVERRIDE:
+                writer.putShort((short) 0x2349);
+                break;
+            case CONTROLLER_MODE:
+                writer.putShort((short) 0x2E04);
+                break;
+            case ZONE_TEMPERATURE:
+                writer.putShort((short) 0x30C9);
+                break;
+            case UNKNOWN_3120:
+                writer.putShort((short) 0x3120);
+                break;
+            case SYSTEM_TIMESTAMP:
+                writer.putShort((short) 0x313F);
+                break;
+            case ZONE_HEAT_DEMAND:
+                writer.putShort((short) 0x3150);
+                break;
+            case ACTUATOR_SYNC:
+                writer.putShort((short) 0x3B00);
                 break;
             default:
-                throw new IllegalArgumentException("Cant send evo home property: " + evoHomeProperty);
+                throw new IllegalArgumentException("Cant send evo home command: " + command);
         }
     }
 
@@ -89,10 +193,12 @@ public class EvoHomeEncoder {
 
         writer.startEvoHomeMessage();
 
-        writer.putByte((byte) 0x18);
+        writeHeader(EvoHomeMsgType.I, EvoHomeMsgParam0._8);
         writeDeviceId(deviceId);
         writeDeviceId(deviceId);
-        writeEvoPropertyAndLength(EvoHomeProperty._18_2349_ZONE_SETPOINT_UNTIL);
+        writeEvoCommand(EvoHomeCommand.ZONE_SETPOINT_OVERRIDE);
+        writeDataLength(0x0D);
+
         writeZoneTemperature(temperature);
         writer.putInt(0x04ffffff);
         writeLocalDateTime(localDateTime);

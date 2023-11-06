@@ -19,19 +19,36 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package de.ibapl.fhz4j.parser.api;
+package de.ibapl.fhz4j.protocol.evohome.messages;
 
-@FunctionalInterface
-public interface Parser {
+import de.ibapl.fhz4j.protocol.evohome.EvoHomeCommand;
+import de.ibapl.fhz4j.protocol.evohome.EvoHomeDeviceMessage;
+import de.ibapl.fhz4j.protocol.evohome.EvoHomeMsgParam0;
+import de.ibapl.fhz4j.protocol.evohome.EvoHomeMsgType;
 
-    public void parse(byte b);
+/**
+ *
+ * @author Arne Plöse
+ * <a href="https://github.com/zxdavb/ramses_protocol/wiki/0009:-Relay-Failsafe">0009:
+ * Relay Failsafe</a>
+ */
+public class RelayFailsaveInformationMessage extends EvoHomeDeviceMessage {
 
-    default public void init() {
-        throw new RuntimeException("Not implemenmted!");
+    /**
+     * 0xF9, 0xFA or 0xFC, or zone_idx(0x00-0x0B).
+     */
+    public byte domain_id;
+
+    public int value;
+
+    public RelayFailsaveInformationMessage(EvoHomeMsgParam0 msgParam0) {
+        super(EvoHomeCommand.RELAY_FAILSAVE, EvoHomeMsgType.INFORMATION, msgParam0);
     }
 
-    default public void init(int expectedLength) {
-        throw new RuntimeException("Not implemenmted!");
+    @Override
+    protected void addToJsonString(StringBuilder sb) {
+        super.addToJsonString(sb);
+        sb.append(String.format(", domain_id : 0x%02x", domain_id));
+        sb.append(String.format(", value : 0x%04x", value));
     }
-
 }

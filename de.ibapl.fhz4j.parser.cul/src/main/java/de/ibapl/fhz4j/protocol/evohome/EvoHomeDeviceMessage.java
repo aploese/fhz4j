@@ -30,8 +30,8 @@ public abstract class EvoHomeDeviceMessage extends EvoHomeMessage {
     public DeviceId deviceId1;
     public DeviceId deviceId2;
 
-    public EvoHomeDeviceMessage(EvoHomeProperty property) {
-        super(property);
+    public EvoHomeDeviceMessage(EvoHomeCommand command, EvoHomeMsgType msgType, EvoHomeMsgParam0 msgParam0) {
+        super(command, msgType, msgParam0);
     }
 
     @Override

@@ -72,12 +72,12 @@ public class CulWriter implements FhtWriter, EvoHomeWriter {
 
     @Override
     public void putByte(byte value) throws IOException {
-        putNibble((0xF0 & value) >> 4);
-        putNibble(0x0F & value);
+        putNibble((byte) (value >> 4));
+        putNibble(value);
     }
 
-    private void putNibble(int value) {
-        switch (value) {
+    private void putNibble(byte value) {
+        switch (value & 0x0F) {
             case 0x00:
                 buffer.put((byte) '0');
                 break;
@@ -146,7 +146,7 @@ public class CulWriter implements FhtWriter, EvoHomeWriter {
             buffer.clear();
             buffer.put("\r\n".getBytes());
             doWrite();
-            buffer.put("vd\r\n".getBytes());
+            buffer.put("vd\r\n".getBytes());  //TODO vd is for debugging ....
             doWrite();
             Thread.sleep(100);
             LOG.info("INIT Evo Home End");
@@ -256,16 +256,22 @@ public class CulWriter implements FhtWriter, EvoHomeWriter {
 
     @Override
     public void putShort(short value) throws IOException {
-        putByte((byte) (value >>> 8));
-        putByte((byte) value);
+        putNibble((byte) (value >>> 12));
+        putNibble((byte) (value >>> 8));
+        putNibble((byte) (value >>> 4));
+        putNibble((byte) value);
     }
 
     @Override
     public void putInt(int value) throws IOException {
-        putByte((byte) (value >>> 24));
-        putByte((byte) (value >>> 16));
-        putByte((byte) (value >>> 8));
-        putByte((byte) value);
+        putNibble((byte) (value >>> 28));
+        putNibble((byte) (value >>> 24));
+        putNibble((byte) (value >>> 20));
+        putNibble((byte) (value >>> 16));
+        putNibble((byte) (value >>> 12));
+        putNibble((byte) (value >>> 8));
+        putNibble((byte) (value >>> 4));
+        putNibble((byte) value);
     }
 
 }

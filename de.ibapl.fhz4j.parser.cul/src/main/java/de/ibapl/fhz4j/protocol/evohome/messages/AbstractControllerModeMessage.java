@@ -19,19 +19,39 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package de.ibapl.fhz4j.parser.api;
+package de.ibapl.fhz4j.protocol.evohome.messages;
 
-@FunctionalInterface
-public interface Parser {
+import de.ibapl.fhz4j.protocol.evohome.EvoHomeCommand;
+import de.ibapl.fhz4j.protocol.evohome.EvoHomeDeviceMessage;
+import de.ibapl.fhz4j.protocol.evohome.EvoHomeMsgParam0;
+import de.ibapl.fhz4j.protocol.evohome.EvoHomeMsgType;
 
-    public void parse(byte b);
+/**
+ *
+ * @author Arne Plöse
+ * <a href="https://github.com/zxdavb/ramses_protocol/wiki/2E04:-Controller-Mode">2E04:
+ * Controller Mode</a>
+ */
+public abstract class AbstractControllerModeMessage extends EvoHomeDeviceMessage {
 
-    default public void init() {
-        throw new RuntimeException("Not implemenmted!");
+    public static enum Mode {
+        NORMAL,
+        HEATING_OFF,
+        ECONOMY,
+        AWAY,
+        EXCEPTION_DAY,
+        SPECIAL_PROGRAMME;
     }
 
-    default public void init(int expectedLength) {
-        throw new RuntimeException("Not implemenmted!");
+    public Mode mode;
+
+    protected AbstractControllerModeMessage(EvoHomeMsgType msgType, EvoHomeMsgParam0 msgParam0) {
+        super(EvoHomeCommand.CONTROLLER_MODE, msgType, msgParam0);
     }
 
+    @Override
+    protected void addToJsonString(StringBuilder sb) {
+        super.addToJsonString(sb);
+        sb.append(", mode : ").append(mode);
+    }
 }

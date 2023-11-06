@@ -21,77 +21,75 @@
  */
 package de.ibapl.fhz4j.parser.evohome;
 
-import de.ibapl.fhz4j.parser.api.AbstractParser;
-import de.ibapl.fhz4j.protocol.evohome.messages.ZoneConfigPayloadMessage;
-import java.math.BigDecimal;
-import java.util.LinkedList;
+import de.ibapl.fhz4j.parser.api.Parser;
 
-class ZonesParamParser extends AbstractParser {
+/**
+ * Header 3C or 18 command 0004
+ *
+ * @author aploese
+ *
+ */
+class LocalizationParser implements Parser {
 
-    LinkedList<ZoneConfigPayloadMessage.ZoneParams> zoneParams;
+    StringBuilder nameBuilder = new StringBuilder();
+    byte unused0;
+    byte unused1;
 
     enum State {
 
         /**
          *
          */
-        COLLECT_ZONEID,
+        COLLECT_UNKNOWN0,
         /**
          *
          */
-        COLLECT_FLAGS,
+        COLLECT_LOCALIZATION_NAME,
         /**
          *
          */
-        COLLECT_MIN_TEMP,
+        COLLECT_UNKNOWN1,
         /**
          *
          */
-        COLLECT_MAX_TEMP, PARSE_SUCCESS, PARSE_ERROR;
+        PARSE_SUCCESS, PARSE_ERROR;
 
     }
 
-    // Just cache this ...
-    private final static BigDecimal ONE_HUNDRED = new BigDecimal(100.0);
-
     State state;
-    private short bytesToConsume;
-    private short bytesConsumed;
+    private int bytesToConsume;
+    private int bytesConsumed;
 
     @Override
     public void parse(byte b) {
         bytesConsumed++;
         switch (state) {
-            case COLLECT_ZONEID:
-                zoneParams.addLast(new ZoneConfigPayloadMessage.ZoneParams());
-                zoneParams.getLast().zoneId = b;
-                state = State.COLLECT_FLAGS;
-                break;
-            case COLLECT_FLAGS:
-                zoneParams.getLast().windowFunction = (b & 0x10) == 0x10;
-                zoneParams.getLast().operationLock = (b & 0x01) == 0x01;
-                if ((b & 0xEE) != 0) {
-                    throw new RuntimeException(String.format("Can't handle ZoneParams flags unexpected value: 0x%02x", b));
+            case COLLECT_UNKNOWN0:
+                unused0 = b;
+                if (unused0 != 0) {
+                    throw new RuntimeException("unused0 != 0x00");
                 }
-                setStackSize(2);
-                state = State.COLLECT_MIN_TEMP;
-                break;
-            case COLLECT_MIN_TEMP:
-                if (push(b)) {
-                    zoneParams.getLast().minTemperature = new BigDecimal(getShortValue()).divide(ONE_HUNDRED);
-                    setStackSize(2);
-                    state = State.COLLECT_MAX_TEMP;
+                if (bytesConsumed == bytesToConsume - 1) { //unknown1 ist the last byte to consume
+                    state = State.COLLECT_UNKNOWN1;
+                } else {
+                    state = State.COLLECT_LOCALIZATION_NAME;
                 }
                 break;
-            case COLLECT_MAX_TEMP:
-                if (push(b)) {
-                    zoneParams.getLast().maxTemperature = new BigDecimal(getShortValue()).divide(ONE_HUNDRED);
-                    if (bytesConsumed == bytesToConsume) {
-                        state = State.PARSE_SUCCESS;
-                    } else {
-                        state = State.COLLECT_ZONEID;
-                    }
+            case COLLECT_LOCALIZATION_NAME:
+                if (b != (byte) 0xFF) {// last 2 bytes are 0xFF, so skip them
+                    nameBuilder.append((char) b);
                 }
+                if (bytesConsumed == bytesToConsume - 1) { //unknown1 ist the last byte to consume
+                    state = State.COLLECT_UNKNOWN1;
+                } else {
+                }
+                break;
+            case COLLECT_UNKNOWN1:
+                unused1 = b;
+                if (unused1 != (byte) 0xFF) {
+                    throw new RuntimeException("unused1 != 0xFF");
+                }
+                state = State.PARSE_SUCCESS;
                 break;
             case PARSE_SUCCESS:
                 throw new RuntimeException("PARSE_SUCCESS should not be called");
@@ -102,8 +100,10 @@ class ZonesParamParser extends AbstractParser {
     }
 
     public void init(short bytesToConsume) {
-        state = State.COLLECT_ZONEID;
-        zoneParams = new LinkedList<>();
+        state = State.COLLECT_UNKNOWN0;
+        nameBuilder.setLength(0);
+        unused0 = 0;
+        unused1 = 0;
         this.bytesConsumed = 0;
         this.bytesToConsume = bytesToConsume;
     }

@@ -19,19 +19,31 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package de.ibapl.fhz4j.parser.api;
+package de.ibapl.fhz4j.parser.evohome;
 
-@FunctionalInterface
-public interface Parser {
+/**
+ *
+ * @author aploese
+ */
+public class ByteArrayBuilder {
 
-    public void parse(byte b);
+    private int currentPos;
+    private byte[] theArray;
 
-    default public void init() {
-        throw new RuntimeException("Not implemenmted!");
+    public void init(int capacity) {
+        theArray = new byte[capacity];
+        currentPos = 0;
     }
 
-    default public void init(int expectedLength) {
-        throw new RuntimeException("Not implemenmted!");
+    public boolean push(byte b) {
+        theArray[currentPos++] = b;
+        return currentPos == theArray.length;
     }
 
+    public byte[] getData() {
+        if (currentPos != theArray.length) {
+            throw new IllegalStateException("parsing not finished");
+        }
+        return theArray;
+    }
 }

@@ -19,19 +19,37 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package de.ibapl.fhz4j.parser.api;
+package de.ibapl.fhz4j.protocol.evohome.messages;
 
-@FunctionalInterface
-public interface Parser {
+import de.ibapl.fhz4j.protocol.evohome.EvoHomeMsgParam0;
+import de.ibapl.fhz4j.protocol.evohome.EvoHomeMsgType;
+import java.time.LocalDateTime;
 
-    public void parse(byte b);
+/**
+ *
+ * @author Arne Plöse
+ * <a href="https://github.com/zxdavb/ramses_protocol/wiki/2E04:-Controller-Mode">2E04:
+ * Controller Mode</a>
+ */
+public abstract class AbstractControllerModePayloadMessage extends AbstractControllerModeMessage {
 
-    default public void init() {
-        throw new RuntimeException("Not implemenmted!");
+    public enum ProgrammType {
+        PERMANENT,
+        TIMED;
     }
 
-    default public void init(int expectedLength) {
-        throw new RuntimeException("Not implemenmted!");
+    public LocalDateTime dateTime;
+    public ProgrammType programm_type;
+
+    protected AbstractControllerModePayloadMessage(EvoHomeMsgType msgType, EvoHomeMsgParam0 msgParam0) {
+        super(msgType, msgParam0);
+    }
+
+    @Override
+    protected void addToJsonString(StringBuilder sb) {
+        super.addToJsonString(sb);
+        sb.append(", dateTime : ").append(dateTime);
+        sb.append(", programm_type : ").append(programm_type);
     }
 
 }

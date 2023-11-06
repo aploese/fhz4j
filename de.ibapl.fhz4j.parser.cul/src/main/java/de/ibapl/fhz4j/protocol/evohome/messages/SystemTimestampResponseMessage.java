@@ -19,19 +19,37 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package de.ibapl.fhz4j.parser.api;
+package de.ibapl.fhz4j.protocol.evohome.messages;
 
-@FunctionalInterface
-public interface Parser {
+import de.ibapl.fhz4j.protocol.evohome.EvoHomeMsgParam0;
+import de.ibapl.fhz4j.protocol.evohome.EvoHomeMsgType;
+import java.time.LocalDateTime;
 
-    public void parse(byte b);
+/**
+ *
+ * @author Arne Plöse
+ * <a href="https://github.com/zxdavb/ramses_protocol/wiki/313F:-System-Date-&-Time">313F:
+ * System Date & Time</a>
+ */
+public class SystemTimestampResponseMessage extends AbstractSystemTimestampMessage {
 
-    default public void init() {
-        throw new RuntimeException("Not implemenmted!");
+    public enum Direction {
+        TO_CONTROLLER,
+        TO_DEVICE;
     }
 
-    default public void init(int expectedLength) {
-        throw new RuntimeException("Not implemenmted!");
+    public Direction direction;
+
+    public LocalDateTime timestamp;
+
+    public SystemTimestampResponseMessage(EvoHomeMsgParam0 msgParam0) {
+        super(EvoHomeMsgType.RESPONSE, msgParam0);
     }
 
+    @Override
+    protected void addToJsonString(StringBuilder sb) {
+        super.addToJsonString(sb);
+        sb.append(", direction : ").append(direction);
+        sb.append(", timestamp : ").append(timestamp);
+    }
 }

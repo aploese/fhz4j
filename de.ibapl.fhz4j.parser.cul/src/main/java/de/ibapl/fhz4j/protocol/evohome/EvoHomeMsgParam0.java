@@ -19,19 +19,13 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package de.ibapl.fhz4j.parser.api;
+package de.ibapl.fhz4j.protocol.evohome;
 
-@FunctionalInterface
-public interface Parser {
-
-    public void parse(byte b);
-
-    default public void init() {
-        throw new RuntimeException("Not implemenmted!");
-    }
-
-    default public void init(int expectedLength) {
-        throw new RuntimeException("Not implemenmted!");
-    }
+/**
+ *
+ * @author aploese
+ */
+public enum EvoHomeMsgParam0 {
+    _8, _C,
 
 }

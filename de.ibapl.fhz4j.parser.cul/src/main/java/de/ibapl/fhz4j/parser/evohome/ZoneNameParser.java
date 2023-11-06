@@ -21,14 +21,19 @@
  */
 package de.ibapl.fhz4j.parser.evohome;
 
-import de.ibapl.fhz4j.parser.api.AbstractParser;
-import de.ibapl.fhz4j.protocol.evohome.messages.ZoneConfigPayloadMessage;
-import java.math.BigDecimal;
-import java.util.LinkedList;
+import de.ibapl.fhz4j.parser.api.Parser;
 
-class ZonesParamParser extends AbstractParser {
+/**
+ * Header 3C or 18 command 0004
+ *
+ * @author aploese
+ *
+ */
+class ZoneNameParser implements Parser {
 
-    LinkedList<ZoneConfigPayloadMessage.ZoneParams> zoneParams;
+    StringBuilder zoneNameBuilder = new StringBuilder();
+    byte zoneId;
+    byte unused;
 
     enum State {
 
@@ -39,20 +44,17 @@ class ZonesParamParser extends AbstractParser {
         /**
          *
          */
-        COLLECT_FLAGS,
+        COLLECT_UNKNOWN,
         /**
          *
          */
-        COLLECT_MIN_TEMP,
+        COLLECT_ZONE_NAME,
         /**
          *
          */
-        COLLECT_MAX_TEMP, PARSE_SUCCESS, PARSE_ERROR;
+        PARSE_SUCCESS, PARSE_ERROR;
 
     }
-
-    // Just cache this ...
-    private final static BigDecimal ONE_HUNDRED = new BigDecimal(100.0);
 
     State state;
     private short bytesToConsume;
@@ -63,34 +65,24 @@ class ZonesParamParser extends AbstractParser {
         bytesConsumed++;
         switch (state) {
             case COLLECT_ZONEID:
-                zoneParams.addLast(new ZoneConfigPayloadMessage.ZoneParams());
-                zoneParams.getLast().zoneId = b;
-                state = State.COLLECT_FLAGS;
+                zoneId = b;
+                state = State.COLLECT_UNKNOWN;
                 break;
-            case COLLECT_FLAGS:
-                zoneParams.getLast().windowFunction = (b & 0x10) == 0x10;
-                zoneParams.getLast().operationLock = (b & 0x01) == 0x01;
-                if ((b & 0xEE) != 0) {
-                    throw new RuntimeException(String.format("Can't handle ZoneParams flags unexpected value: 0x%02x", b));
+            case COLLECT_UNKNOWN:
+                unused = b;
+                if (unused != 0) {
+                    throw new RuntimeException("unused was set!?");
                 }
-                setStackSize(2);
-                state = State.COLLECT_MIN_TEMP;
+                state = State.COLLECT_ZONE_NAME;
                 break;
-            case COLLECT_MIN_TEMP:
-                if (push(b)) {
-                    zoneParams.getLast().minTemperature = new BigDecimal(getShortValue()).divide(ONE_HUNDRED);
-                    setStackSize(2);
-                    state = State.COLLECT_MAX_TEMP;
+            case COLLECT_ZONE_NAME:
+                //We do not want 0 or DEL here, so filter it
+                if (b != 0 && b != 0x7F) {
+                    zoneNameBuilder.append((char) b);
                 }
-                break;
-            case COLLECT_MAX_TEMP:
-                if (push(b)) {
-                    zoneParams.getLast().maxTemperature = new BigDecimal(getShortValue()).divide(ONE_HUNDRED);
-                    if (bytesConsumed == bytesToConsume) {
-                        state = State.PARSE_SUCCESS;
-                    } else {
-                        state = State.COLLECT_ZONEID;
-                    }
+                if (bytesConsumed == bytesToConsume) {
+                    state = State.PARSE_SUCCESS;
+                } else {
                 }
                 break;
             case PARSE_SUCCESS:
@@ -103,7 +95,9 @@ class ZonesParamParser extends AbstractParser {
 
     public void init(short bytesToConsume) {
         state = State.COLLECT_ZONEID;
-        zoneParams = new LinkedList<>();
+        zoneNameBuilder.setLength(0);
+        zoneId = 0;
+        unused = 0;
         this.bytesConsumed = 0;
         this.bytesToConsume = bytesToConsume;
     }

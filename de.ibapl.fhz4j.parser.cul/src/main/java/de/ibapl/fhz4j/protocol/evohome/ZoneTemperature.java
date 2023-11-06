@@ -37,6 +37,10 @@ public class ZoneTemperature {
         this.temperature = temperature;
     }
 
+    public ZoneTemperature(byte zone) {
+        this.zone = zone;
+    }
+
     protected void addToString(StringBuilder sb) {
         //no-op must be overwritten ... in subclasses
     }
