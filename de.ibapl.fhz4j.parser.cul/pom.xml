@@ -34,6 +34,7 @@
             <artifactId>easymockclassextension</artifactId>
         </dependency>
     </dependencies>
+    
 
 </project>
 

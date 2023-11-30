@@ -34,15 +34,34 @@ import de.ibapl.fhz4j.protocol.evohome.EvoHomeMsgType;
  */
 public abstract class AbstractControllerModeMessage extends EvoHomeDeviceMessage {
 
+    /**
+     * The modes of the controller.
+     */
     public static enum Mode {
+        /**
+         * Normal operation - follo schedule.
+         */
         NORMAL,
+        /**
+         * Heating is OFF.
+         */
         HEATING_OFF,
+        /**
+         * Reduced room temp.
+         */
         ECONOMY,
+        /**
+         * Reduced room temp and reduced water temp.
+         *
+         */
         AWAY,
         EXCEPTION_DAY,
         SPECIAL_PROGRAMME;
     }
 
+    /**
+     * The mode of the controller.
+     */
     public Mode mode;
 
     protected AbstractControllerModeMessage(EvoHomeMsgType msgType, EvoHomeMsgParam0 msgParam0) {

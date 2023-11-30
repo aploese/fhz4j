@@ -27,7 +27,8 @@ package de.ibapl.fhz4j.cul;
  */
 public enum SlowRfFlag {
     /**
-     * Bit 0: Report known messages (parity & checksum ok), with type prefix.
+     * Bit 0: Report known messages (parity &amp; checksum ok), with type
+     * prefix.
      */
     REPORT_PACKAGE(0x01),
     /**

@@ -28,7 +28,7 @@ import de.ibapl.fhz4j.protocol.evohome.EvoHomeMsgType;
  *
  * @author Arne Plöse
  * <a href="https://github.com/zxdavb/ramses_protocol/wiki/313F:-System-Date-&-Time">313F:
- * System Date & Time</a>
+ * System Date &amp; Time</a>
  */
 public class SystemTimestampRequestMessage extends AbstractSystemTimestampMessage {
 
