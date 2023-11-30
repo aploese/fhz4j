@@ -37,4 +37,5 @@ module de.ibapl.fhz4j.parser.cul {
     exports de.ibapl.fhz4j.protocol.fs20;
     exports de.ibapl.fhz4j.protocol.hms;
     exports de.ibapl.fhz4j.protocol.lacrosse.tx2;
+    exports de.ibapl.fhz4j.scada;
 }
