@@ -50,9 +50,6 @@ import de.ibapl.fhz4j.protocol.fs20.FS20Message;
 import de.ibapl.fhz4j.protocol.hms.HmsMessage;
 import de.ibapl.fhz4j.protocol.lacrosse.tx2.LaCrosseTx2Message;
 import java.io.IOException;
-import java.nio.ByteBuffer;
-import java.nio.channels.FileChannel;
-import java.nio.file.Path;
 import java.time.LocalTime;
 import java.util.EnumSet;
 import java.util.Set;
@@ -391,17 +388,6 @@ ation: PT10.087149S
         assertNull(throwable);
         assertEquals("? (~ is unknown) Use one of A B C e F G h i K L l M m R T t U u V v W X x Y Z z", helpMessage);
         assertTrue(parser.isIdle());
-    }
-
-    @Test
-    public void decodeFhtMessage_5() throws Exception {
-        ByteBuffer b = ByteBuffer.allocateDirect(1024);
-        FileChannel fc = FileChannel.open(Path.of("/home/aploese/eno1.txt"));
-        fc.read(b);
-
-        decode("T0101436900F9\r\nT0101446901F9\r\nT0101856904F9\r\n");
-        assertNull(throwable);
-        assertNotNull(fhtMessage);
     }
 
     @Test

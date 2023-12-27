@@ -30,12 +30,17 @@ import de.ibapl.fhz4j.api.Response;
 import de.ibapl.fhz4j.parser.cul.CulParser;
 import de.ibapl.fhz4j.protocol.evohome.DeviceId;
 import de.ibapl.fhz4j.protocol.evohome.ZoneTemperature;
-import de.ibapl.fhz4j.protocol.fht.FhtProperty;
 import de.ibapl.fhz4j.protocol.fht.Fht80TfValue;
+import de.ibapl.fhz4j.protocol.fht.FhtProperty;
 import de.ibapl.fhz4j.writer.cul.CulWriter;
 import de.ibapl.fhz4j.writer.evohome.EvoHomeEncoder;
 import de.ibapl.fhz4j.writer.fht.FhtEncoder;
+import de.ibapl.spsw.api.DataBits;
+import de.ibapl.spsw.api.FlowControl;
+import de.ibapl.spsw.api.Parity;
 import de.ibapl.spsw.api.SerialPortSocket;
+import de.ibapl.spsw.api.Speed;
+import de.ibapl.spsw.api.StopBits;
 import java.io.IOException;
 import java.io.InterruptedIOException;
 import java.nio.ByteBuffer;
@@ -54,6 +59,8 @@ import java.util.logging.Logger;
 public class CulAdapter implements Adapter, FhzHandler, EvoHomeHandler {
 
     private class StreamListener implements Runnable {
+
+        private final ByteBuffer inBuffer = ByteBuffer.allocateDirect(64);
 
         @Override
         public void run() {
@@ -90,16 +97,29 @@ public class CulAdapter implements Adapter, FhzHandler, EvoHomeHandler {
     private FhtEncoder fhtEncoder;
     private EvoHomeEncoder evoHomeEncoder;
     private final CulMessageListener fhzDataListener;
-    private final ByteBuffer inBuffer = ByteBuffer.allocateDirect(64);
     private boolean open;
     private Thread parserThread;
     private SerialPortSocket serialPortSocket;
     private final StreamListener streamListener = new StreamListener();
 
-    public CulAdapter(SerialPortSocket serialPortSocket, CulMessageListener fhzDataListener) {
+    /**
+     * Create a CUL adapter and initialize the serial port with 9600,8,n,1.
+     *
+     * @param serialPortSocket
+     * @param fhzDataListener
+     */
+    public CulAdapter(SerialPortSocket serialPortSocket, CulMessageListener fhzDataListener) throws IOException {
         if (!serialPortSocket.isOpen()) {
             throw new IllegalStateException("serial port " + serialPortSocket.getPortName() + " is not open");
         }
+
+        serialPortSocket.setSpeed(Speed._9600_BPS);
+        serialPortSocket.setDataBits(DataBits.DB_8);
+        serialPortSocket.setParity(Parity.NONE);
+        serialPortSocket.setStopBits(StopBits.SB_1);
+        serialPortSocket.setFlowControl(FlowControl.getFC_NONE());
+        serialPortSocket.setTimeouts(100, 1000, 1000);
+
         this.serialPortSocket = serialPortSocket;
         this.fhzDataListener = fhzDataListener;
         culParser = new CulParser<>(fhzDataListener);
