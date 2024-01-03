@@ -127,7 +127,7 @@ public class CulAdapter implements Adapter, FhzHandler, EvoHomeHandler {
         serialPortSocket.setParity(Parity.NONE);
         serialPortSocket.setStopBits(StopBits.SB_1);
         serialPortSocket.setFlowControl(FlowControl.getFC_NONE());
-        serialPortSocket.setTimeouts(100, 1000, 1000);
+        serialPortSocket.setTimeouts(100, 60000, 1000);
 
         this.serialPortSocket = serialPortSocket;
         this.fhzDataListener = fhzDataListener;
