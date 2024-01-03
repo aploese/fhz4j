@@ -44,6 +44,7 @@ import de.ibapl.spsw.api.StopBits;
 import de.ibapl.spsw.api.TimeoutIOException;
 import java.io.IOException;
 import java.nio.ByteBuffer;
+import java.nio.channels.AsynchronousCloseException;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -77,6 +78,12 @@ public class CulAdapter implements Adapter, FhzHandler, EvoHomeHandler {
                         }
                     }
                     inBuffer.clear();
+                } catch (AsynchronousCloseException ace) {
+                    if (open) {
+                        fhzDataListener.onIOException(ace);
+                    } else {
+                        LOG.finest("caught AsynchronousCloseException");
+                    }
                 } catch (TimeoutIOException tioe) {
                     LOG.finest("caught TimeoutIOException");
                 } catch (IOException iioe) {
