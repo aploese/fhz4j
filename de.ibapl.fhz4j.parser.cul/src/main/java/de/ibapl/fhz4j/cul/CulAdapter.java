@@ -41,8 +41,8 @@ import de.ibapl.spsw.api.Parity;
 import de.ibapl.spsw.api.SerialPortSocket;
 import de.ibapl.spsw.api.Speed;
 import de.ibapl.spsw.api.StopBits;
+import de.ibapl.spsw.api.TimeoutIOException;
 import java.io.IOException;
-import java.io.InterruptedIOException;
 import java.nio.ByteBuffer;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
@@ -77,7 +77,9 @@ public class CulAdapter implements Adapter, FhzHandler, EvoHomeHandler {
                         }
                     }
                     inBuffer.clear();
-                } catch (InterruptedIOException iioe) {
+                } catch (TimeoutIOException tioe) {
+                    LOG.finest("caught TimeoutIOException");
+                } catch (IOException iioe) {
                     if (CulAdapter.this.open) {
                         CulAdapter.this.fhzDataListener.onIOException(iioe);
                     }
