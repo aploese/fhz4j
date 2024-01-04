@@ -44,6 +44,7 @@ import de.ibapl.fhz4j.protocol.hms.HmsMessage;
 import de.ibapl.fhz4j.protocol.lacrosse.tx2.LaCrosseTx2Message;
 import de.ibapl.spsw.api.SerialPortSocket;
 import de.ibapl.spsw.api.SerialPortSocketFactory;
+import de.ibapl.spsw.api.Speed;
 import de.ibapl.spsw.logging.LoggingSerialPortSocket;
 import de.ibapl.spsw.logging.TimeStampLogging;
 import de.ibapl.spsw.ser2net.Ser2NetProvider;
@@ -235,6 +236,11 @@ public class Main {
         opt.setType(String.class);
         optg.addOption(opt);
 
+        opt = new Option("s", "speed", true, "serial port speed (baudrate)");
+        opt.setArgName("speed");
+        opt.setType(int.class);
+        optg.addOption(opt);
+
         opt = new Option("r", "ser2net", true, "ser2net host:port");
         opt.setArgName("ser2net");
         opt.setType(String.class);
@@ -304,32 +310,40 @@ public class Main {
 
         final File logFile = File.createTempFile("cul_", ".txt", Paths.get(".").toFile());
 
+        final Speed speed;
+        if (cmd.hasOption("speed")) {
+            speed = Speed.fromNative(Integer.parseInt(cmd.getOptionValue("speed")));
+        } else {
+            speed = Speed._9600_BPS;
+        }
+
         if (cmd.hasOption("ser2net")) {
-            new Main().runSer2Net(cmd.getOptionValue("ser2net"), protocols, logFile);
+            new Main().runSer2Net(cmd.getOptionValue("ser2net"), protocols, speed, logFile);
         }
 
         if (cmd.hasOption("port")) {
-            new Main().runLocalPort(cmd.getOptionValue("port"), protocols, logFile);
+            new Main().runLocalPort(cmd.getOptionValue("port"), protocols, speed, logFile);
         }
 
     }
 
     private final Set<Short> DEVICES_HOME_CODE = new HashSet<>();
 
-    public void runSer2Net(String ser2net, Set<Protocol> protocols, File logFile) {
+    public void runSer2Net(String ser2net, Set<Protocol> protocols, Speed speed, File logFile) {
         try {
             LOG.log(Level.INFO, "LOG File: {0}", logFile.getAbsolutePath());
             String[] split = ser2net.split(":");
             SerialPortSocket serialPort = LoggingSerialPortSocket.wrapWithAsciiOutputStream(new Ser2NetProvider(split[0], Integer.parseInt(split[1])), new FileOutputStream(logFile), false, TimeStampLogging.NONE);
-            run(serialPort, protocols);
+            run(serialPort, protocols, speed);
         } catch (Exception ex) {
             throw new RuntimeException(ex);
         }
     }
 
-    public void runLocalPort(String port, Set<Protocol> protocols, File logFile) {
+    public void runLocalPort(String port, Set<Protocol> protocols, Speed speed, File logFile) {
         try {
-            ServiceLoader<SerialPortSocketFactory> sl = ServiceLoader.load(SerialPortSocketFactory.class);
+            ServiceLoader<SerialPortSocketFactory> sl = ServiceLoader.load(SerialPortSocketFactory.class
+            );
             Iterator<SerialPortSocketFactory> i = sl.iterator();
             if (!i.hasNext()) {
                 throw new RuntimeException("No provider for SerialPortSocketFactory found, pleas add one to you class path ");
@@ -338,15 +352,15 @@ public class Main {
 
             LOG.log(Level.INFO, "LOG File: {0}", logFile.getAbsolutePath());
             SerialPortSocket serialPort = LoggingSerialPortSocket.wrapWithAsciiOutputStream(serialPortSocketFactory.open(port), new FileOutputStream(logFile), false, TimeStampLogging.UTC);
-            run(serialPort, protocols);
+            run(serialPort, protocols, speed);
         } catch (Exception ex) {
             throw new RuntimeException(ex);
         }
     }
 
-    public void run(SerialPortSocket serialPortSocket, Set<Protocol> protocols) throws Exception {
+    public void run(SerialPortSocket serialPortSocket, Set<Protocol> protocols, Speed speed) throws Exception {
         final FhzListener listener = new FhzListener();
-        try (CulAdapter culAddapter = new CulAdapter(serialPortSocket, listener)) {
+        try (CulAdapter culAddapter = new CulAdapter(serialPortSocket, listener, speed)) {
             listener.fhzAdapter = culAddapter;
             try {
                 try {
