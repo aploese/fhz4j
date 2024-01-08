@@ -116,9 +116,10 @@ public class CulAdapter implements Adapter, FhzHandler, EvoHomeHandler {
      *
      * @param serialPortSocket
      * @param fhzDataListener
+     * @throws java.io.IOException
      */
     @Deprecated
-    private CulAdapter(SerialPortSocket serialPortSocket, CulMessageListener fhzDataListener) throws IOException {
+    public CulAdapter(SerialPortSocket serialPortSocket, CulMessageListener fhzDataListener) throws IOException {
         this(serialPortSocket, fhzDataListener, Speed._9600_BPS);
     }
 
@@ -128,13 +129,14 @@ public class CulAdapter implements Adapter, FhzHandler, EvoHomeHandler {
      * @param serialPortSocket
      * @param fhzDataListener
      * @param sped
+     * @throws java.io.IOException
      */
-    public CulAdapter(SerialPortSocket serialPortSocket, CulMessageListener fhzDataListener, Speed sped) throws IOException {
+    public CulAdapter(SerialPortSocket serialPortSocket, CulMessageListener fhzDataListener, Speed speed) throws IOException {
         if (!serialPortSocket.isOpen()) {
             throw new IllegalStateException("serial port " + serialPortSocket.getPortName() + " is not open");
         }
 
-        serialPortSocket.setSpeed(sped);
+        serialPortSocket.setSpeed(speed);
         serialPortSocket.setDataBits(DataBits.DB_8);
         serialPortSocket.setParity(Parity.NONE);
         serialPortSocket.setStopBits(StopBits.SB_1);
