@@ -1,6 +1,6 @@
 /*
  * FHZ4J - Drivers for the Wireless FS20, FHT and HMS protocol https://github.com/aploese/fhz4j/
- * Copyright (C) 2009-2023, Arne Plöse and individual contributors as indicated
+ * Copyright (C) 2017-2024, Arne Plöse and individual contributors as indicated
  * by the @authors tag. See the copyright.txt in the distribution for a
  * full listing of individual contributors.
  *
@@ -101,7 +101,7 @@ public class CulParser<T extends Message> extends AbstractCulParser {
         }
     }
 
-    private Queue<QueueEntry> pendingRequests = new LinkedList<>();
+    private final Queue<QueueEntry> pendingRequests = new LinkedList<>();
 
     /**
      * Returns whether or not the parser is idle.
@@ -175,46 +175,45 @@ public class CulParser<T extends Message> extends AbstractCulParser {
 
     @Override
     public void parse(char c) {
+        OUTER:
         switch (state) {
-            case IDLE:
+            case IDLE -> {
                 init();
                 switch (c) {
-                    case '?':
+                    case '?' -> {
                         state = State.CUL_HELP_MESSAGE;
                         helpStringBuilder = new StringBuilder();
                         helpStringBuilder.append(c);
-                        break;
-                    case 'E':
+                    }
+                    case 'E' ->
                         state = State.CUL_E_PARSED;
-                        break;
-                    case 'F':
+                    case 'F' -> {
                         initParser(fs20Parser);
                         state = State.PARSER_PARSING;
-                        break;
-                    case 'T':
+                    }
+                    case 'T' -> {
                         initParser(fhtParser);
                         state = State.PARSER_PARSING;
-                        break;
-                    case 'H':
+                    }
+                    case 'H' -> {
                         initParser(hmsParser);
                         state = State.PARSER_PARSING;
-                        break;
-                    case 't':
+                    }
+                    case 't' -> {
                         initParser(laCrosseTx2Parser);
                         state = State.PARSER_PARSING;
-                        break;
-                    case 'L':
+                    }
+                    case 'L' ->
                         state = State.CUL_L_PARSED;
-                        break;
-                    case 'v':
+                    case 'v' -> {
                         evoHomeParser.init();
                         state = State.EVO_HOME_START;
-                        break;
-                    case '\n':
-                        break;
-                    case '\r':
-                        break;
-                    default:
+                    }
+                    case '\n' -> {
+                    }
+                    case '\r' -> {
+                    }
+                    default -> {
                         if (!pendingRequests.isEmpty()) {
                             culResponseParser = CulResponseParser.of(pendingRequests.peek().request, pendingRequests.peek().consumer);
                             state = State.CUL_PARSER_PARSING;
@@ -222,58 +221,59 @@ public class CulParser<T extends Message> extends AbstractCulParser {
                         } else {
                             LOG.fine(String.format("Discarted: 0x%02x %s", (byte) c, c));
                         }
+                    }
                 }
-                break;
-            case EVO_HOME_START:
+            }
+            case EVO_HOME_START -> {
                 switch (c) {
-                    case 'r':
+                    case 'r' -> {
                         initParser(evoHomeParser);
                         state = State.PARSER_PARSING;
-                        break;
-                    case 'a':
+                    }
+                    case 'a' -> {
                         culMessageListener.receiveEnabled(Protocol.EVO_HOME);
                         state = State.IDLE;
-                        break;
-                    case '!':
+                    }
+                    case '!' ->
                         state = State.EVO_HOME_READ_ERROR_CHAR;
-                        break;
-                    default:
+                    default ->
                         throw new IllegalArgumentException(String.format("unexpected char EVO_HOME_START: 0x%02x %s", (byte) c, c));
                 }
-                break;
-            case EVO_HOME_READ_ERROR_CHAR:
+            }
+            case EVO_HOME_READ_ERROR_CHAR -> {
                 switch (c) {
-                    case 'M':
+                    case 'M' -> {
                         //Manchester coding error in received data
                         errorGarbageCollector.append("EvoHome Manchester coding error:");
                         state = State.EVO_HOME_READ_GARBAGE;
-                        break;
-                    case 'F':
+                    }
+                    case 'F' -> {
                         //Framing error, where received data doesn't decode to 1start-8data-1stop at 38,400bps
                         errorGarbageCollector.append("EvoHome Framing error:");
                         state = State.EVO_HOME_READ_GARBAGE;
-                        break;
-                    case 'C':
+                    }
+                    case 'C' -> {
                         //Checksum error over completed message
                         errorGarbageCollector.append("EvoHome Checksum error:");
                         state = State.EVO_HOME_READ_GARBAGE;
-                        break;
-                    case 'L':
+                    }
+                    case 'L' -> {
                         //Message exceed expected maximum length
                         errorGarbageCollector.append("EvoHome Msg too long:");
                         state = State.EVO_HOME_READ_GARBAGE;
-                        break;
-                    case 'O':
+                    }
+                    case 'O' -> {
                         //verrun, where a second data byte arrived before the ISR processing the first was able to complete
                         errorGarbageCollector.append("EvoHome  overrun:");
                         state = State.EVO_HOME_READ_GARBAGE;
-                        break;
-                    default:
-                        errorGarbageCollector.append("EvoHome  unknown :" + c);
+                    }
+                    default -> {
+                        errorGarbageCollector.append("EvoHome  unknown :").append(c);
                         state = State.EVO_HOME_READ_GARBAGE;
+                    }
                 }
-                break;
-            case EVO_HOME_READ_GARBAGE:
+            }
+            case EVO_HOME_READ_GARBAGE -> {
                 if (c == '\n' || c == '\r') {
                     //TODO pass to culListener???
                     LOG.warning(errorGarbageCollector.toString());
@@ -282,23 +282,21 @@ public class CulParser<T extends Message> extends AbstractCulParser {
                 } else {
                     errorGarbageCollector.append(c);
                 }
-                break;
-            case PARSER_PARSING:
+            }
+            case PARSER_PARSING -> {
                 switch (c) {
-                    case 'v':
+                    case 'v' ->
                         state = State.EVO_HOME_START;
-                        break;
-                    case '?':
+                    case '?' -> {
                         state = State.CUL_HELP_MESSAGE;
                         helpStringBuilder = new StringBuilder();
                         helpStringBuilder.append(c);
-                        break;
-                    case '\n':
-                    case '\r':
+                    }
+                    case '\n', '\r' -> {
                         LOG.log(Level.SEVERE, "In state {0} for protocol {1} unexpected end of message received", new Object[]{state, currentParser.getClass().getName()});
                         state = State.IDLE;
-                        break;
-                    default:
+                    }
+                    default -> {
                         if (isFirstNibble) {
                             firstNibble = digit2Byte(c);
                             isFirstNibble = false;
@@ -306,39 +304,41 @@ public class CulParser<T extends Message> extends AbstractCulParser {
                             isFirstNibble = true;
                             currentParser.parse((byte) ((firstNibble << 4) | digit2Byte(c)));
                         }
+                    }
                 }
-                break;
-            case CUL_PARSER_PARSING:
-            	try {
-                culResponseParser.parse(c);
-                switch (c) {
-                    case '\n':
-                        state = State.IDLE;
-                        if (culResponseParser.isSuccess()) {
-                            //On success remove pending parser
-                            pendingRequests.remove();
-                            if (culResponseParser.consumer != null) {
-                                culResponseParser.consumer.accept(culResponseParser.response);
-                            }
-                        } else {
-                            LOG.log(Level.SEVERE, "In state {0} for CUL request {1} unexpected end of message received", new Object[]{state, culResponseParser.getClass().getName()});
-                            state = State.IDLE;
-                            break;
-                        }
-                        break;
-                    case '\r':
-                        //no-op
-                        break;
-                    default:
-                    //no-op
-                }
-            } catch (Exception e) {
-                LOG.log(Level.SEVERE, "In state {0} for CUL request {1} unexpected parser error", new Object[]{state, culResponseParser.getClass().getName()});
-                state = State.IDLE;
-                //TODO notify failure??
             }
-            break;
-            case CUL_E_PARSED:
+            case CUL_PARSER_PARSING -> {
+                try {
+                    culResponseParser.parse(c);
+                    switch (c) {
+                        case '\n' -> {
+                            state = State.IDLE;
+                            if (culResponseParser.isSuccess()) {
+                                //On success remove pending parser
+                                pendingRequests.remove();
+                                if (culResponseParser.consumer != null) {
+                                    culResponseParser.consumer.accept(culResponseParser.response);
+                                }
+                            } else {
+                                LOG.log(Level.SEVERE, "In state {0} for CUL request {1} unexpected end of message received", new Object[]{state, culResponseParser.getClass().getName()});
+                                state = State.IDLE;
+                                break;
+                            }
+                        }
+                        case '\r' -> {
+                        }
+                        default -> {
+                        }
+                    }
+                    //no-op
+                    //no-op
+                } catch (Exception e) {
+                    LOG.log(Level.SEVERE, "In state {0} for CUL request {1} unexpected parser error", new Object[]{state, culResponseParser.getClass().getName()});
+                    state = State.IDLE;
+                    //TODO notify failure??
+                }
+            }
+            case CUL_E_PARSED -> {
                 if (c == 'O') {
                     state = State.CUL_EO_PARSED;
                 } else {
@@ -347,8 +347,8 @@ public class CulParser<T extends Message> extends AbstractCulParser {
                     firstNibble = digit2Byte(c);
                     isFirstNibble = false;
                 }
-                break;
-            case CUL_EO_PARSED:
+            }
+            case CUL_EO_PARSED -> {
                 if (c == 'B') {
                     state = State.END_CHAR_0X0D;
                     fhzMessage = CulEobMessage.EOB;
@@ -356,24 +356,24 @@ public class CulParser<T extends Message> extends AbstractCulParser {
                     // ERROR???
                     state = State.IDLE;
                 }
-                break;
-            case CUL_L_PARSED:
+            }
+            case CUL_L_PARSED -> {
                 if (c == 'O') {
                     state = State.CUL_LO_PARSED;
                 } else {
                     // ERROR???
                     state = State.IDLE;
                 }
-                break;
-            case CUL_LO_PARSED:
+            }
+            case CUL_LO_PARSED -> {
                 if (c == 'V') {
                     state = State.CUL_LOV_PARSED;
                 } else {
                     // ERROR???
                     state = State.IDLE;
                 }
-                break;
-            case CUL_LOV_PARSED:
+            }
+            case CUL_LOV_PARSED -> {
                 if (c == 'F') {
                     state = State.END_CHAR_0X0D;
                     fhzMessage = CulLovfMessage.LOVF;
@@ -381,8 +381,8 @@ public class CulParser<T extends Message> extends AbstractCulParser {
                     // ERROR???
                     state = State.IDLE;
                 }
-                break;
-            case SINGNAL_STRENGTH:
+            }
+            case SINGNAL_STRENGTH -> {
                 if (c == '\r') {
                     state = State.END_CHAR_0X0A;
                     break;
@@ -397,8 +397,8 @@ public class CulParser<T extends Message> extends AbstractCulParser {
                         state = State.END_CHAR_0X0D;
                     }
                 }
-                break;
-            case CUL_HELP_MESSAGE:
+            }
+            case CUL_HELP_MESSAGE -> {
                 if (c == '\n' || c == '\r') {
                     state = State.IDLE;
                     culMessageListener.helpParsed(helpStringBuilder.toString());
@@ -406,20 +406,24 @@ public class CulParser<T extends Message> extends AbstractCulParser {
                 } else {
                     helpStringBuilder.append(c);
                 }
-                break;
-            case END_CHAR_0X0D:
-                if (c == '\r') {
-                    state = State.END_CHAR_0X0A;
-                    break;
-                } else if (c == '\n') {
-                    finishParsingAndNotify();
-                } else {
-                    // ERRORhandling
-                    state = State.IDLE;
-                    break;
+            }
+            case END_CHAR_0X0D -> {
+                switch (c) {
+                    case '\r' -> {
+                        state = State.END_CHAR_0X0A;
+                        break OUTER;
+                    }
+                    case '\n' ->
+                        finishParsingAndNotify();
+                    default -> {
+                        // ERRORhandling
+                        state = State.IDLE;
+                        break OUTER;
+                    }
                 }
-                break;
-            case END_CHAR_0X0A:
+            }
+
+            case END_CHAR_0X0A -> {
                 if (c == '\n') {
                     finishParsingAndNotify();
                 } else {
@@ -427,7 +431,9 @@ public class CulParser<T extends Message> extends AbstractCulParser {
                     state = State.IDLE;
                     parse(c); // try to recover
                 }
-            default:
+            }
+            default -> {
+            }
         }
     }
 
@@ -438,40 +444,31 @@ public class CulParser<T extends Message> extends AbstractCulParser {
                 LOG.fine(fhzMessage.toString());
             }
         }
-
         if (culMessageListener != null) {
 
-            if (partialFhzMessage instanceof FhtMessage) {
-                culMessageListener.fhtPartialDataParsed((FhtMessage) partialFhzMessage);
+            if (partialFhzMessage instanceof FhtMessage fhtMessage) {
+                culMessageListener.fhtPartialDataParsed(fhtMessage);
             }
 
             if (fhzMessage != null) {
                 switch (fhzMessage.protocol) {
-                    case FHT:
+                    case FHT ->
                         culMessageListener.fhtDataParsed((FhtMessage) fhzMessage);
-                        break;
-                    case FHT_TF:
+                    case FHT_TF ->
                         culMessageListener.fht80TfDataParsed((Fht80TfMessage) fhzMessage);
-                        break;
-                    case HMS:
+                    case HMS ->
                         culMessageListener.hmsDataParsed((HmsMessage) fhzMessage);
-                        break;
-                    case EM:
+                    case EM ->
                         culMessageListener.emDataParsed((EmMessage) fhzMessage);
-                        break;
-                    case FS20:
+                    case FS20 ->
                         culMessageListener.fs20DataParsed((FS20Message) fhzMessage);
-                        break;
-                    case LA_CROSSE_TX2:
+                    case LA_CROSSE_TX2 ->
                         culMessageListener.laCrosseTxParsed((LaCrosseTx2Message) fhzMessage);
-                        break;
-                    case CUL:
+                    case CUL ->
                         culMessageListener.culMessageParsed((CulMessage) fhzMessage);
-                        break;
-                    case EVO_HOME:
+                    case EVO_HOME ->
                         culMessageListener.evoHomeParsed((EvoHomeMessage) fhzMessage);
-                        break;
-                    default:
+                    default ->
                         throw new RuntimeException();
                 }
             }
@@ -489,6 +486,7 @@ public class CulParser<T extends Message> extends AbstractCulParser {
      * Add a request for which we expect a response.
      *
      * @param request
+     * @param consumer
      * @return
      */
     public boolean addCulRequest(CulRequest request, Consumer<Response> consumer) {
@@ -499,7 +497,7 @@ public class CulParser<T extends Message> extends AbstractCulParser {
      * Add the ordered request for which we expect a response.
      *
      * @param requests
-     * @return
+     * @param consumer
      */
     public void addCulRequests(Queue<CulRequest> requests, Consumer<CulResponse> consumer) {
         for (CulRequest request : requests) {

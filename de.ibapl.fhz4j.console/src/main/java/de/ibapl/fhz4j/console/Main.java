@@ -1,6 +1,6 @@
 /*
  * FHZ4J - Drivers for the Wireless FS20, FHT and HMS protocol https://github.com/aploese/fhz4j/
- * Copyright (C) 2009-2023, Arne Plöse and individual contributors as indicated
+ * Copyright (C) 2017-2024, Arne Plöse and individual contributors as indicated
  * by the @authors tag. See the copyright.txt in the distribution for a
  * full listing of individual contributors.
  *
@@ -419,13 +419,12 @@ public class Main {
                     c = (char) System.in.read();
 
                     switch (c) {
-                        case 'q':
+                        case 'q' ->
                             System.out.print("Bye will close down!");
-                            break;
-                        case 'r':
+                        case 'r' ->
                             culAddapter.initFhtReporting(DEVICES_HOME_CODE);
-                            break;
-                        default:
+                        default -> {
+                        }
                     }
                 } while (c != 'q');
 

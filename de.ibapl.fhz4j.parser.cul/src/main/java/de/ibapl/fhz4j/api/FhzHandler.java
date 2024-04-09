@@ -1,6 +1,6 @@
 /*
  * FHZ4J - Drivers for the Wireless FS20, FHT and HMS protocol https://github.com/aploese/fhz4j/
- * Copyright (C) 2009-2023, Arne Plöse and individual contributors as indicated
+ * Copyright (C) 2019-2024, Arne Plöse and individual contributors as indicated
  * by the @authors tag. See the copyright.txt in the distribution for a
  * full listing of individual contributors.
  *
@@ -73,13 +73,15 @@ public interface FhzHandler extends Adapter {
                 return result;
             } else {
                 switch (unit) {
-                    case MILLISECONDS:
+                    case MILLISECONDS -> {
                         wait(timeout);
                         return result;
-                    case SECONDS:
+                    }
+                    case SECONDS -> {
                         wait(timeout * 1000);
                         return result;
-                    default:
+                    }
+                    default ->
                         throw new IllegalArgumentException("Only ms and s are allowed");
                 }
             }

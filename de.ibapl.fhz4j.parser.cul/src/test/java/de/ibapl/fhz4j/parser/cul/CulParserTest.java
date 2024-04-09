@@ -1,6 +1,6 @@
 /*
  * FHZ4J - Drivers for the Wireless FS20, FHT and HMS protocol https://github.com/aploese/fhz4j/
- * Copyright (C) 2009-2023, Arne Plöse and individual contributors as indicated
+ * Copyright (C) 2017-2024, Arne Plöse and individual contributors as indicated
  * by the @authors tag. See the copyright.txt in the distribution for a
  * full listing of individual contributors.
  *
@@ -330,6 +330,18 @@ ation: PT10.087149S
     @Test
     public void decode_LA_CROSSE_TX2() {
         decode("tA00E73173D\r\n");
+        assertNull(throwable);
+        assertNotNull(laCrosseTx2Message);
+
+//TODO ???		decode("tA00AA002EAE5\r\n");
+//	 assertNotNull(laCrosseTx2Message);
+    }
+
+    //TODO catch this...
+    //"tA00A6002D620\r\n"
+    @Test
+    public void decode_LA_CROSSE__tAFC67860001E() {
+        decode("tAFC67860001E\r\n");
         assertNull(throwable);
         assertNotNull(laCrosseTx2Message);
 

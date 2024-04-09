@@ -1,6 +1,6 @@
 /*
  * FHZ4J - Drivers for the Wireless FS20, FHT and HMS protocol https://github.com/aploese/fhz4j/
- * Copyright (C) 2009-2023, Arne Plöse and individual contributors as indicated
+ * Copyright (C) 2019-2024, Arne Plöse and individual contributors as indicated
  * by the @authors tag. See the copyright.txt in the distribution for a
  * full listing of individual contributors.
  *
@@ -57,26 +57,24 @@ public class LaCrosseTx2Parser extends AbstractParser {
         try {
             cs += (b & 0x0F) + ((b >> 4) & 0x0F);
             switch (state) {
-                case START_SEQUENCE_A_AND_SENSOR_TYTE:
-                    switch (b) {
-                        case (byte) 0xA0:
-                            laCrosseTx2Message = new LaCrosseTx2Message(LaCrosseTx2Property.TEMP);
-                            break;
-                        case (byte) 0xAE:
-                            laCrosseTx2Message = new LaCrosseTx2Message(LaCrosseTx2Property.HUMIDITY);
-                            break;
-                        default:
+                case START_SEQUENCE_A_AND_SENSOR_TYTE -> {
+                    laCrosseTx2Message = switch (b) {
+                        case (byte) 0xA0 ->
+                            new LaCrosseTx2Message(LaCrosseTx2Property.TEMP);
+                        case (byte) 0xAE ->
+                            new LaCrosseTx2Message(LaCrosseTx2Property.HUMIDITY);
+                        default ->
                             throw new RuntimeException("Can't figure out the sensortype");
-                    }
+                    };
                     state = State.COLLECT_SENSOR_ADDRESS;
-                    break;
-                case COLLECT_SENSOR_ADDRESS:
+                }
+                case COLLECT_SENSOR_ADDRESS -> {
                     // move only the lower nibble one bit to the right
                     laCrosseTx2Message.address = (byte) ((b & 0xF0) | (b >> 1) & 0x07);
                     setStackSize(3);
                     state = State.COLLECT_DATA;
-                    break;
-                case COLLECT_DATA:
+                }
+                case COLLECT_DATA -> {
                     if (push(b)) {
                         switch (laCrosseTx2Message.laCrosseTx2Property) {
                             case TEMP:
@@ -102,8 +100,8 @@ public class LaCrosseTx2Parser extends AbstractParser {
                             throw new RuntimeException("Check sum mismatch");
                         }
                     }
-                    break;
-                default:
+                }
+                default ->
                     throw new RuntimeException("Cant handle stat: " + state);
             }
         } catch (Throwable t) {

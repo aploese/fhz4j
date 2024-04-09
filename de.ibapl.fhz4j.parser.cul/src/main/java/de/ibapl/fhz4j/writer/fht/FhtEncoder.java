@@ -1,6 +1,6 @@
 /*
  * FHZ4J - Drivers for the Wireless FS20, FHT and HMS protocol https://github.com/aploese/fhz4j/
- * Copyright (C) 2009-2023, Arne Plöse and individual contributors as indicated
+ * Copyright (C) 2022-2024, Arne Plöse and individual contributors as indicated
  * by the @authors tag. See the copyright.txt in the distribution for a
  * full listing of individual contributors.
  *
@@ -44,196 +44,135 @@ public class FhtEncoder {
     }
 
     private void writeFhtProperty(FhtProperty fhtProperty, byte value) throws IOException {
-        switch (fhtProperty) {
-            case VALVE:
-                writer.putByte((byte) 0x00);
-                break;
-            case OFFSET_VALVE_1:
-                writer.putByte((byte) 0x01);
-                break;
-            case OFFSET_VALVE_2:
-                writer.putByte((byte) 0x02);
-                break;
-            case OFFSET_VALVE_3:
-                writer.putByte((byte) 0x03);
-                break;
-            case OFFSET_VALVE_4:
-                writer.putByte((byte) 0x04);
-                break;
-            case OFFSET_VALVE_5:
-                writer.putByte((byte) 0x05);
-                break;
-            case OFFSET_VALVE_6:
-                writer.putByte((byte) 0x06);
-                break;
-            case OFFSET_VALVE_7:
-                writer.putByte((byte) 0x07);
-                break;
-            case OFFSET_VALVE_8:
-                writer.putByte((byte) 0x08);
-                break;
-            case MON_FROM_1:
-                writer.putByte((byte) 0x14);
-                break;
-            case MON_TO_1:
-                writer.putByte((byte) 0x15);
-                break;
-            case MON_FROM_2:
-                writer.putByte((byte) 0x16);
-                break;
-            case MON_TO_2:
-                writer.putByte((byte) 0x17);
-                break;
-            case TUE_FROM_1:
-                writer.putByte((byte) 0x18);
-                break;
-            case TUE_TO_1:
-                writer.putByte((byte) 0x19);
-                break;
-            case TUE_FROM_2:
-                writer.putByte((byte) 0x1a);
-                break;
-            case TUE_TO_2:
-                writer.putByte((byte) 0x1b);
-                break;
-            case WED_FROM_1:
-                writer.putByte((byte) 0x1c);
-                break;
-            case WED_TO_1:
-                writer.putByte((byte) 0x1d);
-                break;
-            case WED_FROM_2:
-                writer.putByte((byte) 0x1e);
-                break;
-            case WED_TO_2:
-                writer.putByte((byte) 0x1f);
-                break;
-            case THU_FROM_1:
-                writer.putByte((byte) 0x20);
-                break;
-            case THU_TO_1:
-                writer.putByte((byte) 0x21);
-                break;
-            case THU_FROM_2:
-                writer.putByte((byte) 0x22);
-                break;
-            case THU_TO_2:
-                writer.putByte((byte) 0x23);
-                break;
-            case FRI_FROM_1:
-                writer.putByte((byte) 0x24);
-                break;
-            case FRI_TO_1:
-                writer.putByte((byte) 0x25);
-                break;
-            case FRI_FROM_2:
-                writer.putByte((byte) 0x26);
-                break;
-            case FRI_TO_2:
-                writer.putByte((byte) 0x27);
-                break;
-            case SAT_FROM_1:
-                writer.putByte((byte) 0x28);
-                break;
-            case SAT_TO_1:
-                writer.putByte((byte) 0x29);
-                break;
-            case SAT_FROM_2:
-                writer.putByte((byte) 0x2a);
-                break;
-            case SAT_TO_2:
-                writer.putByte((byte) 0x2b);
-                break;
-            case SUN_FROM_1:
-                writer.putByte((byte) 0x2c);
-                break;
-            case SUN_TO_1:
-                writer.putByte((byte) 0x2d);
-                break;
-            case SUN_FROM_2:
-                writer.putByte((byte) 0x2e);
-                break;
-            case SUN_TO_2:
-                writer.putByte((byte) 0x2f);
-                break;
-            case MODE:
-                writer.putByte((byte) 0x3e);
-                break;
-            case HOLIDAY_1:
-                writer.putByte((byte) 0x3f);
-                break;
-            case HOLIDAY_2:
-                writer.putByte((byte) 0x40);
-                break;
-            case DESIRED_TEMP:
-                writer.putByte((byte) 0x41);
-                break;
-            case MEASURED_LOW:
-                writer.putByte((byte) 0x42);
-                break;
-            case MEASURED_HIGH:
-                writer.putByte((byte) 0x43);
-                break;
-            case WARNINGS:
-                writer.putByte((byte) 0x44);
-                break;
-            case MANU_TEMP:
-                writer.putByte((byte) 0x45);
-                break;
-            case ACK:
-                writer.putByte((byte) 0x4b);
-                break;
-            case CAN_CMIT:
-                writer.putByte((byte) 0x53);
-                break;
-            case CAN_RCV:
-                writer.putByte((byte) 0x54);
-                break;
-            case YEAR:
-                writer.putByte((byte) 0x60);
-                break;
-            case MONTH:
-                writer.putByte((byte) 0x61);
-                break;
-            case DAY_OF_MONTH:
-                writer.putByte((byte) 0x62);
-                break;
-            case HOUR:
-                writer.putByte((byte) 0x63);
-                break;
-            case MINUTE:
-                writer.putByte((byte) 0x64);
-                break;
-            case REPORT_1:
-                writer.putByte((byte) 0x65);
-                break;
-            case REPORT_2:
-                writer.putByte((byte) 0x66);
-                break;
-            case ACK_2:
-                writer.putByte((byte) 0x69);
-                break;
-            case START_XMIT:
-                writer.putByte((byte) 0x7d);
-                break;
-            case END_XMIT:
-                writer.putByte((byte) 0x7e);
-                break;
-            case DAY_TEMP:
-                writer.putByte((byte) 0x82);
-                break;
-            case NIGHT_TEMP:
-                writer.putByte((byte) 0x84);
-                break;
-            case LOW_TEMP_OFFSET:
-                writer.putByte((byte) 0x85);
-                break;
-            case WINDOW_OPEN_TEMP:
-                writer.putByte((byte) 0x8a);
-                break;
-            default:
+        final byte property = (byte) switch (fhtProperty) {
+            case VALVE ->
+                0x00;
+            case OFFSET_VALVE_1 ->
+                0x01;
+            case OFFSET_VALVE_2 ->
+                0x02;
+            case OFFSET_VALVE_3 ->
+                0x03;
+            case OFFSET_VALVE_4 ->
+                0x04;
+            case OFFSET_VALVE_5 ->
+                0x05;
+            case OFFSET_VALVE_6 ->
+                0x06;
+            case OFFSET_VALVE_7 ->
+                0x07;
+            case OFFSET_VALVE_8 ->
+                0x08;
+            case MON_FROM_1 ->
+                0x14;
+            case MON_TO_1 ->
+                0x15;
+            case MON_FROM_2 ->
+                0x16;
+            case MON_TO_2 ->
+                0x17;
+            case TUE_FROM_1 ->
+                0x18;
+            case TUE_TO_1 ->
+                0x19;
+            case TUE_FROM_2 ->
+                0x1a;
+            case TUE_TO_2 ->
+                0x1b;
+            case WED_FROM_1 ->
+                0x1c;
+            case WED_TO_1 ->
+                0x1d;
+            case WED_FROM_2 ->
+                0x1e;
+            case WED_TO_2 ->
+                0x1f;
+            case THU_FROM_1 ->
+                0x20;
+            case THU_TO_1 ->
+                0x21;
+            case THU_FROM_2 ->
+                0x22;
+            case THU_TO_2 ->
+                0x23;
+            case FRI_FROM_1 ->
+                0x24;
+            case FRI_TO_1 ->
+                0x25;
+            case FRI_FROM_2 ->
+                0x26;
+            case FRI_TO_2 ->
+                0x27;
+            case SAT_FROM_1 ->
+                0x28;
+            case SAT_TO_1 ->
+                0x29;
+            case SAT_FROM_2 ->
+                0x2a;
+            case SAT_TO_2 ->
+                0x2b;
+            case SUN_FROM_1 ->
+                0x2c;
+            case SUN_TO_1 ->
+                0x2d;
+            case SUN_FROM_2 ->
+                0x2e;
+            case SUN_TO_2 ->
+                0x2f;
+            case MODE ->
+                0x3e;
+            case HOLIDAY_1 ->
+                0x3f;
+            case HOLIDAY_2 ->
+                0x40;
+            case DESIRED_TEMP ->
+                0x41;
+            case MEASURED_LOW ->
+                0x42;
+            case MEASURED_HIGH ->
+                0x43;
+            case WARNINGS ->
+                0x44;
+            case MANU_TEMP ->
+                0x45;
+            case ACK ->
+                0x4b;
+            case CAN_CMIT ->
+                0x53;
+            case CAN_RCV ->
+                0x54;
+            case YEAR ->
+                0x60;
+            case MONTH ->
+                0x61;
+            case DAY_OF_MONTH ->
+                0x62;
+            case HOUR ->
+                0x63;
+            case MINUTE ->
+                0x64;
+            case REPORT_1 ->
+                0x65;
+            case REPORT_2 ->
+                0x66;
+            case ACK_2 ->
+                0x69;
+            case START_XMIT ->
+                0x7d;
+            case END_XMIT ->
+                0x7e;
+            case DAY_TEMP ->
+                0x82;
+            case NIGHT_TEMP ->
+                0x84;
+            case LOW_TEMP_OFFSET ->
+                0x85;
+            case WINDOW_OPEN_TEMP ->
+                0x8a;
+            default ->
                 throw new UnsupportedOperationException("Not supported yet.");
-        }
+        };
+        writer.putByte(property);
         writer.putByte(value);
     }
 
@@ -340,49 +279,49 @@ public class FhtEncoder {
         }
 
         switch (dayOfWeek) {
-            case MONDAY:
+            case MONDAY -> {
                 from1Property = FhtProperty.MON_FROM_1;
                 to1Property = FhtProperty.MON_TO_1;
                 from2Property = FhtProperty.MON_FROM_2;
                 to2Property = FhtProperty.MON_TO_2;
-                break;
-            case TUESDAY:
+            }
+            case TUESDAY -> {
                 from1Property = FhtProperty.TUE_FROM_1;
                 to1Property = FhtProperty.TUE_TO_1;
                 from2Property = FhtProperty.TUE_FROM_2;
                 to2Property = FhtProperty.TUE_TO_2;
-                break;
-            case WEDNESDAY:
+            }
+            case WEDNESDAY -> {
                 from1Property = FhtProperty.WED_FROM_1;
                 to1Property = FhtProperty.WED_TO_1;
                 from2Property = FhtProperty.WED_FROM_2;
                 to2Property = FhtProperty.WED_TO_2;
-                break;
-            case THURSDAY:
+            }
+            case THURSDAY -> {
                 from1Property = FhtProperty.THU_FROM_1;
                 to1Property = FhtProperty.THU_TO_1;
                 from2Property = FhtProperty.THU_FROM_2;
                 to2Property = FhtProperty.THU_TO_2;
-                break;
-            case FRIDAY:
+            }
+            case FRIDAY -> {
                 from1Property = FhtProperty.FRI_FROM_1;
                 to1Property = FhtProperty.FRI_TO_1;
                 from2Property = FhtProperty.FRI_FROM_2;
                 to2Property = FhtProperty.FRI_TO_2;
-                break;
-            case SATURDAY:
+            }
+            case SATURDAY -> {
                 from1Property = FhtProperty.SAT_FROM_1;
                 to1Property = FhtProperty.SAT_TO_1;
                 from2Property = FhtProperty.SAT_FROM_2;
                 to2Property = FhtProperty.SAT_TO_2;
-                break;
-            case SUNDAY:
+            }
+            case SUNDAY -> {
                 from1Property = FhtProperty.SUN_FROM_1;
                 to1Property = FhtProperty.SUN_TO_1;
                 from2Property = FhtProperty.SUN_FROM_2;
                 to2Property = FhtProperty.SUN_TO_2;
-                break;
-            default:
+            }
+            default ->
                 throw new IllegalArgumentException("Unknown dayOfweek: " + dayOfWeek);
 
         }
@@ -396,15 +335,9 @@ public class FhtEncoder {
     public void writeFht(short housecode, FhtProperty fhtProperty, float value) throws IOException {
         startFhtMessage(housecode);
         switch (fhtProperty) {
-            case DAY_TEMP:
-            case NIGHT_TEMP:
-            case DESIRED_TEMP:
-            case LOW_TEMP_OFFSET:
-            case WINDOW_OPEN_TEMP:
-            case MANU_TEMP:
+            case DAY_TEMP, NIGHT_TEMP, DESIRED_TEMP, LOW_TEMP_OFFSET, WINDOW_OPEN_TEMP, MANU_TEMP ->
                 writeFhtProperty(fhtProperty, (byte) (value * 2));
-                break;
-            default:
+            default ->
                 throw new IllegalArgumentException("Wrong fht property for temp: " + fhtProperty);
         }
         finishFhtMessage();
@@ -415,70 +348,38 @@ public class FhtEncoder {
         writer.putByte((byte) (address >> 16));
         writer.putByte((byte) (address >> 8));
         writer.putByte((byte) address);
-        byte value = lowBattery ? (byte) 0x10 : 0x00;
-        switch (fht80TfValue) {
-            case WINDOW_INTERNAL_OPEN:
-                writer.putByte((byte) (value | 0x01));
-                break;
-            case WINDOW_INTERNAL_CLOSED:
-                writer.putByte((byte) (value | 0x02));
-                break;
-            case WINDOW_EXTERNAL_OPEN:
-                writer.putByte((byte) (value | 0x81));
-                break;
-            case WINDOW_EXTERNAL_CLOSED:
-                writer.putByte((byte) (value | 0x82));
-                break;
-            case SYNC:
-                writer.putByte((byte) (value | 0x0C));
-                break;
-            case FINISH:
-                writer.putByte((byte) (value | 0x0F));
-                break;
-            default:
+        final byte flag = switch (fht80TfValue) {
+            case WINDOW_INTERNAL_OPEN ->
+                0x01;
+            case WINDOW_INTERNAL_CLOSED ->
+                0x02;
+            case WINDOW_EXTERNAL_OPEN ->
+                (byte) 0x81;
+            case WINDOW_EXTERNAL_CLOSED ->
+                (byte) 0x82;
+            case SYNC ->
+                0x0C;
+            case FINISH ->
+                0x0F;
+            default ->
                 throw new IllegalArgumentException("Wrong fht tf value for temp: " + fht80TfValue);
-        }
+        };
+        final byte lowBattFlag = lowBattery ? (byte) 0x10 : 0x00;
+        writer.putByte((byte) (lowBattFlag | flag));
         finishFhtMessage();
     }
 
     public void writeFht(short housecode, FhtProperty fhtProperty, LocalTime value) throws IOException {
         startFhtMessage(housecode);
         switch (fhtProperty) {
-            case MON_FROM_1:
-            case MON_TO_1:
-            case MON_FROM_2:
-            case MON_TO_2:
-            case TUE_FROM_1:
-            case TUE_TO_1:
-            case TUE_FROM_2:
-            case TUE_TO_2:
-            case WED_FROM_1:
-            case WED_TO_1:
-            case WED_FROM_2:
-            case WED_TO_2:
-            case THU_FROM_1:
-            case THU_TO_1:
-            case THU_FROM_2:
-            case THU_TO_2:
-            case FRI_FROM_1:
-            case FRI_TO_1:
-            case FRI_FROM_2:
-            case FRI_TO_2:
-            case SAT_FROM_1:
-            case SAT_TO_1:
-            case SAT_FROM_2:
-            case SAT_TO_2:
-            case SUN_FROM_1:
-            case SUN_TO_1:
-            case SUN_FROM_2:
-            case SUN_TO_2:
+            case MON_FROM_1, MON_TO_1, MON_FROM_2, MON_TO_2, TUE_FROM_1, TUE_TO_1, TUE_FROM_2, TUE_TO_2, WED_FROM_1, WED_TO_1, WED_FROM_2, WED_TO_2, THU_FROM_1, THU_TO_1, THU_FROM_2, THU_TO_2, FRI_FROM_1, FRI_TO_1, FRI_FROM_2, FRI_TO_2, SAT_FROM_1, SAT_TO_1, SAT_FROM_2, SAT_TO_2, SUN_FROM_1, SUN_TO_1, SUN_FROM_2, SUN_TO_2 -> {
                 if (value == null) {
                     writeFhtProperty(fhtProperty, (byte) 0x90); // this is 24:00 or 24 * 6 = 144 the meaning is not set ....
                 } else {
                     writeFhtProperty(fhtProperty, (byte) (value.getHour() * 6 + value.getMinute() / 10));
                 }
-                break;
-            default:
+            }
+            default ->
                 throw new IllegalArgumentException("Wrong fht property for temp: " + fhtProperty);
         }
         finishFhtMessage();

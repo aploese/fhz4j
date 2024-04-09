@@ -146,36 +146,29 @@
                         <failIfMissing>true</failIfMissing>
                         <aggregate>true</aggregate>
                         <strictCheck>true</strictCheck>
-                        <properties>
-                            <copyright-range>${project.inceptionYear}-2023</copyright-range>
-                        </properties>
-                    </configuration>
-                    <executions>
-                        <execution>
-                            <id>check-java-headers</id>
-                            <phase>verify</phase>
-                            <goals>
-                                <goal>check</goal>
-                            </goals>
-                            <configuration>
+                        <licenseSets>
+                            <licenseSet>
                                 <header>header-template-lgpl-java.txt</header>
-                                <mapping>
-                                    <java>SLASHSTAR_STYLE</java>
-                                </mapping>
                                 <includes>
                                     <include>**/*.java</include>
                                 </includes>
                                 <excludes>
-                                    <exclude>m2m2-fhz4j-ds/**</exclude>
                                 </excludes>
-                            </configuration>
-                        </execution>
-                    </executions>
+                            </licenseSet>
+                        </licenseSets>
+                    </configuration>
+                    <dependencies>
+                        <dependency>
+                            <groupId>com.mycila</groupId>
+                            <artifactId>license-maven-plugin-git</artifactId>
+                            <version>4.3</version>
+                        </dependency>
+                    </dependencies>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-compiler-plugin</artifactId>
-                    <version>3.11.0</version>
+                    <version>3.12.1</version>
                     <configuration>
                         <source>${compile.source}</source>
                         <target>${compile.target}</target>
@@ -235,7 +228,7 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-gpg-plugin</artifactId>
-                    <version>3.1.0</version>
+                    <version>3.2.0</version>
                     <executions>
                         <execution>
                             <id>sign-artifacts</id>
@@ -261,7 +254,7 @@
                 <plugin>
                     <groupId>com.github.ferstl</groupId>
                     <artifactId>depgraph-maven-plugin</artifactId>
-                    <version>4.0.2</version>
+                    <version>4.0.3</version>
                 </plugin>
             </plugins>
         </pluginManagement>

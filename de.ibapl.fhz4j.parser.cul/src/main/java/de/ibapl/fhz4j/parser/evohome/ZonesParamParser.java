@@ -1,6 +1,6 @@
 /*
  * FHZ4J - Drivers for the Wireless FS20, FHT and HMS protocol https://github.com/aploese/fhz4j/
- * Copyright (C) 2009-2023, Arne Plöse and individual contributors as indicated
+ * Copyright (C) 2019-2024, Arne Plöse and individual contributors as indicated
  * by the @authors tag. See the copyright.txt in the distribution for a
  * full listing of individual contributors.
  *
@@ -62,12 +62,12 @@ class ZonesParamParser extends AbstractParser {
     public void parse(byte b) {
         bytesConsumed++;
         switch (state) {
-            case COLLECT_ZONEID:
+            case COLLECT_ZONEID -> {
                 zoneParams.addLast(new ZoneConfigPayloadMessage.ZoneParams());
                 zoneParams.getLast().zoneId = b;
                 state = State.COLLECT_FLAGS;
-                break;
-            case COLLECT_FLAGS:
+            }
+            case COLLECT_FLAGS -> {
                 zoneParams.getLast().windowFunction = (b & 0x10) == 0x10;
                 zoneParams.getLast().operationLock = (b & 0x01) == 0x01;
                 if ((b & 0xEE) != 0) {
@@ -75,15 +75,15 @@ class ZonesParamParser extends AbstractParser {
                 }
                 setStackSize(2);
                 state = State.COLLECT_MIN_TEMP;
-                break;
-            case COLLECT_MIN_TEMP:
+            }
+            case COLLECT_MIN_TEMP -> {
                 if (push(b)) {
                     zoneParams.getLast().minTemperature = new BigDecimal(getShortValue()).divide(ONE_HUNDRED);
                     setStackSize(2);
                     state = State.COLLECT_MAX_TEMP;
                 }
-                break;
-            case COLLECT_MAX_TEMP:
+            }
+            case COLLECT_MAX_TEMP -> {
                 if (push(b)) {
                     zoneParams.getLast().maxTemperature = new BigDecimal(getShortValue()).divide(ONE_HUNDRED);
                     if (bytesConsumed == bytesToConsume) {
@@ -92,11 +92,13 @@ class ZonesParamParser extends AbstractParser {
                         state = State.COLLECT_ZONEID;
                     }
                 }
-                break;
-            case PARSE_SUCCESS:
-                throw new RuntimeException("PARSE_SUCCESS should not be called");
-            case PARSE_ERROR:
-                throw new RuntimeException("PARSE_ERROR should not be called");
+            }
+            case PARSE_SUCCESS ->
+                throw new IllegalStateException("PARSE_SUCCESS should not be called");
+            case PARSE_ERROR ->
+                throw new IllegalStateException("PARSE_ERROR should not be called");
+            default ->
+                throw new IllegalStateException(state.name());
 
         }
     }

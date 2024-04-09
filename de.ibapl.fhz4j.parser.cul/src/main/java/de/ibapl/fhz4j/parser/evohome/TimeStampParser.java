@@ -1,6 +1,6 @@
 /*
  * FHZ4J - Drivers for the Wireless FS20, FHT and HMS protocol https://github.com/aploese/fhz4j/
- * Copyright (C) 2009-2023, Arne Plöse and individual contributors as indicated
+ * Copyright (C) 2023-2024, Arne Plöse and individual contributors as indicated
  * by the @authors tag. See the copyright.txt in the distribution for a
  * full listing of individual contributors.
  *
@@ -46,38 +46,40 @@ public class TimeStampParser extends AbstractParser {
     @Override
     public void parse(byte b) {
         switch (state) {
-            case SECOND:
+            case SECOND -> {
                 //TODO upper bit DST -> DaylightSavingTime?
                 second = b & 0x7f;
                 state = State.MINUTE;
-                break;
-            case MINUTE:
+            }
+            case MINUTE -> {
                 minute = b & 0xff;
                 state = State.HOUR;
-                break;
-            case HOUR:
+            }
+            case HOUR -> {
                 hour = b & 0x1f;
                 state = State.DAY_OF_MONTH;
-                break;
-            case DAY_OF_MONTH:
+            }
+            case DAY_OF_MONTH -> {
                 dayOfMonth = b & 0xff;
                 state = State.MONTH;
-                break;
-            case MONTH:
+            }
+            case MONTH -> {
                 month = Month.of(b & 0xff);
                 setStackSize(2);
                 state = State.YEAR;
-                break;
-            case YEAR:
+            }
+            case YEAR -> {
                 if (push(b)) {
                     year = getIntValue();
                     state = State.PARSE_SUCCESS;
                 }
-                break;
-            case PARSE_SUCCESS:
-                throw new RuntimeException("PARSE_SUCCESS should not be called");
-            case PARSE_ERROR:
-                throw new RuntimeException("PARSE_ERROR should not be called");
+            }
+            case PARSE_SUCCESS ->
+                throw new IllegalStateException("PARSE_SUCCESS should not be called");
+            case PARSE_ERROR ->
+                throw new IllegalStateException("PARSE_ERROR should not be called");
+            default ->
+                throw new IllegalStateException(state.name());
 
         }
     }

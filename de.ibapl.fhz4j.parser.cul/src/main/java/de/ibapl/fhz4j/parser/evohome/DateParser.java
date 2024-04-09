@@ -1,6 +1,6 @@
 /*
  * FHZ4J - Drivers for the Wireless FS20, FHT and HMS protocol https://github.com/aploese/fhz4j/
- * Copyright (C) 2009-2023, Arne Plöse and individual contributors as indicated
+ * Copyright (C) 2023-2024, Arne Plöse and individual contributors as indicated
  * by the @authors tag. See the copyright.txt in the distribution for a
  * full listing of individual contributors.
  *
@@ -61,13 +61,13 @@ public class DateParser extends AbstractParser {
     }
 
     @Override
-    public void parse(byte b) {
+    public void parse(byte b) throws IllegalStateException {
         switch (state) {
-            case COLLECT_DAY_OF_MONTH:
+            case COLLECT_DAY_OF_MONTH -> {
                 dayOfMonth = b;
                 state = State.COLLECT_MONTH;
-                break;
-            case COLLECT_MONTH:
+            }
+            case COLLECT_MONTH -> {
                 if (b == -1) {
                     month = null;
                 } else {
@@ -75,20 +75,22 @@ public class DateParser extends AbstractParser {
                 }
                 setStackSize(2);
                 state = State.COLLECT_YEAR_HIGH;
-                break;
-            case COLLECT_YEAR_HIGH:
+            }
+            case COLLECT_YEAR_HIGH -> {
                 push(b);
                 state = State.COLLECT_YEAR_LOW;
-                break;
-            case COLLECT_YEAR_LOW:
+            }
+            case COLLECT_YEAR_LOW -> {
                 push(b);
                 year = getIntValue();
                 state = State.PARSE_SUCCESS;
-                break;
-            case PARSE_SUCCESS:
+            }
+            case PARSE_SUCCESS ->
                 throw new RuntimeException("PARSE_SUCCESS should not be called");
-            case PARSE_ERROR:
+            case PARSE_ERROR ->
                 throw new RuntimeException("PARSE_ERROR should not be called");
+            default ->
+                throw new IllegalStateException(state.name());
 
         }
     }

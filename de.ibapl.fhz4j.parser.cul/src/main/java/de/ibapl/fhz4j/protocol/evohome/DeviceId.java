@@ -1,6 +1,6 @@
 /*
  * FHZ4J - Drivers for the Wireless FS20, FHT and HMS protocol https://github.com/aploese/fhz4j/
- * Copyright (C) 2009-2023, Arne Plöse and individual contributors as indicated
+ * Copyright (C) 2019-2024, Arne Plöse and individual contributors as indicated
  * by the @authors tag. See the copyright.txt in the distribution for a
  * full listing of individual contributors.
  *
@@ -46,10 +46,7 @@ public class DeviceId {
             return false;
         }
         final DeviceId other = (DeviceId) obj;
-        if (this.id != other.id) {
-            return false;
-        }
-        return true;
+        return this.id == other.id;
     }
 
     public final int id;
@@ -57,20 +54,16 @@ public class DeviceId {
 
     public DeviceId(int deviceId) {
         this.id = deviceId;
-        switch (deviceId & 0xFF0000) {
-            case 0x110000:
-            case 0x130000:
-                type = DeviceType.RADIATOR_CONTROLLER;
-                break;
-            case 0x890000:
-                type = DeviceType.SINGLE_ZONE_THERMOSTAT;
-                break;
-            case 0x060000:
-                type = DeviceType.MULTI_ZONE_CONTROLLER;
-                break;
-            default:
-                type = DeviceType.UNKNOWN;
-        }
+        type = switch (deviceId & 0xFF0000) {
+            case 0x110000, 0x130000 ->
+                DeviceType.RADIATOR_CONTROLLER;
+            case 0x890000 ->
+                DeviceType.SINGLE_ZONE_THERMOSTAT;
+            case 0x060000 ->
+                DeviceType.MULTI_ZONE_CONTROLLER;
+            default ->
+                DeviceType.UNKNOWN;
+        };
     }
 
     @Override

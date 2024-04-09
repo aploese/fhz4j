@@ -1,6 +1,6 @@
 /*
  * FHZ4J - Drivers for the Wireless FS20, FHT and HMS protocol https://github.com/aploese/fhz4j/
- * Copyright (C) 2009-2023, Arne Plöse and individual contributors as indicated
+ * Copyright (C) 2023-2024, Arne Plöse and individual contributors as indicated
  * by the @authors tag. See the copyright.txt in the distribution for a
  * full listing of individual contributors.
  *
@@ -54,18 +54,20 @@ public class TimeParser extends AbstractParser {
     @Override
     public void parse(byte b) {
         switch (state) {
-            case COLLECT_MINUTES:
+            case COLLECT_MINUTES -> {
                 minutes = b;
                 state = State.COLLECT_HOURS;
-                break;
-            case COLLECT_HOURS:
+            }
+            case COLLECT_HOURS -> {
                 hours = b;
                 state = State.PARSE_SUCCESS;
-                break;
-            case PARSE_SUCCESS:
-                throw new RuntimeException("PARSE_SUCCESS should not be called");
-            case PARSE_ERROR:
-                throw new RuntimeException("PARSE_ERROR should not be called");
+            }
+            case PARSE_SUCCESS ->
+                throw new IllegalStateException("PARSE_SUCCESS should not be called");
+            case PARSE_ERROR ->
+                throw new IllegalStateException("PARSE_ERROR should not be called");
+            default ->
+                throw new IllegalStateException(state.name());
 
         }
     }

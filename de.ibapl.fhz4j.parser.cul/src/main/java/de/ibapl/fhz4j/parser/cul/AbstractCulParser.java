@@ -1,6 +1,6 @@
 /*
  * FHZ4J - Drivers for the Wireless FS20, FHT and HMS protocol https://github.com/aploese/fhz4j/
- * Copyright (C) 2009-2023, Arne Plöse and individual contributors as indicated
+ * Copyright (C) 2021-2024, Arne Plöse and individual contributors as indicated
  * by the @authors tag. See the copyright.txt in the distribution for a
  * full listing of individual contributors.
  *
@@ -31,42 +31,42 @@ public abstract class AbstractCulParser {
     protected boolean isFirstNibble = true;
 
     protected byte digit2Byte(char c) {
-        switch (c) {
-            case '0':
-                return 0x00;
-            case '1':
-                return 0x01;
-            case '2':
-                return 0x02;
-            case '3':
-                return 0x03;
-            case '4':
-                return 0x04;
-            case '5':
-                return 0x05;
-            case '6':
-                return 0x06;
-            case '7':
-                return 0x07;
-            case '8':
-                return 0x08;
-            case '9':
-                return 0x09;
-            case 'A':
-                return 0x0a;
-            case 'B':
-                return 0x0b;
-            case 'C':
-                return 0x0c;
-            case 'D':
-                return 0x0d;
-            case 'E':
-                return 0x0e;
-            case 'F':
-                return 0x0f;
-            default:
-                throw new RuntimeException(String.format("Not a Number: \"%c\" 0x%02x", c, (byte) c));
-        }
+        return switch (c) {
+            case '0' ->
+                0x00;
+            case '1' ->
+                0x01;
+            case '2' ->
+                0x02;
+            case '3' ->
+                0x03;
+            case '4' ->
+                0x04;
+            case '5' ->
+                0x05;
+            case '6' ->
+                0x06;
+            case '7' ->
+                0x07;
+            case '8' ->
+                0x08;
+            case '9' ->
+                0x09;
+            case 'A' ->
+                0x0a;
+            case 'B' ->
+                0x0b;
+            case 'C' ->
+                0x0c;
+            case 'D' ->
+                0x0d;
+            case 'E' ->
+                0x0e;
+            case 'F' ->
+                0x0f;
+            default ->
+                throw new IllegalArgumentException(String.format("Not a Number: \"%c\" 0x%02x", c, (byte) c));
+        };
     }
 
     public abstract void parse(char c);

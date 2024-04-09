@@ -1,6 +1,6 @@
 /*
  * FHZ4J - Drivers for the Wireless FS20, FHT and HMS protocol https://github.com/aploese/fhz4j/
- * Copyright (C) 2009-2023, Arne Plöse and individual contributors as indicated
+ * Copyright (C) 2019-2024, Arne Plöse and individual contributors as indicated
  * by the @authors tag. See the copyright.txt in the distribution for a
  * full listing of individual contributors.
  *
@@ -77,58 +77,43 @@ public class CulWriter implements FhtWriter, EvoHomeWriter {
     }
 
     private void putNibble(byte value) {
-        switch (value & 0x0F) {
-            case 0x00:
-                buffer.put((byte) '0');
-                break;
-            case 0x01:
-                buffer.put((byte) '1');
-                break;
-            case 0x02:
-                buffer.put((byte) '2');
-                break;
-            case 0x03:
-                buffer.put((byte) '3');
-                break;
-            case 0x04:
-                buffer.put((byte) '4');
-                break;
-            case 0x05:
-                buffer.put((byte) '5');
-                break;
-            case 0x06:
-                buffer.put((byte) '6');
-                break;
-            case 0x07:
-                buffer.put((byte) '7');
-                break;
-            case 0x08:
-                buffer.put((byte) '8');
-                break;
-            case 0x09:
-                buffer.put((byte) '9');
-                break;
-            case 0x0A:
-                buffer.put((byte) 'A');
-                break;
-            case 0x0B:
-                buffer.put((byte) 'B');
-                break;
-            case 0x0C:
-                buffer.put((byte) 'C');
-                break;
-            case 0x0D:
-                buffer.put((byte) 'D');
-                break;
-            case 0x0E:
-                buffer.put((byte) 'E');
-                break;
-            case 0x0F:
-                buffer.put((byte) 'F');
-                break;
-            default:
+        final byte nibble = (byte) switch (value & 0x0F) {
+            case 0x00 ->
+                '0';
+            case 0x01 ->
+                '1';
+            case 0x02 ->
+                '2';
+            case 0x03 ->
+                '3';
+            case 0x04 ->
+                '4';
+            case 0x05 ->
+                '5';
+            case 0x06 ->
+                '6';
+            case 0x07 ->
+                '7';
+            case 0x08 ->
+                '8';
+            case 0x09 ->
+                '9';
+            case 0x0A ->
+                'A';
+            case 0x0B ->
+                'B';
+            case 0x0C ->
+                'C';
+            case 0x0D ->
+                'D';
+            case 0x0E ->
+                'E';
+            case 0x0F ->
+                'F';
+            default ->
                 throw new IllegalArgumentException("Not a Number: " + value);
-        }
+        };
+        buffer.put(nibble);
     }
 
     @Override

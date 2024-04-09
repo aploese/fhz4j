@@ -1,6 +1,6 @@
 /*
  * FHZ4J - Drivers for the Wireless FS20, FHT and HMS protocol https://github.com/aploese/fhz4j/
- * Copyright (C) 2009-2023, Arne Plöse and individual contributors as indicated
+ * Copyright (C) 2019-2024, Arne Plöse and individual contributors as indicated
  * by the @authors tag. See the copyright.txt in the distribution for a
  * full listing of individual contributors.
  *
@@ -87,134 +87,134 @@ public class FhtParser implements Parser {
     }
 
     private FhtProperty getCommand(byte command) {
-        switch (command & 0xFF) {
-            case 0x00:
-                return FhtProperty.VALVE;
-            case 0x01:
-                return FhtProperty.OFFSET_VALVE_1;
-            case 0x02:
-                return FhtProperty.OFFSET_VALVE_2;
-            case 0x03:
-                return FhtProperty.OFFSET_VALVE_3;
-            case 0x04:
-                return FhtProperty.OFFSET_VALVE_4;
-            case 0x05:
-                return FhtProperty.OFFSET_VALVE_5;
-            case 0x06:
-                return FhtProperty.OFFSET_VALVE_6;
-            case 0x07:
-                return FhtProperty.OFFSET_VALVE_7;
-            case 0x08:
-                return FhtProperty.OFFSET_VALVE_8;
-            case 0x14:
-                return FhtProperty.MON_FROM_1;
-            case 0x15:
-                return FhtProperty.MON_TO_1;
-            case 0x16:
-                return FhtProperty.MON_FROM_2;
-            case 0x17:
-                return FhtProperty.MON_TO_2;
-            case 0x18:
-                return FhtProperty.TUE_FROM_1;
-            case 0x19:
-                return FhtProperty.TUE_TO_1;
-            case 0x1a:
-                return FhtProperty.TUE_FROM_2;
-            case 0x1b:
-                return FhtProperty.TUE_TO_2;
-            case 0x1c:
-                return FhtProperty.WED_FROM_1;
-            case 0x1d:
-                return FhtProperty.WED_TO_1;
-            case 0x1e:
-                return FhtProperty.WED_FROM_2;
-            case 0x1f:
-                return FhtProperty.WED_TO_2;
-            case 0x20:
-                return FhtProperty.THU_FROM_1;
-            case 0x21:
-                return FhtProperty.THU_TO_1;
-            case 0x22:
-                return FhtProperty.THU_FROM_2;
-            case 0x23:
-                return FhtProperty.THU_TO_2;
-            case 0x24:
-                return FhtProperty.FRI_FROM_1;
-            case 0x25:
-                return FhtProperty.FRI_TO_1;
-            case 0x26:
-                return FhtProperty.FRI_FROM_2;
-            case 0x27:
-                return FhtProperty.FRI_TO_2;
-            case 0x28:
-                return FhtProperty.SAT_FROM_1;
-            case 0x29:
-                return FhtProperty.SAT_TO_1;
-            case 0x2a:
-                return FhtProperty.SAT_FROM_2;
-            case 0x2b:
-                return FhtProperty.SAT_TO_2;
-            case 0x2c:
-                return FhtProperty.SUN_FROM_1;
-            case 0x2d:
-                return FhtProperty.SUN_TO_1;
-            case 0x2e:
-                return FhtProperty.SUN_FROM_2;
-            case 0x2f:
-                return FhtProperty.SUN_TO_2;
-            case 0x3e:
-                return FhtProperty.MODE;
-            case 0x3f:
-                return FhtProperty.HOLIDAY_1;
-            case 0x40:
-                return FhtProperty.HOLIDAY_2;
-            case 0x41:
-                return FhtProperty.DESIRED_TEMP;
-            case 0x42:
-                return FhtProperty.MEASURED_LOW;
-            case 0x43:
-                return FhtProperty.MEASURED_HIGH;
-            case 0x44:
-                return FhtProperty.WARNINGS;
-            case 0x45:
-                return FhtProperty.MANU_TEMP;
-            case 0x4b:
-                return FhtProperty.ACK;
-            case 0x53:
-                return FhtProperty.CAN_CMIT;
-            case 0x54:
-                return FhtProperty.CAN_RCV;
-            case 0x60:
-                return FhtProperty.YEAR;
-            case 0x61:
-                return FhtProperty.MONTH;
-            case 0x62:
-                return FhtProperty.DAY_OF_MONTH;
-            case 0x63:
-                return FhtProperty.HOUR;
-            case 0x64:
-                return FhtProperty.MINUTE;
-            case 0x65:
-                return FhtProperty.REPORT_1;
-            case 0x66:
-                return FhtProperty.REPORT_2;
-            case 0x69:
-                return FhtProperty.ACK_2;
-            case 0x7d:
-                return FhtProperty.START_XMIT;
-            case 0x7e:
-                return FhtProperty.END_XMIT;
-            case 0x82:
-                return FhtProperty.DAY_TEMP;
-            case 0x84:
-                return FhtProperty.NIGHT_TEMP;
-            case 0x85:
-                return FhtProperty.LOW_TEMP_OFFSET;
-            case 0x8a:
-                return FhtProperty.WINDOW_OPEN_TEMP;
-            default:
+        return switch (command & 0xFF) {
+            case 0x00 ->
+                FhtProperty.VALVE;
+            case 0x01 ->
+                FhtProperty.OFFSET_VALVE_1;
+            case 0x02 ->
+                FhtProperty.OFFSET_VALVE_2;
+            case 0x03 ->
+                FhtProperty.OFFSET_VALVE_3;
+            case 0x04 ->
+                FhtProperty.OFFSET_VALVE_4;
+            case 0x05 ->
+                FhtProperty.OFFSET_VALVE_5;
+            case 0x06 ->
+                FhtProperty.OFFSET_VALVE_6;
+            case 0x07 ->
+                FhtProperty.OFFSET_VALVE_7;
+            case 0x08 ->
+                FhtProperty.OFFSET_VALVE_8;
+            case 0x14 ->
+                FhtProperty.MON_FROM_1;
+            case 0x15 ->
+                FhtProperty.MON_TO_1;
+            case 0x16 ->
+                FhtProperty.MON_FROM_2;
+            case 0x17 ->
+                FhtProperty.MON_TO_2;
+            case 0x18 ->
+                FhtProperty.TUE_FROM_1;
+            case 0x19 ->
+                FhtProperty.TUE_TO_1;
+            case 0x1a ->
+                FhtProperty.TUE_FROM_2;
+            case 0x1b ->
+                FhtProperty.TUE_TO_2;
+            case 0x1c ->
+                FhtProperty.WED_FROM_1;
+            case 0x1d ->
+                FhtProperty.WED_TO_1;
+            case 0x1e ->
+                FhtProperty.WED_FROM_2;
+            case 0x1f ->
+                FhtProperty.WED_TO_2;
+            case 0x20 ->
+                FhtProperty.THU_FROM_1;
+            case 0x21 ->
+                FhtProperty.THU_TO_1;
+            case 0x22 ->
+                FhtProperty.THU_FROM_2;
+            case 0x23 ->
+                FhtProperty.THU_TO_2;
+            case 0x24 ->
+                FhtProperty.FRI_FROM_1;
+            case 0x25 ->
+                FhtProperty.FRI_TO_1;
+            case 0x26 ->
+                FhtProperty.FRI_FROM_2;
+            case 0x27 ->
+                FhtProperty.FRI_TO_2;
+            case 0x28 ->
+                FhtProperty.SAT_FROM_1;
+            case 0x29 ->
+                FhtProperty.SAT_TO_1;
+            case 0x2a ->
+                FhtProperty.SAT_FROM_2;
+            case 0x2b ->
+                FhtProperty.SAT_TO_2;
+            case 0x2c ->
+                FhtProperty.SUN_FROM_1;
+            case 0x2d ->
+                FhtProperty.SUN_TO_1;
+            case 0x2e ->
+                FhtProperty.SUN_FROM_2;
+            case 0x2f ->
+                FhtProperty.SUN_TO_2;
+            case 0x3e ->
+                FhtProperty.MODE;
+            case 0x3f ->
+                FhtProperty.HOLIDAY_1;
+            case 0x40 ->
+                FhtProperty.HOLIDAY_2;
+            case 0x41 ->
+                FhtProperty.DESIRED_TEMP;
+            case 0x42 ->
+                FhtProperty.MEASURED_LOW;
+            case 0x43 ->
+                FhtProperty.MEASURED_HIGH;
+            case 0x44 ->
+                FhtProperty.WARNINGS;
+            case 0x45 ->
+                FhtProperty.MANU_TEMP;
+            case 0x4b ->
+                FhtProperty.ACK;
+            case 0x53 ->
+                FhtProperty.CAN_CMIT;
+            case 0x54 ->
+                FhtProperty.CAN_RCV;
+            case 0x60 ->
+                FhtProperty.YEAR;
+            case 0x61 ->
+                FhtProperty.MONTH;
+            case 0x62 ->
+                FhtProperty.DAY_OF_MONTH;
+            case 0x63 ->
+                FhtProperty.HOUR;
+            case 0x64 ->
+                FhtProperty.MINUTE;
+            case 0x65 ->
+                FhtProperty.REPORT_1;
+            case 0x66 ->
+                FhtProperty.REPORT_2;
+            case 0x69 ->
+                FhtProperty.ACK_2;
+            case 0x7d ->
+                FhtProperty.START_XMIT;
+            case 0x7e ->
+                FhtProperty.END_XMIT;
+            case 0x82 ->
+                FhtProperty.DAY_TEMP;
+            case 0x84 ->
+                FhtProperty.NIGHT_TEMP;
+            case 0x85 ->
+                FhtProperty.LOW_TEMP_OFFSET;
+            case 0x8a ->
+                FhtProperty.WINDOW_OPEN_TEMP;
+            default ->
                 throw new UnsupportedOperationException(String.format("Unknown command: 0x%02x", command & 0xFF));
-        }
+        };
     }
 
     private Map<FhtProperty, Fht80bRawMessage> getPartialMsgs(short housecode, FhtProperty[] fhtProperties) {
@@ -338,8 +338,7 @@ public class FhtParser implements Parser {
     public void parse(byte b) {
         try {
             switch (state) {
-                // FHT
-                case COLLECT_HOUSECODE_HIGH:
+                case COLLECT_HOUSECODE_HIGH -> {
                     if ((b & 0xFF) > 99) { // 0x63 in hex
                         tfAddress = (b & 0xFF) << 16;
                         state = State.COLLECT_TF_ADDRESS_2ND;
@@ -348,8 +347,8 @@ public class FhtParser implements Parser {
                         housecode = (short) (b * 100);
                         state = State.COLLECT_HOUSECODE_LOW;
                     }
-                    break;
-                case COLLECT_HOUSECODE_LOW:
+                }
+                case COLLECT_HOUSECODE_LOW -> {
                     if ((b & 0xFF) > 99) {// 0x63 in hex
                         tfAddress = ((housecode / 100) << 16) + ((b & 0xFF) << 8);
                         state = State.COLLECT_TF_ADDRESS_3RD;
@@ -358,37 +357,40 @@ public class FhtParser implements Parser {
                         housecode += (short) b;
                         state = State.COLLECT_COMMAND;
                     }
-                    break;
-                case COLLECT_COMMAND:
+                }
+                case COLLECT_COMMAND -> {
                     command = getCommand(b);
                     if (parseCULOutBuffer) {
                         state = State.COLLECT_VALUE;
                     } else {
                         state = State.COLLECT_DESCRIPTION;
                     }
-                    break;
-                case COLLECT_DESCRIPTION:
+                }
+                case COLLECT_DESCRIPTION -> {
                     description = b;
                     state = State.COLLECT_VALUE;
-                    break;
-                case COLLECT_VALUE:
+                }
+                case COLLECT_VALUE -> {
                     buildAndNotify(b);
                     state = State.PARSE_SUCCESS;
-                    break;
-                case COLLECT_TF_ADDRESS_2ND:
+                }
+                case COLLECT_TF_ADDRESS_2ND -> {
                     tfAddress += (b & 0xFF) << 8;
                     state = State.COLLECT_TF_ADDRESS_3RD;
-                    break;
-                case COLLECT_TF_ADDRESS_3RD:
+                }
+                case COLLECT_TF_ADDRESS_3RD -> {
                     tfAddress += (b & 0xFF);
                     state = State.COLLECT_TF_VALUE;
-                    break;
-                case COLLECT_TF_VALUE:
+                }
+                case COLLECT_TF_VALUE -> {
                     buildAndNotifyTf(b);
                     state = State.PARSE_SUCCESS;
-                    break;
+                }
+                default ->
+                    throw new IllegalStateException(state.name());
 
             }
+            // FHT
         } catch (Throwable t) {
             parserListener.fail(new RuntimeException(String.format("State: %s command: %s last byte 0x%02x", state, command, b), t));
             state = State.PARSE_ERROR;
@@ -397,239 +399,187 @@ public class FhtParser implements Parser {
 
     private void buildAndNotify(byte b) {
         switch (command) {
-            case VALVE:
+            case VALVE ->
                 buildValveMessage(b);
-                break;
-            case OFFSET_VALVE_1:
-            case OFFSET_VALVE_2:
-            case OFFSET_VALVE_3:
-            case OFFSET_VALVE_4:
-            case OFFSET_VALVE_5:
-            case OFFSET_VALVE_6:
-            case OFFSET_VALVE_7:
-            case OFFSET_VALVE_8:
+            case OFFSET_VALVE_1, OFFSET_VALVE_2, OFFSET_VALVE_3, OFFSET_VALVE_4, OFFSET_VALVE_5, OFFSET_VALVE_6, OFFSET_VALVE_7, OFFSET_VALVE_8 ->
                 buildValveOffsetMessage(b);
-                break;
-            case NIGHT_TEMP:
-            case DAY_TEMP:
-            case DESIRED_TEMP:
-            case WINDOW_OPEN_TEMP:
-            case LOW_TEMP_OFFSET:
+            case NIGHT_TEMP, DAY_TEMP, DESIRED_TEMP, WINDOW_OPEN_TEMP, LOW_TEMP_OFFSET ->
                 parserListener.success(
                         new FhtTempMessage(housecode, command, description, (description & 0xf0) == 0x60, (description & 0x01) == 0x01, 0.5f * b));
-                break;
-            case MEASURED_LOW:
+            case MEASURED_LOW -> {
                 removePartialMsg(housecode, FhtProperty.MEASURED_TEMP.parts);
                 buildAndNotifyPartial(b);
-                break;
-            case MEASURED_HIGH:
+            }
+            case MEASURED_HIGH -> {
                 buildAndNotifyPartial(b);
                 buildAndNotifyMeasuredTempMessage();
-                break;
-            case WARNINGS:
+            }
+            case WARNINGS ->
                 buildWarningsMessage(b);
-                break;
-            case MON_FROM_1:
+            case MON_FROM_1 -> {
                 removePartialMsg(housecode, FhtProperty.MONDAY_TIMES.parts);
                 buildAndNotifyPartial(b);
-                break;
-            case MON_TO_1:
+            }
+            case MON_TO_1 ->
                 buildAndNotifyPartial(b);
-                break;
-            case MON_FROM_2:
+            case MON_FROM_2 ->
                 buildAndNotifyPartial(b);
-                break;
-            case MON_TO_2:
+            case MON_TO_2 -> {
                 buildAndNotifyPartial(b);
                 buildMessage(FhtProperty.MONDAY_TIMES);
-                break;
-            case TUE_FROM_1:
+            }
+            case TUE_FROM_1 -> {
                 removePartialMsg(housecode, FhtProperty.TUESDAY_TIMES.parts);
                 buildAndNotifyPartial(b);
-                break;
-            case TUE_TO_1:
+            }
+            case TUE_TO_1 ->
                 buildAndNotifyPartial(b);
-                break;
-            case TUE_FROM_2:
+            case TUE_FROM_2 ->
                 buildAndNotifyPartial(b);
-                break;
-            case TUE_TO_2:
+            case TUE_TO_2 -> {
                 buildAndNotifyPartial(b);
                 buildMessage(FhtProperty.TUESDAY_TIMES);
-                break;
-            case WED_FROM_1:
+            }
+            case WED_FROM_1 -> {
                 removePartialMsg(housecode, FhtProperty.WEDNESDAY_TIMES.parts);
                 buildAndNotifyPartial(b);
-                break;
-            case WED_TO_1:
+            }
+            case WED_TO_1 ->
                 buildAndNotifyPartial(b);
-                break;
-            case WED_FROM_2:
+            case WED_FROM_2 ->
                 buildAndNotifyPartial(b);
-                break;
-            case WED_TO_2:
+            case WED_TO_2 -> {
                 buildAndNotifyPartial(b);
                 buildMessage(FhtProperty.WEDNESDAY_TIMES);
-                break;
-            case THU_FROM_1:
+            }
+            case THU_FROM_1 -> {
                 removePartialMsg(housecode, FhtProperty.THURSDAY_TIMES.parts);
                 buildAndNotifyPartial(b);
-                break;
-            case THU_TO_1:
+            }
+            case THU_TO_1 ->
                 buildAndNotifyPartial(b);
-                break;
-            case THU_FROM_2:
+            case THU_FROM_2 ->
                 buildAndNotifyPartial(b);
-                break;
-            case THU_TO_2:
+            case THU_TO_2 -> {
                 buildAndNotifyPartial(b);
                 buildMessage(FhtProperty.THURSDAY_TIMES);
-                break;
-            case FRI_FROM_1:
+            }
+            case FRI_FROM_1 -> {
                 removePartialMsg(housecode, FhtProperty.FRIDAY_TIMES.parts);
                 buildAndNotifyPartial(b);
-                break;
-            case FRI_TO_1:
+            }
+            case FRI_TO_1 ->
                 buildAndNotifyPartial(b);
-                break;
-            case FRI_FROM_2:
+            case FRI_FROM_2 ->
                 buildAndNotifyPartial(b);
-                break;
-            case FRI_TO_2:
+            case FRI_TO_2 -> {
                 buildAndNotifyPartial(b);
                 buildMessage(FhtProperty.FRIDAY_TIMES);
-                break;
-            case SAT_FROM_1:
+            }
+            case SAT_FROM_1 -> {
                 removePartialMsg(housecode, FhtProperty.SATURDAYDAY_TIMES.parts);
                 buildAndNotifyPartial(b);
-                break;
-            case SAT_TO_1:
+            }
+            case SAT_TO_1 ->
                 buildAndNotifyPartial(b);
-                break;
-            case SAT_FROM_2:
+            case SAT_FROM_2 ->
                 buildAndNotifyPartial(b);
-                break;
-            case SAT_TO_2:
+            case SAT_TO_2 -> {
                 buildAndNotifyPartial(b);
                 buildMessage(FhtProperty.SATURDAYDAY_TIMES);
-                break;
-            case SUN_FROM_1:
+            }
+            case SUN_FROM_1 -> {
                 removePartialMsg(housecode, FhtProperty.SUNDAYDAY_TIMES.parts);
                 buildAndNotifyPartial(b);
-                break;
-            case SUN_TO_1:
+            }
+            case SUN_TO_1 ->
                 buildAndNotifyPartial(b);
-                break;
-            case SUN_FROM_2:
+            case SUN_FROM_2 ->
                 buildAndNotifyPartial(b);
-                break;
-            case SUN_TO_2:
+            case SUN_TO_2 -> {
                 buildAndNotifyPartial(b);
                 buildMessage(FhtProperty.SUNDAYDAY_TIMES);
-                break;
-            case MINUTE:
+            }
+            case MINUTE -> {
                 buildAndNotifyPartial(b);
                 buildTimeAndDateMessage();
-                break;
-            case HOUR:
+            }
+            case HOUR ->
                 buildAndNotifyPartial(b);
-                break;
-            case MONTH:
+            case MONTH ->
                 buildAndNotifyPartial(b);
-                break;
-            case DAY_OF_MONTH:
+            case DAY_OF_MONTH ->
                 buildAndNotifyPartial(b);
-                break;
-            case YEAR:
+            case YEAR -> {
                 removePartialMsg(housecode, FhtProperty.CURRENT_DATE_AND_TIME.parts);
                 buildAndNotifyPartial(b);
-                break;
-            // collect FhtDateTime
-            case MODE:
+            }
+            case MODE ->
                 buildAndNotifyModeMessage(b);
-                break;
-            case REPORT_1:
-            case REPORT_2:
+            case REPORT_1, REPORT_2 -> {
                 final Fht80bRawMessage msg = new Fht80bRawMessage(housecode, command, description, (description & 0xf0) == 0x60, (description & 0x01) == 0x01,
                         b);
                 parserListener.success(msg);
-                break;
-            case HOLIDAY_1:
+            }
+            case HOLIDAY_1 -> {
                 removePartialMsg(housecode, FhtProperty.HOLIDAY_END_DATE.parts);
                 buildAndNotifyPartial(b);
-                break;
-            case HOLIDAY_2:
+            }
+            case HOLIDAY_2 ->
                 buildAndNotifyPartial(b);
-                // message will be build when mode message arrives.
-                break;
-            case ACK:
-            case ACK_2:
-            case CAN_RCV:
-            case CAN_CMIT:
-            case END_XMIT:
-            case START_XMIT:
+            // message will be build when mode message arrives.
+            case ACK, ACK_2, CAN_RCV, CAN_CMIT, END_XMIT, START_XMIT ->
                 buildProtocolMessage(b);
-                break;
-            default:
+            default ->
                 throw new RuntimeException("Cant handle unknown command: " + command);
         }
+        // collect FhtDateTime
 
     }
 
     private void buildAndNotifyTf(byte b) {
         final boolean lowBattery = (b & 0x10) == 0x10;
-        switch (b & 0xEF) {
-            case 0x01:
-                parserListener.success(new Fht80TfMessage(tfAddress, Fht80TfValue.WINDOW_INTERNAL_OPEN, lowBattery));
-                break;
-            case 0x02:
-                parserListener.success(new Fht80TfMessage(tfAddress, Fht80TfValue.WINDOW_INTERNAL_CLOSED, lowBattery));
-                break;
-            case 0x81:
-                parserListener.success(new Fht80TfMessage(tfAddress, Fht80TfValue.WINDOW_EXTERNAL_OPEN, lowBattery));
-                break;
-            case 0x82:
-                parserListener.success(new Fht80TfMessage(tfAddress, Fht80TfValue.WINDOW_EXTERNAL_CLOSED, lowBattery));
-                break;
-            case 0x0C:
-                parserListener.success(new Fht80TfMessage(tfAddress, Fht80TfValue.SYNC, lowBattery));
-                break;
-            case 0x0F:
-                parserListener.success(new Fht80TfMessage(tfAddress, Fht80TfValue.FINISH, lowBattery));
-                break;
-            default:
-                throw new RuntimeException(String.format("Unknown TF value: %02x ", b));
-        }
+        final Fht80TfValue value = switch (b & 0xEF) {
+            case 0x01 ->
+                Fht80TfValue.WINDOW_INTERNAL_OPEN;
+            case 0x02 ->
+                Fht80TfValue.WINDOW_INTERNAL_CLOSED;
+            case 0x81 ->
+                Fht80TfValue.WINDOW_EXTERNAL_OPEN;
+            case 0x82 ->
+                Fht80TfValue.WINDOW_EXTERNAL_CLOSED;
+            case 0x0C ->
+                Fht80TfValue.SYNC;
+            case 0x0F ->
+                Fht80TfValue.FINISH;
+            default ->
+                throw new IllegalArgumentException(String.format("Unknown TF value: %02x ", b));
+        };
+        parserListener.success(new Fht80TfMessage(tfAddress, value, lowBattery));
     }
 
     private void buildAndNotifyModeMessage(byte b) {
-        Fht80bMode fhtMode;
-        switch (b) {
-            case 0x00:
-                fhtMode = Fht80bMode.AUTO;
-                break;
-            case 0x01:
-                fhtMode = Fht80bMode.MANUAL;
-                break;
-            case 0x02:
-                fhtMode = Fht80bMode.HOLIDAY;
-                break;
-            case 0x03:
-                fhtMode = Fht80bMode.PARTY;
-                break;
-            default:
-                throw new RuntimeException("Can't figure out fhtMode");
-        }
+        final Fht80bMode fhtMode
+                = switch (b) {
+            case 0x00 ->
+                Fht80bMode.AUTO;
+            case 0x01 ->
+                Fht80bMode.MANUAL;
+            case 0x02 ->
+                Fht80bMode.HOLIDAY;
+            case 0x03 ->
+                Fht80bMode.PARTY;
+            default ->
+                throw new IllegalArgumentException("Can't figure out fhtMode");
+        };
         FhtModeMessage fhtModeMessage = new FhtModeMessage(housecode, description, (description & 0xf0) == 0x60, (description & 0x01) == 0x01, fhtMode);
 
         switch (fhtModeMessage.mode) {
-            case AUTO:
+            case AUTO ->
                 parserListener.success(fhtModeMessage);
-                break;
-            case MANUAL:
+            case MANUAL ->
                 parserListener.success(fhtModeMessage);
-                break;
-            case HOLIDAY: {
+            case HOLIDAY -> {
                 Map<FhtProperty, Fht80bRawMessage> messages = getPartialMsgs(housecode, FhtProperty.HOLIDAY_END_DATE.parts);
                 if (messages.isEmpty()) {
                     return;
@@ -638,8 +588,7 @@ public class FhtParser implements Parser {
                         new FhtDateMessage(housecode, FhtProperty.HOLIDAY_END_DATE, description, (description & 0xf0) == 0x60, (description & 0x01) == 0x01,
                                 messages.get(FhtProperty.HOLIDAY_2).getSignedValue(), messages.get(FhtProperty.HOLIDAY_1).getSignedValue()));
             }
-            break;
-            case PARTY: {
+            case PARTY -> {
                 Map<FhtProperty, Fht80bRawMessage> messages = getPartialMsgs(housecode, FhtProperty.PARTY_END_TIME.parts);
                 if (messages.isEmpty()) {
                     return;
@@ -648,8 +597,7 @@ public class FhtParser implements Parser {
                 parserListener.successPartialAssembled(new FhtTimeMessage(housecode, FhtProperty.PARTY_END_TIME,
                         description, (description & 0xf0) == 0x60, (description & 0x01) == 0x01, (byte) (rawTime / 6), (byte) ((rawTime % 6) * 10)));
             }
-            break;
-            default:
+            default ->
                 throw new RuntimeException();
         }
     }
@@ -684,58 +632,49 @@ public class FhtParser implements Parser {
         } else {
             offset = b & 0x7F;
         }
-        switch (description & 0x6F) {
-            case 0x28:
-                parserListener.success(new FhtValvePosMessage(housecode, command, description, false, FhtValveMode.OFFSET_ADJUST, offset,
-                        allowLowBatteryBeep));
-                return;
-            case 0x2F:
-                parserListener.success(new FhtValvePosMessage(housecode, command, description, false, FhtValveMode.PAIRING, offset,
-                        allowLowBatteryBeep));
-                return;
-            default:
-                throw new RuntimeException("Unknown Description");
-        }
+        final FhtValveMode value = switch (description & 0x6F) {
+            case 0x28 ->
+                FhtValveMode.OFFSET_ADJUST;
+            case 0x2F ->
+                FhtValveMode.PAIRING;
+            default ->
+                throw new IllegalStateException("Unknown Description");
+        };
+        parserListener.success(new FhtValvePosMessage(housecode, command, description, false, value, offset,
+                allowLowBatteryBeep));
     }
 
     private void buildValveMessage(byte b) throws RuntimeException {
         final boolean repeated = (description & 0x80) == 0x80;
         final boolean allowLowBatteryBeep = (description & 0x10) == 0x10;
         switch (description & 0x0F) {
-            case 0x00:
-                parserListener.success(new FhtValvePosMessage(housecode, command, description, repeated,
-                        FhtValveMode.END_OF_SYNC_SEQUENCE, 0.5f * b, allowLowBatteryBeep));
-                return;
-            case 0x01:
+            case 0x00 ->
+                parserListener.success(
+                        new FhtValvePosMessage(housecode, command, description, repeated, FhtValveMode.END_OF_SYNC_SEQUENCE, 0.5f * b, allowLowBatteryBeep));
+            case 0x01 ->
                 parserListener.success(
                         new FhtValvePosMessage(housecode, command, description, repeated, FhtValveMode.ON, 100.0f, allowLowBatteryBeep));
-                return;
-            case 0x02:
+            case 0x02 ->
                 parserListener.success(
                         new FhtValvePosMessage(housecode, command, description, repeated, FhtValveMode.OFF, 0.0f, allowLowBatteryBeep));
-                return;
-            case 0x06:
+            case 0x06 ->
                 // 100.0 / 255.0 = 0,392156863;
-                parserListener.success(new FhtValvePosMessage(housecode, command, description, repeated, FhtValveMode.POSITION,
-                        0.392156863f * (b & 0xFF), allowLowBatteryBeep));
-                return;
-            case 0x08:
-                parserListener.success(new FhtValvePosMessage(housecode, command, description, repeated, FhtValveMode.OFFSET_ADJUST,
-                        0.0f, allowLowBatteryBeep));
-                return;
-            case 0x0a:
-                parserListener.success(new FhtValvePosMessage(housecode, command, description, repeated, FhtValveMode.LIME_CYCLE,
-                        0.5f * (b & 0xFF), allowLowBatteryBeep));
-                return;
-            case 0x0c:
-                parserListener.success(new FhtValveSyncMessage(housecode, command, description, 0.5f * (b & 0xff), allowLowBatteryBeep));
-                return;
-            case 0x0e:
-                parserListener.success(new FhtValvePosMessage(housecode, command, description, repeated, FhtValveMode.BEEP,
-                        0.5f * (b & 0xFF), allowLowBatteryBeep));
-                return;
-            default:
-                throw new RuntimeException(
+                parserListener.success(
+                        new FhtValvePosMessage(housecode, command, description, repeated, FhtValveMode.POSITION, 0.392156863f * (b & 0xFF), allowLowBatteryBeep));
+            case 0x08 ->
+                parserListener.success(
+                        new FhtValvePosMessage(housecode, command, description, repeated, FhtValveMode.OFFSET_ADJUST, 0.0f, allowLowBatteryBeep));
+            case 0x0a ->
+                parserListener.success(
+                        new FhtValvePosMessage(housecode, command, description, repeated, FhtValveMode.LIME_CYCLE, 0.5f * (b & 0xFF), allowLowBatteryBeep));
+            case 0x0c ->
+                parserListener.success(
+                        new FhtValveSyncMessage(housecode, command, description, 0.5f * (b & 0xff), allowLowBatteryBeep));
+            case 0x0e ->
+                parserListener.success(
+                        new FhtValvePosMessage(housecode, command, description, repeated, FhtValveMode.BEEP, 0.5f * (b & 0xFF), allowLowBatteryBeep));
+            default ->
+                throw new IllegalStateException(
                         String.format("Unknown Description %d valve cmd: %02x ", housecode, description));
         }
     }

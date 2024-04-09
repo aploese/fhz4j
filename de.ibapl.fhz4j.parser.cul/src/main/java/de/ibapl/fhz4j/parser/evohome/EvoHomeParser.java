@@ -1,6 +1,6 @@
 /*
  * FHZ4J - Drivers for the Wireless FS20, FHT and HMS protocol https://github.com/aploese/fhz4j/
- * Copyright (C) 2009-2023, Arne Plöse and individual contributors as indicated
+ * Copyright (C) 2019-2024, Arne Plöse and individual contributors as indicated
  * by the @authors tag. See the copyright.txt in the distribution for a
  * full listing of individual contributors.
  *
@@ -309,80 +309,73 @@ public class EvoHomeParser extends AbstractParser {
     public void parse(byte b) {
         try {
             switch (state) {
-                case COLLECT_HEADER:
+                case COLLECT_HEADER -> {
                     decodeHeader(b);
                     setStackSize(3);
                     state = State.COLLECT_DEVICEID_1;
-                    break;
-                case COLLECT_DEVICEID_1:
+                }
+                case COLLECT_DEVICEID_1 -> {
                     if (push(b)) {
                         deviceId1 = getIntValue();
                         setStackSize(3);
                         state = State.COLLECT_DEVICEID_2;
                     }
-                    break;
-                case COLLECT_DEVICEID_2:
+                }
+                case COLLECT_DEVICEID_2 -> {
                     if (push(b)) {
                         deviceId2 = getIntValue();
                         setStackSize(2);
                         state = State.COLLECT_COMMAND;
                     }
-                    break;
-                case COLLECT_COMMAND:
+                }
+                case COLLECT_COMMAND -> {
                     if (push(b)) {
                         decodeCommand();
                         state = State.COLLECT_DATA_LENGTH;
                     }
-                    break;
-                case COLLECT_DATA_LENGTH:
+                }
+                case COLLECT_DATA_LENGTH -> {
                     remainingDataLength = (short) (b & 0xff);
                     buildMessage();
-                    break;
-                case COLLECT_DATA_BYTES:
+                }
+                case COLLECT_DATA_BYTES ->
                     setByteArrayValue(b);
-                    break;
-                case CONTROLLER_MODE__ALL__MODE:
+                case CONTROLLER_MODE__ALL__MODE -> {
                     remainingDataLength--;
-                    switch (b & 0xff) {
-                        case 0x00:
-                            ((AbstractControllerModeMessage) evoHomeMessage).mode = AbstractControllerModeMessage.Mode.NORMAL;
-                            break;
-                        case 0x01:
-                            ((AbstractControllerModeMessage) evoHomeMessage).mode = AbstractControllerModeMessage.Mode.HEATING_OFF;
-                            break;
-                        case 0x02:
-                            ((AbstractControllerModeMessage) evoHomeMessage).mode = AbstractControllerModeMessage.Mode.ECONOMY;
-                            break;
-                        case 0x03:
-                            ((AbstractControllerModeMessage) evoHomeMessage).mode = AbstractControllerModeMessage.Mode.AWAY;
-                            break;
-                        case 0x04:
-                            ((AbstractControllerModeMessage) evoHomeMessage).mode = AbstractControllerModeMessage.Mode.EXCEPTION_DAY;
-                            break;
-                        case 0x07:
-                            ((AbstractControllerModeMessage) evoHomeMessage).mode = AbstractControllerModeMessage.Mode.SPECIAL_PROGRAMME;
-                            break;
-                        default:
-                            throw new RuntimeException("Unknown Mode: " + b);
-                    }
+                    ((AbstractControllerModeMessage) evoHomeMessage).mode = switch (b & 0xff) {
+                        case 0x00 ->
+                            AbstractControllerModeMessage.Mode.NORMAL;
+                        case 0x01 ->
+                            AbstractControllerModeMessage.Mode.HEATING_OFF;
+                        case 0x02 ->
+                            AbstractControllerModeMessage.Mode.ECONOMY;
+                        case 0x03 ->
+                            AbstractControllerModeMessage.Mode.AWAY;
+                        case 0x04 ->
+                            AbstractControllerModeMessage.Mode.EXCEPTION_DAY;
+                        case 0x07 ->
+                            AbstractControllerModeMessage.Mode.SPECIAL_PROGRAMME;
+                        default ->
+                            throw new IllegalStateException("Unknown Mode: " + b);
+                    };
                     if (remainingDataLength == 0) {
                         success();
                     } else {
                         timeParser.init();
                         state = State.CONTROLLER_MODE__PAYLOAD__TIME;
                     }
-                    break;
-                case CONTROLLER_MODE__PAYLOAD__TIME:
+                }
+                case CONTROLLER_MODE__PAYLOAD__TIME -> {
                     remainingDataLength--;
                     timeParser.parse(b);
                     if (timeParser.state == TimeParser.State.PARSE_SUCCESS) {
                         dateParser.init();
                         state = State.CONTROLLER_MODE__PAYLOAD__DATE;
                     } else if (timeParser.state == TimeParser.State.PARSE_ERROR) {
-                        throw new RuntimeException();
+                        throw new IllegalStateException();
                     }
-                    break;
-                case CONTROLLER_MODE__PAYLOAD__DATE:
+                }
+                case CONTROLLER_MODE__PAYLOAD__DATE -> {
                     remainingDataLength--;
                     dateParser.parse(b);
                     if (dateParser.state == DateParser.State.PARSE_SUCCESS) {
@@ -394,60 +387,58 @@ public class EvoHomeParser extends AbstractParser {
                         }
                         state = State.CONTROLLER_MODE__PAYLOAD__PROGRAM_TYPE;
                     } else if (dateParser.state == DateParser.State.PARSE_ERROR) {
-                        throw new RuntimeException();
+                        throw new IllegalStateException();
                     }
-                    break;
-                case CONTROLLER_MODE__PAYLOAD__PROGRAM_TYPE:
+                }
+                case CONTROLLER_MODE__PAYLOAD__PROGRAM_TYPE -> {
                     remainingDataLength--;
-                    switch (b & 0xff) {
-                        case 0x00:
-                            ((AbstractControllerModePayloadMessage) evoHomeMessage).programm_type = AbstractControllerModePayloadMessage.ProgrammType.PERMANENT;
-                            break;
-                        case 0x01:
-                            ((AbstractControllerModePayloadMessage) evoHomeMessage).programm_type = AbstractControllerModePayloadMessage.ProgrammType.TIMED;
-                            break;
-                        default:
-                            throw new AssertionError();
-                    }
+                    ((AbstractControllerModePayloadMessage) evoHomeMessage).programm_type = switch (b & 0xff) {
+                        case 0x00 ->
+                            AbstractControllerModePayloadMessage.ProgrammType.PERMANENT;
+                        case 0x01 ->
+                            AbstractControllerModePayloadMessage.ProgrammType.TIMED;
+                        default ->
+                            throw new IllegalStateException();
+                    };
                     success();
-                    break;
-                case PARSE__RELAY_HEAT_DEMAND__DOMAIN_ID:
+                }
+                case PARSE__RELAY_HEAT_DEMAND__DOMAIN_ID -> {
                     ((RelayHeatDemandInformationMessage) evoHomeMessage).domain_id = b;
                     state = State.PARSE__RELAY_HEAT_DEMAND__DEMAND;
-                    break;
-                case PARSE__RELAY_HEAT_DEMAND__DEMAND:
+                }
+                case PARSE__RELAY_HEAT_DEMAND__DEMAND -> {
                     ((RelayHeatDemandInformationMessage) evoHomeMessage).demand = (float) ((b & 0x00FF) / 2.0);
                     success();
-                    break;
-                case PARSE__RELAY_FAILSAVE__DOMAIN_ID:
+                }
+                case PARSE__RELAY_FAILSAVE__DOMAIN_ID -> {
                     ((RelayFailsaveInformationMessage) evoHomeMessage).domain_id = b;
                     setStackSize(2);
                     state = State.COLLECT__RELAY_FAILSAVE__VALUE;
-                    break;
-                case COLLECT__RELAY_FAILSAVE__VALUE:
+                }
+                case COLLECT__RELAY_FAILSAVE__VALUE -> {
                     if (push(b)) {
                         ((RelayFailsaveInformationMessage) evoHomeMessage).value = getShortValue();
                         success();
                     }
-                    break;
-                case PARSE__SYSTEM_SYNCHRONIZATION__PAYLOAD__DEVICE_ID:
+                }
+                case PARSE__SYSTEM_SYNCHRONIZATION__PAYLOAD__DEVICE_ID -> {
                     ((SystemSynchronizationPayloadMessage) evoHomeMessage).device_id = b;
                     setStackSize(2);
                     state = State.PARSE__SYSTEM_SYNCHRONIZATION__PAYLOAD__COUNTDOWN;
-                    break;
-                case PARSE__SYSTEM_SYNCHRONIZATION__PAYLOAD__COUNTDOWN:
+                }
+                case PARSE__SYSTEM_SYNCHRONIZATION__PAYLOAD__COUNTDOWN -> {
                     if (push(b)) {
                         ((SystemSynchronizationPayloadMessage) evoHomeMessage).countdown = getShortValue();
                         success();
                     }
-                    break;
-                case ZONE_TEMPERATURE__PAYLOAD__ZONE_ID:
+                }
+                case ZONE_TEMPERATURE__PAYLOAD__ZONE_ID -> {
                     remainingDataLength--;
                     ((AbstractZoneTemperaturePayloadMessage) evoHomeMessage).zoneTemperatures.add(new ZoneTemperature(b));
                     setStackSize(2);
                     state = State.ZONE_TEMPERATURE__PAYLOAD__TEMPERATURE;
-                    break;
-                case ZONE_TEMPERATURE__PAYLOAD__TEMPERATURE:
+                }
+                case ZONE_TEMPERATURE__PAYLOAD__TEMPERATURE -> {
                     remainingDataLength--;
                     if (push(b)) {
                         ((AbstractZoneTemperaturePayloadMessage) evoHomeMessage).zoneTemperatures.getLast().temperature = getTemperature();
@@ -457,23 +448,23 @@ public class EvoHomeParser extends AbstractParser {
                             state = State.ZONE_TEMPERATURE__PAYLOAD__ZONE_ID;
                         }
                     }
-                    break;
-                case RF_BIND__PAYLOAD__ELEMENTS__ZONE_ID:
+                }
+                case RF_BIND__PAYLOAD__ELEMENTS__ZONE_ID -> {
                     remainingDataLength--;
                     ((AbstractRfBindPayloadMessage) evoHomeMessage).elements.add(new AbstractRfBindPayloadMessage.Data());
                     ((AbstractRfBindPayloadMessage) evoHomeMessage).elements.getLast().zoneId = b;
                     setStackSize(2);
                     state = State.RF_BIND__PAYLOAD__ELEMENTS__COMMAND;
-                    break;
-                case RF_BIND__PAYLOAD__ELEMENTS__COMMAND:
+                }
+                case RF_BIND__PAYLOAD__ELEMENTS__COMMAND -> {
                     remainingDataLength--;
                     if (push(b)) {
                         ((AbstractRfBindPayloadMessage) evoHomeMessage).elements.getLast().command = getShortValue();
                         setStackSize(3);
                         state = State.RF_BIND__PAYLOAD__ELEMENTS__DEVICE_ID;
                     }
-                    break;
-                case RF_BIND__PAYLOAD__ELEMENTS__DEVICE_ID:
+                }
+                case RF_BIND__PAYLOAD__ELEMENTS__DEVICE_ID -> {
                     remainingDataLength--;
                     if (push(b)) {
                         ((AbstractRfBindPayloadMessage) evoHomeMessage).elements.getLast().deviceId = getIntValue();
@@ -483,19 +474,19 @@ public class EvoHomeParser extends AbstractParser {
                             state = State.RF_BIND__PAYLOAD__ELEMENTS__ZONE_ID;
                         }
                     }
-                    break;
-                case COLLECT__ZONE_NAME__REQUEST__ZONEID:
+                }
+                case COLLECT__ZONE_NAME__REQUEST__ZONEID -> {
                     ((ZoneNameRequestMessage) evoHomeMessage).zoneId = b;
                     state = State.COLLECT_ZONE_NAME_REQ_UNKNOWN;
-                    break;
-                case COLLECT_ZONE_NAME_REQ_UNKNOWN:
+                }
+                case COLLECT_ZONE_NAME_REQ_UNKNOWN -> {
                     ((ZoneNameRequestMessage) evoHomeMessage).unused = b;
                     if (((ZoneNameRequestMessage) evoHomeMessage).unused != 0) {
-                        throw new RuntimeException();
+                        throw new IllegalStateException();
                     }
                     success();
-                    break;
-                case PARSE__ZONE_NAME__PAYLOAD__DATA:
+                }
+                case PARSE__ZONE_NAME__PAYLOAD__DATA -> {
                     zoneNameParser.parse(b);
                     if (zoneNameParser.state == ZoneNameParser.State.PARSE_SUCCESS) {
                         ((ZoneNamePayloadMessage) evoHomeMessage).zoneId = zoneNameParser.zoneId;
@@ -503,53 +494,48 @@ public class EvoHomeParser extends AbstractParser {
                         ((ZoneNamePayloadMessage) evoHomeMessage).zoneName = zoneNameParser.zoneNameBuilder.toString();
                         success();
                     }
-                    break;
-                case ZONE_HEAT_DEMAND__INFORMATION__ZONE_ID:
+                }
+                case ZONE_HEAT_DEMAND__INFORMATION__ZONE_ID -> {
                     ((ZoneHeatDemandInformationMessage) evoHomeMessage).zone_id = b;
                     state = State.ZONE_HEAT_DEMAND__INFORMATION__HEAT_DEMAND;
-                    break;
-                case ZONE_HEAT_DEMAND__INFORMATION__HEAT_DEMAND:
+                }
+                case ZONE_HEAT_DEMAND__INFORMATION__HEAT_DEMAND -> {
                     ((ZoneHeatDemandInformationMessage) evoHomeMessage).heatDemand = (short) (b & 0xFF);
                     success();
-                    break;
-                case ZONE_SETPOINT_OVERRIDE__ALL__ZONE_ID:
+                }
+                case ZONE_SETPOINT_OVERRIDE__ALL__ZONE_ID -> {
                     remainingDataLength--;
                     ((AbstractZoneSetpointOverrideMessage) evoHomeMessage).zone_id = b;
                     setStackSize(2);
                     state = State.ZONE_SETPOINT_OVERRIDE__ALL__TEMPERATURE;
-                    break;
-                case ZONE_SETPOINT_OVERRIDE__ALL__TEMPERATURE:
+                }
+                case ZONE_SETPOINT_OVERRIDE__ALL__TEMPERATURE -> {
                     remainingDataLength--;
                     if (push(b)) {
                         ((AbstractZoneSetpointOverrideMessage) evoHomeMessage).setpoint = new BigDecimal(getShortValue()).divide(ONE_HUNDRED);
                         state = State.ZONE_SETPOINT_OVERRIDE__ALL__ZONE_MODE;
                     }
-                    break;
-                case ZONE_SETPOINT_OVERRIDE__ALL__ZONE_MODE:
+                }
+                case ZONE_SETPOINT_OVERRIDE__ALL__ZONE_MODE -> {
                     remainingDataLength--;
-                    switch (b & 0xff) {
-                        case 0x00:
-                            ((AbstractZoneSetpointOverrideMessage) evoHomeMessage).zone_mode = AbstractZoneSetpointOverrideMessage.SetpointOverrideMode.FOLLOW_SCHEDULE;
-                            break;
-                        case 0x01:
-                            ((AbstractZoneSetpointOverrideMessage) evoHomeMessage).zone_mode = AbstractZoneSetpointOverrideMessage.SetpointOverrideMode.ADVANCED_OVERRIDE;
-                            break;
-                        case 0x02:
-                            ((AbstractZoneSetpointOverrideMessage) evoHomeMessage).zone_mode = AbstractZoneSetpointOverrideMessage.SetpointOverrideMode.PERMANENT_OVERRIDE;
-                            break;
-                        case 0x03:
-                            ((AbstractZoneSetpointOverrideMessage) evoHomeMessage).zone_mode = AbstractZoneSetpointOverrideMessage.SetpointOverrideMode.COUNTDOWN_OVERRIDE;
-                            break;
-                        case 0x04:
-                            ((AbstractZoneSetpointOverrideMessage) evoHomeMessage).zone_mode = AbstractZoneSetpointOverrideMessage.SetpointOverrideMode.TEMPORARY_OVERRIDE;
-                            break;
-                        default:
+                    ((AbstractZoneSetpointOverrideMessage) evoHomeMessage).zone_mode = switch (b & 0xff) {
+                        case 0x00 ->
+                            AbstractZoneSetpointOverrideMessage.SetpointOverrideMode.FOLLOW_SCHEDULE;
+                        case 0x01 ->
+                            AbstractZoneSetpointOverrideMessage.SetpointOverrideMode.ADVANCED_OVERRIDE;
+                        case 0x02 ->
+                            AbstractZoneSetpointOverrideMessage.SetpointOverrideMode.PERMANENT_OVERRIDE;
+                        case 0x03 ->
+                            AbstractZoneSetpointOverrideMessage.SetpointOverrideMode.COUNTDOWN_OVERRIDE;
+                        case 0x04 ->
+                            AbstractZoneSetpointOverrideMessage.SetpointOverrideMode.TEMPORARY_OVERRIDE;
+                        default ->
                             throw new RuntimeException("Can't handle zone_mode from: " + b);
-                    }
+                    };
                     setStackSize(3);
                     state = State.ZONE_SETPOINT_OVERRIDE__ALL__COUNTDOWN;
-                    break;
-                case ZONE_SETPOINT_OVERRIDE__ALL__COUNTDOWN:
+                }
+                case ZONE_SETPOINT_OVERRIDE__ALL__COUNTDOWN -> {
                     remainingDataLength--;
                     if (push(b)) {
                         ((AbstractZoneSetpointOverrideMessage) evoHomeMessage).countdown = Duration.ofMinutes(getIntValue());
@@ -560,34 +546,34 @@ public class EvoHomeParser extends AbstractParser {
                             state = State.ZONE_SETPOINT_OVERRIDE__ALL_TIME;
                         }
                     }
-                    break;
-                case ZONE_SETPOINT_OVERRIDE__ALL_TIME:
+                }
+                case ZONE_SETPOINT_OVERRIDE__ALL_TIME -> {
                     remainingDataLength--;
                     timeParser.parse(b);
                     if (timeParser.state == TimeParser.State.PARSE_SUCCESS) {
                         dateParser.init();
                         state = State.ZONE_SETPOINT_OVERRIDE__ALL_DATE;
                     } else if (timeParser.state == TimeParser.State.PARSE_ERROR) {
-                        throw new RuntimeException();
+                        throw new IllegalStateException();
                     }
-                    break;
-                case ZONE_SETPOINT_OVERRIDE__ALL_DATE:
+                }
+                case ZONE_SETPOINT_OVERRIDE__ALL_DATE -> {
                     remainingDataLength--;
                     dateParser.parse(b);
                     if (dateParser.state == DateParser.State.PARSE_SUCCESS) {
                         ((AbstractZoneSetpointOverrideMessage) evoHomeMessage).time_until = LocalDateTime.of(dateParser.getDate(), timeParser.getTime());
                         success();
                     } else if (dateParser.state == DateParser.State.PARSE_ERROR) {
-                        throw new RuntimeException();
+                        throw new IllegalStateException();
                     }
-                    break;
-                case PARSE_LOCALIZATION_ELEMENTS:
+                }
+                case PARSE_LOCALIZATION_ELEMENTS -> {
                     localizationParser.parse(b);
                     if (localizationParser.state == LocalizationParser.State.PARSE_SUCCESS) {
-                        if (evoHomeMessage instanceof LocalizationRequestMessage) {
-                            ((LocalizationRequestMessage) evoHomeMessage).unused0 = localizationParser.unused0;
-                            ((LocalizationRequestMessage) evoHomeMessage).language = localizationParser.nameBuilder.toString();
-                            ((LocalizationRequestMessage) evoHomeMessage).unused1 = localizationParser.unused1;
+                        if (evoHomeMessage instanceof LocalizationRequestMessage localizationRequestMessage) {
+                            localizationRequestMessage.unused0 = localizationParser.unused0;
+                            localizationRequestMessage.language = localizationParser.nameBuilder.toString();
+                            localizationRequestMessage.unused1 = localizationParser.unused1;
                         } else {
                             ((LocalizationResponseMessage) evoHomeMessage).unused0 = localizationParser.unused0;
                             ((LocalizationResponseMessage) evoHomeMessage).language = localizationParser.nameBuilder.toString();
@@ -595,33 +581,33 @@ public class EvoHomeParser extends AbstractParser {
                         }
                         success();
                     }
-                    break;
-                case PARSE_ZONE_CONFIG_ELEMENTS:
+                }
+                case PARSE_ZONE_CONFIG_ELEMENTS -> {
                     zonesParamParser.parse(b);
                     if (zonesParamParser.state == ZonesParamParser.State.PARSE_SUCCESS) {
                         ((ZoneConfigPayloadMessage) evoHomeMessage).zones = zonesParamParser.zoneParams;
                         success();
                     }
-                    break;
-                case COLLECT_SINGLE_VALUE:
+                }
+                case COLLECT_SINGLE_VALUE -> {
                     if (push(b)) {
                         setSingleValueAndNotify();
                         state = State.PARSE_SUCCESS;
                     }
-                    break;
-                case ZONE_ACTUATORS__INFORMATION__ZONE_IDX:
+                }
+                case ZONE_ACTUATORS__INFORMATION__ZONE_IDX -> {
                     remainingDataLength--;
                     ((ZoneActuatorsInformationMessage) evoHomeMessage).actuators.add(new ZoneActuatorsInformationMessage.ZoneActuator());
                     ((ZoneActuatorsInformationMessage) evoHomeMessage).actuators.getLast().zone_idx = b;
                     state = State.ZONE_ACTUATORS__INFORMATION__UNKNOWN0;
-                    break;
-                case ZONE_ACTUATORS__INFORMATION__UNKNOWN0:
+                }
+                case ZONE_ACTUATORS__INFORMATION__UNKNOWN0 -> {
                     remainingDataLength--;
                     ((ZoneActuatorsInformationMessage) evoHomeMessage).actuators.getLast().unknown0 = b;
                     setStackSize(4);
                     state = State.ZONE_ACTUATORS__INFORMATION__DEVICEID;
-                    break;
-                case ZONE_ACTUATORS__INFORMATION__DEVICEID:
+                }
+                case ZONE_ACTUATORS__INFORMATION__DEVICEID -> {
                     remainingDataLength--;
                     if (push(b)) {
                         ((ZoneActuatorsInformationMessage) evoHomeMessage).actuators.getLast().deviceId = new DeviceId(getShortValue());
@@ -631,13 +617,13 @@ public class EvoHomeParser extends AbstractParser {
                             state = State.ZONE_ACTUATORS__INFORMATION__ZONE_IDX;
                         }
                     }
-                    break;
-                case ZONE_ACTUATORS__REQUEST__ZONE_IDX:
+                }
+                case ZONE_ACTUATORS__REQUEST__ZONE_IDX -> {
                     remainingDataLength--;
                     ((ZoneActuatorsRequestMessage) evoHomeMessage).zone_idx = b;
                     state = State.ZONE_ACTUATORS__REQUEST__UNKNOWN0;
-                    break;
-                case ZONE_ACTUATORS__REQUEST__UNKNOWN0:
+                }
+                case ZONE_ACTUATORS__REQUEST__UNKNOWN0 -> {
                     remainingDataLength--;
                     ((ZoneActuatorsRequestMessage) evoHomeMessage).unknown0 = b;
                     if (remainingDataLength == 0) {
@@ -645,18 +631,18 @@ public class EvoHomeParser extends AbstractParser {
                     } else {
                         throw new IllegalStateException("ZONE_ACTUATORS__REQUEST__UNKNOWN0 has remaining data " + remainingDataLength);
                     }
-                    break;
-                case DEVICE_BATTERY_STATUS__INFORMATION__ZONE_ID:
+                }
+                case DEVICE_BATTERY_STATUS__INFORMATION__ZONE_ID -> {
                     remainingDataLength--;
                     ((DeviceBatteryStatusInformationMessage) evoHomeMessage).zone_id = b;
                     state = State.DEVICE_BATTERY_STATUS__INFORMATION__LEVEL;
-                    break;
-                case DEVICE_BATTERY_STATUS__INFORMATION__LEVEL:
+                }
+                case DEVICE_BATTERY_STATUS__INFORMATION__LEVEL -> {
                     remainingDataLength--;
                     ((DeviceBatteryStatusInformationMessage) evoHomeMessage).level = (float) ((b & 0xff) / 2.0);
                     state = State.DEVICE_BATTERY_STATUS__INFORMATION__UNKNOWN0;
-                    break;
-                case DEVICE_BATTERY_STATUS__INFORMATION__UNKNOWN0:
+                }
+                case DEVICE_BATTERY_STATUS__INFORMATION__UNKNOWN0 -> {
                     remainingDataLength--;
                     ((DeviceBatteryStatusInformationMessage) evoHomeMessage).unknown0 = b;
                     if (remainingDataLength == 0) {
@@ -664,16 +650,16 @@ public class EvoHomeParser extends AbstractParser {
                     } else {
                         throw new IllegalStateException("DEVICE_BATTERY_STATUS__INFORMATION__UNKNOWN0 has remaining data " + remainingDataLength);
                     }
-                    break;
-                case DEVICE_INFORMATION__INFORMATION__UNKNOWN0:
+                }
+                case DEVICE_INFORMATION__INFORMATION__UNKNOWN0 -> {
                     remainingDataLength--;
                     if (byteArrayBuilder.push(b)) {
                         ((DeviceInformationInformationMessage) evoHomeMessage).unknown0 = byteArrayBuilder.getData();
                         dateParser.init();
                         state = State.DEVICE_INFORMATION__INFORMATION__FIRMWARE;
                     }
-                    break;
-                case DEVICE_INFORMATION__INFORMATION__FIRMWARE:
+                }
+                case DEVICE_INFORMATION__INFORMATION__FIRMWARE -> {
                     remainingDataLength--;
                     dateParser.parse(b);
                     if (dateParser.state == DateParser.State.PARSE_SUCCESS) {
@@ -681,8 +667,8 @@ public class EvoHomeParser extends AbstractParser {
                         dateParser.init();
                         state = State.DEVICE_INFORMATION__INFORMATION__MANUFACTURED;
                     }
-                    break;
-                case DEVICE_INFORMATION__INFORMATION__MANUFACTURED:
+                }
+                case DEVICE_INFORMATION__INFORMATION__MANUFACTURED -> {
                     remainingDataLength--;
                     dateParser.parse(b);
                     if (dateParser.state == DateParser.State.PARSE_SUCCESS) {
@@ -690,8 +676,8 @@ public class EvoHomeParser extends AbstractParser {
                         stringBuilder.setLength(0);
                         state = State.DEVICE_INFORMATION__INFORMATION__DESCRIPTION;
                     }
-                    break;
-                case DEVICE_INFORMATION__INFORMATION__DESCRIPTION:
+                }
+                case DEVICE_INFORMATION__INFORMATION__DESCRIPTION -> {
                     remainingDataLength--;
                     if (b != 0) {//skip 0 bytes at the end the length is fixed to 20 chars?
                         stringBuilder.append((char) b);
@@ -700,28 +686,28 @@ public class EvoHomeParser extends AbstractParser {
                         ((DeviceInformationInformationMessage) evoHomeMessage).description = stringBuilder.toString();
                         success();
                     }
-                    break;
-                case BOILER_RELAY_INFORMATION__X__DOMAIN_ID:
+                }
+                case BOILER_RELAY_INFORMATION__X__DOMAIN_ID -> {
                     remainingDataLength--;
                     ((BoilerRelayInformationMessage) evoHomeMessage).domain_id = b;
                     state = State.BOILER_RELAY_INFORMATION__X__CYCLE_RATE;
-                    break;
-                case BOILER_RELAY_INFORMATION__X__CYCLE_RATE:
+                }
+                case BOILER_RELAY_INFORMATION__X__CYCLE_RATE -> {
                     remainingDataLength--;
                     ((BoilerRelayInformationMessage) evoHomeMessage).cycle_rate = (float) ((b & 0xFF) / 4.0);
                     state = State.BOILER_RELAY_INFORMATION__X__MINIMUM_ON_TIME;
-                    break;
-                case BOILER_RELAY_INFORMATION__X__MINIMUM_ON_TIME:
+                }
+                case BOILER_RELAY_INFORMATION__X__MINIMUM_ON_TIME -> {
                     remainingDataLength--;
                     ((BoilerRelayInformationMessage) evoHomeMessage).minimum_on_time = Duration.ofSeconds((b & 0xFF) * 15); // b is in min/4 so 60s/4 is 15s
                     state = State.BOILER_RELAY_INFORMATION__X__MINIMUM_OFF_TIME;
-                    break;
-                case BOILER_RELAY_INFORMATION__X__MINIMUM_OFF_TIME:
+                }
+                case BOILER_RELAY_INFORMATION__X__MINIMUM_OFF_TIME -> {
                     remainingDataLength--;
                     ((BoilerRelayInformationMessage) evoHomeMessage).minimum_off_time = Duration.ofSeconds((b & 0xFF) * 15); // b is in min/4 so 60s/4 is 15s
                     state = State.BOILER_RELAY_INFORMATION__X__UNKNOWN0;
-                    break;
-                case BOILER_RELAY_INFORMATION__X__UNKNOWN0:
+                }
+                case BOILER_RELAY_INFORMATION__X__UNKNOWN0 -> {
                     remainingDataLength--;
                     ((BoilerRelayInformationMessage) evoHomeMessage).unknown0 = b;
                     if (remainingDataLength == 0) {
@@ -730,51 +716,51 @@ public class EvoHomeParser extends AbstractParser {
                         setStackSize(2);
                         state = State.BOILER_RELAY_INFORMATION__X__PROPORTIONAL_BANDWITH;
                     }
-                    break;
-                case BOILER_RELAY_INFORMATION__X__PROPORTIONAL_BANDWITH:
+                }
+                case BOILER_RELAY_INFORMATION__X__PROPORTIONAL_BANDWITH -> {
                     remainingDataLength--;
                     if (push(b)) {
                         ((BoilerRelayInformationMessage) evoHomeMessage).proportional_band_width = getShortValue();
                         state = State.BOILER_RELAY_INFORMATION__X__UNKNOWN1;
                     }
-                    break;
-                case BOILER_RELAY_INFORMATION__X__UNKNOWN1:
+                }
+                case BOILER_RELAY_INFORMATION__X__UNKNOWN1 -> {
                     remainingDataLength--;
                     ((BoilerRelayInformationMessage) evoHomeMessage).unknown1 = b;
                     if (remainingDataLength == 0) {
                         success();
                     }
-                    break;
-                case WINDOW_SENSOR__REQUEST__ZONE_ID:
+                }
+                case WINDOW_SENSOR__REQUEST__ZONE_ID -> {
                     remainingDataLength--;
                     ((WindowSensorRequestMessage) evoHomeMessage).zone_id = b;
                     success();
-                    break;
-                case WINDOW_SENSOR__PAYLOAD__ZONE_ID:
+                }
+                case WINDOW_SENSOR__PAYLOAD__ZONE_ID -> {
                     remainingDataLength--;
                     ((AbstractWindowSensorPayloadMessage) evoHomeMessage).zone_id = b;
                     setStackSize(2);
                     state = State.WINDOW_SENSOR__PAYLOAD__UNKNOWN0;
-                    break;
-                case WINDOW_SENSOR__PAYLOAD__UNKNOWN0:
+                }
+                case WINDOW_SENSOR__PAYLOAD__UNKNOWN0 -> {
                     remainingDataLength--;
                     if (push(b)) {
                         ((AbstractWindowSensorPayloadMessage) evoHomeMessage).unknown0 = getShortValue();
                         success();
                     }
-                    break;
-                case ZONE_SETPOINT__REQUEST__ZONE_ID:
+                }
+                case ZONE_SETPOINT__REQUEST__ZONE_ID -> {
                     remainingDataLength--;
                     ((ZoneSetpointRequestMessage) evoHomeMessage).zone_id = b;
                     success();
-                    break;
-                case ZONE_SETPOINT__PAYLOAD__ZONE_TEMPERATURES__ZONE_ID:
+                }
+                case ZONE_SETPOINT__PAYLOAD__ZONE_TEMPERATURES__ZONE_ID -> {
                     remainingDataLength--;
                     ((AbstractZoneSetpointPayloadMessage) evoHomeMessage).zoneTemperatures.add(new ZoneTemperature(b));
                     setStackSize(2);
                     state = State.ZONE_SETPOINT__PAYLOAD__ZONE_TEMPERATURES__SETPOINT;
-                    break;
-                case ZONE_SETPOINT__PAYLOAD__ZONE_TEMPERATURES__SETPOINT:
+                }
+                case ZONE_SETPOINT__PAYLOAD__ZONE_TEMPERATURES__SETPOINT -> {
                     remainingDataLength--;
                     if (push(b)) {
                         if (getShortValue() == 0x7FFF) {
@@ -788,96 +774,93 @@ public class EvoHomeParser extends AbstractParser {
                             state = State.ZONE_SETPOINT__PAYLOAD__ZONE_TEMPERATURES__ZONE_ID;
                         }
                     }
-                    break;
-                case UNKNOWN_3120__INFORMATION__UNUSED0:
+                }
+                case UNKNOWN_3120__INFORMATION__UNUSED0 -> {
                     remainingDataLength--;
                     ((Unknown_0x3120InformationMessage) evoHomeMessage).unused0 = b;
                     if (b != 0x00) {
-                        throw new RuntimeException("Unknown_0x3120InformationMessage.unused0 is set to " + b);
+                        throw new IllegalStateException("Unknown_0x3120InformationMessage.unused0 is set to " + b);
                     }
                     setStackSize(2);
                     state = State.UNKNOWN_3120__INFORMATION__FIXED1;
-                    break;
-                case UNKNOWN_3120__INFORMATION__FIXED1:
+                }
+                case UNKNOWN_3120__INFORMATION__FIXED1 -> {
                     remainingDataLength--;
                     if (push(b)) {
                         ((Unknown_0x3120InformationMessage) evoHomeMessage).fixed1 = getShortValue();
                         if (getShortValue() != 0x70B0) {
-                            throw new RuntimeException("Unknown_0x3120InformationMessage.fixed1 is set to " + getShortValue());
+                            throw new IllegalStateException("Unknown_0x3120InformationMessage.fixed1 is set to " + getShortValue());
                         }
                         setStackSize(3);
                         state = State.UNKNOWN_3120__INFORMATION__UNUSED2;
                     }
-                    break;
-                case UNKNOWN_3120__INFORMATION__UNUSED2:
+                }
+                case UNKNOWN_3120__INFORMATION__UNUSED2 -> {
                     remainingDataLength--;
                     if (push(b)) {
                         ((Unknown_0x3120InformationMessage) evoHomeMessage).unused2 = getIntValue();
                         if (getIntValue() != 0x000000) {
-                            throw new RuntimeException("Unknown_0x3120InformationMessage.unused2 is set to " + getIntValue());
+                            throw new IllegalStateException("Unknown_0x3120InformationMessage.unused2 is set to " + getIntValue());
                         }
                         state = State.UNKNOWN_3120__INFORMATION__FIXED3;
                     }
-                    break;
-                case UNKNOWN_3120__INFORMATION__FIXED3:
+                }
+                case UNKNOWN_3120__INFORMATION__FIXED3 -> {
                     remainingDataLength--;
                     ((Unknown_0x3120InformationMessage) evoHomeMessage).fixed3 = b;
                     if (b != (byte) 0xff) {
-                        throw new RuntimeException("Unknown_0x3120InformationMessage.fixed3 is set to " + b);
+                        throw new IllegalStateException("Unknown_0x3120InformationMessage.fixed3 is set to " + b);
                     }
                     success();
-                    break;
-                case SYSTEM_TIMESTAMP__REQUEST__ZONE_ID:
+                }
+                case SYSTEM_TIMESTAMP__REQUEST__ZONE_ID -> {
                     remainingDataLength--;
                     ((SystemTimestampRequestMessage) evoHomeMessage).zone_id = b;
                     success();
-                    break;
-                case SYSTEM_TIMESTAMP__RESPONSE__ZONE_ID:
+                }
+                case SYSTEM_TIMESTAMP__RESPONSE__ZONE_ID -> {
                     remainingDataLength--;
                     ((SystemTimestampResponseMessage) evoHomeMessage).zone_id = b;
                     state = State.SYSTEM_TIMESTAMP__RESPONSE__DIRECTION;
-                    break;
-                case SYSTEM_TIMESTAMP__RESPONSE__DIRECTION:
+                }
+                case SYSTEM_TIMESTAMP__RESPONSE__DIRECTION -> {
                     remainingDataLength--;
-                    switch (b & 0xff) {
-                        case 0x60:
-                            ((SystemTimestampResponseMessage) evoHomeMessage).direction = SystemTimestampResponseMessage.Direction.TO_CONTROLLER;
-                            break;
-                        case 0xfc:
-                            ((SystemTimestampResponseMessage) evoHomeMessage).direction = SystemTimestampResponseMessage.Direction.TO_DEVICE;
-                            break;
-                        default:
-                            throw new RuntimeException("Can't handle direction of: " + b);
-                    }
+                    ((SystemTimestampResponseMessage) evoHomeMessage).direction = switch (b & 0xff) {
+                        case 0x60 ->
+                            SystemTimestampResponseMessage.Direction.TO_CONTROLLER;
+                        case 0xfc ->
+                            SystemTimestampResponseMessage.Direction.TO_DEVICE;
+                        default ->
+                            throw new IllegalStateException("Can't handle direction of: " + b);
+                    };
                     timeStampParser.init();
                     state = State.SYSTEM_TIMESTAMP__RESPONSE__TIMESTAMP;
-                    break;
-                case SYSTEM_TIMESTAMP__RESPONSE__TIMESTAMP:
+                }
+                case SYSTEM_TIMESTAMP__RESPONSE__TIMESTAMP -> {
                     remainingDataLength--;
                     timeStampParser.parse(b);
                     if (timeStampParser.state == TimeStampParser.State.PARSE_SUCCESS) {
                         ((SystemTimestampResponseMessage) evoHomeMessage).timestamp = timeStampParser.getTimestamp();
                         success();
                     }
-                    break;
-                case ACTUATOR_SYNC__INFORMATION__DOMAIN_ID:
+                }
+                case ACTUATOR_SYNC__INFORMATION__DOMAIN_ID -> {
                     remainingDataLength--;
                     ((ActuatorSyncInformationMessage) evoHomeMessage).domain_id = b;
                     state = State.ACTUATOR_SYNC__INFORMATION__STATE;
-                    break;
-                case ACTUATOR_SYNC__INFORMATION__STATE:
+                }
+                case ACTUATOR_SYNC__INFORMATION__STATE -> {
                     remainingDataLength--;
                     ((ActuatorSyncInformationMessage) evoHomeMessage).state = b;
                     success();
-                    break;
-                case SYSTEM_SYNCHRONIZATION__REQUEST__DOMAIN_ID:
+                }
+                case SYSTEM_SYNCHRONIZATION__REQUEST__DOMAIN_ID -> {
                     remainingDataLength--;
                     ((SystemSynchronizationRequestMessage) evoHomeMessage).domain_id = b;
                     success();
-                    break;
-                default:
-                    // TODO
-                    throw new RuntimeException("Cant handle state: " + state);
+                }
+                default -> // TODO
+                    throw new IllegalStateException("Cant handle state: " + state);
 
             }
         } catch (Throwable t) {
@@ -889,19 +872,16 @@ public class EvoHomeParser extends AbstractParser {
     @Deprecated
     private void setByteArrayValue(byte b) {
         final byte[] theArray;
-        switch (evoHomeCommand) {
-            case RF_CHECK:
-                theArray = ((RfCheckWriteMessage) evoHomeMessage).value;
-                break;
-            case ZONE_MANAGEMENT:
-                theArray = ((ZoneManagementInformationMessage) evoHomeMessage).value;
-                break;
-            case T87RF_STARTUP_042F:
-                theArray = ((T87RF_Startup_0x042F_InformationMessage) evoHomeMessage).value;
-                break;
-            default:
-                throw new RuntimeException("Unknown property: " + evoHomeMessage);
-        }
+        theArray = switch (evoHomeCommand) {
+            case RF_CHECK ->
+                ((RfCheckWriteMessage) evoHomeMessage).value;
+            case ZONE_MANAGEMENT ->
+                ((ZoneManagementInformationMessage) evoHomeMessage).value;
+            case T87RF_STARTUP_042F ->
+                ((T87RF_Startup_0x042F_InformationMessage) evoHomeMessage).value;
+            default ->
+                throw new IllegalStateException("Unknown property: " + evoHomeMessage);
+        };
 
         theArray[copyDataIndex++] = b;
         if (theArray.length == copyDataIndex) {
@@ -912,85 +892,60 @@ public class EvoHomeParser extends AbstractParser {
     }
 
     private void decodeCommand() {
-        switch (getShortValue()) {
-            case 0x0001:
-                evoHomeCommand = EvoHomeCommand.RF_CHECK;
-                break;
-            case 0x0004:
-                evoHomeCommand = EvoHomeCommand.ZONE_NAME;
-                break;
-            case 0x0005:
-                evoHomeCommand = EvoHomeCommand.ZONE_MANAGEMENT;
-                break;
-            case 0x0008:
-                evoHomeCommand = EvoHomeCommand.RELAY_HEAT_DEMAND;
-                break;
-            case 0x0009:
-                evoHomeCommand = EvoHomeCommand.RELAY_FAILSAVE;
-                break;
-            case 0x000A:
-                evoHomeCommand = EvoHomeCommand.ZONE_CONFIG;
-                break;
-            case 0x000C:
-                evoHomeCommand = EvoHomeCommand.ZONE_ACTUATORS;
-                break;
-            case 0x000E:
-                evoHomeCommand = EvoHomeCommand.T87RF_STARTUP_000E;
-                break;
-            case 0x0016:
-                evoHomeCommand = EvoHomeCommand.RF_SIGNAL_TEST;
-                break;
-            case 0x0100:
-                evoHomeCommand = EvoHomeCommand.LOCALIZATION;
-                break;
-            case 0x042f:
-                evoHomeCommand = EvoHomeCommand.T87RF_STARTUP_042F;
-                break;
-            case 0x1060:
-                evoHomeCommand = EvoHomeCommand.DEVICE_BATTERY_STATUS;
-                break;
-            case 0x10e0:
-                evoHomeCommand = EvoHomeCommand.DEVICE_INFORMATION;
-                break;
-            case 0x1100:
-                evoHomeCommand = EvoHomeCommand.BOILER_RELAY_INFORMATION;
-                break;
-            case 0x12b0:
-                evoHomeCommand = EvoHomeCommand.WINDOW_SENSOR;
-                break;
-            case 0x1f09:
-                evoHomeCommand = EvoHomeCommand.SYSTEM_SYNCHRONIZATION;
-                break;
-            case 0x1fc9:
-                evoHomeCommand = EvoHomeCommand.RF_BIND;
-                break;
-            case 0x2309:
-                evoHomeCommand = EvoHomeCommand.ZONE_SETPOINT;
-                break;
-            case 0x2349:
-                evoHomeCommand = EvoHomeCommand.ZONE_SETPOINT_OVERRIDE;
-                break;
-            case 0x2e04:
-                evoHomeCommand = EvoHomeCommand.CONTROLLER_MODE;
-                break;
-            case 0x30c9:
-                evoHomeCommand = EvoHomeCommand.ZONE_TEMPERATURE;
-                break;
-            case 0x3120:
-                evoHomeCommand = EvoHomeCommand.UNKNOWN_3120;
-                break;
-            case 0x313f:
-                evoHomeCommand = EvoHomeCommand.SYSTEM_TIMESTAMP;
-                break;
-            case 0x3150:
-                evoHomeCommand = EvoHomeCommand.ZONE_HEAT_DEMAND;
-                break;
-            case 0x3b00:
-                evoHomeCommand = EvoHomeCommand.ACTUATOR_SYNC;
-                break;
-            default:
+        evoHomeCommand = switch (getShortValue()) {
+            case 0x0001 ->
+                EvoHomeCommand.RF_CHECK;
+            case 0x0004 ->
+                EvoHomeCommand.ZONE_NAME;
+            case 0x0005 ->
+                EvoHomeCommand.ZONE_MANAGEMENT;
+            case 0x0008 ->
+                EvoHomeCommand.RELAY_HEAT_DEMAND;
+            case 0x0009 ->
+                EvoHomeCommand.RELAY_FAILSAVE;
+            case 0x000A ->
+                EvoHomeCommand.ZONE_CONFIG;
+            case 0x000C ->
+                EvoHomeCommand.ZONE_ACTUATORS;
+            case 0x000E ->
+                EvoHomeCommand.T87RF_STARTUP_000E;
+            case 0x0016 ->
+                EvoHomeCommand.RF_SIGNAL_TEST;
+            case 0x0100 ->
+                EvoHomeCommand.LOCALIZATION;
+            case 0x042f ->
+                EvoHomeCommand.T87RF_STARTUP_042F;
+            case 0x1060 ->
+                EvoHomeCommand.DEVICE_BATTERY_STATUS;
+            case 0x10e0 ->
+                EvoHomeCommand.DEVICE_INFORMATION;
+            case 0x1100 ->
+                EvoHomeCommand.BOILER_RELAY_INFORMATION;
+            case 0x12b0 ->
+                EvoHomeCommand.WINDOW_SENSOR;
+            case 0x1f09 ->
+                EvoHomeCommand.SYSTEM_SYNCHRONIZATION;
+            case 0x1fc9 ->
+                EvoHomeCommand.RF_BIND;
+            case 0x2309 ->
+                EvoHomeCommand.ZONE_SETPOINT;
+            case 0x2349 ->
+                EvoHomeCommand.ZONE_SETPOINT_OVERRIDE;
+            case 0x2e04 ->
+                EvoHomeCommand.CONTROLLER_MODE;
+            case 0x30c9 ->
+                EvoHomeCommand.ZONE_TEMPERATURE;
+            case 0x3120 ->
+                EvoHomeCommand.UNKNOWN_3120;
+            case 0x313f ->
+                EvoHomeCommand.SYSTEM_TIMESTAMP;
+            case 0x3150 ->
+                EvoHomeCommand.ZONE_HEAT_DEMAND;
+            case 0x3b00 ->
+                EvoHomeCommand.ACTUATOR_SYNC;
+            default ->
                 throw new IllegalArgumentException(String.format("Unknown command 0x%04x", getShortValue()));
-        }
+        };
 
     }
 
@@ -1001,385 +956,380 @@ public class EvoHomeParser extends AbstractParser {
      */
     private void buildMessage() {
         switch (evoHomeCommand) {
-            case RF_CHECK:
+            case RF_CHECK -> {
                 switch (evoHomeMsgType) {
-                    case WRITE:
+                    case WRITE -> {
                         checkLength(0x05, remainingDataLength, "RfCheckWriteMessage");
                         evoHomeMessage = new RfCheckWriteMessage(evoHomeMsgType, evoHomeMsgParam0);
                         state = State.COLLECT_DATA_BYTES;
-                        break;
-                    default:
+                    }
+                    default ->
                         throw new RuntimeException("RF_CHECK -> no case for " + evoHomeMsgType);
                 }
-                break;
-            case ZONE_NAME:
+            }
+            case ZONE_NAME -> {
                 switch (evoHomeMsgType) {
-                    case REQUEST:
+                    case REQUEST -> {
                         checkLength(0x02, remainingDataLength, "ZoneNameRequestMessage");
                         evoHomeMessage = new ZoneNameRequestMessage(evoHomeMsgParam0);
                         state = State.COLLECT__ZONE_NAME__REQUEST__ZONEID;
-                        break;
-                    case INFORMATION:
-                    case WRITE:
-                    case RESPONSE:
+                    }
+                    case INFORMATION, WRITE, RESPONSE -> {
                         checkLength(0x16, remainingDataLength, "ZoneNamePayloadMessage");
                         evoHomeMessage = new ZoneNamePayloadMessage(evoHomeMsgType, evoHomeMsgParam0);
                         zoneNameParser.init(remainingDataLength);
                         state = State.PARSE__ZONE_NAME__PAYLOAD__DATA;
-                        break;
-                    default:
+                    }
+                    default ->
                         throw new RuntimeException("ZONE_NAME -> no case for " + evoHomeMsgType);
                 }
-                break;
-            case ZONE_CONFIG:
+            }
+            case ZONE_CONFIG -> {
                 switch (evoHomeMsgType) {
-                    case REQUEST:
+                    case REQUEST -> {
                         checkLength(0x01, remainingDataLength, "ZoneConfigRequestMessage");
                         evoHomeMessage = new ZoneConfigRequestMessage(evoHomeMsgParam0);
                         setStackSize(1);
                         state = State.COLLECT_SINGLE_VALUE;
-                        break;
-                    case RESPONSE:
-                    case INFORMATION:
+                    }
+                    case RESPONSE, INFORMATION -> {
                         //TODO allow multiple of 6
                         checkLength(0x06, remainingDataLength, "ZoneConfigPayLoadMessage");
                         evoHomeMessage = new ZoneConfigPayloadMessage(evoHomeMsgType, evoHomeMsgParam0);
                         zonesParamParser.init(remainingDataLength);
                         state = State.PARSE_ZONE_CONFIG_ELEMENTS;
-                        break;
-                    default:
+                    }
+                    default ->
                         throw new RuntimeException("ZONE_CONFIG -> no case for " + evoHomeMsgType);
                 }
-                break;
-            case ZONE_MANAGEMENT:
+            }
+            case ZONE_MANAGEMENT -> {
                 switch (evoHomeMsgType) {
-                    case INFORMATION:
+                    case INFORMATION -> {
                         evoHomeMessage = new ZoneManagementInformationMessage(evoHomeMsgParam0, remainingDataLength);
                         state = State.COLLECT_DATA_BYTES;
-                        break;
-                    default:
+                    }
+                    default ->
                         throw new RuntimeException("ZONE_MANAGEMENT -> no case for " + evoHomeMsgType);
                 }
-                break;
-            case RF_SIGNAL_TEST:
+            }
+            case RF_SIGNAL_TEST -> {
                 switch (evoHomeMsgType) {
-                    case REQUEST:
+                    case REQUEST -> {
                         checkLength(0x02, remainingDataLength, "RfSignalTestRequestMessage");
                         evoHomeMessage = new RfSignalTestRequestMessage(evoHomeMsgParam0);
                         setStackSize(2);
                         state = State.COLLECT_SINGLE_VALUE;
-                        break;
-                    case RESPONSE:
+                    }
+                    case RESPONSE -> {
                         checkLength(0x02, remainingDataLength, "RfSignalTestResponseMessage");
                         evoHomeMessage = new RfSignalTestResponseMessage(evoHomeMsgParam0);
                         setStackSize(2);
                         state = State.COLLECT_SINGLE_VALUE;
-                        break;
-                    default:
+                    }
+                    default ->
                         throw new RuntimeException(" -> no case for " + evoHomeMsgType);
                 }
-                break;
-            case LOCALIZATION:
+            }
+            case LOCALIZATION -> {
                 switch (evoHomeMsgType) {
-                    case REQUEST:
+                    case REQUEST -> {
                         checkLength(0x02, 0x05, remainingDataLength, "LocalizationRequestMessage");
                         evoHomeMessage = new LocalizationRequestMessage(evoHomeMsgParam0);
                         localizationParser.init(remainingDataLength);
                         state = State.PARSE_LOCALIZATION_ELEMENTS;
-                        break;
-                    case RESPONSE:
+                    }
+                    case RESPONSE -> {
                         checkLength(0x05, remainingDataLength, "LocalizationResponseMessage");
                         evoHomeMessage = new LocalizationResponseMessage(evoHomeMsgParam0);
                         localizationParser.init(remainingDataLength);
                         state = State.PARSE_LOCALIZATION_ELEMENTS;
-                        break;
-                    default:
+                    }
+                    default ->
                         throw new RuntimeException("LOCALIZATION -> no case for " + evoHomeMsgType);
                 }
-                break;
-            case SYSTEM_SYNCHRONIZATION:
+            }
+            case SYSTEM_SYNCHRONIZATION -> {
                 switch (evoHomeMsgType) {
-                    case REQUEST:
+                    case REQUEST -> {
                         checkLength(0x01, remainingDataLength, "SystemSynchronizationRequestMessage");
                         evoHomeMessage = new SystemSynchronizationRequestMessage(evoHomeMsgParam0);
                         setStackSize(1);
                         state = State.SYSTEM_SYNCHRONIZATION__REQUEST__DOMAIN_ID;
-                        break;
-                    case INFORMATION:
-                    case WRITE:
-                    case RESPONSE:
+                    }
+                    case INFORMATION, WRITE, RESPONSE -> {
                         checkLength(0x03, remainingDataLength, "SystemSynchronizationPayloadMessage");
                         evoHomeMessage = new SystemSynchronizationPayloadMessage(evoHomeMsgType, evoHomeMsgParam0);
                         setStackSize(1);
                         state = State.PARSE__SYSTEM_SYNCHRONIZATION__PAYLOAD__DEVICE_ID;
-                        break;
-                    default:
+                    }
+                    default ->
                         throw new RuntimeException("SYSTEM_SYNCHRONIZATION -> no case for " + evoHomeMsgType);
                 }
-                break;
-            case RELAY_HEAT_DEMAND:
+            }
+            case RELAY_HEAT_DEMAND -> {
                 switch (evoHomeMsgType) {
-                    case INFORMATION:
+                    case INFORMATION -> {
                         checkLength(0x02, remainingDataLength, "RelayHeatDemandInformationMessage");
                         evoHomeMessage = new RelayHeatDemandInformationMessage(evoHomeMsgParam0);
                         state = State.PARSE__RELAY_HEAT_DEMAND__DOMAIN_ID;
-                        break;
-                    default:
+                    }
+                    default ->
                         throw new RuntimeException("RELAY_HEAT_DEMAND -> no case for " + evoHomeMsgType);
                 }
-                break;
-            case RELAY_FAILSAVE:
+            }
+            case RELAY_FAILSAVE -> {
                 switch (evoHomeMsgType) {
-                    case INFORMATION:
+                    case INFORMATION -> {
                         checkLength(0x03, remainingDataLength, "RelayFailsaveInformationMessage");
                         evoHomeMessage = new RelayFailsaveInformationMessage(evoHomeMsgParam0);
                         state = State.PARSE__RELAY_FAILSAVE__DOMAIN_ID;
-                        break;
-                    default:
+                    }
+                    default ->
                         throw new RuntimeException("RELAY_FAILSAVE -> no case for " + evoHomeMsgType);
                 }
-                break;
-            case ZONE_ACTUATORS:
+            }
+            case ZONE_ACTUATORS -> {
                 switch (evoHomeMsgType) {
-                    case REQUEST:
+                    case REQUEST -> {
                         checkLength(0x02, remainingDataLength, "ZoneActuatorsRequestMessage");
                         evoHomeMessage = new ZoneActuatorsRequestMessage(evoHomeMsgParam0);
                         state = State.ZONE_ACTUATORS__REQUEST__ZONE_IDX;
-                        break;
-                    case INFORMATION:
+                    }
+                    case INFORMATION -> {
                         if (remainingDataLength % 6 != 0) {
                             throw new RuntimeException("ZoneActuatorsInformationMessage length must be a multiple of 6");
                         }
                         evoHomeMessage = new ZoneActuatorsInformationMessage(evoHomeMsgParam0);
                         state = State.ZONE_ACTUATORS__INFORMATION__ZONE_IDX;
-                        break;
-                    default:
+                    }
+                    default ->
                         throw new RuntimeException("RELAY_FAILSAVE -> no case for " + evoHomeMsgType);
                 }
-                break;
-            case T87RF_STARTUP_000E:
+            }
+            case T87RF_STARTUP_000E -> {
                 switch (evoHomeMsgType) {
-                    case INFORMATION:
+                    case INFORMATION -> {
                         checkLength(0x03, remainingDataLength, "T87RF_Startup_0x000E_InformationMessage");
                         evoHomeMessage = new T87RF_Startup_0x000E_InformationMessage(evoHomeMsgParam0);
                         setStackSize(3);
                         state = State.COLLECT_SINGLE_VALUE;
-                        break;
-                    default:
+                    }
+                    default ->
                         throw new RuntimeException("T87RF_STARTUP_000E -> no case for " + evoHomeMsgType);
                 }
-                break;
-            case T87RF_STARTUP_042F:
+            }
+            case T87RF_STARTUP_042F -> {
                 switch (evoHomeMsgType) {
-                    case INFORMATION:
+                    case INFORMATION -> {
                         checkLength(0x08, remainingDataLength, "T87RF_Startup_0x042F_InformationMessage");
                         evoHomeMessage = new T87RF_Startup_0x042F_InformationMessage(evoHomeMsgParam0, remainingDataLength);
                         state = State.COLLECT_DATA_BYTES;
-                        break;
-                    default:
+                    }
+                    default ->
                         throw new RuntimeException("T87RF_STARTUP_042F -> no case for " + evoHomeMsgType);
                 }
-                break;
-            case DEVICE_BATTERY_STATUS:
+            }
+            case DEVICE_BATTERY_STATUS -> {
                 switch (evoHomeMsgType) {
-                    case INFORMATION:
+                    case INFORMATION -> {
                         checkLength(0x03, remainingDataLength, "EvoHome_0x18_0x1060_0x03_Message");
                         evoHomeMessage = new DeviceBatteryStatusInformationMessage(evoHomeMsgParam0);
                         state = State.DEVICE_BATTERY_STATUS__INFORMATION__ZONE_ID;
-                        break;
-                    default:
+                    }
+                    default ->
                         throw new RuntimeException("DEVICE_BATTERY_STATUS -> no case for " + evoHomeMsgType);
                 }
-                break;
-            case DEVICE_INFORMATION:
+            }
+            case DEVICE_INFORMATION -> {
                 switch (evoHomeMsgType) {
-                    case INFORMATION:
+                    case INFORMATION -> {
                         checkLength(0x26, remainingDataLength, "DeviceInformationInformationMessage");
                         evoHomeMessage = new DeviceInformationInformationMessage(evoHomeMsgParam0);
                         byteArrayBuilder.init(10);
                         state = State.DEVICE_INFORMATION__INFORMATION__UNKNOWN0;
-                        break;
-                    default:
+                    }
+                    default ->
                         throw new RuntimeException("DEVICE_INFORMATION -> no case for " + evoHomeMsgType);
                 }
-                break;
-            case BOILER_RELAY_INFORMATION:
+            }
+            case BOILER_RELAY_INFORMATION -> {
                 checkLength(0x08, remainingDataLength, "BoilerRelayInformationMessage");
                 evoHomeMessage = new BoilerRelayInformationMessage(evoHomeMsgType, evoHomeMsgParam0);
                 state = State.BOILER_RELAY_INFORMATION__X__DOMAIN_ID;
-                break;
-            case WINDOW_SENSOR:
+            }
+            case WINDOW_SENSOR -> {
                 switch (evoHomeMsgType) {
-                    case REQUEST:
+                    case REQUEST -> {
                         checkLength(0x01, remainingDataLength, "WindowSensorRequestMessage");
                         evoHomeMessage = new WindowSensorRequestMessage(evoHomeMsgParam0);
                         state = State.WINDOW_SENSOR__REQUEST__ZONE_ID;
-                        break;
-                    case INFORMATION:
+                    }
+                    case INFORMATION -> {
                         checkLength(0x03, remainingDataLength, "WindowSensorInformationMessage");
                         evoHomeMessage = new WindowSensorInformationMessage(evoHomeMsgParam0);
                         state = State.WINDOW_SENSOR__PAYLOAD__ZONE_ID;
-                        break;
-                    case RESPONSE:
+                    }
+                    case RESPONSE -> {
                         checkLength(0x03, remainingDataLength, "WindowSensorResponseMessage");
                         evoHomeMessage = new WindowSensorResponseMessage(evoHomeMsgParam0);
                         state = State.WINDOW_SENSOR__PAYLOAD__ZONE_ID;
-                        break;
-                    default:
+                    }
+                    default ->
                         throw new RuntimeException("WINDOW_SENSOR -> no case for " + evoHomeMsgType);
                 }
-                break;
-            case RF_BIND:
+            }
+            case RF_BIND -> {
                 switch (evoHomeMsgType) {
-                    case INFORMATION:
+                    case INFORMATION -> {
                         if (remainingDataLength % 6 != 0) {
                             throw new RuntimeException("RfBindInformationMessage length must be a multiple of 6");
                         }
                         evoHomeMessage = new RfBindInformationMessage(evoHomeMsgParam0);
                         state = State.RF_BIND__PAYLOAD__ELEMENTS__ZONE_ID;
-                        break;
-                    case WRITE:
+                    }
+                    case WRITE -> {
                         if (remainingDataLength % 6 != 0) {
                             throw new RuntimeException("RfBindWriteMessage length must be a multiple of 6");
                         }
                         evoHomeMessage = new RfBindWriteMessage(evoHomeMsgParam0);
                         state = State.RF_BIND__PAYLOAD__ELEMENTS__ZONE_ID;
-                        break;
-                    default:
+                    }
+                    default ->
                         throw new RuntimeException("RF_BIND -> no case for " + evoHomeMsgType);
                 }
-                break;
-            case ZONE_SETPOINT:
+            }
+            case ZONE_SETPOINT -> {
                 switch (evoHomeMsgType) {
-                    case REQUEST:
+                    case REQUEST -> {
                         checkLength(0x01, remainingDataLength, "ZoneSetpointRequestMessage");
                         evoHomeMessage = new ZoneSetpointRequestMessage(evoHomeMsgParam0);
                         state = State.ZONE_SETPOINT__REQUEST__ZONE_ID;
-                        break;
-                    case INFORMATION:
+                    }
+                    case INFORMATION -> {
                         if (remainingDataLength % 3 != 0) {
                             throw new RuntimeException("ZoneSetpointInformationMessage length must be a multiple of 6");
                         }
                         evoHomeMessage = new ZoneSetpointInformationMessage(evoHomeMsgParam0);
                         state = State.ZONE_SETPOINT__PAYLOAD__ZONE_TEMPERATURES__ZONE_ID;
-                        break;
-                    case WRITE:
+                    }
+                    case WRITE -> {
                         checkLength(0x03, remainingDataLength, "ZoneSetpointWriteMessage");
                         evoHomeMessage = new ZoneSetpointWriteMessage(evoHomeMsgParam0);
                         state = State.ZONE_SETPOINT__PAYLOAD__ZONE_TEMPERATURES__ZONE_ID;
-                        break;
-                    case RESPONSE:
+                    }
+                    case RESPONSE -> {
                         checkLength(0x03, remainingDataLength, "ZoneSetpointResponseMessage");
                         evoHomeMessage = new ZoneSetpointResponseMessage(evoHomeMsgParam0);
                         state = State.ZONE_SETPOINT__PAYLOAD__ZONE_TEMPERATURES__ZONE_ID;
-                        break;
+                    }
 
-                    default:
+                    default ->
                         throw new RuntimeException("ZONE_SETPOINT -> no case for " + evoHomeMsgType);
                 }
-                break;
-            case ZONE_SETPOINT_OVERRIDE:
+            }
+            case ZONE_SETPOINT_OVERRIDE -> {
                 switch (evoHomeMsgType) {
-                    case REQUEST:
+                    case REQUEST -> {
                         checkLength(0x07, 0x0D, remainingDataLength, "ZoneSetpointOverrideRequestMessage");
                         evoHomeMessage = new ZoneSetpointOverrideRequestMessage(evoHomeMsgParam0);
                         state = State.ZONE_SETPOINT_OVERRIDE__ALL__ZONE_ID;
-                        break;
-                    case INFORMATION:
+                    }
+                    case INFORMATION -> {
                         checkLength(0x07, 0x0D, remainingDataLength, "ZoneSetpointOverrideInformationMessage");
                         evoHomeMessage = new ZoneSetpointOverrideInformationMessage(evoHomeMsgParam0);
                         state = State.ZONE_SETPOINT_OVERRIDE__ALL__ZONE_ID;
-                        break;
-                    case WRITE:
+                    }
+                    case WRITE -> {
                         checkLength(0x07, 0x0D, remainingDataLength, "ZoneSetpointOverrideWriteMessage");
                         evoHomeMessage = new ZoneSetpointOverrideWriteMessage(evoHomeMsgParam0);
                         state = State.ZONE_SETPOINT_OVERRIDE__ALL__ZONE_ID;
-                        break;
-                    case RESPONSE:
+                    }
+                    case RESPONSE -> {
                         checkLength(0x07, 0x0D, remainingDataLength, "ZoneSetpointOverrideResponseMessage");
                         evoHomeMessage = new ZoneSetpointOverrideResponseMessage(evoHomeMsgParam0);
                         state = State.ZONE_SETPOINT_OVERRIDE__ALL__ZONE_ID;
-                        break;
-                    default:
+                    }
+                    default ->
                         throw new RuntimeException("ZONE_SETPOINT_OVERRIDE -> no case for " + evoHomeMsgType);
                 }
-                break;
-            case CONTROLLER_MODE:
+            }
+            case CONTROLLER_MODE -> {
                 switch (evoHomeMsgType) {
-                    case INFORMATION:
+                    case INFORMATION -> {
                         checkLength(0x08, remainingDataLength, "ControllerModeInformationMessage");
                         evoHomeMessage = new ControllerModeInformationMessage(evoHomeMsgParam0);
                         state = State.CONTROLLER_MODE__ALL__MODE;
-                        break;
-                    default:
+                    }
+                    default ->
                         throw new RuntimeException("CONTROLLER_MODE -> no case for " + evoHomeMsgType);
                 }
-                break;
-            case ZONE_TEMPERATURE:
+            }
+            case ZONE_TEMPERATURE -> {
                 switch (evoHomeMsgType) {
-                    case INFORMATION:
+                    case INFORMATION -> {
                         if (remainingDataLength % 3 != 0) {
                             throw new RuntimeException("ZoneTemperatureInformationMessage length must be a multiple of 6");
                         }
                         evoHomeMessage = new ZoneTemperatureInformationMessage(evoHomeMsgParam0);
                         state = State.ZONE_TEMPERATURE__PAYLOAD__ZONE_ID;
-                        break;
-                    default:
+                    }
+                    default ->
                         throw new RuntimeException("ZONE_TEMPERATURE -> no case for " + evoHomeMsgType);
                 }
-                break;
-            case UNKNOWN_3120:
+            }
+            case UNKNOWN_3120 -> {
                 switch (evoHomeMsgType) {
-                    case INFORMATION:
+                    case INFORMATION -> {
                         checkLength(0x07, remainingDataLength, "Unknown_0x3120InformationMessage");
                         evoHomeMessage = new Unknown_0x3120InformationMessage(evoHomeMsgParam0);
                         state = State.UNKNOWN_3120__INFORMATION__UNUSED0;
-                        break;
-                    default:
+                    }
+                    default ->
                         throw new RuntimeException("UNKNOWN_3120 -> no case for " + evoHomeMsgType);
                 }
-                break;
-            case SYSTEM_TIMESTAMP:
+            }
+            case SYSTEM_TIMESTAMP -> {
                 switch (evoHomeMsgType) {
-                    case REQUEST:
+                    case REQUEST -> {
                         checkLength(0x01, remainingDataLength, "SystemTimestampRequestMessage");
                         evoHomeMessage = new SystemTimestampRequestMessage(evoHomeMsgParam0);
                         setStackSize(1);
                         state = State.SYSTEM_TIMESTAMP__REQUEST__ZONE_ID;
-                        break;
-                    case RESPONSE:
+                    }
+                    case RESPONSE -> {
                         checkLength(0x09, remainingDataLength, "SystemTimestampResponseMessage");
                         evoHomeMessage = new SystemTimestampResponseMessage(evoHomeMsgParam0);
                         state = State.SYSTEM_TIMESTAMP__RESPONSE__ZONE_ID;
-                        break;
-                    default:
+                    }
+                    default ->
                         throw new RuntimeException("SYSTEM_TIMESTAMP -> no case for " + evoHomeMsgType);
                 }
-                break;
-            case ZONE_HEAT_DEMAND:
+            }
+            case ZONE_HEAT_DEMAND -> {
                 switch (evoHomeMsgType) {
-                    case INFORMATION:
+                    case INFORMATION -> {
                         checkLength(0x02, remainingDataLength, "ZoneHeatDemandInformationMessage");
                         evoHomeMessage = new ZoneHeatDemandInformationMessage(evoHomeMsgParam0);
                         state = State.ZONE_HEAT_DEMAND__INFORMATION__ZONE_ID;
-                        break;
-                    default:
+                    }
+                    default ->
                         throw new RuntimeException("ZONE_HEAT_DEMAND -> no case for " + evoHomeMsgType);
                 }
-                break;
-            case ACTUATOR_SYNC:
+            }
+            case ACTUATOR_SYNC -> {
                 switch (evoHomeMsgType) {
-                    case INFORMATION:
+                    case INFORMATION -> {
                         checkLength(0x02, remainingDataLength, "ActuatorSyncInformationMessage");
                         evoHomeMessage = new ActuatorSyncInformationMessage(evoHomeMsgParam0);
                         setStackSize(2);
                         state = State.ACTUATOR_SYNC__INFORMATION__DOMAIN_ID;
-                        break;
-                    default:
+                    }
+                    default ->
                         throw new RuntimeException("ZONE_HEAT_DEMAND -> no case for " + evoHomeMsgType);
                 }
-                break;
-            default:
+            }
+            default ->
                 throw new IllegalArgumentException(String.format("Can't handle msgType %s with param0 %s Command %s and length %d",
                         evoHomeMsgType, evoHomeMsgParam0, evoHomeCommand, remainingDataLength));
         }
@@ -1402,72 +1352,65 @@ public class EvoHomeParser extends AbstractParser {
     }
 
     private void decodeHeader(byte b) {
-        switch (b & 0xf0) {
-            case 0x00:
-                evoHomeMsgType = EvoHomeMsgType.REQUEST;
-                break;
-            case 0x10:
-                evoHomeMsgType = EvoHomeMsgType.INFORMATION;
-                break;
-            case 0x20:
-                evoHomeMsgType = EvoHomeMsgType.WRITE;
-                break;
-            case 0x30:
-                evoHomeMsgType = EvoHomeMsgType.RESPONSE;
-                break;
-            default:
+        evoHomeMsgType = switch (b & 0xf0) {
+            case 0x00 ->
+                EvoHomeMsgType.REQUEST;
+            case 0x10 ->
+                EvoHomeMsgType.INFORMATION;
+            case 0x20 ->
+                EvoHomeMsgType.WRITE;
+            case 0x30 ->
+                EvoHomeMsgType.RESPONSE;
+            default ->
                 throw new IllegalArgumentException(String.format("Unknown EvoHome message type 0x%02x", b & 0x0f));
-        }
-        switch (b & 0x0f) {
-            case 0x08:
-                evoHomeMsgParam0 = EvoHomeMsgParam0._8;
-                break;
-            case 0x0C:
-                evoHomeMsgParam0 = EvoHomeMsgParam0._C;
-                break;
-            default:
+        };
+        evoHomeMsgParam0 = switch (b & 0x0f) {
+            case 0x08 ->
+                EvoHomeMsgParam0._8;
+            case 0x0C ->
+                EvoHomeMsgParam0._C;
+            default ->
                 throw new IllegalArgumentException(String.format("Unknown EvoHome param0  0x%02x", b & 0x0f));
-        }
+        };
     }
 
     private void setSingleValueAndNotify() {
         switch (evoHomeCommand) {
-            case RF_SIGNAL_TEST:
-                if (evoHomeMessage instanceof RfSignalTestRequestMessage) {
-                    ((RfSignalTestRequestMessage) evoHomeMessage).value = getShortValue();
+            case RF_SIGNAL_TEST -> {
+                if (evoHomeMessage instanceof RfSignalTestRequestMessage rfSignalTestRequestMessage) {
+                    rfSignalTestRequestMessage.value = getShortValue();
                 } else {
                     ((RfSignalTestResponseMessage) evoHomeMessage).value = getShortValue();
                 }
-                break;
-            case ZONE_CONFIG:
+            }
+            case ZONE_CONFIG ->
                 ((ZoneConfigRequestMessage) evoHomeMessage).value = getByteValue();
-                break;
-            case T87RF_STARTUP_000E:
+            case T87RF_STARTUP_000E ->
                 ((T87RF_Startup_0x000E_InformationMessage) evoHomeMessage).value = getIntValue();
-                break;
-            /*TODO
-            case _0C_1F09_REQUEST_FOR_3C_1F09_:
-                ((EvoHome_0x0C_0x1F09_0x01_REQUEST_0C_1F09_Message) evoHomeMessage).value = getByteValue();
-                break;
-            case _0C_313F_REQUEST_FOR_3C_313F:
-                ((EvoHome_0x0C_0x313F_0x01_REQUEST_0C_313F_Message) evoHomeMessage).value = getByteValue();
-                break;
-            case _18_1F09_BROADCAST_18_1F09_:
-                ((EvoHome_0x18_0x1F09_0x03_BROADCAST_18_1F09_Message) evoHomeMessage).value = getIntValue();
-                break;
-            case _18_3B00:
-                ((EvoHome_0x18_0x3B00_0x02_Message) evoHomeMessage).value = getIntValue();
-                break;
-            case _28_1F09:
-                ((EvoHome_0x28_0x1F09_0x03_Message) evoHomeMessage).unknown = getIntValue();
-                break;
-            case _3C_1F09_RESPONSE_TO_0C_1F09:
-                ((EvoHome_0x3C_0x1F09_0x03_RESPONSE_3C_1F09_Message) evoHomeMessage).value = getIntValue();
-                break;
-             */
-            default:
+
+            default ->
                 throw new RuntimeException("Unhandled command: " + evoHomeCommand);
         }
+        /*TODO
+        case _0C_1F09_REQUEST_FOR_3C_1F09_:
+        ((EvoHome_0x0C_0x1F09_0x01_REQUEST_0C_1F09_Message) evoHomeMessage).value = getByteValue();
+        break;
+        case _0C_313F_REQUEST_FOR_3C_313F:
+        ((EvoHome_0x0C_0x313F_0x01_REQUEST_0C_313F_Message) evoHomeMessage).value = getByteValue();
+        break;
+        case _18_1F09_BROADCAST_18_1F09_:
+        ((EvoHome_0x18_0x1F09_0x03_BROADCAST_18_1F09_Message) evoHomeMessage).value = getIntValue();
+        break;
+        case _18_3B00:
+        ((EvoHome_0x18_0x3B00_0x02_Message) evoHomeMessage).value = getIntValue();
+        break;
+        case _28_1F09:
+        ((EvoHome_0x28_0x1F09_0x03_Message) evoHomeMessage).unknown = getIntValue();
+        break;
+        case _3C_1F09_RESPONSE_TO_0C_1F09:
+        ((EvoHome_0x3C_0x1F09_0x03_RESPONSE_3C_1F09_Message) evoHomeMessage).value = getIntValue();
+        break;
+         */
         parserListener.success(evoHomeMessage);
     }
 }

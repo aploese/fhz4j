@@ -1,6 +1,6 @@
 /*
  * FHZ4J - Drivers for the Wireless FS20, FHT and HMS protocol https://github.com/aploese/fhz4j/
- * Copyright (C) 2009-2023, Arne Plöse and individual contributors as indicated
+ * Copyright (C) 2019-2024, Arne Plöse and individual contributors as indicated
  * by the @authors tag. See the copyright.txt in the distribution for a
  * full listing of individual contributors.
  *
@@ -68,41 +68,39 @@ public class HmsParser extends AbstractParser {
     public void parse(byte b) {
         try {
             switch (state) {
-                case COLLECT_DEVICE_CODE:
+                case COLLECT_DEVICE_CODE -> {
                     if (push(b)) {
                         housecode = getShortValue();
                         state = State.DEVICE_STATUS_AND_TYPE;
                     }
-                    break;
-                case DEVICE_STATUS_AND_TYPE:
+                }
+                case DEVICE_STATUS_AND_TYPE -> {
                     deviceStatus = EnumSet.noneOf(HmsDeviceStatus.class);
                     if ((b & 0x20) == 0x20) {
                         deviceStatus.add(HmsDeviceStatus.BATT_LOW);
                     }
                     switch (b & 0x0f) {
-                        case 0x00:
+                        case 0x00 -> {
                             setStackSize(2);
                             state = State.COLLECT_HMS_100_TF_DATA_TEMP;
-                            break;
-                        case 0x02:
+                        }
+                        case 0x02 ->
                             state = State.COLLECT_HMS_100_WD_FLAGS;
-                            break;
-                        case 0x03:
+                        case 0x03 -> {
                             setStackSize(3);
                             state = State.COLLECT_HMS_100_RM_DATA;
-                            break;
-                        case 0x04:
+                        }
+                        case 0x04 ->
                             state = State.COLLECT_HMS_100_TFK_FLAGS;
-                            break;
-                        default:
+                        default -> {
                             LOG.warning(String.format("Wrong device type - Wrong number: 0x%02x", b));
                             state = State.PARSE_ERROR;
                             parserListener.fail(null);
                             return;
+                        }
                     }
-                    break;
-
-                case COLLECT_HMS_100_TF_DATA_TEMP:
+                }
+                case COLLECT_HMS_100_TF_DATA_TEMP -> {
                     if (push(b)) {
                         final Hms100TfMessage hms100TfMessage = new Hms100TfMessage(housecode, deviceStatus);
                         hmsMessage = hms100TfMessage;
@@ -114,8 +112,8 @@ public class HmsParser extends AbstractParser {
                         push(humPartial);
                         state = State.COLLECT_HMS_100_TF_DATA_HUM;
                     }
-                    break;
-                case COLLECT_HMS_100_TF_DATA_HUM:
+                }
+                case COLLECT_HMS_100_TF_DATA_HUM -> {
                     if (push(b)) {
                         final Hms100TfMessage hms100TfMessage = (Hms100TfMessage) hmsMessage;
                         final short valueBCD = (short) (swapBytes(getShortValue()) >> 4);
@@ -123,35 +121,35 @@ public class HmsParser extends AbstractParser {
                         state = State.PARSE_SUCCESS;
                         parserListener.success(hmsMessage);
                     }
-                    break;
-                case COLLECT_HMS_100_TFK_FLAGS:
+                }
+                case COLLECT_HMS_100_TFK_FLAGS -> {
                     final Hms100TfkMessage hms100TfkMessage = new Hms100TfkMessage(housecode, deviceStatus);
                     hmsMessage = hms100TfkMessage;
                     hms100TfkMessage.open = (b & 0x01) == 0x01;
                     setStackSize(2);
                     state = State.COLLECT_HMS_100_TFK_DATA;
-                    break;
-                case COLLECT_HMS_100_TFK_DATA:
+                }
+                case COLLECT_HMS_100_TFK_DATA -> {
                     if (push(b)) {
                         state = State.PARSE_SUCCESS;
                         parserListener.success(hmsMessage);
                     }
-                    break;
-                case COLLECT_HMS_100_WD_FLAGS:
+                }
+                case COLLECT_HMS_100_WD_FLAGS -> {
                     final Hms100WdMessage hms100WdMessage = new Hms100WdMessage(housecode, deviceStatus);
                     hmsMessage = hms100WdMessage;
                     hms100WdMessage.water = (b & 0x01) == 0x01;
                     setStackSize(2);
                     state = State.COLLECT_HMS_100_WD_DATA;
-                    break;
-                case COLLECT_HMS_100_WD_DATA:
+                }
+                case COLLECT_HMS_100_WD_DATA -> {
                     if (push(b)) {
                         // unknown, just drop it
                         state = State.PARSE_SUCCESS;
                         parserListener.success(hmsMessage);
                     }
-                    break;
-                case COLLECT_HMS_100_RM_DATA:
+                }
+                case COLLECT_HMS_100_RM_DATA -> {
                     if (push(b)) {
                         final Hms100RmMessage hms100RmMessage = new Hms100RmMessage(housecode, deviceStatus);
                         hmsMessage = hms100RmMessage;
@@ -159,7 +157,9 @@ public class HmsParser extends AbstractParser {
                         state = State.PARSE_SUCCESS;
                         parserListener.success(hmsMessage);
                     }
-                    break;
+                }
+                default ->
+                    new IllegalStateException(state.name());
             }
         } catch (Throwable t) {
             parserListener.fail(new RuntimeException(String.format("State: %s last byte 0x%02x", state, b), t));

@@ -1,6 +1,6 @@
 /*
  * FHZ4J - Drivers for the Wireless FS20, FHT and HMS protocol https://github.com/aploese/fhz4j/
- * Copyright (C) 2009-2023, Arne Plöse and individual contributors as indicated
+ * Copyright (C) 2019-2024, Arne Plöse and individual contributors as indicated
  * by the @authors tag. See the copyright.txt in the distribution for a
  * full listing of individual contributors.
  *
@@ -75,52 +75,49 @@ public class EmParser extends AbstractParser {
     public void parse(byte b) {
         try {
             switch (state) {
-                case COLLECT_TYPE:
-                    switch (b) {
-                        case 1:
-                            emMessage = new EmMessage(EmDeviceType.EM_1000_S);
-                            break;
-                        case 2:
-                            emMessage = new EmMessage(EmDeviceType.EM_1000_EM);
-                            break;
-                        case 3:
-                            emMessage = new EmMessage(EmDeviceType.EM_1000_GZ);
-                            break;
-                        default:
+                case COLLECT_TYPE -> {
+                    emMessage = switch (b) {
+                        case 1 ->
+                            new EmMessage(EmDeviceType.EM_1000_S);
+                        case 2 ->
+                            new EmMessage(EmDeviceType.EM_1000_EM);
+                        case 3 ->
+                            new EmMessage(EmDeviceType.EM_1000_GZ);
+                        default ->
                             throw new RuntimeException("Wrong Type");
-                    }
+                    };
                     state = State.COLLECT_ADDRESS;
-                    break;
-                case COLLECT_ADDRESS:
+                }
+                case COLLECT_ADDRESS -> {
                     emMessage.address = (short) (b & 0xff);
                     state = State.COLLECT_COUNTER;
-                    break;
-                case COLLECT_COUNTER:
+                }
+                case COLLECT_COUNTER -> {
                     emMessage.counter = (short) (b & 0xff);
                     setStackSize(2);
                     state = State.COLLECT_CUMULATED_VALUE;
-                    break;
-                case COLLECT_CUMULATED_VALUE:
+                }
+                case COLLECT_CUMULATED_VALUE -> {
                     if (push(b)) {
                         emMessage.valueCummulated = reorderBytes(getIntValue());
                         setStackSize(2);
                         state = State.COLLECT_5MIN_VALUE;
                     }
-                    break;
-                case COLLECT_5MIN_VALUE:
+                }
+                case COLLECT_5MIN_VALUE -> {
                     if (push(b)) {
                         emMessage.value5Min = reorderBytes(getIntValue());
                         setStackSize(2);
                         state = State.COLLECT_5MIN_PEAK_VALUE;
                     }
-                    break;
-                case COLLECT_5MIN_PEAK_VALUE:
+                }
+                case COLLECT_5MIN_PEAK_VALUE -> {
                     if (push(b)) {
                         emMessage.value5MinPeak = reorderBytes(getIntValue());
                         state = State.PARSE_SUCCESS;
                         parserListener.success(emMessage);
                     }
-                    break;
+                }
             }
         } catch (Throwable t) {
             parserListener.fail(new RuntimeException(String.format("State: %s last byte 0x%02x", state, b), t));

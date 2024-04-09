@@ -1,6 +1,6 @@
 /*
  * FHZ4J - Drivers for the Wireless FS20, FHT and HMS protocol https://github.com/aploese/fhz4j/
- * Copyright (C) 2009-2023, Arne Plöse and individual contributors as indicated
+ * Copyright (C) 2022-2024, Arne Plöse and individual contributors as indicated
  * by the @authors tag. See the copyright.txt in the distribution for a
  * full listing of individual contributors.
  *
@@ -63,32 +63,26 @@ public class EvoHomeEncoder {
 
     private void writeHeader(EvoHomeMsgType msgType, EvoHomeMsgParam0 msgParam0) throws IOException {
         byte data;
-        switch (msgType) {
-            case REQUEST:
-                data = 0x00;
-                break;
-            case INFORMATION:
-                data = 0x10;
-                break;
-            case WRITE:
-                data = 0x10;
-                break;
-            case RESPONSE:
-                data = 0x30;
-                break;
-            default:
-                throw new AssertionError();
-        }
-        switch (msgParam0) {
-            case _8:
-                data |= 0x08;
-                break;
-            case _C:
-                data |= 0x0C;
-                break;
-            default:
-                throw new AssertionError();
-        }
+        data = switch (msgType) {
+            case REQUEST ->
+                0x00;
+            case INFORMATION ->
+                0x10;
+            case WRITE ->
+                0x10;
+            case RESPONSE ->
+                0x30;
+            default ->
+                throw new IllegalArgumentException();
+        };
+        data |= switch (msgParam0) {
+            case _8 ->
+                0x08;
+            case _C ->
+                0x0C;
+            default ->
+                throw new IllegalArgumentException();
+        };
         writer.putByte(data);
     }
 
@@ -106,82 +100,59 @@ public class EvoHomeEncoder {
     }
 
     private void writeEvoCommand(EvoHomeCommand command) throws IOException {
-        switch (command) {
-            case ZONE_NAME:
-                writer.putShort((short) 0x0004);
-                break;
-            case ZONE_MANAGEMENT:
-                writer.putShort((short) 0x0005);
-                break;
-            case RELAY_HEAT_DEMAND:
-                writer.putShort((short) 0x0008);
-                break;
-            case RELAY_FAILSAVE:
-                writer.putShort((short) 0x0009);
-                break;
-            case ZONE_CONFIG:
-                writer.putShort((short) 0x000A);
-                break;
-            case ZONE_ACTUATORS:
-                writer.putShort((short) 0x000C);
-                break;
-            case T87RF_STARTUP_000E:
-                writer.putShort((short) 0x000E);
-                break;
-            case RF_SIGNAL_TEST:
-                writer.putShort((short) 0x0016);
-                break;
-            case LOCALIZATION:
-                writer.putShort((short) 0x0100);
-                break;
-            case T87RF_STARTUP_042F:
-                writer.putShort((short) 0x042F);
-                break;
-            case DEVICE_BATTERY_STATUS:
-                writer.putShort((short) 0x1060);
-                break;
-            case DEVICE_INFORMATION:
-                writer.putShort((short) 0x10E0);
-                break;
-            case BOILER_RELAY_INFORMATION:
-                writer.putShort((short) 0x1100);
-                break;
-            case WINDOW_SENSOR:
-                writer.putShort((short) 0x12B0);
-                break;
-            case SYSTEM_SYNCHRONIZATION:
-                writer.putShort((short) 0x1F09);
-                break;
-            case RF_BIND:
-                writer.putShort((short) 0x1FC9);
-                break;
-            case ZONE_SETPOINT:
-                writer.putShort((short) 0x2309);
-                break;
-            case ZONE_SETPOINT_OVERRIDE:
-                writer.putShort((short) 0x2349);
-                break;
-            case CONTROLLER_MODE:
-                writer.putShort((short) 0x2E04);
-                break;
-            case ZONE_TEMPERATURE:
-                writer.putShort((short) 0x30C9);
-                break;
-            case UNKNOWN_3120:
-                writer.putShort((short) 0x3120);
-                break;
-            case SYSTEM_TIMESTAMP:
-                writer.putShort((short) 0x313F);
-                break;
-            case ZONE_HEAT_DEMAND:
-                writer.putShort((short) 0x3150);
-                break;
-            case ACTUATOR_SYNC:
-                writer.putShort((short) 0x3B00);
-                break;
-            default:
+        final short cmd = (short) switch (command) {
+            case ZONE_NAME ->
+                0x0004;
+            case ZONE_MANAGEMENT ->
+                0x0005;
+            case RELAY_HEAT_DEMAND ->
+                0x0008;
+            case RELAY_FAILSAVE ->
+                0x0009;
+            case ZONE_CONFIG ->
+                0x000A;
+            case ZONE_ACTUATORS ->
+                0x000C;
+            case T87RF_STARTUP_000E ->
+                0x000E;
+            case RF_SIGNAL_TEST ->
+                0x0016;
+            case LOCALIZATION ->
+                0x0100;
+            case T87RF_STARTUP_042F ->
+                0x042F;
+            case DEVICE_BATTERY_STATUS ->
+                0x1060;
+            case DEVICE_INFORMATION ->
+                0x10E0;
+            case BOILER_RELAY_INFORMATION ->
+                0x1100;
+            case WINDOW_SENSOR ->
+                0x12B0;
+            case SYSTEM_SYNCHRONIZATION ->
+                0x1F09;
+            case RF_BIND ->
+                0x1FC9;
+            case ZONE_SETPOINT ->
+                0x2309;
+            case ZONE_SETPOINT_OVERRIDE ->
+                0x2349;
+            case CONTROLLER_MODE ->
+                0x2E04;
+            case ZONE_TEMPERATURE ->
+                0x30C9;
+            case UNKNOWN_3120 ->
+                0x3120;
+            case SYSTEM_TIMESTAMP ->
+                0x313F;
+            case ZONE_HEAT_DEMAND ->
+                0x3150;
+            case ACTUATOR_SYNC ->
+                0x3B00;
+            default ->
                 throw new IllegalArgumentException("Cant send evo home command: " + command);
-        }
+        };
+        writer.putShort(cmd);
     }
 
     private void writeZoneTemperature(ZoneTemperature temperature) throws IOException {

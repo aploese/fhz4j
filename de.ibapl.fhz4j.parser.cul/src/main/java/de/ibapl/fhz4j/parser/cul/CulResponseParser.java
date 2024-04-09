@@ -1,6 +1,6 @@
 /*
  * FHZ4J - Drivers for the Wireless FS20, FHT and HMS protocol https://github.com/aploese/fhz4j/
- * Copyright (C) 2009-2023, Arne Plöse and individual contributors as indicated
+ * Copyright (C) 2021-2024, Arne Plöse and individual contributors as indicated
  * by the @authors tag. See the copyright.txt in the distribution for a
  * full listing of individual contributors.
  *
@@ -62,7 +62,7 @@ abstract class CulResponseParser<R extends CulRequest, T extends CulResponse> ex
         }
 
         private State state = State.PARSE_SLOW_RF_SETTINGS;
-        private StringBuilder sb = new StringBuilder();
+        private final StringBuilder sb = new StringBuilder();
 
         @Override
         public boolean isSuccess() {
@@ -72,7 +72,7 @@ abstract class CulResponseParser<R extends CulRequest, T extends CulResponse> ex
         @Override
         public void parse(char c) {
             switch (state) {
-                case PARSE_SLOW_RF_SETTINGS:
+                case PARSE_SLOW_RF_SETTINGS -> {
                     if (isFirstNibble) {
                         firstNibble = digit2Byte(c);
                         isFirstNibble = false;
@@ -86,37 +86,37 @@ abstract class CulResponseParser<R extends CulRequest, T extends CulResponse> ex
                             }
                         }
                     }
-                    break;
-                case WAIT_FOR_SPACE:
+                }
+                case WAIT_FOR_SPACE -> {
                     if (c == ' ') {
                         state = State.WAIT_FOR_TIMESLOTS;
                     } else {
                         state = State.FAIL;
                         throw new RuntimeException("Expected space ");
                     }
-                    break;
-                case WAIT_FOR_TIMESLOTS:
+                }
+                case WAIT_FOR_TIMESLOTS -> {
                     if (c != ' ') {
                         state = State.PARSE_TIMESLOTS;
                         sb.append(c);
                     }
-                    break;
-                case PARSE_TIMESLOTS:
+                }
+                case PARSE_TIMESLOTS -> {
                     if ((c == '\r') || (c == '\n')) {
                         response.milliTimeToSend = Integer.parseInt(sb.toString());
                         state = State.SUCCESS;
                     } else {
                         sb.append(c);
                     }
-                    break;
-                case SUCCESS:
+                }
+                case SUCCESS -> {
                     if (c == '\n') {
                         //no-op
                     } else {
                         state = State.FAIL;
                     }
-                    break;
-                default:
+                }
+                default ->
                     throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
             }
         }
@@ -173,7 +173,7 @@ abstract class CulResponseParser<R extends CulRequest, T extends CulResponse> ex
         @Override
         public void parse(char c) {
             switch (state) {
-                case IDLE:
+                case IDLE -> {
                     if (c == 'N') {
                         state = State.N_PARSED;
                     } else {
@@ -186,8 +186,8 @@ abstract class CulResponseParser<R extends CulRequest, T extends CulResponse> ex
                             throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
                         }
                     }
-                    break;
-                case PARSE_HOUSECODE:
+                }
+                case PARSE_HOUSECODE -> {
                     if (isFirstNibble) {
                         if (c == ':') {
                             state = State.PARSE_DATA;
@@ -199,48 +199,56 @@ abstract class CulResponseParser<R extends CulRequest, T extends CulResponse> ex
                         isFirstNibble = true;
                         fhtParser.parse((byte) ((firstNibble << 4) | digit2Byte(c)));
                     }
-                    break;
-                case PARSE_DATA:
+                }
+                case PARSE_DATA -> {
                     if (isFirstNibble) {
-                        if (c == ',') {
-                            fhtParser.initWithHousecode(currentHousecode);
-                        } else if (c == ' ') {
-                            state = State.IDLE;
-                        } else if (c == '\r') {
-                        } else if (c == '\n') {
-                            state = State.SUCCESS;
-                        } else {
-                            isFirstNibble = false;
-                            firstNibble = digit2Byte(c);
+                        switch (c) {
+                            case ',':
+                                fhtParser.initWithHousecode(currentHousecode);
+                                break;
+                            case ' ':
+                                state = State.IDLE;
+                                break;
+                            case '\r':
+                                break;
+                            case '\n':
+                                state = State.SUCCESS;
+                                break;
+                            default:
+                                isFirstNibble = false;
+                                firstNibble = digit2Byte(c);
+                                break;
                         }
                     } else {
                         isFirstNibble = true;
                         fhtParser.parse((byte) ((firstNibble << 4) | digit2Byte(c)));
                     }
-                    break;
-                case N_PARSED:
+                }
+                case N_PARSED -> {
                     if (c == '/') {
                         state = State.N_SLASH_PARSED;
                     } else {
-                        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+                        throw new UnsupportedOperationException("Not supported yet.");
                     }
-                    break;
-                case N_SLASH_PARSED:
+                }
+                case N_SLASH_PARSED -> {
                     if (c == 'A') {
                         state = State.SUCCESS;
                     } else {
-                        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+                        throw new UnsupportedOperationException("Not supported yet.");
                     }
-                    break;
-                case SUCCESS:
+                }
+                case SUCCESS -> {
                     if ((c == '\r') || (c == '\n')) {
 
                     } else {
-                        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+                        throw new UnsupportedOperationException("Not supported yet.");
                     }
-                    break;
-                default:
-                    throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+                }
+                case FAIL ->
+                    throw new UnsupportedOperationException("Not supported yet.");
+                default ->
+                    throw new UnsupportedOperationException("Not supported yet.");
 
             }
         }
@@ -268,7 +276,7 @@ abstract class CulResponseParser<R extends CulRequest, T extends CulResponse> ex
         @Override
         public void parse(char c) {
             switch (state) {
-                case PARSE_SIZE:
+                case PARSE_SIZE -> {
                     if (isFirstNibble) {
                         firstNibble = digit2Byte(c);
                         isFirstNibble = false;
@@ -277,16 +285,18 @@ abstract class CulResponseParser<R extends CulRequest, T extends CulResponse> ex
                         isFirstNibble = true;
                         response.buffSize = (short) ((firstNibble << 4) | digit2Byte(c));
                     }
-                    break;
-                case SUCCESS:
+                }
+                case SUCCESS -> {
                     if ((c == '\n') || (c == '\r')) {
                         //no-op
                     } else {
                         state = State.FAIL;
                     }
-                    break;
-                default:
-                    throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+                }
+                case FAIL ->
+                    throw new UnsupportedOperationException("Not supported yet.");
+                default ->
+                    throw new UnsupportedOperationException("Not supported yet.");
             }
         }
 
@@ -315,23 +325,25 @@ abstract class CulResponseParser<R extends CulRequest, T extends CulResponse> ex
         @Override
         public void parse(char c) {
             switch (state) {
-                case COLLECTING:
+                case COLLECTING -> {
                     if ((c == '\n') || (c == '\r')) {
                         state = State.SUCCESS;
                         response.value = sb.toString();
                     } else {
                         sb.append(c);
                     }
-                    break;
-                case SUCCESS:
+                }
+                case SUCCESS -> {
                     if ((c == '\n') || (c == '\r')) {
                         //no-op
                     } else {
                         state = State.FAIL;
                     }
-                    break;
-                default:
-                    throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+                }
+                case FAIL ->
+                    throw new UnsupportedOperationException("Not supported yet.");
+                default ->
+                    throw new UnsupportedOperationException("Not supported yet.");
             }
         }
 
@@ -360,23 +372,25 @@ abstract class CulResponseParser<R extends CulRequest, T extends CulResponse> ex
         @Override
         public void parse(char c) {
             switch (state) {
-                case COLLECTING:
+                case COLLECTING -> {
                     if ((c == '\n') || (c == '\r')) {
                         state = State.SUCCESS;
                         response.value = sb.toString();
                     } else {
                         sb.append(c);
                     }
-                    break;
-                case SUCCESS:
+                }
+                case SUCCESS -> {
                     if ((c == '\n') || (c == '\r')) {
                         //no-op
                     } else {
                         state = State.FAIL;
                     }
-                    break;
-                default:
-                    throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+                }
+                case FAIL ->
+                    throw new UnsupportedOperationException("Not supported yet.");
+                default ->
+                    throw new UnsupportedOperationException("Not supported yet.");
             }
         }
 

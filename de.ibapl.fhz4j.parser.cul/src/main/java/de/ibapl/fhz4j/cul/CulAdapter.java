@@ -1,6 +1,6 @@
 /*
  * FHZ4J - Drivers for the Wireless FS20, FHT and HMS protocol https://github.com/aploese/fhz4j/
- * Copyright (C) 2009-2023, Arne Plöse and individual contributors as indicated
+ * Copyright (C) 2018-2024, Arne Plöse and individual contributors as indicated
  * by the @authors tag. See the copyright.txt in the distribution for a
  * full listing of individual contributors.
  *
@@ -36,7 +36,6 @@ import de.ibapl.fhz4j.writer.cul.CulWriter;
 import de.ibapl.fhz4j.writer.evohome.EvoHomeEncoder;
 import de.ibapl.fhz4j.writer.fht.FhtEncoder;
 import de.ibapl.spsw.api.DataBits;
-import de.ibapl.spsw.api.FlowControl;
 import de.ibapl.spsw.api.Parity;
 import de.ibapl.spsw.api.SerialPortSocket;
 import de.ibapl.spsw.api.Speed;
@@ -128,7 +127,7 @@ public class CulAdapter implements Adapter, FhzHandler, EvoHomeHandler {
      *
      * @param serialPortSocket
      * @param fhzDataListener
-     * @param sped
+     * @param speed
      * @throws java.io.IOException
      */
     public CulAdapter(SerialPortSocket serialPortSocket, CulMessageListener fhzDataListener, Speed speed) throws IOException {
@@ -140,7 +139,6 @@ public class CulAdapter implements Adapter, FhzHandler, EvoHomeHandler {
         serialPortSocket.setDataBits(DataBits.DB_8);
         serialPortSocket.setParity(Parity.NONE);
         serialPortSocket.setStopBits(StopBits.SB_1);
-        serialPortSocket.setFlowControl(FlowControl.getFC_NONE());
         serialPortSocket.setTimeouts(100, 60000, 1000);
 
         this.serialPortSocket = serialPortSocket;

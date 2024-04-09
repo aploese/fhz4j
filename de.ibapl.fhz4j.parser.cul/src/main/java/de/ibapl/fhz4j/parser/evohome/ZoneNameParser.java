@@ -1,6 +1,6 @@
 /*
  * FHZ4J - Drivers for the Wireless FS20, FHT and HMS protocol https://github.com/aploese/fhz4j/
- * Copyright (C) 2009-2023, Arne Plöse and individual contributors as indicated
+ * Copyright (C) 2023-2024, Arne Plöse and individual contributors as indicated
  * by the @authors tag. See the copyright.txt in the distribution for a
  * full listing of individual contributors.
  *
@@ -64,18 +64,18 @@ class ZoneNameParser implements Parser {
     public void parse(byte b) {
         bytesConsumed++;
         switch (state) {
-            case COLLECT_ZONEID:
+            case COLLECT_ZONEID -> {
                 zoneId = b;
                 state = State.COLLECT_UNKNOWN;
-                break;
-            case COLLECT_UNKNOWN:
+            }
+            case COLLECT_UNKNOWN -> {
                 unused = b;
                 if (unused != 0) {
                     throw new RuntimeException("unused was set!?");
                 }
                 state = State.COLLECT_ZONE_NAME;
-                break;
-            case COLLECT_ZONE_NAME:
+            }
+            case COLLECT_ZONE_NAME -> {
                 //We do not want 0 or DEL here, so filter it
                 if (b != 0 && b != 0x7F) {
                     zoneNameBuilder.append((char) b);
@@ -84,11 +84,13 @@ class ZoneNameParser implements Parser {
                     state = State.PARSE_SUCCESS;
                 } else {
                 }
-                break;
-            case PARSE_SUCCESS:
-                throw new RuntimeException("PARSE_SUCCESS should not be called");
-            case PARSE_ERROR:
-                throw new RuntimeException("PARSE_ERROR should not be called");
+            }
+            case PARSE_SUCCESS ->
+                throw new IllegalStateException("PARSE_SUCCESS should not be called");
+            case PARSE_ERROR ->
+                throw new IllegalStateException("PARSE_ERROR should not be called");
+            default ->
+                throw new IllegalStateException(state.name());
 
         }
     }
