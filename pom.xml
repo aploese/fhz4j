@@ -148,20 +148,31 @@
                             <version>4.3</version>
                         </dependency>
                     </dependencies>
+                    <!-- do not pass config to the modules-->
+                    <inherited>false</inherited>
                     <configuration>
                         <failIfMissing>true</failIfMissing>
                         <strictCheck>true</strictCheck>
+                        <!-- execute here -->
+                        <aggregate>true</aggregate>
                         <licenseSets>
                             <licenseSet>
                                 <header>header-template-lgpl-java.txt</header>
                                 <includes>
                                     <include>**/*.java</include>
                                 </includes>
-                                <excludes>
-                                </excludes>
                             </licenseSet>
                         </licenseSets>
                     </configuration>
+                    <executions>
+                        <execution>
+                            <id>check-license</id>
+                            <phase>validate</phase>
+                            <goals>
+                                <goal>check</goal>
+                            </goals>
+                        </execution>
+                    </executions>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
@@ -273,15 +284,6 @@
             <plugin>
                 <groupId>com.mycila</groupId>
                 <artifactId>license-maven-plugin</artifactId>
-                <executions>
-                    <execution>
-                     <id>check-java-headers</id>
-                            <phase>verify</phase>
-                            <goals>
-                                <goal>check</goal>
-                            </goals>
-                    </execution>
-                </executions>
             </plugin>
         </plugins>
     </build>
