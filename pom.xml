@@ -141,10 +141,15 @@
                     <groupId>com.mycila</groupId>
                     <artifactId>license-maven-plugin</artifactId>
                     <version>4.3</version>
-                    <inherited>false</inherited>
+                    <dependencies>
+                        <dependency>
+                            <groupId>com.mycila</groupId>
+                            <artifactId>license-maven-plugin-git</artifactId>
+                            <version>4.3</version>
+                        </dependency>
+                    </dependencies>
                     <configuration>
                         <failIfMissing>true</failIfMissing>
-                        <aggregate>true</aggregate>
                         <strictCheck>true</strictCheck>
                         <licenseSets>
                             <licenseSet>
@@ -157,13 +162,6 @@
                             </licenseSet>
                         </licenseSets>
                     </configuration>
-                    <dependencies>
-                        <dependency>
-                            <groupId>com.mycila</groupId>
-                            <artifactId>license-maven-plugin-git</artifactId>
-                            <version>4.3</version>
-                        </dependency>
-                    </dependencies>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
@@ -275,6 +273,15 @@
             <plugin>
                 <groupId>com.mycila</groupId>
                 <artifactId>license-maven-plugin</artifactId>
+                <executions>
+                    <execution>
+                     <id>check-java-headers</id>
+                            <phase>verify</phase>
+                            <goals>
+                                <goal>check</goal>
+                            </goals>
+                    </execution>
+                </executions>
             </plugin>
         </plugins>
     </build>
