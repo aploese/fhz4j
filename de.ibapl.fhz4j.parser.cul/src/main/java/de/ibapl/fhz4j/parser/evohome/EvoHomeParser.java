@@ -993,8 +993,10 @@ public class EvoHomeParser extends AbstractParser {
                         state = State.COLLECT_SINGLE_VALUE;
                     }
                     case RESPONSE, INFORMATION -> {
-                        //TODO allow multiple of 6
-                        checkLength(0x06, remainingDataLength, "ZoneConfigPayLoadMessage");
+                        //must be a multiple of 6
+                        if ((remainingDataLength % 6) != 0) {
+                            checkLength(0x06 * (remainingDataLength / 6), remainingDataLength, "ZoneConfigPayLoadMessage");
+                        }
                         evoHomeMessage = new ZoneConfigPayloadMessage(evoHomeMsgType, evoHomeMsgParam0);
                         zonesParamParser.init(remainingDataLength);
                         state = State.PARSE_ZONE_CONFIG_ELEMENTS;

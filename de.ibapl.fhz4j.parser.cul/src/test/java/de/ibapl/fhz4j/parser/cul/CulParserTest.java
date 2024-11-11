@@ -41,11 +41,11 @@ import de.ibapl.fhz4j.parser.fht.FhtDateMessageTest;
 import de.ibapl.fhz4j.parser.fht.FhtTimeMessageTest;
 import de.ibapl.fhz4j.protocol.em.EmMessage;
 import de.ibapl.fhz4j.protocol.evohome.EvoHomeMessage;
+import de.ibapl.fhz4j.protocol.fht.Fht80TfMessage;
+import de.ibapl.fhz4j.protocol.fht.Fht80TfValue;
 import de.ibapl.fhz4j.protocol.fht.Fht80bRawMessage;
 import de.ibapl.fhz4j.protocol.fht.FhtMessage;
 import de.ibapl.fhz4j.protocol.fht.FhtProperty;
-import de.ibapl.fhz4j.protocol.fht.Fht80TfMessage;
-import de.ibapl.fhz4j.protocol.fht.Fht80TfValue;
 import de.ibapl.fhz4j.protocol.fs20.FS20Message;
 import de.ibapl.fhz4j.protocol.hms.HmsMessage;
 import de.ibapl.fhz4j.protocol.lacrosse.tx2.LaCrosseTx2Message;
@@ -342,8 +342,8 @@ ation: PT10.087149S
     @Test
     public void decode_LA_CROSSE__tAFC67860001E() {
         decode("tAFC67860001E\r\n");
-        assertNull(throwable);
-        assertNotNull(laCrosseTx2Message);
+        assertNotNull(throwable);
+        assertNull(laCrosseTx2Message);
 
 //TODO ???		decode("tA00AA002EAE5\r\n");
 //	 assertNotNull(laCrosseTx2Message);

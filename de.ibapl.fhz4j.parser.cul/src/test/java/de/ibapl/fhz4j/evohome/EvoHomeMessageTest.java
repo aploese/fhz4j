@@ -429,7 +429,7 @@ public class EvoHomeMessageTest implements ParserListener<EvoHomeMessage> {
     }
 
     @Test
-    public void decode_EvoHome_0xXX_0x0004_0x02_ZoneNameRequestMessage() {
+    public void decode_EvoHome_0x0C_0x0004_0x02_ZoneNameRequestMessage() {
         decode("0C 114977 067AEC 0004 02 0000");
         assertZoneNameRequestMessage((ZoneNameRequestMessage) evoHomeMessage, 0x114977, 0x067AEC, (byte) 0x00);
         decode("0C 131589 067AEC 0004 02 01 00");
@@ -530,14 +530,17 @@ public class EvoHomeMessageTest implements ParserListener<EvoHomeMessage> {
     @Test
     public void decode_EvoHome_0x18_0x000A_0x06_ZoneConfigPayloadMessage() {
         decode("18 067AEC 067AEC 000A 06 00 10 01F4 0DAC");
+
+        List<ZoneConfigPayloadMessage.ZoneParams> zoneParams = new LinkedList<>();
+
         ZoneConfigPayloadMessage.ZoneParams zoneParam = new ZoneConfigPayloadMessage.ZoneParams();
         zoneParam.zoneId = 0;
         zoneParam.windowFunction = true;
         zoneParam.operationLock = false;
         zoneParam.minTemperature = new BigDecimal("5");
         zoneParam.maxTemperature = new BigDecimal("35");
-        List<ZoneConfigPayloadMessage.ZoneParams> zoneParams = new LinkedList<>();
         zoneParams.add(zoneParam);
+
         assert_0x000A_ZoneConfigPayloadMessage((ZoneConfigPayloadMessage) evoHomeMessage, 0x067AEC, 0x067AEC,
                 zoneParams);
     }
@@ -828,16 +831,19 @@ public class EvoHomeMessageTest implements ParserListener<EvoHomeMessage> {
     }
 
     @Test
-    public void decode_EvoHome_0x3C_0x000A() {
+    public void decode_EvoHome_0x3C_0x000A_0x06_ZoneConfigPayloadMessage() {
         decode("3C 067AEC 895E5D 000A 06 00 10 01F4 0DAC");
+
+        List<ZoneConfigPayloadMessage.ZoneParams> zoneParams = new LinkedList<>();
+
         ZoneConfigPayloadMessage.ZoneParams zoneParam = new ZoneConfigPayloadMessage.ZoneParams();
         zoneParam.zoneId = 0;
         zoneParam.windowFunction = true;
         zoneParam.operationLock = false;
         zoneParam.minTemperature = new BigDecimal("5");
         zoneParam.maxTemperature = new BigDecimal("35");
-        List<ZoneConfigPayloadMessage.ZoneParams> zoneParams = new LinkedList<>();
         zoneParams.add(zoneParam);
+
         assert_0x000A_ZoneConfigPayloadMessage((ZoneConfigPayloadMessage) evoHomeMessage, 0x067AEC, 0x895E5D,
                 zoneParams);
     }
@@ -902,6 +908,40 @@ public class EvoHomeMessageTest implements ParserListener<EvoHomeMessage> {
     private void testEncode_EvoHome_0x18_0x2349_0x07_ZONE_SETPOINT_PERMANENT_Message(DeviceId deviceId, ZoneTemperature temperature, String expected) throws IOException {
         encoder.writeEvoHomeZoneSetpointPermanent(deviceId, temperature);
         assertEquals(expected, evoHomeWriter.written);
+    }
+
+    @Test
+    public void decode_EvoHome_0x18_0x000A_0x12_ZoneConfigPayloadMessage() {
+        decode("18 067AEC 067AEC 000A 12 00 10 01F4 0DAC 01 10 01F4 0DAC 02 10 01F4 0DAC");
+
+        List<ZoneConfigPayloadMessage.ZoneParams> zoneParams = new LinkedList<>();
+
+        ZoneConfigPayloadMessage.ZoneParams zoneParam = new ZoneConfigPayloadMessage.ZoneParams();
+        zoneParam.zoneId = 0;
+        zoneParam.windowFunction = true;
+        zoneParam.operationLock = false;
+        zoneParam.minTemperature = new BigDecimal("5");
+        zoneParam.maxTemperature = new BigDecimal("35");
+        zoneParams.add(zoneParam);
+
+        zoneParam = new ZoneConfigPayloadMessage.ZoneParams();
+        zoneParam.zoneId = 1;
+        zoneParam.windowFunction = true;
+        zoneParam.operationLock = false;
+        zoneParam.minTemperature = new BigDecimal("5");
+        zoneParam.maxTemperature = new BigDecimal("35");
+        zoneParams.add(zoneParam);
+
+        zoneParam = new ZoneConfigPayloadMessage.ZoneParams();
+        zoneParam.zoneId = 2;
+        zoneParam.windowFunction = true;
+        zoneParam.operationLock = false;
+        zoneParam.minTemperature = new BigDecimal("5");
+        zoneParam.maxTemperature = new BigDecimal("35");
+        zoneParams.add(zoneParam);
+
+        assert_0x000A_ZoneConfigPayloadMessage((ZoneConfigPayloadMessage) evoHomeMessage, 0x067AEC, 0x067AEC,
+                zoneParams);
     }
 
 }

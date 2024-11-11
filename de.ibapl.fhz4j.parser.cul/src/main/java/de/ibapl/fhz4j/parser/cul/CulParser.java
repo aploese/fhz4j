@@ -42,8 +42,8 @@ import de.ibapl.fhz4j.parser.lacrosse.tx2l.LaCrosseTx2Parser;
 import de.ibapl.fhz4j.protocol.em.EmMessage;
 import de.ibapl.fhz4j.protocol.evohome.EvoHomeMessage;
 import de.ibapl.fhz4j.protocol.fht.AbstractFhtMessage;
-import de.ibapl.fhz4j.protocol.fht.FhtMessage;
 import de.ibapl.fhz4j.protocol.fht.Fht80TfMessage;
+import de.ibapl.fhz4j.protocol.fht.FhtMessage;
 import de.ibapl.fhz4j.protocol.fs20.FS20Message;
 import de.ibapl.fhz4j.protocol.hms.HmsMessage;
 import de.ibapl.fhz4j.protocol.lacrosse.tx2.LaCrosseTx2Message;
@@ -344,8 +344,13 @@ public class CulParser<T extends Message> extends AbstractCulParser {
                 } else {
                     initParser(emParser);
                     state = State.PARSER_PARSING;
-                    firstNibble = digit2Byte(c);
-                    isFirstNibble = false;
+                    try {
+                        firstNibble = digit2Byte(c);
+                        isFirstNibble = false;
+                    } catch (IllegalArgumentException iae) {
+                        LOG.log(Level.SEVERE, "In state {0} for CUL unexpected parser error", state);
+                        state = State.IDLE;
+                    }
                 }
             }
             case CUL_EO_PARSED -> {
