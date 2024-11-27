@@ -31,10 +31,11 @@ import de.ibapl.fhz4j.protocol.evohome.EvoHomeMsgType;
  * @author Arne Plöse
  * <a href="https://github.com/zxdavb/ramses_protocol/wiki/12B0:-Window-Sensor">12B0:
  * Window Sensor</a>
+ * @param <T>
  */
-public abstract class AbstractWindowSensorMessage extends EvoHomeDeviceMessage {
+public abstract class AbstractWindowSensorMessage<T extends AbstractWindowSensorMessage<T>> extends EvoHomeDeviceMessage<T> {
 
-    public byte zone_id;//0..11
+    public byte zoneId;//0..11
 
     protected AbstractWindowSensorMessage(EvoHomeMsgType msgType, EvoHomeMsgParam0 msgParam0) {
         super(EvoHomeCommand.WINDOW_SENSOR, msgType, msgParam0);
@@ -43,6 +44,21 @@ public abstract class AbstractWindowSensorMessage extends EvoHomeDeviceMessage {
     @Override
     protected void addToJsonString(StringBuilder sb) {
         super.addToJsonString(sb);
-        sb.append(String.format(", zone_id : 0x%02x", zone_id));
+        sb.append(String.format(", zoneId : 0x%02x", zoneId));
     }
+
+    @Override
+    protected int subClassHashCode(int hash) {
+        hash = super.subClassHashCode(hash);
+        return HASH_MULTIPLIER * hash + this.zoneId;
+    }
+
+    @Override
+    protected boolean subClassEquals(T other) {
+        if (!super.subClassEquals(other)) {
+            return false;
+        }
+        return this.zoneId == other.zoneId;
+    }
+
 }

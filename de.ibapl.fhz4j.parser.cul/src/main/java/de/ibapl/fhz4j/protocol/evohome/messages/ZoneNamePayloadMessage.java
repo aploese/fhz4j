@@ -25,14 +25,16 @@ import de.ibapl.fhz4j.protocol.evohome.EvoHomeCommand;
 import de.ibapl.fhz4j.protocol.evohome.EvoHomeDeviceMessage;
 import de.ibapl.fhz4j.protocol.evohome.EvoHomeMsgParam0;
 import de.ibapl.fhz4j.protocol.evohome.EvoHomeMsgType;
+import java.util.Objects;
 
 /**
  *
  * @author Arne Plöse
  * <a href="https://github.com/zxdavb/ramses_protocol/wiki/0004:-Zone-Name">0004:
  * Zone Name</a>
+ * @param <T>
  */
-public class ZoneNamePayloadMessage extends EvoHomeDeviceMessage {
+public class ZoneNamePayloadMessage<T extends ZoneNamePayloadMessage<T>> extends EvoHomeDeviceMessage<T> {
 
     public byte zoneId;
     public byte unused;
@@ -53,6 +55,28 @@ public class ZoneNamePayloadMessage extends EvoHomeDeviceMessage {
         if (zoneName != null) {
             sb.append(", zoneName : \"").append(zoneName).append("\"");
         }
+    }
+
+    @Override
+    protected int subClassHashCode(int hash) {
+        hash = super.subClassHashCode(hash);
+        hash = HASH_MULTIPLIER * hash + this.zoneId;
+        hash = HASH_MULTIPLIER * hash + this.unused;
+        return HASH_MULTIPLIER * hash + Objects.hashCode(this.zoneName);
+    }
+
+    @Override
+    protected boolean subClassEquals(T other) {
+        if (!super.subClassEquals(other)) {
+            return false;
+        }
+        if (this.zoneId != other.zoneId) {
+            return false;
+        }
+        if (this.unused != other.unused) {
+            return false;
+        }
+        return Objects.equals(this.zoneName, other.zoneName);
     }
 
 }

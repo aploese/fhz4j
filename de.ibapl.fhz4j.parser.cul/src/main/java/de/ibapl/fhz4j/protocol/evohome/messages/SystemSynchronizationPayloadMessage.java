@@ -30,10 +30,11 @@ import de.ibapl.fhz4j.protocol.evohome.EvoHomeMsgType;
  * @author Arne Plöse
  * <a href="https://github.com/zxdavb/ramses_protocol/wiki/1F09:-System-Synchronization">1F09:
  * System Synchronization</a>
+ * @param <T>
  */
-public class SystemSynchronizationPayloadMessage extends EvoHomeDeviceMessage {
+public class SystemSynchronizationPayloadMessage<T extends SystemSynchronizationPayloadMessage<T>> extends EvoHomeDeviceMessage<T> {
 
-    public byte device_id;
+    public byte deviceId;
     public short countdown;
 
     public SystemSynchronizationPayloadMessage(EvoHomeMsgType msgType, EvoHomeMsgParam0 msgParam0) {
@@ -46,7 +47,26 @@ public class SystemSynchronizationPayloadMessage extends EvoHomeDeviceMessage {
     @Override
     protected void addToJsonString(StringBuilder sb) {
         super.addToJsonString(sb);
-        sb.append(String.format(", device_id : 0x%02x", device_id));
+        sb.append(String.format(", deviceId : 0x%02x", deviceId));
         sb.append(", countdown : ").append(countdown);
     }
+
+    @Override
+    protected int subClassHashCode(int hash) {
+        hash = super.subClassHashCode(hash);
+        hash = HASH_MULTIPLIER * hash + this.deviceId;
+        return HASH_MULTIPLIER * hash + this.countdown;
+    }
+
+    @Override
+    protected boolean subClassEquals(T other) {
+        if (!super.subClassEquals(other)) {
+            return false;
+        }
+        if (this.deviceId != other.deviceId) {
+            return false;
+        }
+        return this.countdown == other.countdown;
+    }
+
 }

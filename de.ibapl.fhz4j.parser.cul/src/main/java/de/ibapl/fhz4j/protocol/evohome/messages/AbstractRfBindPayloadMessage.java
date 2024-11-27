@@ -31,8 +31,9 @@ import java.util.Objects;
  * @author Arne Plöse
  * <a href="https://github.com/zxdavb/ramses_protocol/wiki/1FC9:-RF-Bind">1FC9:
  * RF Bind</a>
+ * @param <T>
  */
-public abstract class AbstractRfBindPayloadMessage extends AbstractRfBindMessage {
+public abstract class AbstractRfBindPayloadMessage<T extends AbstractRfBindPayloadMessage<T>> extends AbstractRfBindMessage<T> {
 
     public static class Data {
 
@@ -50,13 +51,16 @@ public abstract class AbstractRfBindPayloadMessage extends AbstractRfBindMessage
             this.deviceId = deviceId;
         }
 
+        @Override
         public String toString() {
             return String.format("{zoneId : 0x%02x, command : 0x%04x, deviceId : 0x%06x}", zoneId, command, deviceId);
         }
 
         @Override
         public int hashCode() {
-            return Objects.hash(command, deviceId, zoneId);
+            int hash = HASH_MULTIPLIER * INITIAL_HASH + this.zoneId;
+            hash = HASH_MULTIPLIER * hash + this.command;
+            return HASH_MULTIPLIER * hash + this.deviceId;
         }
 
         @Override
@@ -70,8 +74,14 @@ public abstract class AbstractRfBindPayloadMessage extends AbstractRfBindMessage
             if (getClass() != obj.getClass()) {
                 return false;
             }
-            Data other = (Data) obj;
-            return command == other.command && deviceId == other.deviceId && zoneId == other.zoneId;
+            final Data other = (Data) obj;
+            if (this.zoneId != other.zoneId) {
+                return false;
+            }
+            if (this.command != other.command) {
+                return false;
+            }
+            return this.deviceId == other.deviceId;
         }
 
     }
@@ -97,4 +107,19 @@ public abstract class AbstractRfBindPayloadMessage extends AbstractRfBindMessage
         }
         sb.append("]");
     }
+
+    @Override
+    protected int subClassHashCode(int hash) {
+        hash = super.subClassHashCode(hash);
+        return HASH_MULTIPLIER * hash + Objects.hashCode(this.elements);
+    }
+
+    @Override
+    protected boolean subClassEquals(T other) {
+        if (!super.subClassEquals(other)) {
+            return false;
+        }
+        return Objects.equals(this.elements, other.elements);
+    }
+
 }

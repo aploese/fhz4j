@@ -29,8 +29,9 @@ import de.ibapl.fhz4j.protocol.evohome.EvoHomeMsgType;
  * @author Arne Plöse
  * <a href="https://github.com/zxdavb/ramses_protocol/wiki/12B0:-Window-Sensor">12B0:
  * Window Sensor</a>
+ * @param <T>
  */
-public abstract class AbstractWindowSensorPayloadMessage extends AbstractWindowSensorMessage {
+public abstract class AbstractWindowSensorPayloadMessage<T extends AbstractWindowSensorPayloadMessage<T>> extends AbstractWindowSensorMessage<T> {
 
     public short unknown0;
 
@@ -43,4 +44,19 @@ public abstract class AbstractWindowSensorPayloadMessage extends AbstractWindowS
         super.addToJsonString(sb);
         sb.append(String.format(", unknown0 : 0x%04x", unknown0));
     }
+
+    @Override
+    protected int subClassHashCode(int hash) {
+        hash = super.subClassHashCode(hash);
+        return HASH_MULTIPLIER * hash + this.unknown0;
+    }
+
+    @Override
+    protected boolean subClassEquals(T other) {
+        if (!super.subClassEquals(other)) {
+            return false;
+        }
+        return this.unknown0 == other.unknown0;
+    }
+
 }

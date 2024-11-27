@@ -24,8 +24,9 @@ package de.ibapl.fhz4j.protocol.fht;
 /**
  *
  * @author Arne Plöse
+ * @param <T>
  */
-public class Fht8bMessage extends FhtMessage {
+public class Fht8bMessage<T extends Fht8bMessage<T>> extends FhtMessage<T> {
 
     public boolean fromFht_8B;
     public boolean dataRegister;
@@ -42,4 +43,23 @@ public class Fht8bMessage extends FhtMessage {
         sb.append(", fromFht_8b : ").append(fromFht_8B);
         sb.append(", dataRegister : ").append(dataRegister);
     }
+
+    @Override
+    protected int subClassHashCode(int hash) {
+        hash = super.subClassHashCode(hash);
+        hash = HASH_MULTIPLIER * hash + (this.fromFht_8B ? 1 : 0);
+        return HASH_MULTIPLIER * hash + (this.dataRegister ? 1 : 0);
+    }
+
+    @Override
+    protected boolean subClassEquals(T other) {
+        if (!super.subClassEquals(other)) {
+            return false;
+        }
+        if (this.fromFht_8B != other.fromFht_8B) {
+            return false;
+        }
+        return this.dataRegister == other.dataRegister;
+    }
+
 }

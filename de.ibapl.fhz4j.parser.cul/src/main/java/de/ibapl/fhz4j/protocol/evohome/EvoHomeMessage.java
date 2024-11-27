@@ -23,12 +23,14 @@ package de.ibapl.fhz4j.protocol.evohome;
 
 import de.ibapl.fhz4j.api.Message;
 import de.ibapl.fhz4j.api.Protocol;
+import java.util.Objects;
 
 /**
  *
  * @author Arne Plöse
+ * @param <T>
  */
-public abstract class EvoHomeMessage extends Message {
+public abstract class EvoHomeMessage<T extends EvoHomeDeviceMessage<T>> extends Message<T> {
 
     public final EvoHomeCommand command;
     public final EvoHomeMsgType msgType;
@@ -48,4 +50,27 @@ public abstract class EvoHomeMessage extends Message {
         sb.append(", command : ").append(command);
         sb.append(", msgParam0 : ").append(msgParam0);
     }
+
+    @Override
+    protected int subClassHashCode(int hash) {
+        hash = super.subClassHashCode(hash);
+        hash = HASH_MULTIPLIER * hash + Objects.hashCode(this.command);
+        hash = HASH_MULTIPLIER * hash + Objects.hashCode(this.msgType);
+        return HASH_MULTIPLIER * hash + Objects.hashCode(this.msgParam0);
+    }
+
+    @Override
+    protected boolean subClassEquals(T other) {
+        if (!super.subClassEquals(other)) {
+            return false;
+        }
+        if (this.command != other.command) {
+            return false;
+        }
+        if (this.msgType != other.msgType) {
+            return false;
+        }
+        return this.msgParam0 == other.msgParam0;
+    }
+
 }

@@ -31,8 +31,9 @@ import de.ibapl.fhz4j.protocol.evohome.EvoHomeMsgType;
  * @author Arne Plöse
  * <a href="https://github.com/zxdavb/ramses_protocol/wiki/0004:-Zone-Name">0004:
  * Zone Name</a>
+ * @param <T>
  */
-public class ZoneNameRequestMessage extends EvoHomeDeviceMessage {
+public class ZoneNameRequestMessage<T extends ZoneNameRequestMessage<T>> extends EvoHomeDeviceMessage<T> {
 
     public byte zoneId;
     public byte unused;
@@ -46,6 +47,24 @@ public class ZoneNameRequestMessage extends EvoHomeDeviceMessage {
         super.addToJsonString(sb);
         sb.append(String.format(", zoneId : 0x%02x", zoneId));
         sb.append(String.format(", unused : 0x%02x", unused));
+    }
+
+    @Override
+    protected int subClassHashCode(int hash) {
+        hash = super.subClassHashCode(hash);
+        hash = HASH_MULTIPLIER * hash + this.zoneId;
+        return HASH_MULTIPLIER * hash + this.unused;
+    }
+
+    @Override
+    protected boolean subClassEquals(T other) {
+        if (!super.subClassEquals(other)) {
+            return false;
+        }
+        if (this.zoneId != other.zoneId) {
+            return false;
+        }
+        return this.unused == other.unused;
     }
 
 }

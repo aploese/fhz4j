@@ -28,13 +28,14 @@ import de.ibapl.fhz4j.protocol.evohome.EvoHomeMsgType;
 import java.math.BigDecimal;
 import java.time.Duration;
 import java.time.LocalDateTime;
+import java.util.Objects;
 
 /**
  * @author Arne Plöse
  * <a href="https://github.com/zxdavb/ramses_protocol/wiki/2349:-Setpoint-Override">2349:
  * Setpoint Override</a>
  */
-public abstract class AbstractZoneSetpointOverrideMessage extends EvoHomeDeviceMessage {
+public abstract class AbstractZoneSetpointOverrideMessage<T extends AbstractZoneSetpointOverrideMessage<T>> extends EvoHomeDeviceMessage<T> {
 
     public enum SetpointOverrideMode {
         FOLLOW_SCHEDULE,
@@ -75,4 +76,35 @@ public abstract class AbstractZoneSetpointOverrideMessage extends EvoHomeDeviceM
         sb.append(", countdown : ").append(countdown);
         sb.append(", time_until : ").append(time_until);
     }
+
+    @Override
+    protected int subClassHashCode(int hash) {
+        hash = super.subClassHashCode(hash);
+        hash = HASH_MULTIPLIER * hash + this.zone_id;
+        hash = HASH_MULTIPLIER * hash + Objects.hashCode(this.setpoint);
+        hash = HASH_MULTIPLIER * hash + Objects.hashCode(this.zone_mode);
+        hash = HASH_MULTIPLIER * hash + Objects.hashCode(this.countdown);
+        return HASH_MULTIPLIER * hash + Objects.hashCode(this.time_until);
+    }
+
+    @Override
+    protected boolean subClassEquals(T other) {
+        if (!super.subClassEquals(other)) {
+            return false;
+        }
+        if (this.zone_id != other.zone_id) {
+            return false;
+        }
+        if (!Objects.equals(this.setpoint, other.setpoint)) {
+            return false;
+        }
+        if (this.zone_mode != other.zone_mode) {
+            return false;
+        }
+        if (!Objects.equals(this.countdown, other.countdown)) {
+            return false;
+        }
+        return Objects.equals(this.time_until, other.time_until);
+    }
+
 }

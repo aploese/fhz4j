@@ -29,10 +29,11 @@ import de.ibapl.fhz4j.protocol.evohome.EvoHomeMsgType;
  * @author Arne Plöse
  * <a href="https://github.com/zxdavb/ramses_protocol/wiki/2309:-Zone-Setpoint">2309:
  * Zone Setpoint</a>
+ * @param <T>
  */
-public class ZoneSetpointRequestMessage extends AbstractZoneSetpointMessage {
+public class ZoneSetpointRequestMessage<T extends ZoneSetpointRequestMessage<T>> extends AbstractZoneSetpointMessage<T> {
 
-    public byte zone_id;
+    public byte zoneId;
 
     public ZoneSetpointRequestMessage(EvoHomeMsgParam0 msgParam0) {
         super(EvoHomeMsgType.REQUEST, msgParam0);
@@ -41,7 +42,21 @@ public class ZoneSetpointRequestMessage extends AbstractZoneSetpointMessage {
     @Override
     protected void addToJsonString(StringBuilder sb) {
         super.addToJsonString(sb);
-        sb.append(String.format(", zone_id : 0x%02x", zone_id));
+        sb.append(String.format(", zoneId : 0x%02x", zoneId));
+    }
+
+    @Override
+    protected int subClassHashCode(int hash) {
+        hash = super.subClassHashCode(hash);
+        return HASH_MULTIPLIER * hash + this.zoneId;
+    }
+
+    @Override
+    protected boolean subClassEquals(T other) {
+        if (!super.subClassEquals(other)) {
+            return false;
+        }
+        return this.zoneId == other.zoneId;
     }
 
 }

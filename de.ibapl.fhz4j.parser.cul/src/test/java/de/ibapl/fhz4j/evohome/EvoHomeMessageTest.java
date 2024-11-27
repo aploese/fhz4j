@@ -170,16 +170,16 @@ public class EvoHomeMessageTest implements ParserListener<EvoHomeMessage> {
     }
 
     public static void assertEvoHome_0x0008_RelayHeatDemandInformationMessage(RelayHeatDemandInformationMessage evoHomeMessage, int deviceId1,
-            int deviceId2, byte domain_id, short demand) {
+            int deviceId2, byte domainId, short demand) {
         assertEvoHomeDeviceMessage(evoHomeMessage, deviceId1, deviceId2);
-        assertEquals(domain_id, evoHomeMessage.domain_id, "domain_id");
+        assertEquals(domainId, evoHomeMessage.domainId, "domainId");
         assertEquals(demand, evoHomeMessage.demand, "demand");
     }
 
     public static void assertEvoHome_0x0009_RelayFailsaveInformationMessage(RelayFailsaveInformationMessage evoHomeMessage, int deviceId1,
-            int deviceId2, byte domain_id, int value) {
+            int deviceId2, byte domainId, int value) {
         assertEvoHomeDeviceMessage(evoHomeMessage, deviceId1, deviceId2);
-        assertEquals(domain_id, evoHomeMessage.domain_id, "domain_id");
+        assertEquals(domainId, evoHomeMessage.domainId, "domainId");
         assertEquals(value, evoHomeMessage.value, "value");
     }
 
@@ -208,9 +208,9 @@ public class EvoHomeMessageTest implements ParserListener<EvoHomeMessage> {
     }
 
     public static void assertEvoHome_0x000C_ZoneActuatorsRequestMessage(ZoneActuatorsRequestMessage evoHomeMessage, int deviceId1,
-            int deviceId2, byte zone_idx, byte unknown0) {
+            int deviceId2, byte zoneIdx, byte unknown0) {
         assertEvoHomeDeviceMessage(evoHomeMessage, deviceId1, deviceId2);
-        assertEquals(zone_idx, evoHomeMessage.zone_idx, "zone_idx");
+        assertEquals(zoneIdx, evoHomeMessage.zoneIdx, "zoneIdx");
         assertEquals(unknown0, evoHomeMessage.unknown0, "unknown0");
     }
 
@@ -222,7 +222,7 @@ public class EvoHomeMessageTest implements ParserListener<EvoHomeMessage> {
             ZoneActuatorsInformationMessage.ZoneActuator expected = expectedZoneActuators.next();
             assertTrue(actualZoneActuators.hasNext());
             ZoneActuatorsInformationMessage.ZoneActuator actual = actualZoneActuators.next();
-            assertEquals(expected.zone_idx, actual.zone_idx, "zone_idx");
+            assertEquals(expected.zoneIdx, actual.zoneIdx, "zone_idx");
             assertEquals(expected.unknown0, actual.unknown0, "unknown0");
         }
         assertFalse(actualZoneActuators.hasNext());
@@ -298,16 +298,16 @@ public class EvoHomeMessageTest implements ParserListener<EvoHomeMessage> {
     }
 
     public static void assertEvoHome_0x12B0_AbstractWindowSensorPayloadMessage(AbstractWindowSensorPayloadMessage evoHomeMessage, int deviceId1,
-            int deviceId2, byte zone_id, short unknown0) {
+            int deviceId2, byte zoneId, short unknown0) {
         assertEvoHomeDeviceMessage(evoHomeMessage, deviceId1, deviceId2);
-        assertEquals(zone_id, evoHomeMessage.zone_id, "zone_id");
+        assertEquals(zoneId, evoHomeMessage.zoneId, "zoneId");
         assertEquals(unknown0, evoHomeMessage.unknown0, "unknown0");
     }
 
     public static void assert_0x1F09_SystemSynchronizationRequestMessage(SystemSynchronizationRequestMessage evoHomeMessage,
-            int deviceId1, int deviceId2, byte domain_id) {
+            int deviceId1, int deviceId2, byte domainId) {
         assertEvoHomeDeviceMessage(evoHomeMessage, deviceId1, deviceId2);
-        assertEquals(domain_id, evoHomeMessage.domain_id, "domain_id");
+        assertEquals(domainId, evoHomeMessage.domainId, "domainId");
     }
 
     public static void assertRfCheckWriteMessage(RfCheckWriteMessage evoHomeMessage, int deviceId1,
@@ -317,9 +317,9 @@ public class EvoHomeMessageTest implements ParserListener<EvoHomeMessage> {
     }
 
     public static void assertSystemSynchronizationPayloadMessage(SystemSynchronizationPayloadMessage evoHomeMessage, int deviceId1,
-            int deviceId2, byte device_id, short countdown) {
+            int deviceId2, byte deviceId, short countdown) {
         assertEvoHomeDeviceMessage(evoHomeMessage, deviceId1, deviceId2);
-        assertEquals(device_id, evoHomeMessage.device_id, "device_id");
+        assertEquals(deviceId, evoHomeMessage.deviceId, "deviceId");
         assertEquals(countdown, evoHomeMessage.countdown, "countdown");
     }
 
@@ -330,9 +330,9 @@ public class EvoHomeMessageTest implements ParserListener<EvoHomeMessage> {
     }
 
     public static void assertEvoHome_0x2309_ZoneSetpointRequestMessage(ZoneSetpointRequestMessage evoHomeMessage, int deviceId1,
-            int deviceId2, byte zone_id) {
+            int deviceId2, byte zoneId) {
         assertEvoHomeDeviceMessage(evoHomeMessage, deviceId1, deviceId2);
-        assertEquals(zone_id, evoHomeMessage.zone_id, "zone_id");
+        assertEquals(zoneId, evoHomeMessage.zoneId, "zoneId");
     }
 
     public static void assertEvoHome_0x2309_ZoneSetpointPayloadMessage(AbstractZoneSetpointPayloadMessage evoHomeMessage,
@@ -378,30 +378,30 @@ public class EvoHomeMessageTest implements ParserListener<EvoHomeMessage> {
     }
 
     public static void assertEvoHome_0x313F_SystemTimestampRequestMessage(SystemTimestampRequestMessage evoHomeMessage,
-            int deviceId1, int deviceId2, byte zone_id) {
+            int deviceId1, int deviceId2, byte zoneId) {
         assertEvoHomeDeviceMessage(evoHomeMessage, deviceId1, deviceId2);
-        assertEquals(zone_id, evoHomeMessage.zone_id, "zone_id");
+        assertEquals(zoneId, evoHomeMessage.zoneId, "zoneId");
     }
 
     public static void assertEvoHome_0x313F_SystemTimestampResponseMessage(SystemTimestampResponseMessage evoHomeMessage,
-            int deviceId1, int deviceId2, byte zone_id, SystemTimestampResponseMessage.Direction direction, LocalDateTime timestamp) {
+            int deviceId1, int deviceId2, byte zoneId, SystemTimestampResponseMessage.Direction direction, LocalDateTime timestamp) {
         assertEvoHomeDeviceMessage(evoHomeMessage, deviceId1, deviceId2);
-        assertEquals(zone_id, evoHomeMessage.zone_id, "zone_id");
+        assertEquals(zoneId, evoHomeMessage.zoneId, "zoneId");
         assertEquals(direction, evoHomeMessage.direction, "direction");
         assertEquals(timestamp, evoHomeMessage.timestamp, "timestamp");
     }
 
     public static void assertEvoHome_0x3150_ZoneHeatDemandInformationMessage(ZoneHeatDemandInformationMessage evoHomeMessage,
-            int deviceId1, int deviceId2, byte zone_id, short heatDemand) {
+            int deviceId1, int deviceId2, byte zoneId, short heatDemand) {
         assertEvoHomeDeviceMessage(evoHomeMessage, deviceId1, deviceId2);
-        assertEquals(zone_id, evoHomeMessage.zone_id, "zone_id");
+        assertEquals(zoneId, evoHomeMessage.zoneId, "zoneId");
         assertEquals(heatDemand, evoHomeMessage.heatDemand, "heatDemand");
     }
 
     public static void assertEvoHome_0x3B00_ActuatorSyncInformationMessage(ActuatorSyncInformationMessage evoHomeMessage, int deviceId1,
-            int deviceId2, byte domain_id, byte state) {
+            int deviceId2, byte domainId, byte state) {
         assertEvoHomeDeviceMessage(evoHomeMessage, deviceId1, deviceId2);
-        assertEquals(domain_id, evoHomeMessage.domain_id, "domain_id");
+        assertEquals(domainId, evoHomeMessage.domainId, "domainId");
         assertEquals(state, evoHomeMessage.state, "state");
     }
 

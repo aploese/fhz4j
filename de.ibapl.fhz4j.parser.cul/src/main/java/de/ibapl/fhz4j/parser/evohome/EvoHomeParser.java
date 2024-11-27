@@ -403,7 +403,7 @@ public class EvoHomeParser extends AbstractParser {
                     success();
                 }
                 case PARSE__RELAY_HEAT_DEMAND__DOMAIN_ID -> {
-                    ((RelayHeatDemandInformationMessage) evoHomeMessage).domain_id = b;
+                    ((RelayHeatDemandInformationMessage) evoHomeMessage).domainId = b;
                     state = State.PARSE__RELAY_HEAT_DEMAND__DEMAND;
                 }
                 case PARSE__RELAY_HEAT_DEMAND__DEMAND -> {
@@ -411,7 +411,7 @@ public class EvoHomeParser extends AbstractParser {
                     success();
                 }
                 case PARSE__RELAY_FAILSAVE__DOMAIN_ID -> {
-                    ((RelayFailsaveInformationMessage) evoHomeMessage).domain_id = b;
+                    ((RelayFailsaveInformationMessage) evoHomeMessage).domainId = b;
                     setStackSize(2);
                     state = State.COLLECT__RELAY_FAILSAVE__VALUE;
                 }
@@ -422,7 +422,7 @@ public class EvoHomeParser extends AbstractParser {
                     }
                 }
                 case PARSE__SYSTEM_SYNCHRONIZATION__PAYLOAD__DEVICE_ID -> {
-                    ((SystemSynchronizationPayloadMessage) evoHomeMessage).device_id = b;
+                    ((SystemSynchronizationPayloadMessage) evoHomeMessage).deviceId = b;
                     setStackSize(2);
                     state = State.PARSE__SYSTEM_SYNCHRONIZATION__PAYLOAD__COUNTDOWN;
                 }
@@ -441,7 +441,7 @@ public class EvoHomeParser extends AbstractParser {
                 case ZONE_TEMPERATURE__PAYLOAD__TEMPERATURE -> {
                     remainingDataLength--;
                     if (push(b)) {
-                        ((AbstractZoneTemperaturePayloadMessage) evoHomeMessage).zoneTemperatures.getLast().temperature = getTemperature();
+                        ((AbstractZoneTemperaturePayloadMessage<?>) evoHomeMessage).zoneTemperatures.getLast().temperature = getTemperature();
                         if (remainingDataLength == 0) {
                             success();
                         } else {
@@ -451,15 +451,15 @@ public class EvoHomeParser extends AbstractParser {
                 }
                 case RF_BIND__PAYLOAD__ELEMENTS__ZONE_ID -> {
                     remainingDataLength--;
-                    ((AbstractRfBindPayloadMessage) evoHomeMessage).elements.add(new AbstractRfBindPayloadMessage.Data());
-                    ((AbstractRfBindPayloadMessage) evoHomeMessage).elements.getLast().zoneId = b;
+                    ((AbstractRfBindPayloadMessage<?>) evoHomeMessage).elements.add(new AbstractRfBindPayloadMessage.Data());
+                    ((AbstractRfBindPayloadMessage<?>) evoHomeMessage).elements.getLast().zoneId = b;
                     setStackSize(2);
                     state = State.RF_BIND__PAYLOAD__ELEMENTS__COMMAND;
                 }
                 case RF_BIND__PAYLOAD__ELEMENTS__COMMAND -> {
                     remainingDataLength--;
                     if (push(b)) {
-                        ((AbstractRfBindPayloadMessage) evoHomeMessage).elements.getLast().command = getShortValue();
+                        ((AbstractRfBindPayloadMessage<?>) evoHomeMessage).elements.getLast().command = getShortValue();
                         setStackSize(3);
                         state = State.RF_BIND__PAYLOAD__ELEMENTS__DEVICE_ID;
                     }
@@ -467,7 +467,7 @@ public class EvoHomeParser extends AbstractParser {
                 case RF_BIND__PAYLOAD__ELEMENTS__DEVICE_ID -> {
                     remainingDataLength--;
                     if (push(b)) {
-                        ((AbstractRfBindPayloadMessage) evoHomeMessage).elements.getLast().deviceId = getIntValue();
+                        ((AbstractRfBindPayloadMessage<?>) evoHomeMessage).elements.getLast().deviceId = getIntValue();
                         if (remainingDataLength == 0) {
                             success();
                         } else {
@@ -496,7 +496,7 @@ public class EvoHomeParser extends AbstractParser {
                     }
                 }
                 case ZONE_HEAT_DEMAND__INFORMATION__ZONE_ID -> {
-                    ((ZoneHeatDemandInformationMessage) evoHomeMessage).zone_id = b;
+                    ((ZoneHeatDemandInformationMessage) evoHomeMessage).zoneId = b;
                     state = State.ZONE_HEAT_DEMAND__INFORMATION__HEAT_DEMAND;
                 }
                 case ZONE_HEAT_DEMAND__INFORMATION__HEAT_DEMAND -> {
@@ -597,20 +597,20 @@ public class EvoHomeParser extends AbstractParser {
                 }
                 case ZONE_ACTUATORS__INFORMATION__ZONE_IDX -> {
                     remainingDataLength--;
-                    ((ZoneActuatorsInformationMessage) evoHomeMessage).actuators.add(new ZoneActuatorsInformationMessage.ZoneActuator());
-                    ((ZoneActuatorsInformationMessage) evoHomeMessage).actuators.getLast().zone_idx = b;
+                    ((ZoneActuatorsInformationMessage<?>) evoHomeMessage).actuators.add(new ZoneActuatorsInformationMessage.ZoneActuator());
+                    ((ZoneActuatorsInformationMessage<?>) evoHomeMessage).actuators.getLast().zoneIdx = b;
                     state = State.ZONE_ACTUATORS__INFORMATION__UNKNOWN0;
                 }
                 case ZONE_ACTUATORS__INFORMATION__UNKNOWN0 -> {
                     remainingDataLength--;
-                    ((ZoneActuatorsInformationMessage) evoHomeMessage).actuators.getLast().unknown0 = b;
+                    ((ZoneActuatorsInformationMessage<?>) evoHomeMessage).actuators.getLast().unknown0 = b;
                     setStackSize(4);
                     state = State.ZONE_ACTUATORS__INFORMATION__DEVICEID;
                 }
                 case ZONE_ACTUATORS__INFORMATION__DEVICEID -> {
                     remainingDataLength--;
                     if (push(b)) {
-                        ((ZoneActuatorsInformationMessage) evoHomeMessage).actuators.getLast().deviceId = new DeviceId(getShortValue());
+                        ((ZoneActuatorsInformationMessage<?>) evoHomeMessage).actuators.getLast().deviceId = new DeviceId(getShortValue());
                         if (remainingDataLength == 0) {
                             success();
                         } else {
@@ -620,7 +620,7 @@ public class EvoHomeParser extends AbstractParser {
                 }
                 case ZONE_ACTUATORS__REQUEST__ZONE_IDX -> {
                     remainingDataLength--;
-                    ((ZoneActuatorsRequestMessage) evoHomeMessage).zone_idx = b;
+                    ((ZoneActuatorsRequestMessage) evoHomeMessage).zoneIdx = b;
                     state = State.ZONE_ACTUATORS__REQUEST__UNKNOWN0;
                 }
                 case ZONE_ACTUATORS__REQUEST__UNKNOWN0 -> {
@@ -733,12 +733,12 @@ public class EvoHomeParser extends AbstractParser {
                 }
                 case WINDOW_SENSOR__REQUEST__ZONE_ID -> {
                     remainingDataLength--;
-                    ((WindowSensorRequestMessage) evoHomeMessage).zone_id = b;
+                    ((WindowSensorRequestMessage) evoHomeMessage).zoneId = b;
                     success();
                 }
                 case WINDOW_SENSOR__PAYLOAD__ZONE_ID -> {
                     remainingDataLength--;
-                    ((AbstractWindowSensorPayloadMessage) evoHomeMessage).zone_id = b;
+                    ((AbstractWindowSensorPayloadMessage) evoHomeMessage).zoneId = b;
                     setStackSize(2);
                     state = State.WINDOW_SENSOR__PAYLOAD__UNKNOWN0;
                 }
@@ -751,7 +751,7 @@ public class EvoHomeParser extends AbstractParser {
                 }
                 case ZONE_SETPOINT__REQUEST__ZONE_ID -> {
                     remainingDataLength--;
-                    ((ZoneSetpointRequestMessage) evoHomeMessage).zone_id = b;
+                    ((ZoneSetpointRequestMessage) evoHomeMessage).zoneId = b;
                     success();
                 }
                 case ZONE_SETPOINT__PAYLOAD__ZONE_TEMPERATURES__ZONE_ID -> {
@@ -764,9 +764,9 @@ public class EvoHomeParser extends AbstractParser {
                     remainingDataLength--;
                     if (push(b)) {
                         if (getShortValue() == 0x7FFF) {
-                            ((AbstractZoneSetpointPayloadMessage) evoHomeMessage).zoneTemperatures.getLast().temperature = null;
+                            ((AbstractZoneSetpointPayloadMessage<?>) evoHomeMessage).zoneTemperatures.getLast().temperature = null;
                         } else {
-                            ((AbstractZoneSetpointPayloadMessage) evoHomeMessage).zoneTemperatures.getLast().temperature = new BigDecimal(getShortValue()).divide(ONE_HUNDRED);
+                            ((AbstractZoneSetpointPayloadMessage<?>) evoHomeMessage).zoneTemperatures.getLast().temperature = new BigDecimal(getShortValue()).divide(ONE_HUNDRED);
                         }
                         if (remainingDataLength == 0) {
                             success();
@@ -815,12 +815,12 @@ public class EvoHomeParser extends AbstractParser {
                 }
                 case SYSTEM_TIMESTAMP__REQUEST__ZONE_ID -> {
                     remainingDataLength--;
-                    ((SystemTimestampRequestMessage) evoHomeMessage).zone_id = b;
+                    ((SystemTimestampRequestMessage) evoHomeMessage).zoneId = b;
                     success();
                 }
                 case SYSTEM_TIMESTAMP__RESPONSE__ZONE_ID -> {
                     remainingDataLength--;
-                    ((SystemTimestampResponseMessage) evoHomeMessage).zone_id = b;
+                    ((SystemTimestampResponseMessage) evoHomeMessage).zoneId = b;
                     state = State.SYSTEM_TIMESTAMP__RESPONSE__DIRECTION;
                 }
                 case SYSTEM_TIMESTAMP__RESPONSE__DIRECTION -> {
@@ -846,7 +846,7 @@ public class EvoHomeParser extends AbstractParser {
                 }
                 case ACTUATOR_SYNC__INFORMATION__DOMAIN_ID -> {
                     remainingDataLength--;
-                    ((ActuatorSyncInformationMessage) evoHomeMessage).domain_id = b;
+                    ((ActuatorSyncInformationMessage) evoHomeMessage).domainId = b;
                     state = State.ACTUATOR_SYNC__INFORMATION__STATE;
                 }
                 case ACTUATOR_SYNC__INFORMATION__STATE -> {
@@ -856,7 +856,7 @@ public class EvoHomeParser extends AbstractParser {
                 }
                 case SYSTEM_SYNCHRONIZATION__REQUEST__DOMAIN_ID -> {
                     remainingDataLength--;
-                    ((SystemSynchronizationRequestMessage) evoHomeMessage).domain_id = b;
+                    ((SystemSynchronizationRequestMessage) evoHomeMessage).domainId = b;
                     success();
                 }
                 default -> // TODO

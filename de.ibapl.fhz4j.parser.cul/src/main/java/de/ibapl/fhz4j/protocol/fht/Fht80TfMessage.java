@@ -22,12 +22,14 @@
 package de.ibapl.fhz4j.protocol.fht;
 
 import de.ibapl.fhz4j.api.Protocol;
+import java.util.Objects;
 
 /**
  *
  * @author Arne Plöse
+ * @param <T>
  */
-public class Fht80TfMessage extends AbstractFhtMessage {
+public class Fht80TfMessage<T extends Fht80TfMessage<T>> extends AbstractFhtMessage<T> {
 
     public Fht80TfValue value;
     public boolean lowBattery;
@@ -48,4 +50,27 @@ public class Fht80TfMessage extends AbstractFhtMessage {
         sb.append(", lowBattery : ").append(lowBattery);
 
     }
+
+    @Override
+    protected int subClassHashCode(int hash) {
+        hash = super.subClassHashCode(hash);
+        hash = HASH_MULTIPLIER * hash + Objects.hashCode(this.value);
+        hash = HASH_MULTIPLIER * hash + Objects.hashCode(this.lowBattery);
+        return HASH_MULTIPLIER * hash + this.address;
+    }
+
+    @Override
+    protected boolean subClassEquals(T other) {
+        if (!super.subClassEquals(other)) {
+            return false;
+        }
+        if (this.value != other.value) {
+            return false;
+        }
+        if (this.lowBattery != other.lowBattery) {
+            return false;
+        }
+        return this.address == other.address;
+    }
+
 }

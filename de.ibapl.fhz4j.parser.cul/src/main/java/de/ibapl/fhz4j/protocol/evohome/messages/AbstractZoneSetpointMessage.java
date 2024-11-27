@@ -31,8 +31,9 @@ import de.ibapl.fhz4j.protocol.evohome.EvoHomeMsgType;
  * @author Arne Plöse
  * <a href="https://github.com/zxdavb/ramses_protocol/wiki/2309:-Zone-Setpoint">2309:
  * Zone Setpoint</a>
+ * @param <T>
  */
-public abstract class AbstractZoneSetpointMessage extends EvoHomeDeviceMessage {
+public abstract class AbstractZoneSetpointMessage<T extends AbstractZoneSetpointMessage<T>> extends EvoHomeDeviceMessage<T> {
 
     protected AbstractZoneSetpointMessage(EvoHomeMsgType msgType, EvoHomeMsgParam0 msgParam0) {
         super(EvoHomeCommand.ZONE_SETPOINT, msgType, msgParam0);

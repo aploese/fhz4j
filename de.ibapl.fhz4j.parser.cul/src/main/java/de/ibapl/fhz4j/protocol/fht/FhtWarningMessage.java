@@ -22,13 +22,15 @@
 package de.ibapl.fhz4j.protocol.fht;
 
 import java.util.EnumSet;
+import java.util.Objects;
 import java.util.Set;
 
 /**
  *
  * @author Arne Plöse
+ * @param <T>
  */
-public class FhtWarningMessage extends Fht8bMessage {
+public class FhtWarningMessage<T extends FhtWarningMessage<T>> extends Fht8bMessage<T> {
 
     public Set<Fht80bWarning> warnings;
 
@@ -42,4 +44,19 @@ public class FhtWarningMessage extends Fht8bMessage {
         super.addToJsonString(sb);
         sb.append(", warnings : ").append(warnings);
     }
+
+    @Override
+    protected int subClassHashCode(int hash) {
+        hash = super.subClassHashCode(hash);
+        return HASH_MULTIPLIER * hash + Objects.hashCode(this.warnings);
+    }
+
+    @Override
+    protected boolean subClassEquals(T other) {
+        if (!super.subClassEquals(other)) {
+            return false;
+        }
+        return Objects.equals(this.warnings, other.warnings);
+    }
+
 }

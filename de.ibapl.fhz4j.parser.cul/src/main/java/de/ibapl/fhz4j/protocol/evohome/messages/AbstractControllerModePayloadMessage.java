@@ -24,14 +24,16 @@ package de.ibapl.fhz4j.protocol.evohome.messages;
 import de.ibapl.fhz4j.protocol.evohome.EvoHomeMsgParam0;
 import de.ibapl.fhz4j.protocol.evohome.EvoHomeMsgType;
 import java.time.LocalDateTime;
+import java.util.Objects;
 
 /**
  *
  * @author Arne Plöse
  * <a href="https://github.com/zxdavb/ramses_protocol/wiki/2E04:-Controller-Mode">2E04:
  * Controller Mode</a>
+ * @param <T>
  */
-public abstract class AbstractControllerModePayloadMessage extends AbstractControllerModeMessage {
+public abstract class AbstractControllerModePayloadMessage<T extends AbstractControllerModePayloadMessage<T>> extends AbstractControllerModeMessage<T> {
 
     public enum ProgrammType {
         PERMANENT,
@@ -50,6 +52,24 @@ public abstract class AbstractControllerModePayloadMessage extends AbstractContr
         super.addToJsonString(sb);
         sb.append(", dateTime : ").append(dateTime);
         sb.append(", programm_type : ").append(programm_type);
+    }
+
+    @Override
+    protected int subClassHashCode(int hash) {
+        hash = super.subClassHashCode(hash);
+        hash = HASH_MULTIPLIER * hash + Objects.hashCode(this.dateTime);
+        return HASH_MULTIPLIER * hash + Objects.hashCode(this.programm_type);
+    }
+
+    @Override
+    protected boolean subClassEquals(T other) {
+        if (!super.subClassEquals(other)) {
+            return false;
+        }
+        if (!Objects.equals(this.dateTime, other.dateTime)) {
+            return false;
+        }
+        return this.programm_type == other.programm_type;
     }
 
 }

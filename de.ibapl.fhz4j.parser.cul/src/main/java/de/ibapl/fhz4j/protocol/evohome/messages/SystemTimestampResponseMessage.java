@@ -24,14 +24,16 @@ package de.ibapl.fhz4j.protocol.evohome.messages;
 import de.ibapl.fhz4j.protocol.evohome.EvoHomeMsgParam0;
 import de.ibapl.fhz4j.protocol.evohome.EvoHomeMsgType;
 import java.time.LocalDateTime;
+import java.util.Objects;
 
 /**
  *
  * @author Arne Plöse
  * <a href="https://github.com/zxdavb/ramses_protocol/wiki/313F:-System-Date-&-Time">313F:
  * System Date &amp; Time</a>
+ * @param <T>
  */
-public class SystemTimestampResponseMessage extends AbstractSystemTimestampMessage {
+public class SystemTimestampResponseMessage<T extends SystemTimestampResponseMessage<T>> extends AbstractSystemTimestampMessage<T> {
 
     public enum Direction {
         TO_CONTROLLER,
@@ -52,4 +54,23 @@ public class SystemTimestampResponseMessage extends AbstractSystemTimestampMessa
         sb.append(", direction : ").append(direction);
         sb.append(", timestamp : ").append(timestamp);
     }
+
+    @Override
+    protected int subClassHashCode(int hash) {
+        hash = super.subClassHashCode(hash);
+        hash = HASH_MULTIPLIER * hash + Objects.hashCode(this.direction);
+        return HASH_MULTIPLIER * hash + Objects.hashCode(this.timestamp);
+    }
+
+    @Override
+    protected boolean subClassEquals(T other) {
+        if (!super.subClassEquals(other)) {
+            return false;
+        }
+        if (this.direction != other.direction) {
+            return false;
+        }
+        return Objects.equals(this.timestamp, other.timestamp);
+    }
+
 }

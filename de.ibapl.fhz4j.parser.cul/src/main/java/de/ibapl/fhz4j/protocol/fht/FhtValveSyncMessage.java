@@ -24,8 +24,9 @@ package de.ibapl.fhz4j.protocol.fht;
 /**
  *
  * @author Arne Plöse
+ * @param <T>
  */
-public class FhtValveSyncMessage extends FhtMessage {
+public class FhtValveSyncMessage<T extends FhtValveSyncMessage<T>> extends FhtMessage<T> {
 
     public float timeLeft;
     public boolean bit5;
@@ -42,4 +43,23 @@ public class FhtValveSyncMessage extends FhtMessage {
         sb.append(", timeLeft : ").append(timeLeft);
         sb.append(", bit5 : ").append(bit5);
     }
+
+    @Override
+    protected int subClassHashCode(int hash) {
+        hash = super.subClassHashCode(hash);
+        hash = HASH_MULTIPLIER * hash + Float.floatToIntBits(this.timeLeft);
+        return HASH_MULTIPLIER * hash + (this.bit5 ? 1 : 0);
+    }
+
+    @Override
+    protected boolean subClassEquals(T other) {
+        if (!super.subClassEquals(other)) {
+            return false;
+        }
+        if (Float.floatToIntBits(this.timeLeft) != Float.floatToIntBits(other.timeLeft)) {
+            return false;
+        }
+        return this.bit5 == other.bit5;
+    }
+
 }

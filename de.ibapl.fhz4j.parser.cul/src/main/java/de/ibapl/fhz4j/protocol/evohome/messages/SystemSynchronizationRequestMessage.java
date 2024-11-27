@@ -25,15 +25,17 @@ import de.ibapl.fhz4j.protocol.evohome.EvoHomeCommand;
 import de.ibapl.fhz4j.protocol.evohome.EvoHomeDeviceMessage;
 import de.ibapl.fhz4j.protocol.evohome.EvoHomeMsgParam0;
 import de.ibapl.fhz4j.protocol.evohome.EvoHomeMsgType;
+import java.util.Objects;
 
 /**
  * @author Arne Plöse
  * <a href="https://github.com/zxdavb/ramses_protocol/wiki/1F09:-System-Synchronization">1F09:
  * System Synchronization</a>
+ * @param <T>
  */
-public class SystemSynchronizationRequestMessage extends EvoHomeDeviceMessage {
+public class SystemSynchronizationRequestMessage<T extends SystemSynchronizationRequestMessage<T>> extends EvoHomeDeviceMessage<T> {
 
-    public byte domain_id;
+    public byte domainId;
 
     public SystemSynchronizationRequestMessage(EvoHomeMsgParam0 msgParam0) {
         super(EvoHomeCommand.SYSTEM_SYNCHRONIZATION, EvoHomeMsgType.REQUEST, msgParam0);
@@ -42,6 +44,21 @@ public class SystemSynchronizationRequestMessage extends EvoHomeDeviceMessage {
     @Override
     protected void addToJsonString(StringBuilder sb) {
         super.addToJsonString(sb);
-        sb.append(String.format(", domain_id : 0x%02x", domain_id));
+        sb.append(String.format(", domainId : 0x%02x", domainId));
     }
+
+    @Override
+    protected int subClassHashCode(int hash) {
+        hash = super.subClassHashCode(hash);
+        return HASH_MULTIPLIER * hash + Objects.hashCode(this.domainId);
+    }
+
+    @Override
+    protected boolean subClassEquals(T other) {
+        if (!super.subClassEquals(other)) {
+            return false;
+        }
+        return this.domainId == other.domainId;
+    }
+
 }

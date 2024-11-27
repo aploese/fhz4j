@@ -31,11 +31,12 @@ import de.ibapl.fhz4j.protocol.evohome.EvoHomeMsgType;
  * @author Arne Plöse
  * <a href="https://github.com/zxdavb/ramses_protocol/wiki/3150:-Zone-Heat-Demand">3150:
  * Zone Heat Demand</a>
+ * @param <T>
  */
-public class ZoneHeatDemandInformationMessage extends EvoHomeDeviceMessage {
+public class ZoneHeatDemandInformationMessage<T extends ZoneHeatDemandInformationMessage<T>> extends EvoHomeDeviceMessage<T> {
 
     //TODO array for UFH
-    public byte zone_id; //zone_idx or device_id???
+    public byte zoneId; //zone_idx or device_id???
     /**
      * Heatdemand or position ???
      */
@@ -48,9 +49,27 @@ public class ZoneHeatDemandInformationMessage extends EvoHomeDeviceMessage {
     @Override
     protected void addToJsonString(StringBuilder sb) {
         super.addToJsonString(sb);
-        sb.append(String.format(", zone_id : 0x%02x", zone_id));
+        sb.append(String.format(", zoneId : 0x%02x", zoneId));
         sb.append(", heatDemand : ").append(heatDemand);
         sb.append(", valvePosition : ").append(calcValvePosition()).append("%");
+    }
+
+    @Override
+    protected int subClassHashCode(int hash) {
+        hash = super.subClassHashCode(hash);
+        hash = HASH_MULTIPLIER * hash + this.zoneId;
+        return HASH_MULTIPLIER * hash + this.heatDemand;
+    }
+
+    @Override
+    protected boolean subClassEquals(T other) {
+        if (!super.subClassEquals(other)) {
+            return false;
+        }
+        if (this.zoneId != other.zoneId) {
+            return false;
+        }
+        return this.heatDemand == other.heatDemand;
     }
 
     /**

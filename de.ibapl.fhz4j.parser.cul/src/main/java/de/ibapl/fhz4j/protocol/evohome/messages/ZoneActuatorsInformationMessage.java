@@ -27,18 +27,48 @@ import de.ibapl.fhz4j.protocol.evohome.EvoHomeDeviceMessage;
 import de.ibapl.fhz4j.protocol.evohome.EvoHomeMsgParam0;
 import de.ibapl.fhz4j.protocol.evohome.EvoHomeMsgType;
 import java.util.LinkedList;
+import java.util.Objects;
 
 /**
  *
  * @author Arne Plöse
  * <a href="https://github.com/zxdavb/ramses_protocol/wiki/000C:-Zone-Actuators">000C:
  * Zone Actuators</a>
+ * @param <T>
  */
-public class ZoneActuatorsInformationMessage extends EvoHomeDeviceMessage {
+public class ZoneActuatorsInformationMessage<T extends ZoneActuatorsInformationMessage<T>> extends EvoHomeDeviceMessage<T> {
 
     public static class ZoneActuator {
 
-        public byte zone_idx;
+        @Override
+        public int hashCode() {
+            int hash = HASH_MULTIPLIER * INITIAL_HASH + this.zoneIdx;
+            hash = HASH_MULTIPLIER * hash + this.unknown0;
+            return HASH_MULTIPLIER * hash + Objects.hashCode(this.deviceId);
+        }
+
+        @Override
+        public boolean equals(Object obj) {
+            if (this == obj) {
+                return true;
+            }
+            if (obj == null) {
+                return false;
+            }
+            if (getClass() != obj.getClass()) {
+                return false;
+            }
+            final ZoneActuator other = (ZoneActuator) obj;
+            if (this.zoneIdx != other.zoneIdx) {
+                return false;
+            }
+            if (this.unknown0 != other.unknown0) {
+                return false;
+            }
+            return Objects.equals(this.deviceId, other.deviceId);
+        }
+
+        public byte zoneIdx;
         public byte unknown0;
         public DeviceId deviceId;
 
@@ -46,12 +76,26 @@ public class ZoneActuatorsInformationMessage extends EvoHomeDeviceMessage {
 
         }
 
-        public ZoneActuator(byte zone_idx, byte unknown, DeviceId deviceId) {
-            this.zone_idx = zone_idx;
+        public ZoneActuator(byte zoneIdx, byte unknown, DeviceId deviceId) {
+            this.zoneIdx = zoneIdx;
             this.unknown0 = unknown;
             this.deviceId = deviceId;
         }
 
+        protected void addToJsonString(StringBuilder sb) {
+            sb.append("{");
+            sb.append(String.format("zoneIdx : 0x%02x", zoneIdx));
+            sb.append(String.format(", unknown0 : 0x%02x", unknown0));
+            sb.append(", deviceId : ").append(deviceId);
+            sb.append("}");
+        }
+
+        @Override
+        final public String toString() {
+            StringBuilder sb = new StringBuilder();
+            addToJsonString(sb);
+            return sb.toString();
+        }
     }
 
     public LinkedList<ZoneActuator> actuators = new LinkedList<>();
@@ -71,12 +115,23 @@ public class ZoneActuatorsInformationMessage extends EvoHomeDeviceMessage {
             } else {
                 first = false;
             }
-            sb.append("{");
-            sb.append(String.format("zone_idx : 0x%02x", za.zone_idx));
-            sb.append(String.format(", unknown0 : 0x%02x", za.unknown0));
-            sb.append(", deviceId : ").append(za.deviceId);
-            sb.append("}");
+            za.addToJsonString(sb);
         }
         sb.append("]");
     }
+
+    @Override
+    protected int subClassHashCode(int hash) {
+        hash = super.subClassHashCode(hash);
+        return HASH_MULTIPLIER * hash + Objects.hashCode(this.actuators);
+    }
+
+    @Override
+    protected boolean subClassEquals(T other) {
+        if (!super.subClassEquals(other)) {
+            return false;
+        }
+        return Objects.equals(this.actuators, other.actuators);
+    }
+
 }

@@ -25,6 +25,7 @@ import de.ibapl.fhz4j.protocol.evohome.EvoHomeMsgParam0;
 import de.ibapl.fhz4j.protocol.evohome.EvoHomeMsgType;
 import de.ibapl.fhz4j.protocol.evohome.ZoneTemperature;
 import java.util.LinkedList;
+import java.util.Objects;
 
 /**
  * Room Measured Temp
@@ -32,8 +33,9 @@ import java.util.LinkedList;
  * @author Arne Plöse
  * <a href="https://github.com/zxdavb/ramses_protocol/wiki/30C9:-Zone-Temperature">30C9:
  * Zone Temperature</a>
+ * @param <T>
  */
-public abstract class AbstractZoneTemperaturePayloadMessage extends AbstractZoneTemperatureMessage {
+public abstract class AbstractZoneTemperaturePayloadMessage<T extends AbstractZoneTemperaturePayloadMessage<T>> extends AbstractZoneTemperatureMessage<T> {
 
     public LinkedList<ZoneTemperature> zoneTemperatures = new LinkedList<>();
 
@@ -55,6 +57,20 @@ public abstract class AbstractZoneTemperaturePayloadMessage extends AbstractZone
             sb.append(zt);
         }
         sb.append("]");
+    }
+
+    @Override
+    protected int subClassHashCode(int hash) {
+        hash = super.subClassHashCode(hash);
+        return HASH_MULTIPLIER * hash + Objects.hashCode(this.zoneTemperatures);
+    }
+
+    @Override
+    protected boolean subClassEquals(T other) {
+        if (!super.subClassEquals(other)) {
+            return false;
+        }
+        return Objects.equals(this.zoneTemperatures, other.zoneTemperatures);
     }
 
 }

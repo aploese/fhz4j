@@ -27,8 +27,9 @@ import de.ibapl.fhz4j.api.Protocol;
 /**
  *
  * @author aploese
+ * @param <T>
  */
-public abstract class AbstractFhtMessage extends Message {
+public abstract class AbstractFhtMessage<T extends AbstractFhtMessage<T>> extends Message<T> {
 
     public AbstractFhtMessage(Protocol protocol) {
         super(protocol);

@@ -24,8 +24,9 @@ package de.ibapl.fhz4j.protocol.fht;
 /**
  *
  * @author Arne Plöse
+ * @param <T>
  */
-public class Fht80bRawMessage extends Fht8bMessage {
+public class Fht80bRawMessage<T extends Fht80bRawMessage<T>> extends Fht8bMessage<T> {
 
     private final byte value;
 
@@ -49,44 +50,17 @@ public class Fht80bRawMessage extends Fht8bMessage {
     }
 
     @Override
-    public int hashCode() {
-        int hash = 3;
-        hash = 97 * hash + this.description;
-        hash = 97 * hash + (this.fromFht_8B ? 1 : 0);
-        hash = 97 * hash + (this.dataRegister ? 1 : 0);
-        hash = 97 * hash + this.command.hashCode();
-        hash = 97 * hash + this.value;
-        return hash;
+    protected int subClassHashCode(int hash) {
+        hash = super.subClassHashCode(hash);
+        return HASH_MULTIPLIER * hash + this.value;
     }
 
     @Override
-    public boolean equals(Object obj) {
-        if (this == obj) {
-            return true;
-        }
-        if (obj == null) {
+    protected boolean subClassEquals(T other) {
+        if (!super.subClassEquals(other)) {
             return false;
         }
-        if (getClass() != obj.getClass()) {
-            return false;
-        }
-        final Fht80bRawMessage other = (Fht80bRawMessage) obj;
-        if (this.description != other.description) {
-            return false;
-        }
-        if (this.fromFht_8B != other.fromFht_8B) {
-            return false;
-        }
-        if (this.dataRegister != other.dataRegister) {
-            return false;
-        }
-        if (this.command != other.command) {
-            return false;
-        }
-        if (this.value != other.value) {
-            return false;
-        }
-        return true;
+        return this.value == ((Fht80bRawMessage) other).value;
     }
 
 }

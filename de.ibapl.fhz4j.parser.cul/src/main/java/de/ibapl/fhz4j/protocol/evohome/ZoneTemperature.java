@@ -58,7 +58,10 @@ public class ZoneTemperature {
 
     @Override
     public int hashCode() {
-        return Objects.hash(temperature, zone);
+        int hash = 7;
+        hash = 97 * hash + this.zone;
+        hash = 97 * hash + Objects.hashCode(this.temperature);
+        return hash;
     }
 
     @Override
@@ -72,8 +75,11 @@ public class ZoneTemperature {
         if (getClass() != obj.getClass()) {
             return false;
         }
-        ZoneTemperature other = (ZoneTemperature) obj;
-        return Objects.equals(temperature, other.temperature) && zone == other.zone;
+        final ZoneTemperature other = (ZoneTemperature) obj;
+        if (this.zone != other.zone) {
+            return false;
+        }
+        return Objects.equals(this.temperature, other.temperature);
     }
 
 }

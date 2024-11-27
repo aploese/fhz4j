@@ -24,8 +24,9 @@ package de.ibapl.fhz4j.protocol.fht;
 /**
  *
  * @author Arne Plöse
+ * @param <T>
  */
-public class FhtProtocolMessage extends Fht8bMessage {
+public class FhtProtocolMessage<T extends FhtProtocolMessage<T>> extends Fht8bMessage<T> {
 
     public byte data;
 
@@ -39,4 +40,19 @@ public class FhtProtocolMessage extends Fht8bMessage {
         super.addToJsonString(sb);
         sb.append(String.format(", data : 0x%02x", data));
     }
+
+    @Override
+    protected int subClassHashCode(int hash) {
+        hash = super.subClassHashCode(hash);
+        return HASH_MULTIPLIER * hash + this.data;
+    }
+
+    @Override
+    protected boolean subClassEquals(T other) {
+        if (!super.subClassEquals(other)) {
+            return false;
+        }
+        return this.data == other.data;
+    }
+
 }

@@ -30,17 +30,17 @@ package de.ibapl.fhz4j.protocol.em;
  * Copyright (C) 2009, 2017, Arne Plöse and individual contributors as indicated
  * by the @authors tag. See the copyright.txt in the distribution for a
  * full listing of individual contributors.
- * 
+ *
  * This is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as
  * published by the Free Software Foundation; either version 3 of
  * the License, or (at your option) any later version.
- * 
+ *
  * This software is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
  * Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public
  * License along with this software; if not, write to the Free
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
@@ -49,12 +49,13 @@ package de.ibapl.fhz4j.protocol.em;
  */
 import de.ibapl.fhz4j.api.Message;
 import de.ibapl.fhz4j.api.Protocol;
+import java.util.Objects;
 
 /**
  *
  * @author Arne Plöse
  */
-public class EmMessage extends Message {
+public final class EmMessage extends Message<EmMessage> {
 
     public final static double EM_1000_S_CORR_1 = 12.0 / 150.0;
     public final static double EM_1000_S_CORR_2 = 12.0 / 1800.0;
@@ -89,6 +90,40 @@ public class EmMessage extends Message {
         sb.append(", address : ").append(address);
         sb.append(", counter : ").append(counter);
         sb.append(", emDeviceType : ").append(emDeviceType);
+    }
+
+    @Override
+    protected int subClassHashCode(int hash) {
+        hash = super.subClassHashCode(hash);
+        hash = HASH_MULTIPLIER * hash + Objects.hashCode(this.address);
+        hash = HASH_MULTIPLIER * hash + Objects.hashCode(this.counter);
+        hash = HASH_MULTIPLIER * hash + Objects.hashCode(this.emDeviceType);
+        hash = HASH_MULTIPLIER * hash + Objects.hashCode(this.valueCummulated);
+        hash = HASH_MULTIPLIER * hash + Objects.hashCode(this.value5Min);
+        return HASH_MULTIPLIER * hash + Objects.hashCode(this.value5MinPeak);
+    }
+
+    @Override
+    protected boolean subClassEquals(EmMessage other) {
+        if (!super.subClassEquals(other)) {
+            return false;
+        }
+        if (this.address != other.address) {
+            return false;
+        }
+        if (this.counter != other.counter) {
+            return false;
+        }
+        if (this.emDeviceType != other.emDeviceType) {
+            return false;
+        }
+        if (this.valueCummulated != other.valueCummulated) {
+            return false;
+        }
+        if (this.value5Min != other.value5Min) {
+            return false;
+        }
+        return this.value5MinPeak == other.value5MinPeak;
     }
 
 }

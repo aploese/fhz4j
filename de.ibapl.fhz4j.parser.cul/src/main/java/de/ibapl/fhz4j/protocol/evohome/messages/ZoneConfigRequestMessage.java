@@ -31,8 +31,9 @@ import de.ibapl.fhz4j.protocol.evohome.EvoHomeMsgType;
  * @author Arne Plöse
  * <a href="https://github.com/zxdavb/ramses_protocol/wiki/000A:-Zone-Configuration">000A:
  * Zone Configuration</a>
+ * @param <T>
  */
-public class ZoneConfigRequestMessage extends EvoHomeDeviceMessage {
+public class ZoneConfigRequestMessage<T extends ZoneConfigRequestMessage<T>> extends EvoHomeDeviceMessage<T> {
 
     public byte value;
 
@@ -45,4 +46,19 @@ public class ZoneConfigRequestMessage extends EvoHomeDeviceMessage {
         super.addToJsonString(sb);
         sb.append(String.format("value : 0x%02x", value));
     }
+
+    @Override
+    protected int subClassHashCode(int hash) {
+        hash = super.subClassHashCode(hash);
+        return HASH_MULTIPLIER * hash + this.value;
+    }
+
+    @Override
+    protected boolean subClassEquals(T other) {
+        if (!super.subClassEquals(other)) {
+            return false;
+        }
+        return this.value == other.value;
+    }
+
 }

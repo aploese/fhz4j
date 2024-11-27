@@ -21,11 +21,13 @@
  */
 package de.ibapl.fhz4j.cul;
 
+import java.util.Objects;
+
 /**
  *
  * @author aploese
  */
-public class CulEobMessage extends CulMessage {
+public final class CulEobMessage extends CulMessage<CulEobMessage> {
 
     public final static CulMessage EOB = new CulEobMessage();
 
@@ -40,6 +42,20 @@ public class CulEobMessage extends CulMessage {
         sb.append("message : \"");
         sb.append(message);
         sb.append('"');
+    }
+
+    @Override
+    protected int subClassHashCode(int hash) {
+        hash = super.subClassHashCode(hash);
+        return HASH_MULTIPLIER * hash + Objects.hashCode(this.message);
+    }
+
+    @Override
+    protected boolean subClassEquals(CulEobMessage other) {
+        if (!super.subClassEquals(other)) {
+            return false;
+        }
+        return Objects.equals(this.message, other.message);
     }
 
 }

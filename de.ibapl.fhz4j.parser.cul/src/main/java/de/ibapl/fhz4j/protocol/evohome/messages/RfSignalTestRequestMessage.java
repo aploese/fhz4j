@@ -25,14 +25,16 @@ import de.ibapl.fhz4j.protocol.evohome.EvoHomeCommand;
 import de.ibapl.fhz4j.protocol.evohome.EvoHomeDeviceMessage;
 import de.ibapl.fhz4j.protocol.evohome.EvoHomeMsgParam0;
 import de.ibapl.fhz4j.protocol.evohome.EvoHomeMsgType;
+import java.util.Objects;
 
 /**
  *
  * @author Arne Plöse
  * <a href="https://github.com/zxdavb/ramses_protocol/wiki/0016:-RF-Signal-Test">0016:
  * RF Signal Test</a>
+ * @param <T>
  */
-public class RfSignalTestRequestMessage extends EvoHomeDeviceMessage {
+public class RfSignalTestRequestMessage<T extends RfSignalTestRequestMessage<T>> extends EvoHomeDeviceMessage<T> {
 
     public short value;
 
@@ -45,4 +47,19 @@ public class RfSignalTestRequestMessage extends EvoHomeDeviceMessage {
         super.addToJsonString(sb);
         sb.append(String.format(", value : 0x%04x", value));
     }
+
+    @Override
+    protected int subClassHashCode(int hash) {
+        hash = super.subClassHashCode(hash);
+        return HASH_MULTIPLIER * hash + Objects.hashCode(this.value);
+    }
+
+    @Override
+    protected boolean subClassEquals(T other) {
+        if (!super.subClassEquals(other)) {
+            return false;
+        }
+        return this.value == other.value;
+    }
+
 }

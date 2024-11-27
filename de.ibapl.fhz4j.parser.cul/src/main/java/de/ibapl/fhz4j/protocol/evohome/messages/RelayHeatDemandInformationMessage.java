@@ -31,13 +31,14 @@ import de.ibapl.fhz4j.protocol.evohome.EvoHomeMsgType;
  * @author Arne Plöse
  * <a href="https://github.com/zxdavb/ramses_protocol/wiki/0008:-Relay-Heat-Demand">0008:
  * Relay Heat Demand</a>
+ * @param <T>
  */
-public class RelayHeatDemandInformationMessage extends EvoHomeDeviceMessage {
+public class RelayHeatDemandInformationMessage<T extends RelayHeatDemandInformationMessage<T>> extends EvoHomeDeviceMessage<T> {
 
     /**
      * 0xF9, 0xFA or 0xFC, or zone_idx(0x00-0x0B).
      */
-    public byte domain_id;
+    public byte domainId;
     /**
      * % demand (0-200)%.
      */
@@ -50,8 +51,26 @@ public class RelayHeatDemandInformationMessage extends EvoHomeDeviceMessage {
     @Override
     protected void addToJsonString(StringBuilder sb) {
         super.addToJsonString(sb);
-        sb.append(String.format(", domain_id : 0x%02x", domain_id));
+        sb.append(String.format(", domainId : 0x%02x", domainId));
         sb.append(", demand : ").append(demand);
+    }
+
+    @Override
+    protected int subClassHashCode(int hash) {
+        hash = super.subClassHashCode(hash);
+        hash = HASH_MULTIPLIER * hash + this.domainId;
+        return HASH_MULTIPLIER * hash + Float.floatToIntBits(this.demand);
+    }
+
+    @Override
+    protected boolean subClassEquals(T other) {
+        if (!super.subClassEquals(other)) {
+            return false;
+        }
+        if (this.domainId != other.domainId) {
+            return false;
+        }
+        return Float.floatToIntBits(this.demand) == Float.floatToIntBits(other.demand);
     }
 
 }

@@ -22,12 +22,14 @@
 package de.ibapl.fhz4j.protocol.fht;
 
 import java.time.LocalDateTime;
+import java.util.Objects;
 
 /**
  *
  * @author Arne Plöse
+ * @param <T>
  */
-public class FhtDateTimeMessage extends Fht8bMessage {
+public class FhtDateTimeMessage<T extends FhtDateTimeMessage<T>> extends Fht8bMessage<T> {
 
     public LocalDateTime ts;
 
@@ -42,4 +44,19 @@ public class FhtDateTimeMessage extends Fht8bMessage {
         super.addToJsonString(sb);
         sb.append(", ts : ").append(ts);
     }
+
+    @Override
+    protected int subClassHashCode(int hash) {
+        hash = super.subClassHashCode(hash);
+        return HASH_MULTIPLIER * hash + Objects.hashCode(this.ts);
+    }
+
+    @Override
+    protected boolean subClassEquals(T other) {
+        if (!super.subClassEquals(other)) {
+            return false;
+        }
+        return Objects.equals(this.ts, other.ts);
+    }
+
 }

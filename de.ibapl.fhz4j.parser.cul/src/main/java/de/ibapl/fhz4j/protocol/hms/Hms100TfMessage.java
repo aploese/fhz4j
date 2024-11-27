@@ -27,7 +27,7 @@ import java.util.Set;
  *
  * @author Arne Plöse
  */
-public class Hms100TfMessage extends HmsMessage {
+public class Hms100TfMessage<T extends Hms100TfMessage<T>> extends HmsMessage<T> {
 
     public float temp;
     public float humidy;
@@ -42,4 +42,23 @@ public class Hms100TfMessage extends HmsMessage {
         sb.append(", temp : ").append(temp);
         sb.append(", humidy : ").append(humidy);
     }
+
+    @Override
+    protected int subClassHashCode(int hash) {
+        hash = super.subClassHashCode(hash);
+        hash = HASH_MULTIPLIER * hash + Float.floatToIntBits(this.temp);
+        return HASH_MULTIPLIER * hash + Float.floatToIntBits(this.humidy);
+    }
+
+    @Override
+    protected boolean subClassEquals(T other) {
+        if (!super.subClassEquals(other)) {
+            return false;
+        }
+        if (Float.floatToIntBits(this.temp) != Float.floatToIntBits(other.temp)) {
+            return false;
+        }
+        return Float.floatToIntBits(this.humidy) == Float.floatToIntBits(other.humidy);
+    }
+
 }

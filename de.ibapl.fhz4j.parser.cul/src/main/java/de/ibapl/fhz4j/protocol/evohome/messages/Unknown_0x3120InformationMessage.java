@@ -32,7 +32,7 @@ import de.ibapl.fhz4j.protocol.evohome.EvoHomeMsgType;
  * <a href="https://github.com/zxdavb/ramses_protocol/wiki/3120:-Unknown">3120:
  * Unknown</a>
  */
-public class Unknown_0x3120InformationMessage extends EvoHomeDeviceMessage {
+public class Unknown_0x3120InformationMessage<T extends Unknown_0x3120InformationMessage<T>> extends EvoHomeDeviceMessage<T> {
 
     public byte unused0; // 0x00
     public short fixed1; // 0x70B0
@@ -51,4 +51,31 @@ public class Unknown_0x3120InformationMessage extends EvoHomeDeviceMessage {
         sb.append(String.format(", unused2 : 0x%06x", unused2));
         sb.append(String.format(", fixed3 : 0x%02x", fixed3));
     }
+
+    @Override
+    protected int subClassHashCode(int hash) {
+        hash = super.subClassHashCode(hash);
+        hash = HASH_MULTIPLIER * hash + this.unused0;
+        hash = HASH_MULTIPLIER * hash + this.fixed1;
+        hash = HASH_MULTIPLIER * hash + this.unused2;
+        return HASH_MULTIPLIER * hash + this.fixed3;
+    }
+
+    @Override
+    protected boolean subClassEquals(T other) {
+        if (!super.subClassEquals(other)) {
+            return false;
+        }
+        if (this.unused0 != other.unused0) {
+            return false;
+        }
+        if (this.fixed1 != other.fixed1) {
+            return false;
+        }
+        if (this.unused2 != other.unused2) {
+            return false;
+        }
+        return this.fixed3 == other.fixed3;
+    }
+
 }

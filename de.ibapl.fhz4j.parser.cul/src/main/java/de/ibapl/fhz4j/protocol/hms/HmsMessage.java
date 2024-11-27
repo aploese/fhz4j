@@ -21,17 +21,18 @@
  */
 package de.ibapl.fhz4j.protocol.hms;
 
-import java.util.EnumSet;
-import java.util.Set;
-
 import de.ibapl.fhz4j.api.Message;
 import de.ibapl.fhz4j.api.Protocol;
+import java.util.EnumSet;
+import java.util.Objects;
+import java.util.Set;
 
 /**
  *
  * @author Arne Plöse
+ * @param <T>
  */
-public abstract class HmsMessage extends Message {
+public abstract class HmsMessage<T extends HmsMessage<T>> extends Message<T> {
 
     public short housecode;
     public Set<HmsDeviceStatus> deviceStatus = EnumSet.noneOf(HmsDeviceStatus.class);
@@ -51,4 +52,27 @@ public abstract class HmsMessage extends Message {
         sb.append(", deviceStatus : ").append(deviceStatus).append("");
         sb.append(", hmsDeviceType : ").append(hmsDeviceType);
     }
+
+    @Override
+    protected int subClassHashCode(int hash) {
+        hash = super.subClassHashCode(hash);
+        hash = HASH_MULTIPLIER * hash + this.housecode;
+        hash = HASH_MULTIPLIER * hash + Objects.hashCode(this.deviceStatus);
+        return HASH_MULTIPLIER * hash + Objects.hashCode(this.hmsDeviceType);
+    }
+
+    @Override
+    protected boolean subClassEquals(T other) {
+        if (!super.subClassEquals(other)) {
+            return false;
+        }
+        if (this.housecode != other.housecode) {
+            return false;
+        }
+        if (!Objects.equals(this.deviceStatus, other.deviceStatus)) {
+            return false;
+        }
+        return this.hmsDeviceType == other.hmsDeviceType;
+    }
+
 }

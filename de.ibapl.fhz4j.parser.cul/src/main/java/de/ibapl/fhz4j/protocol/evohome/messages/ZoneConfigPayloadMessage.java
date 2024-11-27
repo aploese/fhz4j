@@ -27,22 +27,80 @@ import de.ibapl.fhz4j.protocol.evohome.EvoHomeMsgParam0;
 import de.ibapl.fhz4j.protocol.evohome.EvoHomeMsgType;
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Objects;
 
 /**
  *
  * @author Arne Plöse
  * <a href="https://github.com/zxdavb/ramses_protocol/wiki/000A:-Zone-Configuration">000A:
  * Zone Configuration</a>
+ * @param <T>
  */
-public class ZoneConfigPayloadMessage extends EvoHomeDeviceMessage {
+public class ZoneConfigPayloadMessage<T extends ZoneConfigPayloadMessage<T>> extends EvoHomeDeviceMessage<T> {
 
     public static class ZoneParams {
+
+        @Override
+        public int hashCode() {
+            int hash = 7;
+            hash = HASH_MULTIPLIER * hash + this.zoneId;
+            hash = HASH_MULTIPLIER * hash + (this.windowFunction ? 1 : 0);
+            hash = HASH_MULTIPLIER * hash + (this.operationLock ? 1 : 0);
+            hash = HASH_MULTIPLIER * hash + Objects.hashCode(this.minTemperature);
+            hash = HASH_MULTIPLIER * hash + Objects.hashCode(this.maxTemperature);
+            return hash;
+        }
+
+        @Override
+        public boolean equals(Object obj) {
+            if (this == obj) {
+                return true;
+            }
+            if (obj == null) {
+                return false;
+            }
+            if (getClass() != obj.getClass()) {
+                return false;
+            }
+            final ZoneParams other = (ZoneParams) obj;
+            if (this.zoneId != other.zoneId) {
+                return false;
+            }
+            if (this.windowFunction != other.windowFunction) {
+                return false;
+            }
+            if (this.operationLock != other.operationLock) {
+                return false;
+            }
+            if (!Objects.equals(this.minTemperature, other.minTemperature)) {
+                return false;
+            }
+            return Objects.equals(this.maxTemperature, other.maxTemperature);
+        }
 
         public byte zoneId;
         public boolean windowFunction;
         public boolean operationLock;
         public BigDecimal minTemperature;
         public BigDecimal maxTemperature;
+
+        protected void addToJsonString(StringBuilder sb) {
+            sb.append("{");
+            sb.append(String.format("zoneId : 0x%02x", zoneId));
+            sb.append(String.format(", windowFunction : %b", windowFunction));
+            sb.append(String.format(", operationLock : %b", operationLock));
+            sb.append(", minTemperature : ").append(minTemperature);
+            sb.append(", maxTemperature : ").append(maxTemperature);
+            sb.append("}");
+        }
+
+        @Override
+        public String toString() {
+            StringBuilder sb = new StringBuilder();
+            addToJsonString(sb);
+            return sb.toString();
+        }
+
     }
 
     public List<ZoneParams> zones;
@@ -65,14 +123,23 @@ public class ZoneConfigPayloadMessage extends EvoHomeDeviceMessage {
             } else {
                 first = false;
             }
-            sb.append("{");
-            sb.append(String.format("zoneId : 0x%02x", zp.zoneId));
-            sb.append(String.format(", windowFunction : %b", zp.windowFunction));
-            sb.append(String.format(", operationLock : %b", zp.operationLock));
-            sb.append(", minTemperature : ").append(zp.minTemperature);
-            sb.append(", maxTemperature : ").append(zp.maxTemperature);
-            sb.append("}");
+            zp.addToJsonString(sb);
         }
         sb.append("]");
     }
+
+    @Override
+    protected int subClassHashCode(int hash) {
+        hash = super.subClassHashCode(hash);
+        return HASH_MULTIPLIER * hash + Objects.hashCode(this.zones);
+    }
+
+    @Override
+    protected boolean subClassEquals(T other) {
+        if (!super.subClassEquals(other)) {
+            return false;
+        }
+        return Objects.equals(this.zones, other.zones);
+    }
+
 }

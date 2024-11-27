@@ -46,6 +46,7 @@ public class DeviceId {
             return false;
         }
         final DeviceId other = (DeviceId) obj;
+        //type is generated in constructor so no need to check.
         return this.id == other.id;
     }
 

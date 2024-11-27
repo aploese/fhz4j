@@ -26,14 +26,16 @@ import de.ibapl.fhz4j.protocol.evohome.EvoHomeDeviceMessage;
 import de.ibapl.fhz4j.protocol.evohome.EvoHomeMsgParam0;
 import de.ibapl.fhz4j.protocol.evohome.EvoHomeMsgType;
 import java.time.Duration;
+import java.util.Objects;
 
 /**
  *
  * @author Arne Plöse
  * <a href="https://github.com/zxdavb/ramses_protocol/wiki/1100:-Boiler-Relay-Information">1100:
  * Boiler Relay Information</a>
+ * @param <T>
  */
-public class BoilerRelayInformationMessage extends EvoHomeDeviceMessage {
+public class BoilerRelayInformationMessage<T extends BoilerRelayInformationMessage<T>> extends EvoHomeDeviceMessage<T> {
 
     public byte domain_id;
     public float cycle_rate;
@@ -58,4 +60,43 @@ public class BoilerRelayInformationMessage extends EvoHomeDeviceMessage {
         sb.append(", proportional_band_width : ").append(proportional_band_width);
         sb.append(String.format(", unknown1 : 0x%02x", unknown1));
     }
+
+    @Override
+    protected int subClassHashCode(int hash) {
+        hash = super.subClassHashCode(hash);
+        hash = HASH_MULTIPLIER * hash + this.domain_id;
+        hash = HASH_MULTIPLIER * hash + Float.floatToIntBits(this.cycle_rate);
+        hash = HASH_MULTIPLIER * hash + Objects.hashCode(this.minimum_on_time);
+        hash = HASH_MULTIPLIER * hash + Objects.hashCode(this.minimum_off_time);
+        hash = HASH_MULTIPLIER * hash + this.unknown0;
+        hash = HASH_MULTIPLIER * hash + this.proportional_band_width;
+        return HASH_MULTIPLIER * hash + this.unknown1;
+    }
+
+    @Override
+    protected boolean subClassEquals(T other) {
+        if (!super.subClassEquals(other)) {
+            return false;
+        }
+        if (this.domain_id != other.domain_id) {
+            return false;
+        }
+        if (Float.floatToIntBits(this.cycle_rate) != Float.floatToIntBits(other.cycle_rate)) {
+            return false;
+        }
+        if (this.unknown0 != other.unknown0) {
+            return false;
+        }
+        if (this.proportional_band_width != other.proportional_band_width) {
+            return false;
+        }
+        if (this.unknown1 != other.unknown1) {
+            return false;
+        }
+        if (!Objects.equals(this.minimum_on_time, other.minimum_on_time)) {
+            return false;
+        }
+        return Objects.equals(this.minimum_off_time, other.minimum_off_time);
+    }
+
 }

@@ -25,12 +25,14 @@ import de.ibapl.fhz4j.protocol.evohome.EvoHomeCommand;
 import de.ibapl.fhz4j.protocol.evohome.EvoHomeDeviceMessage;
 import de.ibapl.fhz4j.protocol.evohome.EvoHomeMsgParam0;
 import de.ibapl.fhz4j.protocol.evohome.EvoHomeMsgType;
+import java.util.Arrays;
 
 /**
  *
  * @author Arne Plöse
+ * @param <T>
  */
-public class T87RF_Startup_0x042F_InformationMessage extends EvoHomeDeviceMessage {
+public class T87RF_Startup_0x042F_InformationMessage<T extends T87RF_Startup_0x042F_InformationMessage<T>> extends EvoHomeDeviceMessage<T> {
 
     public final byte[] value;
 
@@ -44,4 +46,19 @@ public class T87RF_Startup_0x042F_InformationMessage extends EvoHomeDeviceMessag
         super.addToJsonString(sb);
         appendByteArray(sb, "value", value);
     }
+
+    @Override
+    protected int subClassHashCode(int hash) {
+        hash = super.subClassHashCode(hash);
+        return HASH_MULTIPLIER * hash + Arrays.hashCode(this.value);
+    }
+
+    @Override
+    protected boolean subClassEquals(T other) {
+        if (!super.subClassEquals(other)) {
+            return false;
+        }
+        return Arrays.equals(this.value, other.value);
+    }
+
 }

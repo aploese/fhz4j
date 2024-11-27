@@ -24,8 +24,9 @@ package de.ibapl.fhz4j.protocol.fht;
 /**
  *
  * @author Arne Plöse
+ * @param <T>
  */
-public class FhtDateMessage extends Fht8bMessage {
+public class FhtDateMessage<T extends FhtDateMessage<T>> extends Fht8bMessage<T> {
 
     public byte day;
     public byte month;
@@ -42,6 +43,24 @@ public class FhtDateMessage extends Fht8bMessage {
         super.addToJsonString(sb);
         sb.append(", day : ").append(day);
         sb.append(", month : ").append(month);
+    }
+
+    @Override
+    protected int subClassHashCode(int hash) {
+        hash = super.subClassHashCode(hash);
+        hash = HASH_MULTIPLIER * hash + this.day;
+        return HASH_MULTIPLIER * hash + this.month;
+    }
+
+    @Override
+    protected boolean subClassEquals(T other) {
+        if (!super.subClassEquals(other)) {
+            return false;
+        }
+        if (this.day != other.day) {
+            return false;
+        }
+        return this.month == other.month;
     }
 
 }

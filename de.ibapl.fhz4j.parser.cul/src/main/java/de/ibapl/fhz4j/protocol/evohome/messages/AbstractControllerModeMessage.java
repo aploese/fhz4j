@@ -25,14 +25,16 @@ import de.ibapl.fhz4j.protocol.evohome.EvoHomeCommand;
 import de.ibapl.fhz4j.protocol.evohome.EvoHomeDeviceMessage;
 import de.ibapl.fhz4j.protocol.evohome.EvoHomeMsgParam0;
 import de.ibapl.fhz4j.protocol.evohome.EvoHomeMsgType;
+import java.util.Objects;
 
 /**
  *
  * @author Arne Plöse
  * <a href="https://github.com/zxdavb/ramses_protocol/wiki/2E04:-Controller-Mode">2E04:
  * Controller Mode</a>
+ * @param <T>
  */
-public abstract class AbstractControllerModeMessage extends EvoHomeDeviceMessage {
+public abstract class AbstractControllerModeMessage<T extends AbstractControllerModeMessage<T>> extends EvoHomeDeviceMessage<T> {
 
     /**
      * The modes of the controller.
@@ -73,4 +75,19 @@ public abstract class AbstractControllerModeMessage extends EvoHomeDeviceMessage
         super.addToJsonString(sb);
         sb.append(", mode : ").append(mode);
     }
+
+    @Override
+    protected int subClassHashCode(int hash) {
+        hash = super.subClassHashCode(hash);
+        return HASH_MULTIPLIER * hash + Objects.hashCode(this.mode);
+    }
+
+    @Override
+    protected boolean subClassEquals(T other) {
+        if (!super.subClassEquals(other)) {
+            return false;
+        }
+        return this.mode == other.mode;
+    }
+
 }

@@ -22,12 +22,14 @@
 package de.ibapl.fhz4j.protocol.fht;
 
 import de.ibapl.fhz4j.api.Protocol;
+import java.util.Objects;
 
 /**
  *
  * @author Arne Plöse
+ * @param <T>
  */
-public abstract class FhtMessage extends AbstractFhtMessage {
+public abstract class FhtMessage<T extends FhtMessage<T>> extends AbstractFhtMessage<T> {
 
     public short housecode;
     public FhtProperty command;
@@ -47,4 +49,27 @@ public abstract class FhtMessage extends AbstractFhtMessage {
         sb.append(", command : ").append(command);
         sb.append(String.format(", description : 0x%02x", description));
     }
+
+    @Override
+    protected int subClassHashCode(int hash) {
+        hash = super.subClassHashCode(hash);
+        hash = HASH_MULTIPLIER * hash + this.housecode;
+        hash = HASH_MULTIPLIER * hash + Objects.hashCode(this.command);
+        return HASH_MULTIPLIER * hash + this.description;
+    }
+
+    @Override
+    protected boolean subClassEquals(T other) {
+        if (!super.subClassEquals(other)) {
+            return false;
+        }
+        if (this.housecode != other.housecode) {
+            return false;
+        }
+        if (this.command != other.command) {
+            return false;
+        }
+        return this.description == other.description;
+    }
+
 }

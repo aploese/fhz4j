@@ -21,11 +21,14 @@
  */
 package de.ibapl.fhz4j.protocol.fht;
 
+import java.util.Objects;
+
 /**
  *
  * @author Arne Plöse
+ * @param <T>
  */
-public class FhtModeMessage extends Fht8bMessage {
+public class FhtModeMessage<T extends FhtModeMessage<T>> extends Fht8bMessage<T> {
 
     public Fht80bMode mode;
 
@@ -39,4 +42,19 @@ public class FhtModeMessage extends Fht8bMessage {
         super.addToJsonString(sb);
         sb.append(", value : ").append(mode);
     }
+
+    @Override
+    protected int subClassHashCode(int hash) {
+        hash = super.subClassHashCode(hash);
+        return HASH_MULTIPLIER * hash + Objects.hashCode(this.mode);
+    }
+
+    @Override
+    protected boolean subClassEquals(T other) {
+        if (!super.subClassEquals(other)) {
+            return false;
+        }
+        return this.mode == other.mode;
+    }
+
 }

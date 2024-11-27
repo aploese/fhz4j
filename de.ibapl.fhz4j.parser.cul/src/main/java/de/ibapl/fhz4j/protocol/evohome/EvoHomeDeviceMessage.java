@@ -21,11 +21,14 @@
  */
 package de.ibapl.fhz4j.protocol.evohome;
 
+import java.util.Objects;
+
 /**
  *
  * @author Arne Plöse
+ * @param <T>
  */
-public abstract class EvoHomeDeviceMessage extends EvoHomeMessage {
+public abstract class EvoHomeDeviceMessage<T extends EvoHomeDeviceMessage<T>> extends EvoHomeMessage<T> {
 
     public DeviceId deviceId1;
     public DeviceId deviceId2;
@@ -48,6 +51,24 @@ public abstract class EvoHomeDeviceMessage extends EvoHomeMessage {
         }
         sb.append("]");
 
+    }
+
+    @Override
+    protected int subClassHashCode(int hash) {
+        hash = super.subClassHashCode(hash);
+        hash = HASH_MULTIPLIER * hash + Objects.hashCode(this.deviceId1);
+        return HASH_MULTIPLIER * hash + Objects.hashCode(this.deviceId2);
+    }
+
+    @Override
+    protected boolean subClassEquals(T other) {
+        if (!super.subClassEquals(other)) {
+            return false;
+        }
+        if (!Objects.equals(this.deviceId1, other.deviceId1)) {
+            return false;
+        }
+        return Objects.equals(this.deviceId2, other.deviceId2);
     }
 
 }

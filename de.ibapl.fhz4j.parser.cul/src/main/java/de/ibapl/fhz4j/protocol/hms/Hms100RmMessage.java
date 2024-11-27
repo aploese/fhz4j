@@ -26,8 +26,9 @@ import java.util.Set;
 /**
  *
  * @author Arne Plöse
+ * @param <T>
  */
-public class Hms100RmMessage extends HmsMessage {
+public class Hms100RmMessage<T extends Hms100RmMessage<T>> extends HmsMessage<T> {
 
     public Hms100RmMessage(short housecode, Set<HmsDeviceStatus> deviceStatus) {
         super(housecode, HmsDeviceType.HMS_100_RM, deviceStatus);
@@ -40,4 +41,19 @@ public class Hms100RmMessage extends HmsMessage {
         super.addToJsonString(sb);
         sb.append(", smoke : ").append(smoke);
     }
+
+    @Override
+    protected int subClassHashCode(int hash) {
+        hash = super.subClassHashCode(hash);
+        return HASH_MULTIPLIER * hash + (this.smoke ? 1 : 0);
+    }
+
+    @Override
+    protected boolean subClassEquals(T other) {
+        if (!super.subClassEquals(other)) {
+            return false;
+        }
+        return this.smoke == other.smoke;
+    }
+
 }

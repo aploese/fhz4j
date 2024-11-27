@@ -31,10 +31,11 @@ import de.ibapl.fhz4j.protocol.evohome.EvoHomeMsgType;
  * @author Arne Plöse
  * <a href="https://github.com/zxdavb/ramses_protocol/wiki/3B00:-Actuator-Sync">3B00:
  * Actuator Sync</a>
+ * @param <T>
  */
-public class ActuatorSyncInformationMessage extends EvoHomeDeviceMessage {
+public class ActuatorSyncInformationMessage<T extends ActuatorSyncInformationMessage<T>> extends EvoHomeDeviceMessage<T> {
 
-    public byte domain_id;
+    public byte domainId;
     public byte state;
 
     public ActuatorSyncInformationMessage(EvoHomeMsgParam0 msgParam0) {
@@ -44,7 +45,26 @@ public class ActuatorSyncInformationMessage extends EvoHomeDeviceMessage {
     @Override
     protected void addToJsonString(StringBuilder sb) {
         super.addToJsonString(sb);
-        sb.append(String.format(", domain_id : 0x%02x", domain_id));
+        sb.append(String.format(", domainId : 0x%02x", domainId));
         sb.append(String.format(", state : 0x%02x", state));
     }
+
+    @Override
+    protected int subClassHashCode(int hash) {
+        hash = super.subClassHashCode(hash);
+        hash = HASH_MULTIPLIER * hash + this.domainId;
+        return HASH_MULTIPLIER * hash + this.state;
+    }
+
+    @Override
+    protected boolean subClassEquals(T other) {
+        if (!super.subClassEquals(other)) {
+            return false;
+        }
+        if (this.domainId != other.domainId) {
+            return false;
+        }
+        return this.state == other.state;
+    }
+
 }

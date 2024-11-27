@@ -31,8 +31,9 @@ import de.ibapl.fhz4j.protocol.evohome.EvoHomeMsgType;
  * @author Arne Plöse
  * <a href="https://github.com/zxdavb/ramses_protocol/wiki/000E:-Unknown">000E:
  * Unknown</a>
+ * @param <T>
  */
-public class T87RF_Startup_0x000E_InformationMessage extends EvoHomeDeviceMessage {
+public class T87RF_Startup_0x000E_InformationMessage<T extends T87RF_Startup_0x000E_InformationMessage<T>> extends EvoHomeDeviceMessage<T> {
 
     public int value;
 
@@ -44,6 +45,20 @@ public class T87RF_Startup_0x000E_InformationMessage extends EvoHomeDeviceMessag
     protected void addToJsonString(StringBuilder sb) {
         super.addToJsonString(sb);
         sb.append(String.format(", value : 0x%04x", value));
+    }
+
+    @Override
+    protected int subClassHashCode(int hash) {
+        hash = super.subClassHashCode(hash);
+        return HASH_MULTIPLIER * hash + this.value;
+    }
+
+    @Override
+    protected boolean subClassEquals(T other) {
+        if (!super.subClassEquals(other)) {
+            return false;
+        }
+        return this.value == other.value;
     }
 
 }

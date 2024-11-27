@@ -25,14 +25,16 @@ import de.ibapl.fhz4j.protocol.evohome.EvoHomeCommand;
 import de.ibapl.fhz4j.protocol.evohome.EvoHomeDeviceMessage;
 import de.ibapl.fhz4j.protocol.evohome.EvoHomeMsgParam0;
 import de.ibapl.fhz4j.protocol.evohome.EvoHomeMsgType;
+import java.util.Objects;
 
 /**
  *
  * @author Arne Plöse
  * <a href="https://github.com/zxdavb/ramses_protocol/wiki/0100:-Localisation-(language)">0100:
  * Localisation (language)</a>
+ * @param <T>
  */
-public class LocalizationRequestMessage extends EvoHomeDeviceMessage {
+public class LocalizationRequestMessage<T extends LocalizationRequestMessage<T>> extends EvoHomeDeviceMessage<T> {
 
     public byte unused0;
     public String language;
@@ -49,4 +51,27 @@ public class LocalizationRequestMessage extends EvoHomeDeviceMessage {
         sb.append(", language : \"").append(language).append("\"");
         sb.append(String.format(", unused1 : 0x%02x", unused1));
     }
+
+    @Override
+    protected int subClassHashCode(int hash) {
+        hash = super.subClassHashCode(hash);
+        hash = HASH_MULTIPLIER * hash + this.unused0;
+        hash = HASH_MULTIPLIER * hash + Objects.hashCode(this.language);
+        return HASH_MULTIPLIER * hash + this.unused1;
+    }
+
+    @Override
+    protected boolean subClassEquals(T other) {
+        if (!super.subClassEquals(other)) {
+            return false;
+        }
+        if (this.unused0 != other.unused0) {
+            return false;
+        }
+        if (this.unused1 != other.unused1) {
+            return false;
+        }
+        return Objects.equals(this.language, other.language);
+    }
+
 }

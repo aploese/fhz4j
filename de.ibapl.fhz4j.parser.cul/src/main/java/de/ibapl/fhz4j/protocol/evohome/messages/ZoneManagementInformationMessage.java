@@ -25,14 +25,16 @@ import de.ibapl.fhz4j.protocol.evohome.EvoHomeCommand;
 import de.ibapl.fhz4j.protocol.evohome.EvoHomeDeviceMessage;
 import de.ibapl.fhz4j.protocol.evohome.EvoHomeMsgParam0;
 import de.ibapl.fhz4j.protocol.evohome.EvoHomeMsgType;
+import java.util.Arrays;
 
 /**
  *
  * @author Arne Plöse
  * <a href="https://github.com/zxdavb/ramses_protocol/wiki/0005:-Zone-Management">0005:
  * Zone Management</a>
+ * @param <T>
  */
-public class ZoneManagementInformationMessage extends EvoHomeDeviceMessage {
+public class ZoneManagementInformationMessage<T extends ZoneManagementInformationMessage<T>> extends EvoHomeDeviceMessage<T> {
 
     public final byte[] value;
 
@@ -46,4 +48,19 @@ public class ZoneManagementInformationMessage extends EvoHomeDeviceMessage {
         super.addToJsonString(sb);
         appendByteArray(sb, "value", value);
     }
+
+    @Override
+    protected int subClassHashCode(int hash) {
+        hash = super.subClassHashCode(hash);
+        return HASH_MULTIPLIER * hash + Arrays.hashCode(this.value);
+    }
+
+    @Override
+    protected boolean subClassEquals(T other) {
+        if (!super.subClassEquals(other)) {
+            return false;
+        }
+        return Arrays.equals(this.value, other.value);
+    }
+
 }

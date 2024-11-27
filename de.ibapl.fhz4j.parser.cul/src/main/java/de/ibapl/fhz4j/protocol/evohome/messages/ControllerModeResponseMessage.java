@@ -29,8 +29,9 @@ import de.ibapl.fhz4j.protocol.evohome.EvoHomeMsgType;
  * @author Arne Plöse
  * <a href="https://github.com/zxdavb/ramses_protocol/wiki/2E04:-Controller-Mode">2E04:
  * Controller Mode</a>
+ * @param <T>
  */
-public class ControllerModeResponseMessage extends AbstractControllerModePayloadMessage {
+public class ControllerModeResponseMessage<T extends ControllerModeResponseMessage<T>> extends AbstractControllerModePayloadMessage<T> {
 
     public ControllerModeResponseMessage(EvoHomeMsgParam0 msgParam0) {
         super(EvoHomeMsgType.RESPONSE, msgParam0);

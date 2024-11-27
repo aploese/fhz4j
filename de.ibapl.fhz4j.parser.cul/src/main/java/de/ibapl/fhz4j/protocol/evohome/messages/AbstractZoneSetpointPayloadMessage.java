@@ -25,14 +25,16 @@ import de.ibapl.fhz4j.protocol.evohome.EvoHomeMsgParam0;
 import de.ibapl.fhz4j.protocol.evohome.EvoHomeMsgType;
 import de.ibapl.fhz4j.protocol.evohome.ZoneTemperature;
 import java.util.LinkedList;
+import java.util.Objects;
 
 /**
  *
  * @author Arne Plöse
  * <a href="https://github.com/zxdavb/ramses_protocol/wiki/2309:-Zone-Setpoint">2309:
  * Zone Setpoint</a>
+ * @param <T>
  */
-public abstract class AbstractZoneSetpointPayloadMessage extends AbstractZoneSetpointMessage {
+public abstract class AbstractZoneSetpointPayloadMessage<T extends AbstractZoneSetpointPayloadMessage<T>> extends AbstractZoneSetpointMessage<T> {
 
     public LinkedList<ZoneTemperature> zoneTemperatures = new LinkedList<>();
 
@@ -54,6 +56,18 @@ public abstract class AbstractZoneSetpointPayloadMessage extends AbstractZoneSet
             sb.append(zt);
         }
         sb.append("]");
+    }
+
+    protected int subClassHashCode(int hash) {
+        hash = super.subClassHashCode(hash);
+        return HASH_MULTIPLIER * hash + Objects.hashCode(this.zoneTemperatures);
+    }
+
+    protected boolean subClassEquals(T other) {
+        if (!super.subClassEquals(other)) {
+            return false;
+        }
+        return Objects.equals(this.zoneTemperatures, other.zoneTemperatures);
     }
 
 }

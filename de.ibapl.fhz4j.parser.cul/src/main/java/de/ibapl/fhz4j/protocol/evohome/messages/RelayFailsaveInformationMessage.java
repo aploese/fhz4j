@@ -31,13 +31,14 @@ import de.ibapl.fhz4j.protocol.evohome.EvoHomeMsgType;
  * @author Arne Plöse
  * <a href="https://github.com/zxdavb/ramses_protocol/wiki/0009:-Relay-Failsafe">0009:
  * Relay Failsafe</a>
+ * @param <T>
  */
-public class RelayFailsaveInformationMessage extends EvoHomeDeviceMessage {
+public class RelayFailsaveInformationMessage<T extends RelayFailsaveInformationMessage<T>> extends EvoHomeDeviceMessage<T> {
 
     /**
      * 0xF9, 0xFA or 0xFC, or zone_idx(0x00-0x0B).
      */
-    public byte domain_id;
+    public byte domainId;
 
     public int value;
 
@@ -48,7 +49,26 @@ public class RelayFailsaveInformationMessage extends EvoHomeDeviceMessage {
     @Override
     protected void addToJsonString(StringBuilder sb) {
         super.addToJsonString(sb);
-        sb.append(String.format(", domain_id : 0x%02x", domain_id));
+        sb.append(String.format(", domainId : 0x%02x", domainId));
         sb.append(String.format(", value : 0x%04x", value));
     }
+
+    @Override
+    protected int subClassHashCode(int hash) {
+        hash = super.subClassHashCode(hash);
+        hash = HASH_MULTIPLIER * hash + this.domainId;
+        return HASH_MULTIPLIER * hash + this.value;
+    }
+
+    @Override
+    protected boolean subClassEquals(T other) {
+        if (!super.subClassEquals(other)) {
+            return false;
+        }
+        if (this.domainId != other.domainId) {
+            return false;
+        }
+        return this.value == other.value;
+    }
+
 }

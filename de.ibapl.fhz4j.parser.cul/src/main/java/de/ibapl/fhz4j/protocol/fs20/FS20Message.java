@@ -23,12 +23,14 @@ package de.ibapl.fhz4j.protocol.fs20;
 
 import de.ibapl.fhz4j.api.Message;
 import de.ibapl.fhz4j.api.Protocol;
+import java.util.Objects;
 
 /**
  *
  * @author Arne Plöse
+ * @param <T>
  */
-public class FS20Message extends Message {
+public class FS20Message<T extends FS20Message<T>> extends Message<T> {
 
     public short housecode;
     public byte offset;
@@ -48,4 +50,27 @@ public class FS20Message extends Message {
         sb.append(", offset : ").append(offset);
         sb.append(", command : ").append(command);
     }
+
+    @Override
+    protected int subClassHashCode(int hash) {
+        hash = super.subClassHashCode(hash);
+        hash = HASH_MULTIPLIER * hash + this.housecode;
+        hash = HASH_MULTIPLIER * hash + this.offset;
+        return HASH_MULTIPLIER * hash + Objects.hashCode(this.command);
+    }
+
+    @Override
+    protected boolean subClassEquals(T other) {
+        if (!super.subClassEquals(other)) {
+            return false;
+        }
+        if (this.housecode != other.housecode) {
+            return false;
+        }
+        if (this.offset != other.offset) {
+            return false;
+        }
+        return this.command == other.command;
+    }
+
 }

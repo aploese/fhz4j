@@ -23,12 +23,14 @@ package de.ibapl.fhz4j.protocol.lacrosse.tx2;
 
 import de.ibapl.fhz4j.api.Message;
 import de.ibapl.fhz4j.api.Protocol;
+import java.util.Objects;
 
 /**
  *
  * @author Arne Plöse
+ * @param <T>
  */
-public class LaCrosseTx2Message extends Message {
+public class LaCrosseTx2Message<T extends LaCrosseTx2Message<T>> extends Message<T> {
 
     public LaCrosseTx2Property laCrosseTx2Property;
     public byte address;
@@ -46,4 +48,27 @@ public class LaCrosseTx2Message extends Message {
         sb.append(", address : ").append(address);
         sb.append(", value : ").append(value);
     }
+
+    @Override
+    protected int subClassHashCode(int hash) {
+        hash = super.subClassHashCode(hash);
+        hash = HASH_MULTIPLIER * hash + Objects.hashCode(this.laCrosseTx2Property);
+        hash = HASH_MULTIPLIER * hash + this.address;
+        return HASH_MULTIPLIER * hash + Float.floatToIntBits(this.value);
+    }
+
+    @Override
+    protected boolean subClassEquals(T other) {
+        if (!super.subClassEquals(other)) {
+            return false;
+        }
+        if (this.address != other.address) {
+            return false;
+        }
+        if (Float.floatToIntBits(this.value) != Float.floatToIntBits(other.value)) {
+            return false;
+        }
+        return this.laCrosseTx2Property == other.laCrosseTx2Property;
+    }
+
 }

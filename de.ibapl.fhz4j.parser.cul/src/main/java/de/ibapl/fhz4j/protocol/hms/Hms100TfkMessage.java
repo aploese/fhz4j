@@ -26,8 +26,9 @@ import java.util.Set;
 /**
  *
  * @author Arne Plöse
+ * @param <T>
  */
-public class Hms100TfkMessage extends HmsMessage {
+public class Hms100TfkMessage<T extends Hms100TfkMessage<T>> extends HmsMessage<T> {
 
     public Hms100TfkMessage(short housecode, Set<HmsDeviceStatus> deviceStatus) {
         super(housecode, HmsDeviceType.HMS_100_TFK, deviceStatus);
@@ -41,4 +42,19 @@ public class Hms100TfkMessage extends HmsMessage {
         sb.append(", open : ").append(open);
 
     }
+
+    @Override
+    protected int subClassHashCode(int hash) {
+        hash = super.subClassHashCode(hash);
+        return HASH_MULTIPLIER * hash + (this.open ? 1 : 0);
+    }
+
+    @Override
+    protected boolean subClassEquals(T other) {
+        if (!super.subClassEquals(other)) {
+            return false;
+        }
+        return this.open == other.open;
+    }
+
 }

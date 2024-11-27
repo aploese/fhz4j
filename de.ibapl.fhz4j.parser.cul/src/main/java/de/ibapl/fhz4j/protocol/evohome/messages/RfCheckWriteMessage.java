@@ -25,14 +25,16 @@ import de.ibapl.fhz4j.protocol.evohome.EvoHomeCommand;
 import de.ibapl.fhz4j.protocol.evohome.EvoHomeDeviceMessage;
 import de.ibapl.fhz4j.protocol.evohome.EvoHomeMsgParam0;
 import de.ibapl.fhz4j.protocol.evohome.EvoHomeMsgType;
+import java.util.Arrays;
 
 /**
  *
  * @author Arne Plöse
  * <a href="https://github.com/Evsdd/The-Evohome-Protocol/wiki/0001:-RF-Unknown">0001:
  * RF Check</a>
+ * @param <T>
  */
-public class RfCheckWriteMessage extends EvoHomeDeviceMessage {
+public class RfCheckWriteMessage<T extends RfCheckWriteMessage<T>> extends EvoHomeDeviceMessage<T> {
 
     public final byte[] value = new byte[0x05];
 
@@ -48,4 +50,19 @@ public class RfCheckWriteMessage extends EvoHomeDeviceMessage {
         super.addToJsonString(sb);
         appendByteArray(sb, "value", value);
     }
+
+    @Override
+    protected int subClassHashCode(int hash) {
+        hash = super.subClassHashCode(hash);
+        return HASH_MULTIPLIER * hash + Arrays.hashCode(this.value);
+    }
+
+    @Override
+    protected boolean subClassEquals(T other) {
+        if (!super.subClassEquals(other)) {
+            return false;
+        }
+        return Arrays.equals(this.value, other.value);
+    }
+
 }

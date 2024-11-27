@@ -27,8 +27,9 @@ import de.ibapl.fhz4j.api.Protocol;
 /**
  *
  * @author Arne Plöse
+ * @param <T>
  */
-public abstract class CulMessage extends Message {
+public abstract class CulMessage<T extends CulMessage<T>> extends Message<T> {
 
     protected CulMessage() {
         super(Protocol.CUL);

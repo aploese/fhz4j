@@ -32,8 +32,9 @@ import de.ibapl.fhz4j.protocol.evohome.EvoHomeMsgType;
  * @author Arne Plöse
  * <a href="https://github.com/zxdavb/ramses_protocol/wiki/30C9:-Zone-Temperature">30C9:
  * Zone Temperature</a>
+ * @param <T>
  */
-public abstract class AbstractZoneTemperatureMessage extends EvoHomeDeviceMessage {
+public abstract class AbstractZoneTemperatureMessage<T extends AbstractZoneTemperatureMessage<T>> extends EvoHomeDeviceMessage<T> {
 
     protected AbstractZoneTemperatureMessage(EvoHomeMsgType msgType, EvoHomeMsgParam0 msgParam0) {
         super(EvoHomeCommand.ZONE_TEMPERATURE, msgType, msgParam0);

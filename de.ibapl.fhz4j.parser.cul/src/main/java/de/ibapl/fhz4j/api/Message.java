@@ -21,12 +21,45 @@
  */
 package de.ibapl.fhz4j.api;
 
+import java.util.Objects;
+
 /**
  *
  * @author Arne Plöse
+ * @param <T>
  *
  */
-public abstract class Message {
+public abstract class Message<T extends Message<T>> {
+
+    protected final static int HASH_MULTIPLIER = 53;
+    protected final static int INITIAL_HASH = 7;
+
+    @Override
+    final public int hashCode() {
+        return subClassHashCode(INITIAL_HASH);
+    }
+
+    protected int subClassHashCode(int hash) {
+        return HASH_MULTIPLIER * hash + Objects.hashCode(this.protocol);
+    }
+
+    @Override
+    final public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        return subClassEquals((T) obj);
+    }
+
+    protected boolean subClassEquals(T other) {
+        return this.protocol == other.protocol;
+    }
 
     public Protocol protocol;
 
@@ -40,7 +73,7 @@ public abstract class Message {
     }
 
     @Override
-    public String toString() {
+    final public String toString() {
         StringBuilder sb = new StringBuilder();
         sb.append("{");
         addToJsonString(sb);

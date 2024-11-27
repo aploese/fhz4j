@@ -22,12 +22,14 @@
 package de.ibapl.fhz4j.protocol.fht;
 
 import java.time.LocalTime;
+import java.util.Objects;
 
 /**
  *
  * @author Arne Plöse
+ * @param <T>
  */
-public class FhtTimesMessage extends Fht8bMessage {
+public class FhtTimesMessage<T extends FhtTimesMessage<T>> extends Fht8bMessage<T> {
 
     public LocalTime timeFrom1;
     public LocalTime timeTo1;
@@ -51,4 +53,31 @@ public class FhtTimesMessage extends Fht8bMessage {
         sb.append(", timeFrom2 : ").append(timeFrom2);
         sb.append(", timeTo2 : ").append(timeTo2);
     }
+
+    @Override
+    protected int subClassHashCode(int hash) {
+        hash = super.subClassHashCode(hash);
+        hash = HASH_MULTIPLIER * hash + Objects.hashCode(this.timeFrom1);
+        hash = HASH_MULTIPLIER * hash + Objects.hashCode(this.timeTo1);
+        hash = HASH_MULTIPLIER * hash + Objects.hashCode(this.timeFrom2);
+        return HASH_MULTIPLIER * hash + Objects.hashCode(this.timeTo2);
+    }
+
+    @Override
+    protected boolean subClassEquals(T other) {
+        if (!super.subClassEquals(other)) {
+            return false;
+        }
+        if (!Objects.equals(this.timeFrom1, other.timeFrom1)) {
+            return false;
+        }
+        if (!Objects.equals(this.timeTo1, other.timeTo1)) {
+            return false;
+        }
+        if (!Objects.equals(this.timeFrom2, other.timeFrom2)) {
+            return false;
+        }
+        return Objects.equals(this.timeTo2, other.timeTo2);
+    }
+
 }

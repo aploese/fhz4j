@@ -21,11 +21,14 @@
  */
 package de.ibapl.fhz4j.protocol.fht;
 
+import java.util.Objects;
+
 /**
  *
  * @author Arne Plöse
+ * @param <T>
  */
-public class FhtValvePosMessage extends FhtMessage {
+public class FhtValvePosMessage<T extends FhtValvePosMessage<T>> extends FhtMessage<T> {
 
     public FhtValveMode mode;
     public boolean repeated;
@@ -50,4 +53,31 @@ public class FhtValvePosMessage extends FhtMessage {
         sb.append(", allowLowBatteryBeep : ").append(allowLowBatteryBeep);
 
     }
+
+    @Override
+    protected int subClassHashCode(int hash) {
+        hash = super.subClassHashCode(hash);
+        hash = HASH_MULTIPLIER * hash + Objects.hashCode(this.mode);
+        hash = HASH_MULTIPLIER * hash + (this.repeated ? 1 : 0);
+        hash = HASH_MULTIPLIER * hash + Float.floatToIntBits(this.position);
+        return HASH_MULTIPLIER * hash + (this.allowLowBatteryBeep ? 1 : 0);
+    }
+
+    @Override
+    protected boolean subClassEquals(T other) {
+        if (!super.subClassEquals(other)) {
+            return false;
+        }
+        if (this.repeated != other.repeated) {
+            return false;
+        }
+        if (Float.floatToIntBits(this.position) != Float.floatToIntBits(other.position)) {
+            return false;
+        }
+        if (this.allowLowBatteryBeep != other.allowLowBatteryBeep) {
+            return false;
+        }
+        return this.mode == other.mode;
+    }
+
 }

@@ -31,8 +31,9 @@ import de.ibapl.fhz4j.protocol.evohome.EvoHomeMsgType;
  * @author Arne Plöse
  * <a href="https://github.com/zxdavb/ramses_protocol/wiki/1060:-Device-Battery-Status">1060:
  * Device Battery Status</a>
+ * @param <T>
  */
-public class DeviceBatteryStatusInformationMessage extends EvoHomeDeviceMessage {
+public class DeviceBatteryStatusInformationMessage<T extends DeviceBatteryStatusInformationMessage<T>> extends EvoHomeDeviceMessage<T> {
 
     public byte zone_id;
     public float level;
@@ -48,6 +49,28 @@ public class DeviceBatteryStatusInformationMessage extends EvoHomeDeviceMessage 
         sb.append(String.format(", zone_id : 0x%02x", zone_id));
         sb.append(", level : ").append(level);
         sb.append(String.format(", unknown0 : 0x%02x", unknown0));
+    }
+
+    @Override
+    protected int subClassHashCode(int hash) {
+        hash = super.subClassHashCode(hash);
+        hash = HASH_MULTIPLIER * hash + this.zone_id;
+        hash = HASH_MULTIPLIER * hash + Float.floatToIntBits(this.level);
+        return HASH_MULTIPLIER * hash + this.unknown0;
+    }
+
+    @Override
+    protected boolean subClassEquals(T other) {
+        if (!super.subClassEquals(other)) {
+            return false;
+        }
+        if (this.zone_id != other.zone_id) {
+            return false;
+        }
+        if (Float.floatToIntBits(this.level) != Float.floatToIntBits(other.level)) {
+            return false;
+        }
+        return this.unknown0 == other.unknown0;
     }
 
 }

@@ -31,10 +31,11 @@ import de.ibapl.fhz4j.protocol.evohome.EvoHomeMsgType;
  * @author Arne Plöse
  * <a href="https://github.com/zxdavb/ramses_protocol/wiki/000C:-Zone-Actuators">000C:
  * Zone Actuators</a>
+ * @param <T>
  */
-public class ZoneActuatorsRequestMessage extends EvoHomeDeviceMessage {
+public class ZoneActuatorsRequestMessage<T extends ZoneActuatorsRequestMessage<T>> extends EvoHomeDeviceMessage<T> {
 
-    public byte zone_idx;
+    public byte zoneIdx;
     public byte unknown0;
 
     public ZoneActuatorsRequestMessage(EvoHomeMsgParam0 msgParam0) {
@@ -44,7 +45,26 @@ public class ZoneActuatorsRequestMessage extends EvoHomeDeviceMessage {
     @Override
     protected void addToJsonString(StringBuilder sb) {
         super.addToJsonString(sb);
-        sb.append(String.format(", zone_idx : 0x%02x", zone_idx));
+        sb.append(String.format(", zoneIdx : 0x%02x", zoneIdx));
         sb.append(String.format(", unknown0 : 0x%02x", unknown0));
     }
+
+    @Override
+    protected int subClassHashCode(int hash) {
+        hash = super.subClassHashCode(hash);
+        hash = HASH_MULTIPLIER * hash + this.zoneIdx;
+        return HASH_MULTIPLIER * hash + this.unknown0;
+    }
+
+    @Override
+    protected boolean subClassEquals(T other) {
+        if (!super.subClassEquals(other)) {
+            return false;
+        }
+        if (this.zoneIdx != other.zoneIdx) {
+            return false;
+        }
+        return this.unknown0 == other.unknown0;
+    }
+
 }
